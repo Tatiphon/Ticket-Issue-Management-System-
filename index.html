@@ -2404,6 +2404,11 @@
         return;
       }
 
+      const btn = document.getElementById("btnSubmitTicket");
+      const spinner = document.getElementById("btnTicketSpinner");
+      if (btn) btn.disabled = true;
+      if (spinner) spinner.classList.remove("hidden");
+
       const priority = document.getElementById("ticketPriority").value;
       const ticketNum = "TKT-" + (1000 + state.tickets.length + 1);
       const newTicket = {
@@ -2429,9 +2434,14 @@
       };
 
       state.tickets.unshift(newTicket);
-      showNotification(`เปิดเคส [${ticketNum}] เรียบร้อย เจ้าหน้าที่จะดำเนินการตามเวลา SLA`, "success");
+      await callAPI("createTicket", { ticketData: newTicket });
+
+      showNotification(`เปิดเคส [${ticketNum}] เรียบร้อย บันทึกลงระบบแล้ว`, "success");
       document.getElementById("createTicketForm").reset();
       clearTicketAttachment();
+
+      if (btn) btn.disabled = false;
+      if (spinner) spinner.classList.add("hidden");
 
       if (state.currentUser) {
         document.getElementById("ticketReporterName").value = state.currentUser.name;
@@ -2673,6 +2683,11 @@
       input.value = "";
       renderTicketComments(ticket);
       showNotification("ส่งข้อความตอบกลับแล้ว", "success");
+
+      callAPI("updateTicket", {
+        ticketId: ticket.ticket_id,
+        updates: { comments: ticket.comments }
+      }, true);
     }
 
     function setCsatStar(n) {
@@ -2683,7 +2698,7 @@
       });
     }
 
-    function submitTicketCsat() {
+    async function submitTicketCsat() {
       if (!state.activeDetailTicketId) return;
       const ticket = state.tickets.find(t => t.ticket_id === state.activeDetailTicketId);
       if (!ticket) return;
@@ -2693,6 +2708,11 @@
       showNotification(`ขอบคุณสำหรับการประเมิน ${ticket.csat_score} ดาว ⭐`, "success");
       openTicketDetailModal(ticket.ticket_id);
       renderAll();
+
+      await callAPI("updateTicket", {
+        ticketId: ticket.ticket_id,
+        updates: { csat_score: ticket.csat_score, csat_feedback: ticket.csat_feedback }
+      }, true);
     }
 
     function openTicketAdminActionModal(ticketId) {
@@ -2714,7 +2734,7 @@
       document.getElementById("ticketAdminActionModal").classList.add("hidden");
     }
 
-    function handleSaveTicketAdminAction(e) {
+    async function handleSaveTicketAdminAction(e) {
       e.preventDefault();
       const tid = document.getElementById("adminActionTicketId").value;
       const ticket = state.tickets.find(t => t.ticket_id === tid);
@@ -2740,6 +2760,16 @@
       closeTicketAdminActionModal();
       showNotification(`บันทึกการจัดการเคส [${ticket.ticket_id}] สำเร็จ`, "success");
       renderAll();
+
+      await callAPI("updateTicket", {
+        ticketId: ticket.ticket_id,
+        updates: {
+          status: ticket.status,
+          assigned_agent: ticket.assigned_agent,
+          resolved_at: ticket.resolved_at,
+          comments: ticket.comments
+        }
+      }, true);
     }
 
     function runAutoAssignRoundRobin() {
@@ -3031,6 +3061,17 @@
 
       syncItemStatuses();
       showNotification(`บันทึกการยืมสำเร็จ ${state.selectedBorrowItems.length} รายการ`, "success");
+
+      callAPI("borrowItem", {
+        itemIds: [...state.selectedBorrowItems],
+        borrowerName: document.getElementById("borrowerName").value.trim(),
+        dept: deptVal,
+        contact: document.getElementById("borrowerContact").value.trim(),
+        borrowDate: bDate,
+        expectedReturn: rDate,
+        notes: document.getElementById("borrowPurpose").value.trim()
+      }, true);
+
       document.getElementById("borrowForm").reset();
       clearSelectedBorrowItems();
       setDefaultReturnDate();
@@ -3174,6 +3215,8 @@
       clearReturnSelections();
       showNotification(`รับคืนอุปกรณ์เรียบร้อยแล้ว`, "success");
       renderAll();
+
+      callAPI("returnItem", { transIds }, true);
     }
 
     function renderInventoryTable(filteredList = null) {
@@ -3272,6 +3315,7 @@
       closeRoleModal();
       showNotification(`บันทึกสิทธิ์สำหรับ ${email} เรียบร้อย`, "success");
       applyUserRoleUI();
+      callAPI("saveUserRole", { roleData: roleObj }, true);
     }
 
     function openEditHistoryModal(tid) {
@@ -3335,10 +3379,13 @@
       input.value = "";
       openDeptManagementModal();
       showNotification(`เพิ่มแผนก "${val}" เรียบร้อย`, "success");
+      callAPI("addDepartment", { deptName: val }, true);
     }
     function handleDeleteDept(idx) {
+      const deptName = state.departments[idx];
       state.departments.splice(idx, 1);
       openDeptManagementModal();
+      if (deptName) callAPI("deleteDepartment", { deptName }, true);
     }
 
     function openAddItemModal() {
@@ -3379,6 +3426,7 @@
       closeAddItemModal();
       showNotification(`เพิ่มอุปกรณ์ [${newItem.item_id}] สำเร็จ`, "success");
       renderAll();
+      callAPI("addItem", { itemId: newItem.item_id, itemName: newItem.item_name, category: newItem.category, serialNumber: newItem.serial_number }, true);
     }
 
     function exportHistoryCsv() {
@@ -3476,8 +3524,10 @@
     }
 
     const SELF_HEALING_GAS_CODE = `/**
- * IT Asset & Helpdesk Service System - Google Apps Script (TCC Full Edition)
+ * IT Asset & Helpdesk Service System - Google Apps Script (TCC Full Self-Healing Edition)
+ * พัฒนาสำหรับ: ฝ่ายเทคโนโลยีสารสนเทศ หอการค้าไทย
  * รองรับ: Items, Logs, Categories, Departments, UserRoles, Tickets, KnowledgeBase
+ * ระบบ Self-Healing: สร้างแท็บตารางที่ขาดหายให้อัตโนมัติ พร้อมตั้งค่าหัวตารางให้อัตโนมัติ
  */
 function doPost(e) {
   var lock = LockService.getScriptLock();
@@ -3489,10 +3539,19 @@ function doPost(e) {
       case "getInitialData": return handleGetInitialData();
       case "borrowItem": return handleBorrowItem(data);
       case "returnItem": return handleReturnItem(data);
+      case "updateHistoryLog": return handleUpdateHistoryLog(data);
+      case "addItem": return handleAddItem(data);
+      case "updateItem": return handleUpdateItem(data);
+      case "addDepartment": return handleAddDepartment(data);
+      case "updateDepartment": return handleUpdateDepartment(data);
+      case "deleteDepartment": return handleDeleteDepartment(data);
+      case "saveUserRole": return handleSaveUserRole(data);
+      case "deleteUserRole": return handleDeleteUserRole(data);
       case "createTicket": return handleCreateTicket(data);
       case "updateTicket": return handleUpdateTicket(data);
-      case "saveUserRole": return handleSaveUserRole(data);
-      default: return jsonResponse({ status: "success", message: "Action processed" });
+      case "saveKbArticle": return handleSaveKbArticle(data);
+      case "deleteKbArticle": return handleDeleteKbArticle(data);
+      default: return jsonResponse({ status: "error", message: "Invalid action: " + action });
     }
   } catch (err) {
     return jsonResponse({ status: "error", message: err.toString() });
@@ -3500,30 +3559,431 @@ function doPost(e) {
     lock.releaseLock();
   }
 }
+
 function doGet(e) { return handleGetInitialData(); }
+
 function getSpreadsheet() { return SpreadsheetApp.getActiveSpreadsheet(); }
+
 function jsonResponse(obj) {
   return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
 }
-function getOrCreateSheet(ss, sheetName, headers) {
+
+function formatGASDate(val, pattern) {
+  if (!val) return "";
+  try {
+    var d = (val instanceof Date) ? val : new Date(val);
+    if (isNaN(d.getTime())) return String(val);
+    return Utilities.formatDate(d, "GMT+7", pattern);
+  } catch(e) { return String(val); }
+}
+
+function getOrCreateSheet(ss, sheetName, headers, defaultRows) {
   var sheet = ss.getSheetByName(sheetName);
   if (!sheet) {
     sheet = ss.insertSheet(sheetName);
     sheet.appendRow(headers);
     sheet.getRange(1, 1, 1, headers.length).setFontWeight("bold").setBackground("#f1f5f9");
+    if (defaultRows && defaultRows.length > 0) {
+      defaultRows.forEach(function(r) { sheet.appendRow(r); });
+    }
+  } else if (sheet.getLastRow() === 0) {
+    sheet.appendRow(headers);
+    sheet.getRange(1, 1, 1, headers.length).setFontWeight("bold").setBackground("#f1f5f9");
+    if (defaultRows && defaultRows.length > 0) {
+      defaultRows.forEach(function(r) { sheet.appendRow(r); });
+    }
   }
   return sheet;
 }
+
 function handleGetInitialData() {
   var ss = getSpreadsheet();
-  getOrCreateSheet(ss, "Items", ["item_id", "item_name", "category", "serial_number", "status"]);
-  getOrCreateSheet(ss, "Logs", ["trans_id", "timestamp", "item_id", "borrower_name", "borrower_dept", "borrower_contact", "borrow_date", "expected_return", "actual_return", "trans_status", "notes"]);
-  getOrCreateSheet(ss, "Categories", ["category_name"]);
-  getOrCreateSheet(ss, "Departments", ["department_name"]);
-  getOrCreateSheet(ss, "UserRoles", ["email", "name", "role", "remark", "updated_at"]);
-  getOrCreateSheet(ss, "Tickets", ["ticket_id", "title", "category", "priority", "status", "reporter_name", "reporter_dept", "created_at", "sla_target", "assigned_agent"]);
-  getOrCreateSheet(ss, "KnowledgeBase", ["kb_id", "category", "title", "content"]);
-  return jsonResponse({ status: "success" });
+  var itemSheet = getOrCreateSheet(ss, "Items", ["item_id", "item_name", "category", "serial_number", "status"], []);
+  var logSheet = getOrCreateSheet(ss, "Logs", ["trans_id", "timestamp", "item_id", "borrower_name", "borrower_dept", "borrower_contact", "borrow_date", "expected_return", "actual_return", "trans_status", "notes"], []);
+  var catSheet = getOrCreateSheet(ss, "Categories", ["category_name"], [["Laptop"], ["Monitor"], ["Projector"], ["Adapter"], ["Audio"], ["Accessory"], ["Other"]]);
+  var deptSheet = getOrCreateSheet(ss, "Departments", ["department_name"], []);
+  var roleSheet = getOrCreateSheet(ss, "UserRoles", ["email", "name", "role", "remark", "updated_at"], []);
+  var ticketSheet = getOrCreateSheet(ss, "Tickets", [
+    "ticket_id", "title", "category", "priority", "status",
+    "reporter_name", "reporter_dept", "reporter_contact", "description",
+    "created_at", "sla_target", "assigned_agent", "resolved_at",
+    "csat_score", "csat_feedback", "attachment_name", "comments_json"
+  ], []);
+  var kbSheet = getOrCreateSheet(ss, "KnowledgeBase", ["kb_id", "category", "title", "content", "tags", "created_at"], []);
+
+  var categories = catSheet.getDataRange().getValues().slice(1).map(function(r){ return String(r[0] || "").trim(); }).filter(Boolean);
+  var departments = deptSheet.getDataRange().getValues().slice(1).map(function(r){ return String(r[0] || "").trim(); }).filter(Boolean);
+  var userRoles = roleSheet.getDataRange().getValues().slice(1).filter(function(r){ return r[0]; }).map(function(r){
+    return { email: String(r[0]).trim(), name: String(r[1] || ""), role: String(r[2] || "user"), remark: String(r[3] || "") };
+  });
+
+  // Logs & Active Borrows
+  var logData = logSheet.getDataRange().getValues();
+  var activeBorrows = [];
+  var allLogs = [];
+  var currentlyBorrowedMap = {};
+  for (var j = 1; j < logData.length; j++) {
+    if (!logData[j][0]) continue;
+    var rawStatus = String(logData[j][9] || "").trim().toLowerCase();
+    var isBorrowActive = (rawStatus === "borrowed" || rawStatus === "ยังไม่คืน");
+    var bId = String(logData[j][2] || "").trim();
+    var logItem = {
+      trans_id: String(logData[j][0]),
+      timestamp: formatGASDate(logData[j][1], "yyyy-MM-dd HH:mm"),
+      item_id: bId,
+      borrower_name: String(logData[j][3] || ""),
+      borrower_dept: String(logData[j][4] || ""),
+      borrower_contact: String(logData[j][5] || ""),
+      borrow_date: formatGASDate(logData[j][6], "yyyy-MM-dd"),
+      expected_return: formatGASDate(logData[j][7], "yyyy-MM-dd"),
+      actual_return: formatGASDate(logData[j][8], "yyyy-MM-dd HH:mm"),
+      trans_status: isBorrowActive ? "Borrowed" : "Returned",
+      notes: String(logData[j][10] || "")
+    };
+    allLogs.unshift(logItem);
+    if (isBorrowActive && bId) {
+      currentlyBorrowedMap[bId.toLowerCase()] = true;
+      activeBorrows.push(logItem);
+    }
+  }
+
+  // Items
+  var itemData = itemSheet.getDataRange().getValues();
+  var items = [];
+  for (var i = 1; i < itemData.length; i++) {
+    if (!itemData[i][0]) continue;
+    var cid = String(itemData[i][0]).trim();
+    var cStat = currentlyBorrowedMap[cid.toLowerCase()] ? "Borrowed" : (String(itemData[i][4] || "Available").trim() === "Maintenance" ? "Maintenance" : "Available");
+    items.push({ item_id: cid, item_name: String(itemData[i][1]), category: String(itemData[i][2]), serial_number: String(itemData[i][3]), status: cStat });
+  }
+
+  // Tickets
+  var ticketData = ticketSheet.getDataRange().getValues();
+  var tickets = [];
+  for (var t = 1; t < ticketData.length; t++) {
+    if (!ticketData[t][0]) continue;
+    var comments = [];
+    try {
+      if (ticketData[t][16]) comments = JSON.parse(ticketData[t][16]);
+    } catch(e) { comments = []; }
+
+    tickets.push({
+      ticket_id: String(ticketData[t][0]),
+      title: String(ticketData[t][1] || ""),
+      category: String(ticketData[t][2] || "Hardware"),
+      priority: String(ticketData[t][3] || "Medium"),
+      status: String(ticketData[t][4] || "Open"),
+      reporter_name: String(ticketData[t][5] || ""),
+      reporter_dept: String(ticketData[t][6] || ""),
+      reporter_contact: String(ticketData[t][7] || ""),
+      description: String(ticketData[t][8] || ""),
+      created_at: formatGASDate(ticketData[t][9], "yyyy-MM-dd HH:mm"),
+      sla_target: formatGASDate(ticketData[t][10], "yyyy-MM-dd HH:mm"),
+      assigned_agent: String(ticketData[t][11] || "ยังไม่มอบหมาย"),
+      resolved_at: formatGASDate(ticketData[t][12], "yyyy-MM-dd HH:mm"),
+      csat_score: Number(ticketData[t][13] || 0),
+      csat_feedback: String(ticketData[t][14] || ""),
+      attachment_name: String(ticketData[t][15] || ""),
+      comments: comments
+    });
+  }
+
+  // KnowledgeBase
+  var kbData = kbSheet.getDataRange().getValues();
+  var knowledgeBase = [];
+  for (var k = 1; k < kbData.length; k++) {
+    if (!kbData[k][0]) continue;
+    knowledgeBase.push({
+      kb_id: String(kbData[k][0]),
+      category: String(kbData[k][1] || ""),
+      title: String(kbData[k][2] || ""),
+      content: String(kbData[k][3] || ""),
+      tags: String(kbData[k][4] || ""),
+      created_at: formatGASDate(kbData[k][5], "yyyy-MM-dd")
+    });
+  }
+
+  return jsonResponse({
+    status: "success",
+    items: items,
+    activeBorrows: activeBorrows,
+    allLogs: allLogs,
+    categories: categories,
+    departments: departments,
+    userRoles: userRoles,
+    tickets: tickets,
+    knowledgeBase: knowledgeBase
+  });
+}
+
+function handleCreateTicket(data) {
+  var ss = getSpreadsheet();
+  var sheet = getOrCreateSheet(ss, "Tickets", [
+    "ticket_id", "title", "category", "priority", "status",
+    "reporter_name", "reporter_dept", "reporter_contact", "description",
+    "created_at", "sla_target", "assigned_agent", "resolved_at",
+    "csat_score", "csat_feedback", "attachment_name", "comments_json"
+  ]);
+  var t = data.ticketData;
+  if (!t || !t.ticket_id) return jsonResponse({ status: "error", message: "Missing ticketData" });
+
+  var commentsStr = (t.comments && typeof t.comments === "object") ? JSON.stringify(t.comments) : (t.comments || "[]");
+  sheet.appendRow([
+    t.ticket_id,
+    t.title || "",
+    t.category || "Hardware",
+    t.priority || "Medium",
+    t.status || "Open",
+    t.reporter_name || "",
+    t.reporter_dept || "",
+    t.reporter_contact || "",
+    t.description || "",
+    t.created_at || formatGASDate(new Date(), "yyyy-MM-dd HH:mm"),
+    t.sla_target || "",
+    t.assigned_agent || "ยังไม่มอบหมาย",
+    t.resolved_at || "",
+    t.csat_score || 0,
+    t.csat_feedback || "",
+    t.attachment_name || "",
+    commentsStr
+  ]);
+  SpreadsheetApp.flush();
+  return jsonResponse({ status: "success", message: "บันทึกเคสแจ้งซ่อมเรียบร้อย", ticket_id: t.ticket_id });
+}
+
+function handleUpdateTicket(data) {
+  var ss = getSpreadsheet();
+  var sheet = getOrCreateSheet(ss, "Tickets", [
+    "ticket_id", "title", "category", "priority", "status",
+    "reporter_name", "reporter_dept", "reporter_contact", "description",
+    "created_at", "sla_target", "assigned_agent", "resolved_at",
+    "csat_score", "csat_feedback", "attachment_name", "comments_json"
+  ]);
+  var targetId = String(data.ticketId || (data.updates && data.updates.ticket_id) || "").trim().toLowerCase();
+  if (!targetId) return jsonResponse({ status: "error", message: "Missing ticketId" });
+
+  var vals = sheet.getDataRange().getValues();
+  var u = data.updates || {};
+  for (var i = 1; i < vals.length; i++) {
+    if (String(vals[i][0]).trim().toLowerCase() === targetId) {
+      var r = i + 1;
+      if (u.status !== undefined) sheet.getRange(r, 5).setValue(u.status);
+      if (u.assigned_agent !== undefined) sheet.getRange(r, 12).setValue(u.assigned_agent);
+      if (u.resolved_at !== undefined) sheet.getRange(r, 13).setValue(u.resolved_at);
+      if (u.csat_score !== undefined) sheet.getRange(r, 14).setValue(u.csat_score);
+      if (u.csat_feedback !== undefined) sheet.getRange(r, 15).setValue(u.csat_feedback);
+      if (u.comments !== undefined) {
+        var cStr = typeof u.comments === "object" ? JSON.stringify(u.comments) : String(u.comments);
+        sheet.getRange(r, 17).setValue(cStr);
+      }
+      SpreadsheetApp.flush();
+      return jsonResponse({ status: "success", message: "อัปเดตเคสเรียบร้อย", ticket_id: targetId });
+    }
+  }
+  return jsonResponse({ status: "error", message: "Ticket not found: " + targetId });
+}
+
+function handleSaveKbArticle(data) {
+  var ss = getSpreadsheet();
+  var sheet = getOrCreateSheet(ss, "KnowledgeBase", ["kb_id", "category", "title", "content", "tags", "created_at"]);
+  var a = data.article;
+  if (!a || !a.kb_id) return jsonResponse({ status: "error", message: "Missing article" });
+  sheet.appendRow([a.kb_id, a.category || "", a.title || "", a.content || "", a.tags || "", a.created_at || formatGASDate(new Date(), "yyyy-MM-dd")]);
+  SpreadsheetApp.flush();
+  return jsonResponse({ status: "success", message: "บันทึกบทความ KB เรียบร้อย" });
+}
+
+function handleDeleteKbArticle(data) {
+  var ss = getSpreadsheet();
+  var sheet = ss.getSheetByName("KnowledgeBase");
+  if (!sheet) return jsonResponse({ status: "success" });
+  var vals = sheet.getDataRange().getValues();
+  var targetId = String(data.kb_id || "").trim().toLowerCase();
+  for (var i = 1; i < vals.length; i++) {
+    if (String(vals[i][0]).trim().toLowerCase() === targetId) {
+      sheet.deleteRow(i + 1);
+      break;
+    }
+  }
+  SpreadsheetApp.flush();
+  return jsonResponse({ status: "success", message: "ลบบทความเรียบร้อย" });
+}
+
+function handleBorrowItem(data) {
+  var ss = getSpreadsheet();
+  var itemSheet = ss.getSheetByName("Items");
+  var logSheet = ss.getSheetByName("Logs");
+  var itemIds = data.itemIds || (data.itemId ? [data.itemId] : []);
+  var itemData = itemSheet.getDataRange().getValues();
+  var batchId = "TRX-" + new Date().getTime();
+  var now = new Date();
+  for (var k = 0; k < itemIds.length; k++) {
+    var tid = String(itemIds[k]).trim().toLowerCase();
+    for (var i = 1; i < itemData.length; i++) {
+      if (String(itemData[i][0]).trim().toLowerCase() === tid) {
+        itemSheet.getRange(i + 1, 5).setValue("Borrowed");
+        var transId = itemIds.length > 1 ? (batchId + "-" + (k + 1)) : batchId;
+        logSheet.appendRow([transId, now, itemData[i][0], data.borrowerName, data.dept, data.contact, data.borrowDate, data.expectedReturn, "", "Borrowed", data.notes || ""]);
+        break;
+      }
+    }
+  }
+  SpreadsheetApp.flush();
+  return jsonResponse({ status: "success", message: "บันทึกการยืมเรียบร้อย" });
+}
+
+function handleReturnItem(data) {
+  var ss = getSpreadsheet();
+  var itemSheet = ss.getSheetByName("Items");
+  var logSheet = ss.getSheetByName("Logs");
+  var targetTransList = data.transIds || (data.transId ? [data.transId] : []);
+  var logData = logSheet.getDataRange().getValues();
+  var itemData = itemSheet.getDataRange().getValues();
+  var now = new Date();
+  var itemsToMakeAvailable = {};
+  for (var t = 0; t < targetTransList.length; t++) {
+    var searchId = String(targetTransList[t]).trim().toLowerCase();
+    for (var j = 1; j < logData.length; j++) {
+      if (String(logData[j][0]).trim().toLowerCase() === searchId) {
+        logSheet.getRange(j + 1, 9).setValue(now);
+        logSheet.getRange(j + 1, 10).setValue("Returned");
+        itemsToMakeAvailable[String(logData[j][2]).trim().toLowerCase()] = true;
+        break;
+      }
+    }
+  }
+  for (var i = 1; i < itemData.length; i++) {
+    if (itemsToMakeAvailable[String(itemData[i][0]).trim().toLowerCase()]) {
+      itemSheet.getRange(i + 1, 5).setValue("Available");
+    }
+  }
+  SpreadsheetApp.flush();
+  return jsonResponse({ status: "success", message: "รับคืนอุปกรณ์เรียบร้อย" });
+}
+
+function handleUpdateHistoryLog(data) {
+  var ss = getSpreadsheet();
+  var logSheet = ss.getSheetByName("Logs");
+  var logData = logSheet.getDataRange().getValues();
+  var searchId = String(data.transId || "").trim().toLowerCase();
+  for (var j = 1; j < logData.length; j++) {
+    if (String(logData[j][0]).trim().toLowerCase() === searchId) {
+      var r = j + 1;
+      if (data.borrowerName !== undefined) logSheet.getRange(r, 4).setValue(data.borrowerName);
+      if (data.borrowerDept !== undefined) logSheet.getRange(r, 5).setValue(data.borrowerDept);
+      if (data.borrowerContact !== undefined) logSheet.getRange(r, 6).setValue(data.borrowerContact);
+      if (data.borrowDate !== undefined) logSheet.getRange(r, 7).setValue(data.borrowDate);
+      if (data.expectedReturn !== undefined) logSheet.getRange(r, 8).setValue(data.expectedReturn);
+      if (data.actualReturn !== undefined) logSheet.getRange(r, 9).setValue(data.actualReturn);
+      if (data.transStatus !== undefined) logSheet.getRange(r, 10).setValue(data.transStatus);
+      if (data.notes !== undefined) logSheet.getRange(r, 11).setValue(data.notes);
+      break;
+    }
+  }
+  SpreadsheetApp.flush();
+  return jsonResponse({ status: "success", message: "อัปเดตประวัติเรียบร้อย" });
+}
+
+function handleAddDepartment(data) {
+  var ss = getSpreadsheet();
+  var sheet = getOrCreateSheet(ss, "Departments", ["department_name"], []);
+  if (data.deptName) sheet.appendRow([String(data.deptName).trim()]);
+  SpreadsheetApp.flush();
+  return jsonResponse({ status: "success", message: "เพิ่มฝ่ายเรียบร้อย" });
+}
+
+function handleUpdateDepartment(data) {
+  var ss = getSpreadsheet();
+  var sheet = getOrCreateSheet(ss, "Departments", ["department_name"], []);
+  var vals = sheet.getDataRange().getValues();
+  for (var i = 1; i < vals.length; i++) {
+    if (String(vals[i][0]).trim().toLowerCase() === String(data.oldDeptName).trim().toLowerCase()) {
+      sheet.getRange(i + 1, 1).setValue(String(data.newDeptName).trim());
+      break;
+    }
+  }
+  SpreadsheetApp.flush();
+  return jsonResponse({ status: "success", message: "แก้ไขชื่อฝ่ายเรียบร้อย" });
+}
+
+function handleDeleteDepartment(data) {
+  var ss = getSpreadsheet();
+  var sheet = getOrCreateSheet(ss, "Departments", ["department_name"], []);
+  var vals = sheet.getDataRange().getValues();
+  for (var i = 1; i < vals.length; i++) {
+    if (String(vals[i][0]).trim().toLowerCase() === String(data.deptName).trim().toLowerCase()) {
+      sheet.deleteRow(i + 1);
+      break;
+    }
+  }
+  SpreadsheetApp.flush();
+  return jsonResponse({ status: "success", message: "ลบฝ่ายเรียบร้อย" });
+}
+
+function handleAddItem(data) {
+  var ss = getSpreadsheet();
+  var sheet = getOrCreateSheet(ss, "Items", ["item_id", "item_name", "category", "serial_number", "status"], []);
+  sheet.appendRow([data.itemId, data.itemName, data.category, data.serialNumber || "-", "Available"]);
+  SpreadsheetApp.flush();
+  return jsonResponse({ status: "success", message: "เพิ่มอุปกรณ์เรียบร้อย" });
+}
+
+function handleUpdateItem(data) {
+  var ss = getSpreadsheet();
+  var sheet = getOrCreateSheet(ss, "Items", ["item_id", "item_name", "category", "serial_number", "status"], []);
+  var vals = sheet.getDataRange().getValues();
+  for (var i = 1; i < vals.length; i++) {
+    if (String(vals[i][0]).trim().toLowerCase() === String(data.itemId).trim().toLowerCase()) {
+      if (data.itemName) sheet.getRange(i + 1, 2).setValue(data.itemName);
+      if (data.category) sheet.getRange(i + 1, 3).setValue(data.category);
+      if (data.serialNumber !== undefined) sheet.getRange(i + 1, 4).setValue(data.serialNumber);
+      if (data.status) sheet.getRange(i + 1, 5).setValue(data.status);
+      break;
+    }
+  }
+  SpreadsheetApp.flush();
+  return jsonResponse({ status: "success", message: "อัปเดตอุปกรณ์เรียบร้อย" });
+}
+
+function handleSaveUserRole(data) {
+  var ss = getSpreadsheet();
+  var sheet = getOrCreateSheet(ss, "UserRoles", ["email", "name", "role", "remark", "updated_at"], []);
+  var r = data.roleData;
+  if (!r || !r.email) return jsonResponse({ status: "error", message: "Missing email" });
+  var values = sheet.getDataRange().getValues();
+  var targetRow = -1;
+  for (var i = 1; i < values.length; i++) {
+    if (String(values[i][0]).toLowerCase() === r.email.toLowerCase()) {
+      targetRow = i + 1;
+      break;
+    }
+  }
+  var now = new Date();
+  if (targetRow > 0) {
+    sheet.getRange(targetRow, 2).setValue(r.name || "");
+    sheet.getRange(targetRow, 3).setValue(r.role || "user");
+    sheet.getRange(targetRow, 4).setValue(r.remark || "");
+    sheet.getRange(targetRow, 5).setValue(now);
+  } else {
+    sheet.appendRow([r.email, r.name || "", r.role || "user", r.remark || "", now]);
+  }
+  SpreadsheetApp.flush();
+  return jsonResponse({ status: "success", message: "User role saved" });
+}
+
+function handleDeleteUserRole(data) {
+  var ss = getSpreadsheet();
+  var sheet = ss.getSheetByName("UserRoles");
+  if (!sheet) return jsonResponse({ status: "success" });
+  var values = sheet.getDataRange().getValues();
+  for (var i = 1; i < values.length; i++) {
+    if (String(values[i][0]).toLowerCase() === String(data.email).toLowerCase()) {
+      sheet.deleteRow(i + 1);
+      break;
+    }
+  }
+  SpreadsheetApp.flush();
+  return jsonResponse({ status: "success", message: "User role deleted" });
 }`;
 
     function openSetupModal() {
@@ -3577,6 +4037,155 @@ function handleGetInitialData() {
       document.execCommand("copy");
       document.body.removeChild(ta);
       showNotification("คัดลอกโค้ด Google Apps Script แล้ว", "success");
+    }
+
+    function updateConnectionStatus(connected) {
+      const dot = document.getElementById("connStatusDot");
+      const txt = document.getElementById("connStatusText");
+      if (dot && txt) {
+        if (connected) {
+          dot.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
+          txt.className = "truncate max-w-[130px] sm:max-w-none text-emerald-700 font-medium";
+          txt.innerText = "เชื่อมต่อระบบ (Live)";
+        } else {
+          dot.className = "w-2 h-2 rounded-full bg-amber-500";
+          txt.className = "truncate max-w-[130px] sm:max-w-none text-amber-700 font-medium";
+          txt.innerText = "โหมดจำลอง (Demo)";
+        }
+      }
+    }
+
+    function updateLastSyncedTime() {
+      const el = document.getElementById("lastSyncText");
+      if (el) {
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        el.innerText = `อัปเดต: ${timeStr} น.`;
+      }
+    }
+
+    async function callAPI(action, payload = {}, isBackground = false) {
+      if (state.webAppUrl && state.webAppUrl.trim() !== "") {
+        try {
+          const response = await fetch(state.webAppUrl, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify({ action, ...payload })
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP Error ${response.status}`);
+          }
+
+          const result = await response.json();
+          state.isLive = true;
+          updateConnectionStatus(true);
+          return result;
+        } catch (err) {
+          console.warn("GAS Connection failed, fallback to local simulator:", err);
+          state.isLive = false;
+          updateConnectionStatus(false);
+          if (!isBackground) {
+            showNotification("ไม่สามารถเชื่อมต่อ Google Apps Script ได้ ข้อมูลทำงานในโหมดจำลองชั่วคราว", "warning");
+          }
+        }
+      } else {
+        state.isLive = false;
+        updateConnectionStatus(false);
+      }
+      return simulateBackend(action, payload);
+    }
+
+    function simulateBackend(action, data = {}) {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          switch (action) {
+            case "getInitialData": {
+              syncItemStatuses();
+              resolve({
+                status: "success",
+                items: [...state.items],
+                activeBorrows: [...state.activeBorrows],
+                allLogs: [...state.allLogs],
+                categories: [...state.categories],
+                departments: [...state.departments],
+                userRoles: [...state.userRoles],
+                tickets: [...state.tickets],
+                knowledgeBase: [...state.knowledgeBase]
+              });
+              break;
+            }
+            case "createTicket": {
+              resolve({ status: "success", message: "บันทึกเคสในระบบจำลองเรียบร้อย", ticket_id: data.ticketData?.ticket_id });
+              break;
+            }
+            case "updateTicket": {
+              resolve({ status: "success", message: "อัปเดตเคสในระบบจำลองเรียบร้อย" });
+              break;
+            }
+            case "borrowItem": {
+              resolve({ status: "success", message: "บันทึกการยืมในระบบจำลองเรียบร้อย" });
+              break;
+            }
+            case "returnItem": {
+              resolve({ status: "success", message: "รับคืนอุปกรณ์ในระบบจำลองเรียบร้อย" });
+              break;
+            }
+            case "saveUserRole": {
+              resolve({ status: "success", message: "บันทึกสิทธิ์ในระบบจำลองเรียบร้อย" });
+              break;
+            }
+            case "addItem":
+            case "updateItem":
+            case "addDepartment":
+            case "deleteDepartment":
+            case "saveKbArticle":
+            case "deleteKbArticle": {
+              resolve({ status: "success", message: "ดำเนินการเรียบร้อย (จำลอง)" });
+              break;
+            }
+            default: {
+              resolve({ status: "success", message: "Action processed" });
+              break;
+            }
+          }
+        }, 120);
+      });
+    }
+
+    async function refreshData(showToast = false) {
+      if (state.isRefreshing) return;
+      state.isRefreshing = true;
+
+      const reloadIcons = document.querySelectorAll("#reloadIcon");
+      reloadIcons.forEach(icon => icon.classList.add("animate-spin"));
+
+      try {
+        const res = await callAPI("getInitialData", {}, !showToast);
+        if (res && res.status === "success") {
+          if (Array.isArray(res.items) && res.items.length > 0) state.items = res.items;
+          if (Array.isArray(res.activeBorrows)) state.activeBorrows = res.activeBorrows;
+          if (Array.isArray(res.allLogs)) state.allLogs = res.allLogs;
+          if (Array.isArray(res.tickets) && res.tickets.length > 0) state.tickets = res.tickets;
+          if (Array.isArray(res.knowledgeBase) && res.knowledgeBase.length > 0) state.knowledgeBase = res.knowledgeBase;
+          if (Array.isArray(res.categories) && res.categories.length > 0) state.categories = res.categories;
+          if (Array.isArray(res.departments) && res.departments.length > 0) state.departments = res.departments;
+          if (Array.isArray(res.userRoles) && res.userRoles.length > 0) {
+            state.userRoles = mergeWithBuiltinRoles(res.userRoles);
+            localStorage.setItem(STORAGE_KEY_ROLES, JSON.stringify(state.userRoles));
+          }
+
+          syncItemStatuses();
+          renderAll();
+          updateLastSyncedTime();
+          if (showToast) showNotification("ซิงค์ข้อมูลล่าสุดกับ Google Sheets เรียบร้อย", "success");
+        }
+      } catch (err) {
+        console.error("Data refresh error:", err);
+      } finally {
+        state.isRefreshing = false;
+        reloadIcons.forEach(icon => icon.classList.remove("animate-spin"));
+      }
     }
 
     function filterActiveBorrows() {
@@ -3638,6 +4247,7 @@ function handleGetInitialData() {
       syncItemStatuses();
       renderAll();
       showNotification(`อัปเดตอุปกรณ์ [${id}] เรียบร้อย`, "success");
+      callAPI("updateItem", { itemId: id, itemName: item.item_name, category: item.category, serialNumber: item.serial_number, status: item.status }, true);
     }
 
     function handleEditHistoryStatusChange(val) {
@@ -3661,13 +4271,7 @@ function handleGetInitialData() {
     }
 
     function triggerManualReload() {
-      const icon = document.getElementById("reloadIcon");
-      if (icon) icon.classList.add("animate-spin");
-      setTimeout(() => {
-        renderAll();
-        if (icon) icon.classList.remove("animate-spin");
-        showNotification("รีเฟรชข้อมูลล่าสุดเรียบร้อยแล้ว", "success");
-      }, 400);
+      refreshData(true);
     }
 
     window.addEventListener("DOMContentLoaded", () => {
@@ -3684,6 +4288,7 @@ function handleGetInitialData() {
       applyUserRoleUI();
       switchTab('borrowTab');
       setTimeout(() => initGoogleSignIn(), 300);
+      setTimeout(() => refreshData(false), 500);
     });
   </script>
 </body>

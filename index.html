@@ -262,6 +262,10 @@
             <svg class="w-4 h-4 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
             <span>คลังความรู้ไอที (KB)</span>
           </button>
+          <button type="button" onclick="openTicketCategoryManageModal()" class="admin-sidebar-btn w-full px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 text-slate-700 hover:bg-slate-100 transition">
+            <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+            <span>จัดการหมวดหมู่ปัญหา</span>
+          </button>
         </div>
 
         <!-- Section 3: บริหารคลังอุปกรณ์และพัสดุ (IT Assets) -->
@@ -323,50 +327,62 @@
       <div class="flex-1 min-w-0 w-full space-y-4">
         
         <!-- User Service Navbar -->
-        <div class="bg-white p-2.5 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+        <div class="bg-white p-2 sm:p-2.5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between gap-3">
+          <div class="flex items-center gap-2.5 overflow-x-auto no-scrollbar flex-wrap sm:flex-nowrap w-full">
             <!-- Mobile Toggle Button for Admin Sidebar -->
-            <button type="button" onclick="toggleAdminSidebarMobile()" class="admin-only admin-hidden lg:hidden px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold flex items-center gap-1.5 shrink-0">
+            <button type="button" onclick="toggleAdminSidebarMobile()" class="admin-only admin-hidden lg:hidden px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold flex items-center gap-1.5 shrink-0">
               <span>☰ เมนูแอดมิน</span>
             </button>
 
-            <button onclick="switchTab('borrowTab')" id="tabBtn-borrowTab" class="user-nav-btn px-3.5 py-2 rounded-xl text-xs font-bold transition bg-tcc-600 text-white shadow-sm shrink-0 flex items-center gap-1.5">
-              <span>📝 แบบฟอร์มยืมอุปกรณ์</span>
-            </button>
+            <!-- หมวดหมู่ที่ 1: รายการขอรับบริการไอที (Action Services - ยืม & แจ้งซ่อม เด่นชัดพิเศษ) -->
+            <div class="flex items-center gap-1.5 p-1 bg-slate-100/80 rounded-2xl border border-slate-200/70 shrink-0">
+              <!-- 1. ยืมอุปกรณ์ไอที -->
+              <button onclick="switchTab('borrowTab')" id="tabBtn-borrowTab" 
+                      class="user-nav-btn px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 bg-tcc-600 text-white shadow-md ring-2 ring-tcc-600/20">
+                <span>📝</span>
+                <span>ยืมอุปกรณ์ไอที</span>
+              </button>
 
-            <button onclick="switchTab('myBorrowsTab')" id="tabBtn-myBorrowsTab" class="user-nav-btn px-3.5 py-2 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-100 transition shrink-0 flex items-center gap-1.5">
-              <span>📋 ของที่ฉันยืม</span>
-              <span id="tabBadgeMyBorrows" class="px-1.5 py-0.2 rounded-full text-[10px] bg-slate-200 text-slate-700 font-bold">0</span>
-            </button>
+              <!-- 2. แจ้งซ่อมไอที (เปิดเคส) -->
+              <button onclick="switchTab('ticketCreateTab')" id="tabBtn-ticketCreateTab" 
+                      class="user-nav-btn px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 bg-white text-rose-700 border border-rose-200/70 hover:bg-rose-50 shadow-2xs">
+                <span>🛠️</span>
+                <span>แจ้งซ่อมไอที (เปิดเคส)</span>
+              </button>
+            </div>
 
-            <button onclick="switchTab('ticketCreateTab')" id="tabBtn-ticketCreateTab" class="user-nav-btn px-3.5 py-2 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-100 transition shrink-0 flex items-center gap-1.5">
-              <span class="text-rose-500 font-bold">＋</span>
-              <span>เปิดเคสแจ้งซ่อม</span>
-            </button>
+            <div class="hidden sm:block w-px h-6 bg-slate-200 shrink-0"></div>
 
-            <button onclick="switchTab('myTicketsTab')" id="tabBtn-myTicketsTab" class="user-nav-btn px-3.5 py-2 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-100 transition shrink-0 flex items-center gap-1.5">
-              <span>📬 เคสของฉัน</span>
-              <span id="tabBadgeMyTickets" class="px-1.5 py-0.2 rounded-full text-[10px] bg-slate-200 text-slate-700 font-bold">0</span>
-            </button>
+            <!-- หมวดหมู่ที่ 2: ติดตามสถานะของฉัน (Personal Tracking - อยู่ใกล้กัน) -->
+            <div class="flex items-center gap-1.5 p-1 bg-slate-50 rounded-2xl border border-slate-200/60 shrink-0">
+              <!-- 3. ของที่ฉันยืม -->
+              <button onclick="switchTab('myBorrowsTab')" id="tabBtn-myBorrowsTab" 
+                      class="user-nav-btn px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shrink-0 text-slate-600 hover:bg-white hover:text-slate-900">
+                <span>📋</span>
+                <span>ของที่ฉันยืม</span>
+                <span id="tabBadgeMyBorrows" class="px-1.5 py-0.2 rounded-full text-[10px] bg-slate-200 text-slate-700 font-bold">0</span>
+              </button>
 
-            <button onclick="switchTab('kbTab')" id="tabBtn-kbTab" class="user-nav-btn px-3.5 py-2 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-100 transition shrink-0 flex items-center gap-1.5">
-              <span>💡 คลังความรู้ (KB)</span>
-            </button>
+              <!-- 4. ติดตามเคสของฉัน -->
+              <button onclick="switchTab('myTicketsTab')" id="tabBtn-myTicketsTab" 
+                      class="user-nav-btn px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shrink-0 text-slate-600 hover:bg-white hover:text-slate-900">
+                <span>📬</span>
+                <span>ติดตามเคสของฉัน</span>
+                <span id="tabBadgeMyTickets" class="px-1.5 py-0.2 rounded-full text-[10px] bg-slate-200 text-slate-700 font-bold">0</span>
+              </button>
+            </div>
 
-            <button onclick="switchTab('aiAssistantTab')" id="tabBtn-aiAssistantTab" class="user-nav-btn px-3.5 py-2 rounded-xl text-xs font-medium text-tcc-700 bg-sky-50 hover:bg-sky-100 border border-sky-200/80 transition shrink-0 flex items-center gap-1.5">
-              <span class="text-amber-500">✨</span>
-              <span>AI ผู้ช่วย</span>
-            </button>
-          </div>
+            <div class="hidden sm:block w-px h-6 bg-slate-200 shrink-0"></div>
 
-          <!-- Quick Action Buttons -->
-          <div class="hidden xl:flex items-center gap-2 shrink-0">
-            <button onclick="switchTab('borrowTab')" class="px-3 py-1.5 rounded-xl bg-tcc-50 hover:bg-tcc-100 text-tcc-700 border border-tcc-200 text-xs font-bold transition flex items-center gap-1">
-              <span>+ ยืมอุปกรณ์</span>
-            </button>
-            <button onclick="switchTab('ticketCreateTab')" class="px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold transition flex items-center gap-1">
-              <span>+ แจ้งซ่อมไอที</span>
-            </button>
+            <!-- หมวดหมู่ที่ 3: คลังความรู้ -->
+            <div class="flex items-center shrink-0">
+              <!-- 5. คลังความรู้ KB -->
+              <button onclick="switchTab('kbTab')" id="tabBtn-kbTab" 
+                      class="user-nav-btn px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shrink-0 text-slate-600 hover:bg-slate-100">
+                <span>💡</span>
+                <span>คลังความรู้ (KB)</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -606,24 +622,12 @@
                     </div>
 
                     <div>
-                      <div class="flex items-center justify-between mb-1.5">
-                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
-                          3. ฝ่าย / แผนก <span class="text-rose-500">*</span>
-                        </label>
-                      </div>
-                      <div id="deptPickerWrapper" class="relative">
-                        <input type="text" id="borrowerDeptSearchInput" 
-                               placeholder="คลิกเลือกหรือพิมพ์ค้นหาแผนก..." 
-                               oninput="handleDeptSearchInput(this.value)" 
-                               onfocus="openDepartmentDropdown()"
-                               autocomplete="off"
-                               required
-                               class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-tcc-500 outline-none cursor-pointer">
-                        <input type="hidden" id="borrowerDept">
-                        <div id="deptDropdownMenu" class="hidden absolute left-0 right-0 top-full mt-1.5 bg-white border border-slate-200 rounded-2xl shadow-xl z-20 max-h-52 overflow-y-auto p-1.5 animate-fadeIn">
-                          <div id="deptOptionsContainer" class="space-y-0.5"></div>
-                        </div>
-                      </div>
+                      <label for="borrowerDept" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        3. ฝ่าย / แผนกผู้ยืม <span class="text-rose-500">*</span>
+                      </label>
+                      <select id="borrowerDept" required class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-tcc-500 outline-none bg-white font-medium text-slate-800">
+                        <option value="">-- กรุณาเลือกฝ่าย / แผนก --</option>
+                      </select>
                     </div>
                   </div>
 
@@ -665,21 +669,30 @@
               </div>
             </div>
 
-            <!-- Right: Quick Peek Available List -->
-            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-5 flex flex-col h-[500px] lg:h-auto">
-              <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3 shrink-0">
+            <!-- Right: Quick Peek Available List (Constrained Height & Same-Screen View) -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-5 flex flex-col h-[620px] max-h-[620px]">
+              <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-2.5 shrink-0">
                 <div class="flex items-center gap-2">
-                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                  <h3 class="font-bold text-slate-900 text-sm">อุปกรณ์ที่ว่างพร้อมยืม</h3>
+                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                  <div>
+                    <h3 class="font-bold text-slate-900 text-sm">อุปกรณ์ที่ว่างพร้อมยืม</h3>
+                    <p class="text-[10px] text-slate-400">คลิกที่การ์ดอุปกรณ์เพื่อเพิ่มลงฟอร์มยืมได้ทันที</p>
+                  </div>
                 </div>
-                <span id="quickAvailableCount" class="text-xs bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">0 ชิ้น</span>
+                <span id="quickAvailableCount" class="text-xs bg-emerald-100 text-emerald-800 font-bold px-2.5 py-0.5 rounded-full">0 ชิ้น</span>
               </div>
 
-              <div class="mb-3 shrink-0">
-                <input type="text" id="quickAvailableSearch" oninput="renderQuickAvailableList()" placeholder="🔍 ค้นหากรองอุปกรณ์ว่าง..." class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-1 focus:ring-tcc-500 bg-slate-50">
+              <!-- Search & Category Filters -->
+              <div class="space-y-2 mb-2.5 shrink-0">
+                <div class="relative">
+                  <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400">🔍</span>
+                  <input type="text" id="quickAvailableSearch" oninput="renderQuickAvailableList()" placeholder="ค้นหาชื่ออุปกรณ์, รหัส IT-xxx, S/N..." class="w-full pl-8 pr-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-1 focus:ring-tcc-500 bg-slate-50">
+                </div>
+                <div id="quickAvailableCategoryPills" class="flex items-center gap-1 overflow-x-auto no-scrollbar py-0.5"></div>
               </div>
 
-              <div id="quickAvailableContainer" class="flex-1 min-h-0 overflow-y-auto space-y-2 pr-1"></div>
+              <!-- Compact Scrollable List -->
+              <div id="quickAvailableContainer" class="flex-1 min-h-0 overflow-y-auto space-y-1.5 pr-1"></div>
             </div>
 
           </div>
@@ -806,8 +819,10 @@
                   <input type="text" id="ticketReporterName" required class="w-full bg-white px-2.5 py-1.5 rounded-lg border border-slate-300 font-semibold text-slate-800">
                 </div>
                 <div>
-                  <span class="text-slate-400 block text-[10px]">แผนก/สังกัด:</span>
-                  <input type="text" id="ticketReporterDept" required placeholder="ระบุแผนก" class="w-full bg-white px-2.5 py-1.5 rounded-lg border border-slate-300 font-semibold text-slate-800">
+                  <span class="text-slate-400 block text-[10px]">แผนก/สังกัด: <span class="text-rose-500">*</span></span>
+                  <select id="ticketReporterDept" required class="w-full bg-white px-2.5 py-1.5 rounded-lg border border-slate-300 font-semibold text-slate-800 text-xs focus:ring-2 focus:ring-tcc-500 outline-none">
+                    <option value="">-- กรุณาเลือกฝ่าย / แผนก --</option>
+                  </select>
                 </div>
                 <div>
                   <span class="text-slate-400 block text-[10px]">เบอร์ติดต่อ/อีเมล:</span>
@@ -886,8 +901,11 @@
             </div>
 
             <!-- Filters -->
-            <div class="grid grid-cols-1 sm:grid-cols-4 gap-2.5 text-xs">
-              <input type="text" id="adminTicketSearchInput" onkeyup="renderAdminTicketsView()" placeholder="ค้นหารหัส TKT, หัวข้อ, ผู้แจ้ง..." class="px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-tcc-500 outline-none">
+            <div class="grid grid-cols-1 sm:grid-cols-5 gap-2.5 text-xs">
+              <input type="text" id="adminTicketSearchInput" onkeyup="renderAdminTicketsView()" placeholder="ค้นหารหัส ITC, หัวข้อ, ผู้แจ้ง..." class="px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-tcc-500 outline-none">
+              <select id="adminTicketFilterCategory" onchange="renderAdminTicketsView()" class="px-3 py-2 rounded-xl border border-slate-300 bg-white">
+                <option value="">หมวดหมู่ทั้งหมด</option>
+              </select>
               <select id="adminTicketFilterPriority" onchange="renderAdminTicketsView()" class="px-3 py-2 rounded-xl border border-slate-300 bg-white">
                 <option value="">ทุกระดับความสำคัญ</option>
                 <option value="Critical">🔴 Critical (วิกฤต)</option>
@@ -1125,17 +1143,17 @@
 
             <div class="overflow-x-auto">
               <table class="w-full text-left text-xs sm:text-sm">
-                <thead class="bg-slate-50 text-slate-600 uppercase border-y border-slate-100 text-xs">
+                <thead class="bg-slate-50 text-slate-700 uppercase border-y border-slate-200 text-xs">
                   <tr>
-                    <th class="py-3 px-4 font-semibold">รหัสธุรกรรม</th>
-                    <th class="py-3 px-4 font-semibold">อุปกรณ์</th>
-                    <th class="py-3 px-4 font-semibold">ผู้ยืม / แผนก</th>
-                    <th class="py-3 px-4 font-semibold">วันที่ยืม</th>
-                    <th class="py-3 px-4 font-semibold">กำหนดคืน</th>
-                    <th class="py-3 px-4 font-semibold">วันที่คืนจริง</th>
-                    <th class="py-3 px-4 font-semibold text-center">สถานะ</th>
-                    <th class="py-3 px-4 font-semibold">หมายเหตุ</th>
-                    <th class="py-3 px-4 font-semibold text-center">จัดการหลังบ้าน</th>
+                    <th class="py-3.5 px-4 font-bold">เลขธุรกรรมยืม (ITB)</th>
+                    <th class="py-3.5 px-4 font-bold">อุปกรณ์ที่ยืม</th>
+                    <th class="py-3.5 px-4 font-bold">ผู้ยืม / ฝ่ายงาน</th>
+                    <th class="py-3.5 px-4 font-bold">วันที่ยืม</th>
+                    <th class="py-3.5 px-4 font-bold">กำหนดส่งคืน</th>
+                    <th class="py-3.5 px-4 font-bold">วันที่ส่งคืนจริง</th>
+                    <th class="py-3.5 px-4 font-bold text-center">สถานะการคืน</th>
+                    <th class="py-3.5 px-4 font-bold">วัตถุประสงค์ / หมายเหตุ</th>
+                    <th class="py-3.5 px-4 font-bold text-center">การจัดการหลังบ้าน</th>
                   </tr>
                 </thead>
                 <tbody id="historyTableBody" class="divide-y divide-slate-100"></tbody>
@@ -1397,25 +1415,53 @@
 
       <form onsubmit="handleSaveKbArticle(event)" class="space-y-3 text-xs">
         <div>
-          <label class="block font-semibold text-slate-700 mb-1">หมวดหมู่ *</label>
-          <select id="inputKbCategory" required class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white">
-            <option value="Hardware">ฮาร์ดแวร์ / เครื่องคอมพิวเตอร์</option>
-            <option value="Software">ซอฟต์แวร์ / โปรแกรมสำนักงาน</option>
-            <option value="Network">ระบบเครือข่าย / Wi-Fi / VPN</option>
-            <option value="Internal System">ระบบสารสนเทศภายใน</option>
-            <option value="Email & Account">อีเมลองค์กร / บัญชีผู้ใช้</option>
-            <option value="Other">งานบริการด้านไอทีอื่นๆ</option>
+          <label class="block font-semibold text-slate-700 mb-1">หมวดหมู่ปัญหา *</label>
+          <select id="inputKbCategory" required class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white font-medium text-slate-800">
+            <option value="ฮาร์ดแวร์ / เครื่องคอมพิวเตอร์ / จอภาพ">ฮาร์ดแวร์ / เครื่องคอมพิวเตอร์ / จอภาพ</option>
+            <option value="ซอฟต์แวร์ / MS Office / โปรแกรมทั่วไป">ซอฟต์แวร์ / MS Office / โปรแกรมทั่วไป</option>
+            <option value="ระบบเครือข่าย / อินเทอร์เน็ต / Wi-Fi / VPN">ระบบเครือข่าย / อินเทอร์เน็ต / Wi-Fi / VPN</option>
+            <option value="อีเมลองค์กร / รหัสผ่าน / สิทธิ์ผู้ใช้">อีเมลองค์กร / รหัสผ่าน / สิทธิ์ผู้ใช้</option>
+            <option value="เครื่องพิมพ์ / สแกนเนอร์">เครื่องพิมพ์ / สแกนเนอร์</option>
+            <option value="ระบบสารสนเทศภายใน / เว็บไซต์">ระบบสารสนเทศภายใน / เว็บไซต์</option>
+            <option value="งานบริการไอทีอื่นๆ">งานบริการไอทีอื่นๆ</option>
           </select>
         </div>
 
         <div>
           <label class="block font-semibold text-slate-700 mb-1">หัวข้อปัญหา (Title) *</label>
-          <input type="text" id="inputKbTitle" required placeholder="เช่น วิธีแก้ไขปัญหาเชื่อมต่อ VPN หอการค้าไทย" class="w-full px-3 py-2 rounded-xl border border-slate-300">
+          <select id="selectKbTitlePreset" onchange="handleKbPresetSelect(this.value)" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white mb-1.5 text-xs text-slate-700 font-medium">
+            <option value="">-- เลือกจากรายการปัญหาที่พบบ่อย (หรือเลือกเพื่อกรอกอัตโนมัติ) --</option>
+            <option value="วิธีแก้ไขปัญหาเชื่อมต่อสัญญาณ Wi-Fi หอการค้าไทย (TCC-WiFi)">วิธีแก้ไขปัญหาเชื่อมต่อสัญญาณ Wi-Fi หอการค้าไทย (TCC-WiFi)</option>
+            <option value="วิธีเชื่อมต่อระบบ VPN สำหรับทำงานนอกสถานที่ (WFH)">วิธีเชื่อมต่อระบบ VPN สำหรับทำงานนอกสถานที่ (WFH)</option>
+            <option value="ขั้นตอนการตั้งค่า Outlook และ Microsoft 365 บนเครื่องใหม่">ขั้นตอนการตั้งค่า Outlook และ Microsoft 365 บนเครื่องใหม่</option>
+            <option value="วิธีแก้ปัญหาเครื่องพิมพ์ (Printer) ไม่ตอบสนอง หรือสั่งพิมพ์ไม่ออก">วิธีแก้ปัญหาเครื่องพิมพ์ (Printer) ไม่ตอบสนอง หรือสั่งพิมพ์ไม่ออก</option>
+            <option value="วิธีขอรีเซ็ตรหัสผ่านอีเมลองค์กร และบัญชี Windows">วิธีขอรีเซ็ตรหัสผ่านอีเมลองค์กร และบัญชี Windows</option>
+            <option value="วิธีแก้ไขปัญหาหน้าจอต่อไม่ติด หรือสายแปลงสัญญาณภาพจอ">วิธีแก้ไขปัญหาหน้าจอต่อไม่ติด หรือสายแปลงสัญญาณภาพจอ</option>
+            <option value="วิธีเข้าใช้งาน File Server / Share Drive ส่วนกลาง">วิธีเข้าใช้งาน File Server / Share Drive ส่วนกลาง</option>
+            <option value="__custom__">+ ระบุหัวข้อปัญหาใหม่เอง...</option>
+          </select>
+          <input type="text" id="inputKbTitle" required placeholder="พิมพ์หัวข้อปัญหา หรือเลือกจากตัวเลือกด้านบน..." class="w-full px-3 py-2 rounded-xl border border-slate-300">
         </div>
 
         <div>
           <label class="block font-semibold text-slate-700 mb-1">ขั้นตอนหรือคำตอบแนะนำ *</label>
-          <textarea id="inputKbContent" rows="5" required placeholder="เขียนขั้นตอนการแก้ปัญหา หรือข้อความที่ใช้ตอบผู้ใช้งาน..." class="w-full px-3 py-2 rounded-xl border border-slate-300"></textarea>
+          <textarea id="inputKbContent" rows="4" required placeholder="เขียนขั้นตอนการแก้ปัญหา หรือข้อความที่ใช้ตอบผู้ใช้งาน..." class="w-full px-3 py-2 rounded-xl border border-slate-300"></textarea>
+        </div>
+
+        <!-- Attachment support for KB (Req 4) -->
+        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+          <label class="block font-semibold text-slate-700">แนบเอกสารความรู้ / คู่มือการแก้ปัญหา</label>
+          <div class="flex items-center gap-2">
+            <input type="file" id="kbFileInput" onchange="handleKbFileSelect(event)" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.zip" class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-tcc-50 file:text-tcc-700 hover:file:bg-tcc-100 cursor-pointer">
+            <button type="button" onclick="clearKbAttachment()" id="btnClearKbFile" class="hidden text-rose-500 hover:text-rose-700 text-xs font-semibold shrink-0">ล้างไฟล์</button>
+          </div>
+          <div id="kbFilePreviewName" class="hidden text-[11px] text-emerald-700 font-medium flex items-center gap-1">
+            <span>📎</span> <span id="kbFileSelectedText"></span>
+          </div>
+          <div>
+            <span class="text-[10px] text-slate-400 block mb-0.5">หรือระบุลิงก์เอกสารออนไลน์ (Google Drive / OneDrive):</span>
+            <input type="url" id="inputKbDocUrl" placeholder="https://drive.google.com/..." class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs bg-white">
+          </div>
         </div>
 
         <div class="pt-3 flex justify-end gap-2 border-t border-slate-100">
@@ -1423,6 +1469,47 @@
           <button type="submit" class="px-4 py-2 bg-tcc-600 hover:bg-tcc-700 text-white font-bold rounded-xl shadow-sm">บันทึกบทความ</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- MODAL: MANAGE TICKET CATEGORIES (Req 8) -->
+  <div id="ticketCategoryManageModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 animate-fadeIn">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center font-bold">
+            🏷️
+          </div>
+          <div>
+            <h3 class="font-bold text-slate-900 text-sm">จัดการหมวดหมู่ปัญหาแจ้งซ่อมไอที</h3>
+            <p class="text-[11px] text-slate-500">เพิ่ม ลบ หรือแก้ไขหมวดหมู่ปัญหาที่บันทึกในฐานข้อมูลระบบ</p>
+          </div>
+        </div>
+        <button onclick="closeTicketCategoryManageModal()" class="text-slate-400 hover:text-slate-600 font-bold p-1">✕</button>
+      </div>
+
+      <!-- Add New Category -->
+      <form onsubmit="handleAddNewTicketCategory(event)" class="flex gap-2 mb-4">
+        <input type="text" id="newTicketCategoryInput" required placeholder="พิมพ์ชื่อหมวดหมู่ปัญหาใหม่..." class="flex-1 px-3 py-2 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-tcc-500 outline-none">
+        <button type="submit" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold shadow-sm shrink-0">
+          + เพิ่มหมวดหมู่
+        </button>
+      </form>
+
+      <!-- Category List Container -->
+      <div class="border border-slate-200 rounded-2xl overflow-hidden">
+        <div class="bg-slate-50 px-3 py-2 text-[11px] font-bold text-slate-500 uppercase tracking-wider flex justify-between">
+          <span>ชื่อหมวดหมู่ปัญหา</span>
+          <span>การจัดการ</span>
+        </div>
+        <div id="ticketCategoryListContainer" class="divide-y divide-slate-100 max-h-60 overflow-y-auto"></div>
+      </div>
+
+      <div class="pt-4 mt-4 border-t border-slate-100 flex justify-end">
+        <button type="button" onclick="closeTicketCategoryManageModal()" class="px-5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl">
+          ปิดหน้าต่าง
+        </button>
+      </div>
     </div>
   </div>
 
@@ -1517,65 +1604,67 @@
 
   <!-- MODAL: EDIT HISTORY LOG -->
   <div id="editHistoryModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl border border-slate-100 max-h-[90vh] overflow-y-auto animate-fadeIn">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto animate-fadeIn">
       <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
         <div>
-          <h3 class="font-bold text-slate-900">แก้ไขบันทึกประวัติหลังบ้าน</h3>
+          <h3 class="font-bold text-slate-900 text-sm">ปรับปรุงบันทึกประวัติการยืม-คืน (จัดการหลังบ้าน)</h3>
           <p id="editHistoryTransLabel" class="text-[11px] text-slate-500 font-mono"></p>
         </div>
-        <button onclick="closeEditHistoryModal()" class="text-slate-400 hover:text-slate-600">✕</button>
+        <button onclick="closeEditHistoryModal()" class="text-slate-400 hover:text-slate-600 font-bold p-1">✕</button>
       </div>
 
-      <form id="editHistoryForm" onsubmit="handleSaveHistoryEdit(event)" class="space-y-3 text-xs">
+      <form id="editHistoryForm" onsubmit="handleSaveHistoryEdit(event)" class="space-y-3.5 text-xs">
         <input type="hidden" id="editHistoryTransId">
-        <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200">
-          <span class="text-slate-500">อุปกรณ์: </span>
-          <span id="editHistoryItemInfo" class="font-bold text-slate-800"></span>
+        <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between">
+          <span class="text-slate-500 font-medium">อุปกรณ์ที่ทำรายการ:</span>
+          <span id="editHistoryItemInfo" class="font-bold text-slate-900 font-mono"></span>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label class="block font-semibold text-slate-700 mb-1">ชื่อผู้ยืม *</label>
-            <input type="text" id="editHistoryBorrowerName" required class="w-full px-3 py-2 rounded-xl border border-slate-300">
+            <label class="block font-semibold text-slate-700 mb-1">ชื่อ-นามสกุล ผู้ยืม *</label>
+            <input type="text" id="editHistoryBorrowerName" required class="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-tcc-500 outline-none">
           </div>
           <div>
-            <label class="block font-semibold text-slate-700 mb-1">แผนก / สังกัด *</label>
-            <input type="text" id="editHistoryDept" required class="w-full px-3 py-2 rounded-xl border border-slate-300">
+            <label class="block font-semibold text-slate-700 mb-1">ฝ่าย / แผนกผู้ยืม *</label>
+            <select id="editHistoryDept" required class="w-full px-3 py-2.5 rounded-xl border border-slate-300 bg-white font-medium text-slate-800 focus:ring-2 focus:ring-tcc-500 outline-none">
+              <option value="">-- กรุณาเลือกฝ่าย / แผนก --</option>
+            </select>
           </div>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label class="block font-semibold text-slate-700 mb-1">เบอร์ติดต่อ / อีเมล</label>
-            <input type="text" id="editHistoryContact" class="w-full px-3 py-2 rounded-xl border border-slate-300">
+            <label class="block font-semibold text-slate-700 mb-1">เบอร์โทร / อีเมลติดต่อ</label>
+            <input type="text" id="editHistoryContact" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-tcc-500 outline-none">
           </div>
           <div>
-            <label class="block font-semibold text-slate-700 mb-1">สถานะรายการ *</label>
-            <select id="editHistoryStatus" onchange="handleEditHistoryStatusChange(this.value)" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white font-semibold">
-              <option value="Borrowed">Borrowed (กำลังยืม)</option>
-              <option value="Returned">Returned (คืนแล้ว)</option>
+            <label class="block font-semibold text-slate-700 mb-1">สถานะรายการยืม-คืน *</label>
+            <select id="editHistoryStatus" onchange="handleEditHistoryStatusChange(this.value)" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 bg-white font-bold text-slate-800 focus:ring-2 focus:ring-tcc-500 outline-none">
+              <option value="Borrowed">Borrowed (กำลังถูกยืม)</option>
+              <option value="Returned">Returned (คืนแล้วเรียบร้อย)</option>
             </select>
           </div>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
             <label class="block font-semibold text-slate-700 mb-1">วันที่ยืม</label>
-            <input type="date" id="editHistoryBorrowDate" class="w-full px-3 py-2 rounded-xl border border-slate-300">
+            <input type="date" id="editHistoryBorrowDate" class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-tcc-500 outline-none">
           </div>
           <div>
-            <label class="block font-semibold text-slate-700 mb-1">กำหนดคืน</label>
-            <input type="date" id="editHistoryExpectedReturn" class="w-full px-3 py-2 rounded-xl border border-slate-300">
+            <label class="block font-semibold text-slate-700 mb-1">กำหนดส่งคืน</label>
+            <input type="date" id="editHistoryExpectedReturn" class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-tcc-500 outline-none">
           </div>
           <div>
-            <label class="block font-semibold text-slate-700 mb-1">วันที่คืนจริง</label>
-            <input type="text" id="editHistoryActualReturn" placeholder="เช่น 2026-10-14 16:00" class="w-full px-3 py-2 rounded-xl border border-slate-300">
+            <label class="block font-semibold text-slate-700 mb-1">วันที่ส่งคืนจริง (ถ้ามี)</label>
+            <input type="text" id="editHistoryActualReturn" placeholder="เช่น 2026-10-29 16:00" class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-tcc-500 outline-none">
           </div>
         </div>
         <div>
-          <label class="block font-semibold text-slate-700 mb-1">หมายเหตุ</label>
-          <textarea id="editHistoryNotes" rows="2" class="w-full px-3 py-2 rounded-xl border border-slate-300"></textarea>
+          <label class="block font-semibold text-slate-700 mb-1">วัตถุประสงค์ / หมายเหตุการใช้งาน</label>
+          <textarea id="editHistoryNotes" rows="2" class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-tcc-500 outline-none"></textarea>
         </div>
         <div class="pt-3 flex justify-end gap-2 border-t border-slate-100">
-          <button type="button" onclick="closeEditHistoryModal()" class="px-4 py-2 rounded-xl text-slate-600 hover:bg-slate-100 font-semibold">ยกเลิก</button>
-          <button type="submit" class="px-4 py-2 rounded-xl bg-tcc-600 hover:bg-tcc-700 text-white font-semibold shadow-sm">บันทึกการแก้ไข</button>
+          <button type="button" onclick="closeEditHistoryModal()" class="px-4 py-2 rounded-xl text-slate-600 hover:bg-slate-100 font-semibold transition">ยกเลิก</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-tcc-600 hover:bg-tcc-700 active:bg-tcc-800 text-white font-bold shadow-sm transition">บันทึกการแก้ไข</button>
         </div>
       </form>
     </div>
@@ -1760,8 +1849,72 @@
       return String(str).replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/"/g, "&quot;").replace(/\n/g, " ").replace(/\r/g, "");
     }
 
+    /* ID GENERATORS (Req 6 & Req 7) */
+    function generateTicketId() {
+      // Req 6: ITC ตามด้วย ปี-เดือน-วัน ตามด้วยเลข 4 หลัก (ITC-YYYY-MM-DD-XXXX)
+      // กรณีขึ้นปีใหม่ ให้เริ่มนับเลข 4 หลักใหม่ (0001)
+      const now = new Date();
+      const yyyy = now.getFullYear();
+      const mm = String(now.getMonth() + 1).padStart(2, "0");
+      const dd = String(now.getDate()).padStart(2, "0");
+      const datePart = `${yyyy}-${mm}-${dd}`;
+      const prefixYear = `ITC-${yyyy}-`;
+
+      let maxSeq = 0;
+      (state.tickets || []).forEach(t => {
+        const id = String(t.ticket_id || "").trim();
+        if (id.startsWith(prefixYear)) {
+          const m = id.match(/^ITC-\d{4}-\d{2}-\d{2}-(\d{4})$/);
+          if (m) {
+            const seq = parseInt(m[1], 10);
+            if (!isNaN(seq) && seq > maxSeq) maxSeq = seq;
+          }
+        }
+      });
+
+      const nextSeq = maxSeq + 1;
+      return `ITC-${datePart}-${String(nextSeq).padStart(4, "0")}`;
+    }
+
+    function generateBorrowBatchId() {
+      // Req 7: ITB ตามด้วย ปี-เดือน-วัน ตามด้วยเลข 4 หลัก (ITB-YYYY-MM-DD-XXXX)
+      // กรณีขึ้นปีใหม่ ให้เริ่มนับเลข 4 หลักใหม่ (0001)
+      const now = new Date();
+      const yyyy = now.getFullYear();
+      const mm = String(now.getMonth() + 1).padStart(2, "0");
+      const dd = String(now.getDate()).padStart(2, "0");
+      const datePart = `${yyyy}-${mm}-${dd}`;
+      const prefixYear = `ITB-${yyyy}-`;
+
+      let maxSeq = 0;
+      const allTx = [...(state.allLogs || []), ...(state.activeBorrows || [])];
+      allTx.forEach(l => {
+        const id = String(l.trans_id || "").trim();
+        if (id.startsWith(prefixYear)) {
+          const m = id.match(/^ITB-\d{4}-\d{2}-\d{2}-(\d{4})(?:-\d+)?$/);
+          if (m) {
+            const seq = parseInt(m[1], 10);
+            if (!isNaN(seq) && seq > maxSeq) maxSeq = seq;
+          }
+        }
+      });
+
+      const nextSeq = maxSeq + 1;
+      return `ITB-${datePart}-${String(nextSeq).padStart(4, "0")}`;
+    }
+
     const INITIAL_DEMO_CATEGORIES = [
       "Laptop", "Monitor", "Projector", "Adapter", "Audio", "Tablet", "Accessory", "Other"
+    ];
+
+    const INITIAL_DEMO_TICKET_CATEGORIES = [
+      "ฮาร์ดแวร์ / เครื่องคอมพิวเตอร์ / จอภาพ",
+      "ซอฟต์แวร์ / MS Office / โปรแกรมทั่วไป",
+      "ระบบเครือข่าย / อินเทอร์เน็ต / Wi-Fi / VPN",
+      "อีเมลองค์กร / บัญชีผู้ใช้งาน / รหัสผ่าน",
+      "เครื่องพิมพ์ / สแกนเนอร์",
+      "ระบบสารสนเทศภายใน / เว็บไซต์",
+      "งานบริการไอทีอื่นๆ"
     ];
 
     const INITIAL_DEMO_DEPTS = [
@@ -1786,8 +1939,8 @@
 
     function getInitialDemoBorrows() {
       return [
-        { trans_id: "TRX-1001", item_id: "IT-002", borrower_name: "กิตติศักดิ์ พัฒนพงศ์", borrower_dept: "ฝ่ายประชาสัมพันธ์และสื่อสารองค์กร", borrower_contact: "kittisak@thaichamber.or.th", borrow_date: getOffsetDate(-6), expected_return: getOffsetDate(-2) },
-        { trans_id: "TRX-1002", item_id: "IT-005", borrower_name: "สุวิมล แสงทอง", borrower_dept: "ฝ่ายสมาชิกสัมพันธ์และการบริการ", borrower_contact: "suwimon@thaichamber.or.th", borrow_date: getOffsetDate(-1), expected_return: getOffsetDate(4) }
+        { trans_id: "ITB-2026-10-23-0001", item_id: "IT-002", borrower_name: "กิตติศักดิ์ พัฒนพงศ์", borrower_dept: "ฝ่ายประชาสัมพันธ์และสื่อสารองค์กร", borrower_contact: "kittisak@thaichamber.or.th", borrow_date: getOffsetDate(-6), expected_return: getOffsetDate(-2) },
+        { trans_id: "ITB-2026-10-28-0002", item_id: "IT-005", borrower_name: "สุวิมล แสงทอง", borrower_dept: "ฝ่ายสมาชิกสัมพันธ์และการบริการ", borrower_contact: "suwimon@thaichamber.or.th", borrow_date: getOffsetDate(-1), expected_return: getOffsetDate(4) }
       ];
     }
 
@@ -1796,16 +1949,16 @@
       return [
         { trans_id: borrows[0].trans_id, timestamp: borrows[0].borrow_date + " 09:30", item_id: borrows[0].item_id, borrower_name: borrows[0].borrower_name, borrower_dept: borrows[0].borrower_dept, borrower_contact: borrows[0].borrower_contact, borrow_date: borrows[0].borrow_date, expected_return: borrows[0].expected_return, actual_return: "", trans_status: "Borrowed", notes: "นำเสนอแผนงานประจำปี" },
         { trans_id: borrows[1].trans_id, timestamp: borrows[1].borrow_date + " 14:15", item_id: borrows[1].item_id, borrower_name: borrows[1].borrower_name, borrower_dept: borrows[1].borrower_dept, borrower_contact: borrows[1].borrower_contact, borrow_date: borrows[1].borrow_date, expected_return: borrows[1].expected_return, actual_return: "", trans_status: "Borrowed", notes: "บันทึกเสียงสัมมนาผู้ประกอบการ" },
-        { trans_id: "TRX-0985", timestamp: getOffsetDate(-14) + " 10:00", item_id: "IT-001", borrower_name: "วิชัย สมบูรณ์", borrower_dept: "ฝ่ายเทคโนโลยีสารสนเทศ (IT)", borrower_contact: "wichai@thaichamber.or.th", borrow_date: getOffsetDate(-14), expected_return: getOffsetDate(-10), actual_return: getOffsetDate(-10) + " 16:30", trans_status: "Returned", notes: "คืน: สภาพสมบูรณ์พร้อมสายชาร์จ" },
-        { trans_id: "TRX-0972", timestamp: getOffsetDate(-35) + " 13:20", item_id: "IT-003", borrower_name: "ดนัย ภักดี", borrower_dept: "ฝ่ายส่งเสริมการค้าและเศรษฐกิจระหว่างประเทศ", borrower_contact: "danai@thaichamber.or.th", borrow_date: getOffsetDate(-35), expected_return: getOffsetDate(-32), actual_return: getOffsetDate(-32) + " 17:00", trans_status: "Returned", notes: "คืน: อุปกรณ์ทำงานปกติ" }
+        { trans_id: "ITB-2026-10-15-0003", timestamp: getOffsetDate(-14) + " 10:00", item_id: "IT-001", borrower_name: "วิชัย สมบูรณ์", borrower_dept: "ฝ่ายเทคโนโลยีสารสนเทศ (IT)", borrower_contact: "wichai@thaichamber.or.th", borrow_date: getOffsetDate(-14), expected_return: getOffsetDate(-10), actual_return: getOffsetDate(-10) + " 16:30", trans_status: "Returned", notes: "คืน: สภาพสมบูรณ์พร้อมสายชาร์จ" },
+        { trans_id: "ITB-2026-09-24-0004", timestamp: getOffsetDate(-35) + " 13:20", item_id: "IT-003", borrower_name: "ดนัย ภักดี", borrower_dept: "ฝ่ายส่งเสริมการค้าและเศรษฐกิจระหว่างประเทศ", borrower_contact: "danai@thaichamber.or.th", borrow_date: getOffsetDate(-35), expected_return: getOffsetDate(-32), actual_return: getOffsetDate(-32) + " 17:00", trans_status: "Returned", notes: "คืน: อุปกรณ์ทำงานปกติ" }
       ];
     }
 
     const INITIAL_DEMO_TICKETS = [
       {
-        ticket_id: "TKT-1001",
+        ticket_id: "ITC-2026-10-25-0001",
         title: "หน้าจอโน้ตบุ๊กกระพริบดับบางจังหวะ",
-        category: "Hardware",
+        category: "ฮาร์ดแวร์ / เครื่องคอมพิวเตอร์ / จอภาพ",
         priority: "High",
         status: "In Progress",
         reporter_name: "สมชาย ใจดี",
@@ -1825,9 +1978,9 @@
         ]
       },
       {
-        ticket_id: "TKT-1002",
+        ticket_id: "ITC-2026-10-27-0002",
         title: "ไม่สามารถเชื่อมต่อสัญญาณ Wi-Fi หอการค้าไทยได้",
-        category: "Network",
+        category: "ระบบเครือข่าย / อินเทอร์เน็ต / Wi-Fi / VPN",
         priority: "Critical",
         status: "Open",
         reporter_name: "สุวิมล แสงทอง",
@@ -1846,9 +1999,9 @@
         ]
       },
       {
-        ticket_id: "TKT-0995",
+        ticket_id: "ITC-2026-10-03-0003",
         title: "ขอลงโปรแกรม Microsoft 365 และตั้งค่า Outlook",
-        category: "Software",
+        category: "ซอฟต์แวร์ / MS Office / โปรแกรมทั่วไป",
         priority: "Medium",
         status: "Resolved",
         reporter_name: "กิตติศักดิ์ พัฒนพงศ์",
@@ -1923,14 +2076,18 @@
       tickets: JSON.parse(JSON.stringify(INITIAL_DEMO_TICKETS)),
       knowledgeBase: JSON.parse(JSON.stringify(INITIAL_DEMO_KB)),
       categories: [...INITIAL_DEMO_CATEGORIES],
+      ticketCategories: [...INITIAL_DEMO_TICKET_CATEGORIES],
       departments: [...INITIAL_DEMO_DEPTS],
       selectedBorrowItems: [],
       selectedReturnTransIds: [],
+      selectedQuickAvailCat: "ทั้งหมด",
       currentTicketViewMode: 'kanban',
       activeDetailTicketId: null,
       tempSelectedRating: 5,
       currentAttachmentBase64: "",
       currentAttachmentName: "",
+      currentKbAttachmentBase64: "",
+      currentKbAttachmentName: "",
       isRefreshing: false,
       autoReloadTimer: null,
       currentUser: null,
@@ -2142,14 +2299,57 @@
       document.querySelectorAll(".tab-content").forEach(el => el.classList.add("hidden"));
 
       // Update User Top Nav Button styling
-      document.querySelectorAll(".user-nav-btn").forEach(el => {
-        el.classList.remove("bg-tcc-600", "text-white", "shadow-sm");
-        el.classList.add("text-slate-600", "hover:bg-slate-100");
+      const userNavConfigs = {
+        borrowTab: {
+          active: ["bg-tcc-600", "text-white", "shadow-md", "ring-2", "ring-tcc-600/20"],
+          inactive: ["bg-white", "text-tcc-800", "border", "border-tcc-200/70", "hover:bg-tcc-50", "shadow-2xs"]
+        },
+        ticketCreateTab: {
+          active: ["bg-rose-600", "text-white", "shadow-md", "ring-2", "ring-rose-600/20"],
+          inactive: ["bg-white", "text-rose-700", "border", "border-rose-200/70", "hover:bg-rose-50", "shadow-2xs"]
+        },
+        myBorrowsTab: {
+          active: ["bg-slate-800", "text-white", "shadow-sm"],
+          inactive: ["text-slate-600", "hover:bg-white", "hover:text-slate-900"]
+        },
+        myTicketsTab: {
+          active: ["bg-slate-800", "text-white", "shadow-sm"],
+          inactive: ["text-slate-600", "hover:bg-white", "hover:text-slate-900"]
+        },
+        kbTab: {
+          active: ["bg-amber-500", "text-white", "shadow-sm"],
+          inactive: ["text-slate-600", "hover:bg-slate-100"]
+        }
+      };
+
+      Object.keys(userNavConfigs).forEach(key => {
+        const btn = document.getElementById("tabBtn-" + key);
+        if (!btn) return;
+        const cfg = userNavConfigs[key];
+        btn.classList.remove(...cfg.active, ...cfg.inactive);
+        if (key === tabId) {
+          btn.classList.add(...cfg.active);
+        } else {
+          btn.classList.add(...cfg.inactive);
+        }
       });
-      const targetUserBtn = document.getElementById("tabBtn-" + tabId);
-      if (targetUserBtn) {
-        targetUserBtn.classList.add("bg-tcc-600", "text-white", "shadow-sm");
-        targetUserBtn.classList.remove("text-slate-600", "hover:bg-slate-100");
+
+      // Update badge contrast
+      const badgeMyBorrows = document.getElementById("tabBadgeMyBorrows");
+      if (badgeMyBorrows) {
+        if (tabId === "myBorrowsTab") {
+          badgeMyBorrows.className = "px-1.5 py-0.2 rounded-full text-[10px] bg-white/20 text-white font-bold";
+        } else {
+          badgeMyBorrows.className = "px-1.5 py-0.2 rounded-full text-[10px] bg-slate-200 text-slate-700 font-bold";
+        }
+      }
+      const badgeMyTickets = document.getElementById("tabBadgeMyTickets");
+      if (badgeMyTickets) {
+        if (tabId === "myTicketsTab") {
+          badgeMyTickets.className = "px-1.5 py-0.2 rounded-full text-[10px] bg-white/20 text-white font-bold";
+        } else {
+          badgeMyTickets.className = "px-1.5 py-0.2 rounded-full text-[10px] bg-slate-200 text-slate-700 font-bold";
+        }
       }
 
       // Update Admin Sidebar Button styling
@@ -2410,7 +2610,7 @@
       if (spinner) spinner.classList.remove("hidden");
 
       const priority = document.getElementById("ticketPriority").value;
-      const ticketNum = "TKT-" + (1000 + state.tickets.length + 1);
+      const ticketNum = generateTicketId();
       const newTicket = {
         ticket_id: ticketNum,
         title: document.getElementById("ticketTitle").value.trim(),
@@ -2795,7 +2995,68 @@
       renderAll();
     }
 
-    /* KNOWLEDGE BASE FUNCTIONS */
+    /* KNOWLEDGE BASE FUNCTIONS (Req 4) */
+    function handleKbPresetSelect(val) {
+      const titleInput = document.getElementById("inputKbTitle");
+      if (!titleInput) return;
+      if (val === "__custom__") {
+        titleInput.value = "";
+        titleInput.focus();
+      } else if (val) {
+        titleInput.value = val;
+      }
+    }
+
+    function handleKbFileSelect(e) {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      if (file.size > 5 * 1024 * 1024) {
+        showNotification("ขนาดไฟล์เอกสารแนบเกิน 5MB", "warning");
+        clearKbAttachment();
+        return;
+      }
+      state.currentKbAttachmentName = file.name;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        state.currentKbAttachmentBase64 = evt.target.result;
+        const preview = document.getElementById("kbFilePreviewName");
+        const txt = document.getElementById("kbFileSelectedText");
+        const btn = document.getElementById("btnClearKbFile");
+        if (txt) txt.textContent = `${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+        if (preview) preview.classList.remove("hidden");
+        if (btn) btn.classList.remove("hidden");
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function clearKbAttachment() {
+      state.currentKbAttachmentName = "";
+      state.currentKbAttachmentBase64 = "";
+      const input = document.getElementById("kbFileInput");
+      if (input) input.value = "";
+      const preview = document.getElementById("kbFilePreviewName");
+      const btn = document.getElementById("btnClearKbFile");
+      if (preview) preview.classList.add("hidden");
+      if (btn) btn.classList.add("hidden");
+    }
+
+    function downloadKbAttachment(kbId) {
+      const k = state.knowledgeBase.find(item => item.kb_id === kbId);
+      if (!k) return;
+      if (k.attachment_base64) {
+        const a = document.createElement("a");
+        a.href = k.attachment_base64;
+        a.download = k.attachment_name || "kb-document";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      } else if (k.doc_url) {
+        window.open(k.doc_url, "_blank");
+      } else {
+        showNotification("บทความนี้ไม่มีไฟล์แนบ", "info");
+      }
+    }
+
     function renderKnowledgeBaseList() {
       const container = document.getElementById("kbListContainer");
       const q = (document.getElementById("kbSearchInput")?.value || "").toLowerCase().trim();
@@ -2807,16 +3068,41 @@
         return;
       }
 
-      container.innerHTML = filtered.map(k => `
-        <div class="p-4 rounded-2xl border border-slate-200 bg-white hover:border-tcc-400 shadow-sm transition space-y-2">
-          <div class="flex items-center justify-between">
-            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-sky-100 text-sky-800">${k.category}</span>
-            <span class="font-mono text-[10px] text-slate-400">${k.kb_id}</span>
+      container.innerHTML = filtered.map(k => {
+        let attachmentBadge = "";
+        if (k.attachment_name) {
+          attachmentBadge = `
+            <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
+              <span class="text-[11px] text-slate-500 font-medium">เอกสารแนบ:</span>
+              <button type="button" onclick="downloadKbAttachment('${escapeQuotes(k.kb_id)}')" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-semibold text-xs transition border border-emerald-200/60 shadow-xs">
+                <span>📎</span> <span class="max-w-[180px] truncate">${k.attachment_name}</span> <span>⬇️</span>
+              </button>
+            </div>
+          `;
+        } else if (k.doc_url) {
+          attachmentBadge = `
+            <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
+              <span class="text-[11px] text-slate-500 font-medium">เอกสารออนไลน์:</span>
+              <a href="${k.doc_url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold text-xs transition border border-blue-200/60 shadow-xs">
+                <span>🔗</span> <span>เปิดเอกสารคู่มือ</span> <span>↗</span>
+              </a>
+            </div>
+          `;
+        }
+        return `
+          <div class="p-4 rounded-2xl border border-slate-200 bg-white hover:border-tcc-400 shadow-sm transition space-y-2.5 flex flex-col justify-between">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-sky-100 text-sky-800">${k.category}</span>
+                <span class="font-mono text-[10px] text-slate-400">${k.kb_id}</span>
+              </div>
+              <h4 class="font-bold text-slate-900 text-sm leading-snug">${k.title}</h4>
+              <p class="text-xs text-slate-600 leading-relaxed whitespace-pre-wrap">${k.content}</p>
+            </div>
+            ${attachmentBadge}
           </div>
-          <h4 class="font-bold text-slate-900 text-sm">${k.title}</h4>
-          <p class="text-xs text-slate-600 leading-relaxed whitespace-pre-wrap">${k.content}</p>
-        </div>
-      `).join("");
+        `;
+      }).join("");
     }
 
     function openAddKbModal() { document.getElementById("addKbModal").classList.remove("hidden"); }
@@ -2824,16 +3110,31 @@
 
     function handleSaveKbArticle(e) {
       e.preventDefault();
+      const docUrl = document.getElementById("inputKbDocUrl")?.value.trim() || "";
       const newArticle = {
         kb_id: "KB-" + String(state.knowledgeBase.length + 1).padStart(3, "0"),
         category: document.getElementById("inputKbCategory").value,
         title: document.getElementById("inputKbTitle").value.trim(),
-        content: document.getElementById("inputKbContent").value.trim()
+        content: document.getElementById("inputKbContent").value.trim(),
+        doc_url: docUrl,
+        attachment_name: state.currentKbAttachmentName || "",
+        attachment_base64: state.currentKbAttachmentBase64 || ""
       };
       state.knowledgeBase.unshift(newArticle);
       closeAddKbModal();
+      clearKbAttachment();
+      const urlInput = document.getElementById("inputKbDocUrl");
+      if (urlInput) urlInput.value = "";
+      const titleInput = document.getElementById("inputKbTitle");
+      if (titleInput) titleInput.value = "";
+      const contentInput = document.getElementById("inputKbContent");
+      if (contentInput) contentInput.value = "";
+      const presetSel = document.getElementById("selectKbTitlePreset");
+      if (presetSel) presetSel.selectedIndex = 0;
+
       showNotification(`เพิ่มบทความ [${newArticle.title}] เรียบร้อย`, "success");
       renderKnowledgeBaseList();
+      callAPI("saveKbArticle", { articleData: newArticle }, true);
     }
 
     function openKbQuickSelectModal() {
@@ -2956,63 +3257,189 @@
       }).join("");
     }
 
-    function openDepartmentDropdown() {
-      filterDepartmentDropdown();
-      document.getElementById("deptDropdownMenu").classList.remove("hidden");
-    }
-    function handleDeptSearchInput(val) {
-      document.getElementById("borrowerDept").value = val.trim();
-      filterDepartmentDropdown();
-      document.getElementById("deptDropdownMenu").classList.remove("hidden");
-    }
-    function filterDepartmentDropdown() {
-      const q = (document.getElementById("borrowerDeptSearchInput")?.value || "").toLowerCase().trim();
-      const container = document.getElementById("deptOptionsContainer");
-      if (!container) return;
+    /* DEPARTMENT & CATEGORY SELECT POPULATION (Req 2 & Req 8) */
+    function renderDepartmentSelects() {
+      const depts = state.departments || [];
+      const optionsHtml = ['<option value="">-- กรุณาเลือกฝ่าย / แผนก --</option>']
+        .concat(depts.map(d => `<option value="${escapeQuotes(d)}">${d}</option>`))
+        .join('');
 
-      const filtered = state.departments.filter(d => !q || d.toLowerCase().includes(q));
-      if (filtered.length === 0) {
-        container.innerHTML = `<div class="p-2 text-center text-xs text-slate-400">ไม่พบแผนก <button type="button" onclick="quickAddDept('${escapeQuotes(q)}')" class="text-tcc-600 underline font-semibold block mx-auto mt-1">+ ใช้ชื่อนี้</button></div>`;
+      const borrowDeptEl = document.getElementById("borrowerDept");
+      if (borrowDeptEl) {
+        const cur = borrowDeptEl.value;
+        borrowDeptEl.innerHTML = optionsHtml;
+        if (cur && depts.includes(cur)) borrowDeptEl.value = cur;
+      }
+
+      const ticketDeptEl = document.getElementById("ticketReporterDept");
+      if (ticketDeptEl) {
+        const cur = ticketDeptEl.value;
+        ticketDeptEl.innerHTML = optionsHtml;
+        if (cur && depts.includes(cur)) ticketDeptEl.value = cur;
+      }
+
+      const editHistDeptEl = document.getElementById("editHistoryDept");
+      if (editHistDeptEl) {
+        const cur = editHistDeptEl.value;
+        editHistDeptEl.innerHTML = optionsHtml;
+        if (cur && depts.includes(cur)) editHistDeptEl.value = cur;
+      }
+    }
+
+    function renderTicketCategorySelects() {
+      const cats = state.ticketCategories || INITIAL_DEMO_TICKET_CATEGORIES;
+      const tktCat = document.getElementById("ticketCategory");
+      if (tktCat) {
+        const cur = tktCat.value;
+        tktCat.innerHTML = cats.map(c => `<option value="${escapeQuotes(c)}">${c}</option>`).join('');
+        if (cur && cats.includes(cur)) tktCat.value = cur;
+      }
+
+      const kbCat = document.getElementById("inputKbCategory");
+      if (kbCat) {
+        const cur = kbCat.value;
+        kbCat.innerHTML = cats.map(c => `<option value="${escapeQuotes(c)}">${c}</option>`).join('');
+        if (cur && cats.includes(cur)) kbCat.value = cur;
+      }
+    }
+
+    /* TICKET CATEGORY MANAGEMENT (Req 8) */
+    function openTicketCategoryManageModal() {
+      renderTicketCategoryManagementList();
+      document.getElementById("ticketCategoryManageModal").classList.remove("hidden");
+    }
+
+    function closeTicketCategoryManageModal() {
+      document.getElementById("ticketCategoryManageModal").classList.add("hidden");
+    }
+
+    function renderTicketCategoryManagementList() {
+      const container = document.getElementById("ticketCategoryListContainer");
+      if (!container) return;
+      const cats = state.ticketCategories || [];
+      if (cats.length === 0) {
+        container.innerHTML = '<div class="p-4 text-center text-xs text-slate-400">ยังไม่มีรายการหมวดหมู่ปัญหา</div>';
         return;
       }
-      container.innerHTML = filtered.map(d => `
-        <div onclick="selectDepartment('${escapeQuotes(d)}')" class="px-3 py-2 hover:bg-tcc-50 text-xs text-slate-700 cursor-pointer rounded-lg">${d}</div>
+      container.innerHTML = cats.map((cat, idx) => `
+        <div class="flex items-center justify-between px-3 py-2.5 text-xs hover:bg-slate-50 transition">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+            <span class="font-semibold text-slate-800">${cat}</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <button type="button" onclick="handleEditTicketCategory(${idx})" class="p-1.5 text-slate-500 hover:text-purple-600 rounded-lg hover:bg-purple-50 transition" title="แก้ไข">
+              ✏️
+            </button>
+            <button type="button" onclick="handleDeleteTicketCategory(${idx})" class="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition" title="ลบ">
+              🗑️
+            </button>
+          </div>
+        </div>
       `).join("");
     }
-    function selectDepartment(dept) {
-      document.getElementById("borrowerDeptSearchInput").value = dept;
-      document.getElementById("borrowerDept").value = dept;
-      document.getElementById("deptDropdownMenu").classList.add("hidden");
+
+    function handleAddNewTicketCategory(e) {
+      if (e && e.preventDefault) e.preventDefault();
+      const input = document.getElementById("newTicketCategoryInput");
+      const val = input.value.trim();
+      if (!val) return;
+      if (!state.ticketCategories) state.ticketCategories = [];
+      if (state.ticketCategories.includes(val)) {
+        return showNotification(`หมวดหมู่ "${val}" มีอยู่ในระบบแล้ว`, "warning");
+      }
+      state.ticketCategories.push(val);
+      input.value = "";
+      renderTicketCategorySelects();
+      renderTicketCategoryManagementList();
+      showNotification(`เพิ่มหมวดหมู่ "${val}" เรียบร้อย`, "success");
+      callAPI("addTicketCategory", { categoryName: val }, true);
     }
-    function quickAddDept(d) {
-      if (!d) return;
-      if (!state.departments.includes(d)) state.departments.push(d);
-      selectDepartment(d);
+
+    function handleEditTicketCategory(idx) {
+      const current = state.ticketCategories[idx];
+      if (!current) return;
+      const updated = prompt("แก้ไขชื่อหมวดหมู่ปัญหา:", current);
+      if (updated && updated.trim() && updated.trim() !== current) {
+        const val = updated.trim();
+        state.ticketCategories[idx] = val;
+        renderTicketCategorySelects();
+        renderTicketCategoryManagementList();
+        showNotification(`แก้ไขหมวดหมู่เป็น "${val}" เรียบร้อย`, "success");
+        callAPI("updateTicketCategory", { oldName: current, newName: val }, true);
+      }
+    }
+
+    function handleDeleteTicketCategory(idx) {
+      const current = state.ticketCategories[idx];
+      if (!current) return;
+      if (!confirm(`คุณต้องการลบหมวดหมู่ "${current}" ใช่หรือไม่?`)) return;
+      state.ticketCategories.splice(idx, 1);
+      renderTicketCategorySelects();
+      renderTicketCategoryManagementList();
+      showNotification(`ลบหมวดหมู่ "${current}" เรียบร้อย`, "info");
+      callAPI("deleteTicketCategory", { categoryName: current }, true);
+    }
+
+    /* QUICK AVAILABLE LIST (Req 1) */
+    function selectQuickAvailCategory(cat) {
+      state.selectedQuickAvailCat = cat;
+      renderQuickAvailableList();
     }
 
     function renderQuickAvailableList() {
       const container = document.getElementById("quickAvailableContainer");
+      const pillsContainer = document.getElementById("quickAvailableCategoryPills");
       const q = (document.getElementById("quickAvailableSearch")?.value || "").toLowerCase().trim();
       const avail = state.items.filter(i => isItemAvailable(i));
-      const filtered = avail.filter(i => !q || i.item_name.toLowerCase().includes(q) || i.item_id.toLowerCase().includes(q));
 
-      document.getElementById("quickAvailableCount").innerText = `${avail.length} ชิ้น`;
+      const countEl = document.getElementById("quickAvailableCount");
+      if (countEl) countEl.innerText = `${avail.length} ชิ้น`;
+
+      // Render Category Filter Pills
+      if (pillsContainer) {
+        const uniqueCats = ["ทั้งหมด", ...Array.from(new Set(avail.map(i => i.category)))];
+        pillsContainer.innerHTML = uniqueCats.map(cat => {
+          const isAct = (state.selectedQuickAvailCat || "ทั้งหมด") === cat;
+          return `
+            <button type="button" onclick="selectQuickAvailCategory('${escapeQuotes(cat)}')" 
+                    class="px-2.5 py-1 rounded-lg text-[11px] font-semibold whitespace-nowrap transition ${isAct ? 'bg-tcc-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
+              ${cat}
+            </button>
+          `;
+        }).join("");
+      }
+
       if (!container) return;
 
+      const filtered = avail.filter(i => {
+        const matchSearch = !q || i.item_name.toLowerCase().includes(q) || i.item_id.toLowerCase().includes(q) || (i.serial_number && i.serial_number.toLowerCase().includes(q));
+        const matchCat = (!state.selectedQuickAvailCat || state.selectedQuickAvailCat === "ทั้งหมด") || i.category === state.selectedQuickAvailCat;
+        return matchSearch && matchCat;
+      });
+
       if (filtered.length === 0) {
-        container.innerHTML = '<p class="text-xs text-slate-400 py-6 text-center">ไม่มีอุปกรณ์ว่าง</p>';
+        container.innerHTML = '<div class="text-center py-12 text-xs text-slate-400">ไม่พบอุปกรณ์ที่ตรงกับเงื่อนไข</div>';
         return;
       }
 
       container.innerHTML = filtered.map(i => {
         const isSel = state.selectedBorrowItems.includes(i.item_id);
         return `
-          <div onclick="addSelectedItem('${escapeQuotes(i.item_id)}')" class="p-2.5 rounded-xl border ${isSel ? 'border-tcc-500 bg-tcc-50/70' : 'border-slate-100 hover:border-tcc-300'} cursor-pointer transition flex items-center justify-between text-xs">
-            <div>
-              <p class="font-bold text-slate-900">${i.item_name}</p>
-              <p class="text-[10px] text-slate-400 font-mono">${i.item_id} • ${i.category}</p>
+          <div onclick="addSelectedItem('${escapeQuotes(i.item_id)}')" 
+               class="p-2.5 rounded-xl border ${isSel ? 'border-tcc-500 bg-tcc-50/70 shadow-xs' : 'border-slate-100 hover:border-tcc-300 bg-white hover:bg-slate-50/60'} cursor-pointer transition flex items-center justify-between text-xs">
+            <div class="min-w-0 pr-2">
+              <p class="font-bold text-slate-900 truncate">${i.item_name}</p>
+              <div class="flex items-center gap-1.5 text-[10px] text-slate-400 font-mono mt-0.5">
+                <span class="bg-slate-100 px-1.5 py-0.5 rounded text-slate-600 font-semibold">${i.item_id}</span>
+                <span>•</span>
+                <span class="truncate">${i.category}</span>
+                ${i.serial_number ? `<span>• S/N: ${i.serial_number}</span>` : ''}
+              </div>
             </div>
-            ${isSel ? '<span class="text-[10px] text-tcc-700 font-bold">✓ เลือกแล้ว</span>' : '<span class="text-[10px] text-tcc-600 font-semibold">+ เลือก</span>'}
+            <div class="shrink-0">
+              ${isSel ? '<span class="inline-flex items-center gap-1 text-[11px] text-emerald-700 bg-emerald-100 px-2.5 py-0.5 rounded-lg font-bold">✓ เลือกแล้ว</span>' : '<span class="inline-flex items-center gap-1 text-[11px] text-tcc-700 bg-tcc-50 hover:bg-tcc-100 px-2.5 py-0.5 rounded-lg font-semibold border border-tcc-200">+ เลือก</span>'}
+            </div>
           </div>
         `;
       }).join("");
@@ -3029,12 +3456,12 @@
         return showNotification("กรุณาเลือกอุปกรณ์อย่างน้อย 1 ชิ้น", "warning");
       }
 
-      const deptVal = document.getElementById("borrowerDept").value || document.getElementById("borrowerDeptSearchInput").value.trim();
+      const deptVal = document.getElementById("borrowerDept")?.value.trim() || "";
       const btn = document.getElementById("btnSubmitBorrow");
       const spinner = document.getElementById("btnBorrowSpinner");
       btn.disabled = true; spinner.classList.remove("hidden");
 
-      const batchPrefix = "TRX-" + Math.floor(1000 + Math.random() * 9000);
+      const batchPrefix = generateBorrowBatchId();
       const bDate = getOffsetDate(0);
       const rDate = document.getElementById("expectedReturnDate").value;
 
@@ -3243,21 +3670,37 @@
       const list = filteredList || state.allLogs;
       const tbody = document.getElementById("historyTableBody");
       if (!tbody) return;
+      if (list.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" class="py-8 text-center text-slate-400 text-xs">ไม่พบบันทึกประวัติการยืม-คืน</td></tr>';
+        return;
+      }
       tbody.innerHTML = list.map(l => {
         const item = state.items.find(i => i.item_id === l.item_id) || { item_name: l.item_id };
         const isRet = l.trans_status === "Returned";
         return `
-          <tr class="hover:bg-slate-50 transition">
-            <td class="py-3 px-4 font-mono text-xs font-bold">${l.trans_id}</td>
-            <td class="py-3 px-4 font-bold text-slate-900">${item.item_name} <span class="font-mono text-xs text-slate-400 block">[${l.item_id}]</span></td>
-            <td class="py-3 px-4">${l.borrower_name} <span class="text-xs text-slate-500 block">${l.borrower_dept}</span></td>
-            <td class="py-3 px-4 text-xs">${l.borrow_date}</td>
-            <td class="py-3 px-4 text-xs">${l.expected_return}</td>
-            <td class="py-3 px-4 text-xs text-emerald-700">${isRet ? (l.actual_return || '-') : '-'}</td>
-            <td class="py-3 px-4 text-center">${isRet ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">คืนแล้ว</span>' : '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">กำลังยืม</span>'}</td>
+          <tr class="hover:bg-slate-50 transition border-b border-slate-100">
+            <td class="py-3 px-4 font-mono text-xs font-bold text-tcc-700">${l.trans_id}</td>
+            <td class="py-3 px-4">
+              <span class="font-bold text-slate-900 block text-xs sm:text-sm">${item.item_name}</span>
+              <span class="font-mono text-[10px] text-slate-400 block">${l.item_id}</span>
+            </td>
+            <td class="py-3 px-4">
+              <span class="font-medium text-slate-800 block text-xs">${l.borrower_name}</span>
+              <span class="text-[11px] text-slate-500 block">${l.borrower_dept}</span>
+            </td>
+            <td class="py-3 px-4 text-xs font-mono text-slate-600">${l.borrow_date || '-'}</td>
+            <td class="py-3 px-4 text-xs font-mono text-slate-600">${l.expected_return || '-'}</td>
+            <td class="py-3 px-4 text-xs font-mono text-emerald-700">${isRet ? (l.actual_return || '-') : '-'}</td>
+            <td class="py-3 px-4 text-center">
+              ${isRet 
+                ? '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/60"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>คืนเรียบร้อย</span>' 
+                : '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200/60"><span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>กำลังถูกยืม</span>'}
+            </td>
             <td class="py-3 px-4 text-xs max-w-xs truncate text-slate-600">${l.notes || '-'}</td>
             <td class="py-3 px-4 text-center">
-              <button onclick="openEditHistoryModal('${escapeQuotes(l.trans_id)}')" class="px-2 py-1 text-xs text-tcc-700 hover:bg-tcc-50 rounded-lg">✏️ แก้ไข</button>
+              <button type="button" onclick="openEditHistoryModal('${escapeQuotes(l.trans_id)}')" class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-tcc-700 bg-tcc-50 hover:bg-tcc-100 rounded-lg transition border border-tcc-200/70 shadow-2xs">
+                <span>✏️</span> <span>แก้ไขข้อมูล</span>
+              </button>
             </td>
           </tr>
         `;
@@ -3325,7 +3768,19 @@
       document.getElementById("editHistoryTransLabel").innerText = `รหัสธุรกรรม: ${log.trans_id}`;
       document.getElementById("editHistoryItemInfo").innerText = `[${log.item_id}]`;
       document.getElementById("editHistoryBorrowerName").value = log.borrower_name;
-      document.getElementById("editHistoryDept").value = log.borrower_dept;
+
+      renderDepartmentSelects();
+      const deptEl = document.getElementById("editHistoryDept");
+      if (deptEl) {
+        if (log.borrower_dept && !Array.from(deptEl.options).some(o => o.value === log.borrower_dept)) {
+          const opt = document.createElement("option");
+          opt.value = log.borrower_dept;
+          opt.textContent = log.borrower_dept;
+          deptEl.appendChild(opt);
+        }
+        deptEl.value = log.borrower_dept;
+      }
+
       document.getElementById("editHistoryContact").value = log.borrower_contact;
       document.getElementById("editHistoryBorrowDate").value = log.borrow_date;
       document.getElementById("editHistoryExpectedReturn").value = log.expected_return;
@@ -3377,6 +3832,7 @@
       if (!val) return;
       if (!state.departments.includes(val)) state.departments.push(val);
       input.value = "";
+      renderDepartmentSelects();
       openDeptManagementModal();
       showNotification(`เพิ่มแผนก "${val}" เรียบร้อย`, "success");
       callAPI("addDepartment", { deptName: val }, true);
@@ -3384,6 +3840,7 @@
     function handleDeleteDept(idx) {
       const deptName = state.departments[idx];
       state.departments.splice(idx, 1);
+      renderDepartmentSelects();
       openDeptManagementModal();
       if (deptName) callAPI("deleteDepartment", { deptName }, true);
     }
@@ -3492,6 +3949,8 @@
 
     function renderAll() {
       syncItemStatuses();
+      renderDepartmentSelects();
+      renderTicketCategorySelects();
       renderSelectedBorrowItems();
       renderQuickAvailableList();
       renderMyBorrowsTable();
@@ -3545,6 +4004,9 @@ function doPost(e) {
       case "addDepartment": return handleAddDepartment(data);
       case "updateDepartment": return handleUpdateDepartment(data);
       case "deleteDepartment": return handleDeleteDepartment(data);
+      case "addTicketCategory": return handleAddTicketCategory(data);
+      case "updateTicketCategory": return handleUpdateTicketCategory(data);
+      case "deleteTicketCategory": return handleDeleteTicketCategory(data);
       case "saveUserRole": return handleSaveUserRole(data);
       case "deleteUserRole": return handleDeleteUserRole(data);
       case "createTicket": return handleCreateTicket(data);
@@ -3601,6 +4063,16 @@ function handleGetInitialData() {
   var itemSheet = getOrCreateSheet(ss, "Items", ["item_id", "item_name", "category", "serial_number", "status"], []);
   var logSheet = getOrCreateSheet(ss, "Logs", ["trans_id", "timestamp", "item_id", "borrower_name", "borrower_dept", "borrower_contact", "borrow_date", "expected_return", "actual_return", "trans_status", "notes"], []);
   var catSheet = getOrCreateSheet(ss, "Categories", ["category_name"], [["Laptop"], ["Monitor"], ["Projector"], ["Adapter"], ["Audio"], ["Accessory"], ["Other"]]);
+  var defaultTktCats = [
+    ["ฮาร์ดแวร์ / เครื่องคอมพิวเตอร์ / จอภาพ"],
+    ["ซอฟต์แวร์ / MS Office / โปรแกรมทั่วไป"],
+    ["ระบบเครือข่าย / อินเทอร์เน็ต / Wi-Fi / VPN"],
+    ["อีเมลองค์กร / บัญชีผู้ใช้งาน / รหัสผ่าน"],
+    ["เครื่องพิมพ์ / สแกนเนอร์"],
+    ["ระบบสารสนเทศภายใน / เว็บไซต์"],
+    ["งานบริการไอทีอื่นๆ"]
+  ];
+  var tktCatSheet = getOrCreateSheet(ss, "TicketCategories", ["category_name"], defaultTktCats);
   var deptSheet = getOrCreateSheet(ss, "Departments", ["department_name"], []);
   var roleSheet = getOrCreateSheet(ss, "UserRoles", ["email", "name", "role", "remark", "updated_at"], []);
   var ticketSheet = getOrCreateSheet(ss, "Tickets", [
@@ -3612,6 +4084,7 @@ function handleGetInitialData() {
   var kbSheet = getOrCreateSheet(ss, "KnowledgeBase", ["kb_id", "category", "title", "content", "tags", "created_at"], []);
 
   var categories = catSheet.getDataRange().getValues().slice(1).map(function(r){ return String(r[0] || "").trim(); }).filter(Boolean);
+  var ticketCategories = tktCatSheet.getDataRange().getValues().slice(1).map(function(r){ return String(r[0] || "").trim(); }).filter(Boolean);
   var departments = deptSheet.getDataRange().getValues().slice(1).map(function(r){ return String(r[0] || "").trim(); }).filter(Boolean);
   var userRoles = roleSheet.getDataRange().getValues().slice(1).filter(function(r){ return r[0]; }).map(function(r){
     return { email: String(r[0]).trim(), name: String(r[1] || ""), role: String(r[2] || "user"), remark: String(r[3] || "") };
@@ -3709,6 +4182,7 @@ function handleGetInitialData() {
     activeBorrows: activeBorrows,
     allLogs: allLogs,
     categories: categories,
+    ticketCategories: ticketCategories,
     departments: departments,
     userRoles: userRoles,
     tickets: tickets,
@@ -3920,6 +4394,42 @@ function handleDeleteDepartment(data) {
   return jsonResponse({ status: "success", message: "ลบฝ่ายเรียบร้อย" });
 }
 
+function handleAddTicketCategory(data) {
+  var ss = getSpreadsheet();
+  var sheet = getOrCreateSheet(ss, "TicketCategories", ["category_name"], []);
+  if (data.categoryName) sheet.appendRow([String(data.categoryName).trim()]);
+  SpreadsheetApp.flush();
+  return jsonResponse({ status: "success", message: "เพิ่มหมวดหมู่ปัญหาเรียบร้อย" });
+}
+
+function handleUpdateTicketCategory(data) {
+  var ss = getSpreadsheet();
+  var sheet = getOrCreateSheet(ss, "TicketCategories", ["category_name"], []);
+  var vals = sheet.getDataRange().getValues();
+  for (var i = 1; i < vals.length; i++) {
+    if (String(vals[i][0]).trim().toLowerCase() === String(data.oldName).trim().toLowerCase()) {
+      sheet.getRange(i + 1, 1).setValue(String(data.newName).trim());
+      break;
+    }
+  }
+  SpreadsheetApp.flush();
+  return jsonResponse({ status: "success", message: "แก้ไขหมวดหมู่ปัญหาเรียบร้อย" });
+}
+
+function handleDeleteTicketCategory(data) {
+  var ss = getSpreadsheet();
+  var sheet = getOrCreateSheet(ss, "TicketCategories", ["category_name"], []);
+  var vals = sheet.getDataRange().getValues();
+  for (var i = 1; i < vals.length; i++) {
+    if (String(vals[i][0]).trim().toLowerCase() === String(data.categoryName).trim().toLowerCase()) {
+      sheet.deleteRow(i + 1);
+      break;
+    }
+  }
+  SpreadsheetApp.flush();
+  return jsonResponse({ status: "success", message: "ลบหมวดหมู่ปัญหาเรียบร้อย" });
+}
+
 function handleAddItem(data) {
   var ss = getSpreadsheet();
   var sheet = getOrCreateSheet(ss, "Items", ["item_id", "item_name", "category", "serial_number", "status"], []);
@@ -4108,6 +4618,7 @@ function handleDeleteUserRole(data) {
                 activeBorrows: [...state.activeBorrows],
                 allLogs: [...state.allLogs],
                 categories: [...state.categories],
+                ticketCategories: [...state.ticketCategories],
                 departments: [...state.departments],
                 userRoles: [...state.userRoles],
                 tickets: [...state.tickets],
@@ -4139,6 +4650,9 @@ function handleDeleteUserRole(data) {
             case "updateItem":
             case "addDepartment":
             case "deleteDepartment":
+            case "addTicketCategory":
+            case "updateTicketCategory":
+            case "deleteTicketCategory":
             case "saveKbArticle":
             case "deleteKbArticle": {
               resolve({ status: "success", message: "ดำเนินการเรียบร้อย (จำลอง)" });
@@ -4169,6 +4683,7 @@ function handleDeleteUserRole(data) {
           if (Array.isArray(res.tickets) && res.tickets.length > 0) state.tickets = res.tickets;
           if (Array.isArray(res.knowledgeBase) && res.knowledgeBase.length > 0) state.knowledgeBase = res.knowledgeBase;
           if (Array.isArray(res.categories) && res.categories.length > 0) state.categories = res.categories;
+          if (Array.isArray(res.ticketCategories) && res.ticketCategories.length > 0) state.ticketCategories = res.ticketCategories;
           if (Array.isArray(res.departments) && res.departments.length > 0) state.departments = res.departments;
           if (Array.isArray(res.userRoles) && res.userRoles.length > 0) {
             state.userRoles = mergeWithBuiltinRoles(res.userRoles);

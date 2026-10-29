@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ระบบบริการไอที & ยืม-คืนอุปกรณ์ | ฝ่ายเทคโนโลยีสารสนเทศ หอการค้าไทย</title>
+  <title>ศูนย์บริการเทคโนโลยีสารสนเทศ | ฝ่ายเทคโนโลยีสารสนเทศ หอการค้าไทย</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script>
@@ -95,6 +95,12 @@
 
         <!-- Right: Action & Profile Area -->
         <div class="flex items-center gap-2 shrink-0">
+          <!-- Toggle Admin Sidebar Button (Desktop & Mobile) -->
+          <button id="btnToggleSidebar" onclick="toggleAdminSidebarMobile()" class="admin-only admin-hidden px-2.5 py-1.5 text-xs font-bold rounded-xl bg-tcc-50 hover:bg-tcc-100 text-tcc-700 border border-tcc-200 items-center gap-1.5 transition shadow-sm inline-flex" title="เปิด/ปิด เมนูด้านข้างแอดมิน">
+            <svg class="w-4 h-4 text-tcc-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg>
+            <span class="hidden sm:inline">เมนูจัดการระบบ</span>
+          </button>
+
           <!-- Global Refresh -->
           <button onclick="triggerManualReload()" class="p-1.5 sm:px-3 sm:py-1.5 text-xs font-semibold rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-700 flex items-center gap-1.5 transition active:scale-95 shadow-sm" title="รีเฟรชข้อมูลล่าสุด">
             <svg id="reloadIcon" class="w-4 h-4 text-tcc-600 transition-transform shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -205,979 +211,1008 @@
   <!-- MAIN APP CONTAINER -->
   <main id="mainAppContainer" class="hidden max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 w-full flex-1">
     
-    <!-- ============================================================== -->
-    <!-- 1. REDESIGNED MAIN NAVIGATION & SERVICE HUB (ข้อ 1) -->
-    <!-- ============================================================== -->
-    <div class="mb-6 space-y-3">
+    <!-- MAIN LAYOUT: LEFT ADMIN SIDEBAR + RIGHT CONTENT AREA -->
+    <div class="flex flex-col lg:flex-row gap-5 items-start">
       
-      <!-- Primary Service Category Switcher -->
-      <div class="bg-white p-1.5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between gap-2 overflow-x-auto no-scrollbar">
-        <div class="flex items-center gap-1.5 min-w-max">
-          <!-- Service 1: Asset Hub -->
-          <button onclick="switchServiceCategory('assetService')" id="catBtn-assetService" class="service-cat-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition bg-tcc-600 text-white shadow-sm">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
-            <span>บริการยืม-คืนอุปกรณ์</span>
+      <!-- ============================================================== -->
+      <!-- LEFT SIDEBAR: ADMIN MANAGEMENT SYSTEM (เมนูด้านข้างฝั่งซ้ายมือ) -->
+      <!-- ============================================================== -->
+      <aside id="adminSidebar" class="admin-only admin-hidden w-full lg:w-64 shrink-0 bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-4 lg:sticky lg:top-20 transition-all">
+        
+        <!-- Sidebar Brand & Identity -->
+        <div class="pb-3 border-b border-slate-100 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-xl bg-tcc-600 text-white flex items-center justify-center font-bold text-sm shadow-sm">
+              ⚙️
+            </div>
+            <div>
+              <h3 class="text-xs font-bold text-slate-900 leading-tight">เมนูจัดการระบบ</h3>
+              <span id="sidebarRoleLabel" class="text-[10px] text-tcc-700 font-semibold">IT Admin Console</span>
+            </div>
+          </div>
+          <button type="button" onclick="toggleAdminSidebarMobile()" class="lg:hidden p-1 text-slate-400 hover:text-slate-600 rounded-lg">
+            ✕
           </button>
+        </div>
 
-          <!-- Service 2: Helpdesk Hub -->
-          <button onclick="switchServiceCategory('ticketService')" id="catBtn-ticketService" class="service-cat-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 transition text-slate-600 hover:bg-slate-100">
-            <svg class="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-            <span>แจ้งซ่อม & ช่วยเหลือไอที</span>
-            <span id="badgeActiveTicketsCat" class="px-1.5 py-0.2 rounded-full text-[10px] bg-rose-100 text-rose-700 font-bold hidden">0</span>
+        <!-- Section 1: แดชบอร์ดและรายงาน -->
+        <div class="space-y-1">
+          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2">ภาพรวม &amp; สถิติ</span>
+          <button type="button" onclick="switchTab('dashboardTab')" id="sidebarBtn-dashboardTab" class="admin-sidebar-btn w-full px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-between text-slate-700 hover:bg-slate-100 transition">
+            <div class="flex items-center gap-2">
+              <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+              <span>ศูนย์รวมแดชบอร์ด &amp; SLA</span>
+            </div>
           </button>
+        </div>
 
-          <!-- Service 3: Unified Dashboard Hub -->
-          <button onclick="switchServiceCategory('dashboardService')" id="catBtn-dashboardService" class="service-cat-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 transition text-slate-600 hover:bg-slate-100">
-            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-            <span>ศูนย์รวมแดชบอร์ด & SLA</span>
+        <!-- Section 2: งานบริการไอที (IT Helpdesk) -->
+        <div class="space-y-1">
+          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2">งานบริการไอที (Helpdesk)</span>
+          <button type="button" onclick="switchTab('ticketAdminTab')" id="sidebarBtn-ticketAdminTab" class="admin-sidebar-btn w-full px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-between text-slate-700 hover:bg-slate-100 transition">
+            <div class="flex items-center gap-2">
+              <svg class="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"/></svg>
+              <span>กระดานบริหารเคส</span>
+            </div>
+            <span id="sidebarBadgeTickets" class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700">0</span>
+            <span id="tabBadgeAdminTickets" class="hidden">0</span>
+            <span id="badgeActiveTicketsCat" class="hidden">0</span>
           </button>
-
-          <!-- Service 4: Knowledge Base Hub -->
-          <button onclick="switchServiceCategory('kbService')" id="catBtn-kbService" class="service-cat-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 transition text-slate-600 hover:bg-slate-100">
+          <button type="button" onclick="switchTab('kbTab')" id="sidebarBtn-kbTab" class="admin-sidebar-btn w-full px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 text-slate-700 hover:bg-slate-100 transition">
             <svg class="w-4 h-4 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
             <span>คลังความรู้ไอที (KB)</span>
           </button>
-
-          <!-- Service 5: Admin & Roles Management (Admin Only) -->
-          <button onclick="switchServiceCategory('adminService')" id="catBtn-adminService" class="service-cat-btn admin-only admin-hidden px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 transition text-slate-600 hover:bg-slate-100">
-            <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-            <span>จัดการระบบ & สิทธิ์</span>
-          </button>
-
-          <!-- Service 6: Gemini AI Assistant -->
-          <button onclick="switchServiceCategory('aiService')" id="catBtn-aiService" class="service-cat-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 transition text-tcc-700 bg-sky-50 hover:bg-sky-100 border border-sky-200/80">
-            <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-            <span>AI Assistant</span>
-          </button>
         </div>
 
-        <!-- Quick Hero Action Shortcut -->
-        <div class="hidden md:flex items-center gap-2 shrink-0">
-          <button onclick="quickGoAction('borrowTab')" class="px-3 py-1.5 rounded-xl bg-tcc-50 hover:bg-tcc-100 text-tcc-700 border border-tcc-200 text-xs font-bold transition flex items-center gap-1.5">
-            <span>+ ยืมอุปกรณ์</span>
-          </button>
-          <button onclick="quickGoAction('ticketCreateTab')" class="px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold transition flex items-center gap-1.5">
-            <span>+ แจ้งซ่อมไอที</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Secondary Sub-Navigation Pills (Contextual to Selected Category) -->
-      <div class="flex items-center justify-between border-b border-slate-200 pb-2 overflow-x-auto no-scrollbar gap-2">
-        
-        <!-- Sub-menu for: ASSET SERVICE -->
-        <div id="subnav-assetService" class="subnav-group flex items-center gap-1.5 shrink-0">
-          <button onclick="switchTab('borrowTab')" id="tabBtn-borrowTab" class="sub-tab-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-tcc-600 text-white shadow-sm transition">
-            📝 แบบฟอร์มยืมอุปกรณ์
-          </button>
-          <button onclick="switchTab('myBorrowsTab')" id="tabBtn-myBorrowsTab" class="sub-tab-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-200/70 transition flex items-center gap-1.5">
-            <span>📋 รายการที่ฉันยืมไว้</span>
-            <span id="tabBadgeMyBorrows" class="px-1.5 py-0.2 rounded-full text-[10px] bg-slate-200 text-slate-700 font-bold">0</span>
-          </button>
-          <button onclick="switchTab('returnTab')" id="tabBtn-returnTab" class="sub-tab-btn admin-only admin-hidden px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-200/70 transition flex items-center gap-1.5">
-            <span>📥 รายการรอรับคืน</span>
-            <span id="tabBadgeReturns" class="px-1.5 py-0.2 rounded-full text-[10px] bg-amber-100 text-amber-800 font-bold">0</span>
-          </button>
-          <button onclick="switchTab('inventoryTab')" id="tabBtn-inventoryTab" class="sub-tab-btn admin-only admin-hidden px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-200/70 transition">
-            🏷️ ทะเบียนคลังอุปกรณ์
-          </button>
-          <button onclick="switchTab('historyTab')" id="tabBtn-historyTab" class="sub-tab-btn admin-only admin-hidden px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-200/70 transition flex items-center gap-1.5">
-            <span>📜 ประวัติยืม-คืน & จัดการหลังบ้าน</span>
-            <span id="tabBadgeHistory" class="px-1.5 py-0.2 rounded-full text-[10px] bg-slate-200 text-slate-700 font-bold">0</span>
-          </button>
-        </div>
-
-        <!-- Sub-menu for: TICKET SERVICE -->
-        <div id="subnav-ticketService" class="subnav-group hidden flex items-center gap-1.5 shrink-0">
-          <button onclick="switchTab('ticketCreateTab')" id="tabBtn-ticketCreateTab" class="sub-tab-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-tcc-600 text-white shadow-sm transition">
-            ➕ เปิดเคสแจ้งซ่อม / ปัญหาไอที
-          </button>
-          <button onclick="switchTab('myTicketsTab')" id="tabBtn-myTicketsTab" class="sub-tab-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-200/70 transition flex items-center gap-1.5">
-            <span>📬 เคสของฉัน & ติดตามสถานะ</span>
-            <span id="tabBadgeMyTickets" class="px-1.5 py-0.2 rounded-full text-[10px] bg-slate-200 text-slate-700 font-bold">0</span>
-          </button>
-          <button onclick="switchTab('ticketAdminTab')" id="tabBtn-ticketAdminTab" class="sub-tab-btn admin-only admin-hidden px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-200/70 transition flex items-center gap-1.5">
-            <span>📊 กระดานบริหารเคส (Kanban/Table)</span>
-            <span id="tabBadgeAdminTickets" class="px-1.5 py-0.2 rounded-full text-[10px] bg-rose-100 text-rose-700 font-bold">0</span>
-          </button>
-        </div>
-
-        <!-- Sub-menu for: UNIFIED DASHBOARD -->
-        <div id="subnav-dashboardService" class="subnav-group hidden flex items-center gap-1.5 shrink-0">
-          <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-            <span>📈 ภาพรวมสถิติ SLA & ประสิทธิภาพการให้บริการ</span>
-          </span>
-        </div>
-
-        <!-- Sub-menu for: KNOWLEDGE BASE -->
-        <div id="subnav-kbService" class="subnav-group hidden flex items-center gap-1.5 shrink-0">
-          <span class="text-xs font-bold text-slate-700">💡 คลังความรู้ คู่มือ และแนวทางแก้ไขปัญหาที่พบบ่อย (Wiki / FAQ)</span>
-        </div>
-
-        <!-- Sub-menu for: ADMIN & ROLES -->
-        <div id="subnav-adminService" class="subnav-group hidden flex items-center gap-1.5 shrink-0">
-          <button onclick="switchTab('rolesTab')" id="tabBtn-rolesTab" class="sub-tab-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-tcc-600 text-white shadow-sm transition">
-            👥 จัดการสิทธิ์ผู้ใช้งาน (Roles)
-          </button>
-          <button onclick="openDeptManagementModal()" class="sub-tab-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-200/70 transition">
-            🏢 จัดการฝ่าย/แผนก
-          </button>
-          <button onclick="openAddItemModal()" class="sub-tab-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-200/70 transition">
-            📦 เพิ่มอุปกรณ์เข้าคลัง
-          </button>
-        </div>
-
-        <!-- Sub-menu for: AI SERVICE -->
-        <div id="subnav-aiService" class="subnav-group hidden flex items-center gap-1.5 shrink-0">
-          <span class="text-xs font-bold text-slate-700">🤖 ระบบตัวช่วยอัจฉริยะ Gemini AI</span>
-        </div>
-
-      </div>
-
-    </div>
-
-    <!-- ============================================================== -->
-    <!-- 2. REDESIGNED UNIFIED DASHBOARD & SLA ANALYTICS (ข้อ 2) -->
-    <!-- ============================================================== -->
-    <div id="tabContent-dashboardTab" class="tab-content hidden">
-      <div class="space-y-5">
-        
-        <!-- Filter Bar -->
-        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div class="flex items-center gap-2">
-            <span class="w-3 h-3 rounded-full bg-tcc-600"></span>
-            <div>
-              <h2 class="text-base sm:text-lg font-bold text-slate-900 leading-tight">ศูนย์รวมสถิติระบบและดัชนีชี้วัด SLA</h2>
-              <p class="text-xs text-slate-500">ข้อมูลรวมแบบ Real-time ทั้งงานบริการ Helpdesk และการหมุนเวียนคลังอุปกรณ์</p>
+        <!-- Section 3: บริหารคลังอุปกรณ์และพัสดุ (IT Assets) -->
+        <div class="space-y-1">
+          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2">คลังอุปกรณ์ &amp; ยืม-คืน</span>
+          <button type="button" onclick="switchTab('returnTab')" id="sidebarBtn-returnTab" class="admin-sidebar-btn w-full px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-between text-slate-700 hover:bg-slate-100 transition">
+            <div class="flex items-center gap-2">
+              <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+              <span>รายการรอรับคืน</span>
             </div>
+            <span id="sidebarBadgeReturns" class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">0</span>
+          </button>
+          <button type="button" onclick="switchTab('inventoryTab')" id="sidebarBtn-inventoryTab" class="admin-sidebar-btn w-full px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 text-slate-700 hover:bg-slate-100 transition">
+            <svg class="w-4 h-4 text-tcc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+            <span>ทะเบียนคลังอุปกรณ์</span>
+          </button>
+          <button type="button" onclick="switchTab('historyTab')" id="sidebarBtn-historyTab" class="admin-sidebar-btn w-full px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-between text-slate-700 hover:bg-slate-100 transition">
+            <div class="flex items-center gap-2">
+              <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <span>ประวัติยืม-คืนหลังบ้าน</span>
+            </div>
+            <span id="sidebarBadgeHistory" class="px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600">0</span>
+          </button>
+        </div>
+
+        <!-- Section 4: การตั้งค่าระบบ & สิทธิ์ -->
+        <div class="space-y-1">
+          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2">การตั้งค่าระบบ</span>
+          <button type="button" onclick="switchTab('rolesTab')" id="sidebarBtn-rolesTab" class="admin-sidebar-btn superadmin-only superadmin-hidden w-full px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 text-slate-700 hover:bg-slate-100 transition">
+            <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+            <span>จัดการสิทธิ์ผู้ใช้งาน</span>
+          </button>
+          <button type="button" onclick="openDeptManagementModal()" class="w-full px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 text-slate-700 hover:bg-slate-100 transition">
+            <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+            <span>จัดการฝ่าย / แผนก</span>
+          </button>
+          <button type="button" onclick="openAddItemModal()" class="w-full px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 text-slate-700 hover:bg-slate-100 transition">
+            <svg class="w-4 h-4 text-tcc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            <span>เพิ่มอุปกรณ์เข้าคลัง</span>
+          </button>
+          <button type="button" onclick="openSetupModal()" class="superadmin-only superadmin-hidden w-full px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 text-slate-700 hover:bg-slate-100 transition">
+            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            <span>Google Sheets &amp; Apps Script</span>
+          </button>
+        </div>
+
+        <!-- Section 5: ทางลัดสลับมุมมอง -->
+        <div class="pt-3 border-t border-slate-100">
+          <button type="button" onclick="switchTab('borrowTab')" class="w-full px-3 py-2 rounded-xl text-xs font-bold text-tcc-700 bg-tcc-50 hover:bg-tcc-100 border border-tcc-200 transition flex items-center justify-center gap-1.5">
+            <span>🔄 สลับไปมุมมองผู้ใช้งาน</span>
+          </button>
+        </div>
+
+      </aside>
+
+      <!-- ============================================================== -->
+      <!-- RIGHT CONTENT AREA: User Services & Main Management Screens -->
+      <!-- ============================================================== -->
+      <div class="flex-1 min-w-0 w-full space-y-4">
+        
+        <!-- User Service Navbar -->
+        <div class="bg-white p-2.5 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+            <!-- Mobile Toggle Button for Admin Sidebar -->
+            <button type="button" onclick="toggleAdminSidebarMobile()" class="admin-only admin-hidden lg:hidden px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold flex items-center gap-1.5 shrink-0">
+              <span>☰ เมนูแอดมิน</span>
+            </button>
+
+            <button onclick="switchTab('borrowTab')" id="tabBtn-borrowTab" class="user-nav-btn px-3.5 py-2 rounded-xl text-xs font-bold transition bg-tcc-600 text-white shadow-sm shrink-0 flex items-center gap-1.5">
+              <span>📝 แบบฟอร์มยืมอุปกรณ์</span>
+            </button>
+
+            <button onclick="switchTab('myBorrowsTab')" id="tabBtn-myBorrowsTab" class="user-nav-btn px-3.5 py-2 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-100 transition shrink-0 flex items-center gap-1.5">
+              <span>📋 ของที่ฉันยืม</span>
+              <span id="tabBadgeMyBorrows" class="px-1.5 py-0.2 rounded-full text-[10px] bg-slate-200 text-slate-700 font-bold">0</span>
+            </button>
+
+            <button onclick="switchTab('ticketCreateTab')" id="tabBtn-ticketCreateTab" class="user-nav-btn px-3.5 py-2 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-100 transition shrink-0 flex items-center gap-1.5">
+              <span class="text-rose-500 font-bold">＋</span>
+              <span>เปิดเคสแจ้งซ่อม</span>
+            </button>
+
+            <button onclick="switchTab('myTicketsTab')" id="tabBtn-myTicketsTab" class="user-nav-btn px-3.5 py-2 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-100 transition shrink-0 flex items-center gap-1.5">
+              <span>📬 เคสของฉัน</span>
+              <span id="tabBadgeMyTickets" class="px-1.5 py-0.2 rounded-full text-[10px] bg-slate-200 text-slate-700 font-bold">0</span>
+            </button>
+
+            <button onclick="switchTab('kbTab')" id="tabBtn-kbTab" class="user-nav-btn px-3.5 py-2 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-100 transition shrink-0 flex items-center gap-1.5">
+              <span>💡 คลังความรู้ (KB)</span>
+            </button>
+
+            <button onclick="switchTab('aiAssistantTab')" id="tabBtn-aiAssistantTab" class="user-nav-btn px-3.5 py-2 rounded-xl text-xs font-medium text-tcc-700 bg-sky-50 hover:bg-sky-100 border border-sky-200/80 transition shrink-0 flex items-center gap-1.5">
+              <span class="text-amber-500">✨</span>
+              <span>AI ผู้ช่วย</span>
+            </button>
           </div>
-          <div class="flex items-center gap-2">
-            <label class="text-xs text-slate-600 font-semibold">เลือกปี:</label>
-            <select id="dashboardYearSelect" onchange="renderMonthlyDashboard()" class="px-3 py-1.5 text-xs rounded-xl border border-slate-300 bg-white font-medium focus:ring-2 focus:ring-tcc-500 outline-none"></select>
-            <button onclick="renderMonthlyDashboard()" class="p-2 text-slate-500 hover:text-tcc-600 rounded-xl border border-slate-200 hover:bg-slate-50 transition" title="รีเฟรชสถิติ">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+
+          <!-- Quick Action Buttons -->
+          <div class="hidden xl:flex items-center gap-2 shrink-0">
+            <button onclick="switchTab('borrowTab')" class="px-3 py-1.5 rounded-xl bg-tcc-50 hover:bg-tcc-100 text-tcc-700 border border-tcc-200 text-xs font-bold transition flex items-center gap-1">
+              <span>+ ยืมอุปกรณ์</span>
+            </button>
+            <button onclick="switchTab('ticketCreateTab')" class="px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold transition flex items-center gap-1">
+              <span>+ แจ้งซ่อมไอที</span>
             </button>
           </div>
         </div>
 
-        <!-- 6 Essential Unified KPI Cards -->
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-          <!-- KPI 1: Active Tickets -->
-          <div class="bg-white p-4 rounded-2xl border border-rose-100 shadow-sm flex flex-col justify-between">
-            <span class="text-xs font-semibold text-slate-500">เคสที่รอดำเนินการ</span>
-            <div class="flex items-baseline gap-1.5 my-1">
-              <span id="kpiActiveTickets" class="text-2xl font-bold text-rose-600">0</span>
-              <span class="text-xs text-slate-400">เคส</span>
-            </div>
-            <p class="text-[10px] text-slate-400">Open &amp; In Progress</p>
-          </div>
-
-          <!-- KPI 2: SLA Compliance -->
-          <div class="bg-white p-4 rounded-2xl border border-emerald-100 shadow-sm flex flex-col justify-between">
-            <span class="text-xs font-semibold text-slate-500">อัตราผ่านเกณฑ์ SLA</span>
-            <div class="flex items-baseline gap-1.5 my-1">
-              <span id="kpiSlaComplianceRate" class="text-2xl font-bold text-emerald-600">100%</span>
-            </div>
-            <p class="text-[10px] text-emerald-700 font-medium">แก้ไขเสร็จตามกำหนด</p>
-          </div>
-
-          <!-- KPI 3: MTTR -->
-          <div class="bg-white p-4 rounded-2xl border border-blue-100 shadow-sm flex flex-col justify-between">
-            <span class="text-xs font-semibold text-slate-500">เวลาเฉลี่ยแก้เคส (MTTR)</span>
-            <div class="flex items-baseline gap-1.5 my-1">
-              <span id="kpiMttrHours" class="text-2xl font-bold text-blue-700">1.8</span>
-              <span class="text-xs text-slate-400">ชม.</span>
-            </div>
-            <p class="text-[10px] text-slate-400">Mean Time to Resolve</p>
-          </div>
-
-          <!-- KPI 4: CSAT Score -->
-          <div class="bg-white p-4 rounded-2xl border border-amber-100 shadow-sm flex flex-col justify-between">
-            <span class="text-xs font-semibold text-slate-500">คะแนนประเมิน (CSAT)</span>
-            <div class="flex items-baseline gap-1.5 my-1">
-              <span id="kpiCsatAverage" class="text-2xl font-bold text-amber-600">5.0</span>
-              <span class="text-xs text-amber-500 font-semibold">★</span>
-            </div>
-            <p id="kpiCsatCount" class="text-[10px] text-slate-400">จาก 0 การประเมิน</p>
-          </div>
-
-          <!-- KPI 5: Active Borrows -->
-          <div class="bg-white p-4 rounded-2xl border border-tcc-100 shadow-sm flex flex-col justify-between">
-            <span class="text-xs font-semibold text-slate-500">อุปกรณ์กำลังถูกยืม</span>
-            <div class="flex items-baseline gap-1.5 my-1">
-              <span id="kpiCurrentActiveBorrows" class="text-2xl font-bold text-tcc-700">0</span>
-              <span class="text-xs text-slate-400">ชิ้น</span>
-            </div>
-            <p id="kpiTotalItemsSub" class="text-[10px] text-slate-400">จากทั้งหมด 0 ชิ้น</p>
-          </div>
-
-          <!-- KPI 6: Overdue Borrows -->
-          <div class="bg-white p-4 rounded-2xl border border-rose-200/80 shadow-sm flex flex-col justify-between">
-            <span class="text-xs font-semibold text-slate-500">เกินกำหนดส่งคืน</span>
-            <div class="flex items-baseline gap-1.5 my-1">
-              <span id="kpiOverdueCount" class="text-2xl font-bold text-rose-600">0</span>
-              <span class="text-xs text-slate-400">รายการ</span>
-            </div>
-            <p id="kpiOnTimeRate" class="text-[10px] text-emerald-700 font-medium">ตรงเวลา 100%</p>
-          </div>
-        </div>
-
-        <!-- Charts Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          
-          <!-- Chart 1: Monthly Asset Borrowing Bar Chart -->
-          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-            <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
-              <div>
-                <h3 class="font-bold text-slate-900 text-sm">สถิติการยืมอุปกรณ์รายเดือน (ปีที่เลือก)</h3>
-                <p class="text-[11px] text-slate-400">แท่งสีน้ำเงิน: ผู้ใช้งาน (คน) | แท่งสีทอง: จำนวนครั้งการยืม (ครั้ง)</p>
-              </div>
-              <div class="flex items-center gap-3 text-[11px] font-medium">
-                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-tcc-600"></span> คน</span>
-                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-amber-400"></span> ครั้ง</span>
-              </div>
-            </div>
-            <div class="w-full overflow-x-auto pb-2">
-              <div id="monthlyChartBarsContainer" class="min-w-[500px] h-48 flex items-end justify-between gap-2 px-2 border-b border-slate-200"></div>
-            </div>
-          </div>
-
-          <!-- Chart 2: Helpdesk Category Breakdown & SLA Health -->
-          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
-            <div>
-              <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
-                <div>
-                  <h3 class="font-bold text-slate-900 text-sm">สัดส่วนเคสแจ้งปัญหาตามหมวดหมู่งาน</h3>
-                  <p class="text-[11px] text-slate-400">จำแนกตามประเภทปัญหาเพื่อวางแผนบำรุงรักษาเชิงป้องกัน</p>
-                </div>
-                <span id="ticketTotalSummaryBadge" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700">รวม 0 เคส</span>
-              </div>
-              <div id="categoryProgressContainer" class="space-y-3">
-                <!-- Populated dynamically -->
-              </div>
-            </div>
-            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-              <span>สถานะ SLA เคสที่เปิดอยู่:</span>
-              <span id="slaHealthIndicator" class="font-bold text-emerald-600">✓ ทุกเคสอยู่ในเกณฑ์ปกติ</span>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- Summary Tables Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <!-- Top Borrowing Departments -->
-          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-            <h3 class="font-bold text-slate-900 text-sm mb-3">5 อันดับฝ่าย/แผนกที่ใช้บริการระบบสูงสุด</h3>
-            <div class="overflow-x-auto">
-              <table class="w-full text-left text-xs">
-                <thead class="bg-slate-50 text-slate-600 uppercase border-y border-slate-100">
-                  <tr>
-                    <th class="py-2.5 px-3">แผนก / สังกัด</th>
-                    <th class="py-2.5 px-3 text-center">ยืมอุปกรณ์ (ครั้ง)</th>
-                    <th class="py-2.5 px-3 text-center">แจ้งซ่อม (เคส)</th>
-                  </tr>
-                </thead>
-                <tbody id="topDeptTableBody" class="divide-y divide-slate-100"></tbody>
-              </table>
-            </div>
-          </div>
-
-          <!-- Urgent SLA Watchlist -->
-          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-            <div class="flex items-center justify-between mb-3">
-              <h3 class="font-bold text-slate-900 text-sm">เคสงานที่ต้องเฝ้าระวัง SLA (ใกล้ครบกำหนด / หลุด SLA)</h3>
-              <span class="text-[10px] text-slate-400">จัดลำดับความเร่งด่วน</span>
-            </div>
-            <div id="slaWatchlistContainer" class="space-y-2 overflow-y-auto max-h-56"></div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- ============================================================== -->
-    <!-- TAB: BORROW FORM (Available for Authenticated Users) -->
-    <!-- ============================================================== -->
-    <div id="tabContent-borrowTab" class="tab-content">
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 items-stretch">
-        
-        <!-- Left: Form -->
-        <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6 flex flex-col justify-between">
-          <div>
-            <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-5">
+        <!-- ============================================================== -->
+        <!-- 2. REDESIGNED UNIFIED DASHBOARD & SLA ANALYTICS (ข้อ 2) -->
+        <!-- ============================================================== -->
+        <div id="tabContent-dashboardTab" class="tab-content hidden">
+          <div class="space-y-5">
+            
+            <!-- Filter Bar -->
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div class="flex items-center gap-2">
                 <span class="w-3 h-3 rounded-full bg-tcc-600"></span>
                 <div>
-                  <h2 class="text-base sm:text-lg font-bold text-slate-900">บันทึกการขอยืมอุปกรณ์ไอที</h2>
-                  <p class="text-xs text-slate-500 mt-0.5">เลือกอุปกรณ์ที่ต้องการ (ยืมได้พร้อมกันหลายชิ้น) และระบุกำหนดส่งคืน</p>
+                  <h2 class="text-base sm:text-lg font-bold text-slate-900 leading-tight">ศูนย์รวมสถิติระบบและดัชนีชี้วัด SLA</h2>
+                  <p class="text-xs text-slate-500">ข้อมูลรวมแบบ Real-time ทั้งงานบริการ Helpdesk และการหมุนเวียนคลังอุปกรณ์</p>
                 </div>
               </div>
-              <span class="hidden sm:inline-flex items-center gap-1 text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-xl font-medium">
-                ✓ เข้าระบบแล้ว
-              </span>
+              <div class="flex items-center gap-2">
+                <label class="text-xs text-slate-600 font-semibold">เลือกปี:</label>
+                <select id="dashboardYearSelect" onchange="renderMonthlyDashboard()" class="px-3 py-1.5 text-xs rounded-xl border border-slate-300 bg-white font-medium focus:ring-2 focus:ring-tcc-500 outline-none"></select>
+                <button onclick="renderMonthlyDashboard()" class="p-2 text-slate-500 hover:text-tcc-600 rounded-xl border border-slate-200 hover:bg-slate-50 transition" title="รีเฟรชสถิติ">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                </button>
+              </div>
             </div>
 
-            <form id="borrowForm" onsubmit="handleBorrowSubmit(event)" class="space-y-4">
+            <!-- 6 Essential Unified KPI Cards -->
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+              <!-- KPI 1: Active Tickets -->
+              <div class="bg-white p-4 rounded-2xl border border-rose-100 shadow-sm flex flex-col justify-between">
+                <span class="text-xs font-semibold text-slate-500">เคสที่รอดำเนินการ</span>
+                <div class="flex items-baseline gap-1.5 my-1">
+                  <span id="kpiActiveTickets" class="text-2xl font-bold text-rose-600">0</span>
+                  <span class="text-xs text-slate-400">เคส</span>
+                </div>
+                <p class="text-[10px] text-slate-400">Open &amp; In Progress</p>
+              </div>
+
+              <!-- KPI 2: SLA Compliance -->
+              <div class="bg-white p-4 rounded-2xl border border-emerald-100 shadow-sm flex flex-col justify-between">
+                <span class="text-xs font-semibold text-slate-500">อัตราผ่านเกณฑ์ SLA</span>
+                <div class="flex items-baseline gap-1.5 my-1">
+                  <span id="kpiSlaComplianceRate" class="text-2xl font-bold text-emerald-600">100%</span>
+                </div>
+                <p class="text-[10px] text-emerald-700 font-medium">แก้ไขเสร็จตามกำหนด</p>
+              </div>
+
+              <!-- KPI 3: MTTR -->
+              <div class="bg-white p-4 rounded-2xl border border-blue-100 shadow-sm flex flex-col justify-between">
+                <span class="text-xs font-semibold text-slate-500">เวลาเฉลี่ยแก้เคส (MTTR)</span>
+                <div class="flex items-baseline gap-1.5 my-1">
+                  <span id="kpiMttrHours" class="text-2xl font-bold text-blue-700">1.8</span>
+                  <span class="text-xs text-slate-400">ชม.</span>
+                </div>
+                <p class="text-[10px] text-slate-400">Mean Time to Resolve</p>
+              </div>
+
+              <!-- KPI 4: CSAT Score -->
+              <div class="bg-white p-4 rounded-2xl border border-amber-100 shadow-sm flex flex-col justify-between">
+                <span class="text-xs font-semibold text-slate-500">คะแนนประเมิน (CSAT)</span>
+                <div class="flex items-baseline gap-1.5 my-1">
+                  <span id="kpiCsatAverage" class="text-2xl font-bold text-amber-600">5.0</span>
+                  <span class="text-xs text-amber-500 font-semibold">★</span>
+                </div>
+                <p id="kpiCsatCount" class="text-[10px] text-slate-400">จาก 0 การประเมิน</p>
+              </div>
+
+              <!-- KPI 5: Active Borrows -->
+              <div class="bg-white p-4 rounded-2xl border border-tcc-100 shadow-sm flex flex-col justify-between">
+                <span class="text-xs font-semibold text-slate-500">อุปกรณ์กำลังถูกยืม</span>
+                <div class="flex items-baseline gap-1.5 my-1">
+                  <span id="kpiCurrentActiveBorrows" class="text-2xl font-bold text-tcc-700">0</span>
+                  <span class="text-xs text-slate-400">ชิ้น</span>
+                </div>
+                <p id="kpiTotalItemsSub" class="text-[10px] text-slate-400">จากทั้งหมด 0 ชิ้น</p>
+              </div>
+
+              <!-- KPI 6: Overdue Borrows -->
+              <div class="bg-white p-4 rounded-2xl border border-rose-200/80 shadow-sm flex flex-col justify-between">
+                <span class="text-xs font-semibold text-slate-500">เกินกำหนดส่งคืน</span>
+                <div class="flex items-baseline gap-1.5 my-1">
+                  <span id="kpiOverdueCount" class="text-2xl font-bold text-rose-600">0</span>
+                  <span class="text-xs text-slate-400">รายการ</span>
+                </div>
+                <p id="kpiOnTimeRate" class="text-[10px] text-emerald-700 font-medium">ตรงเวลา 100%</p>
+              </div>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
               
-              <!-- Multi-Item Selection Combobox -->
+              <!-- Chart 1: Monthly Asset Borrowing Bar Chart -->
+              <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+                  <div>
+                    <h3 class="font-bold text-slate-900 text-sm">สถิติการยืมอุปกรณ์รายเดือน (ปีที่เลือก)</h3>
+                    <p class="text-[11px] text-slate-400">แท่งสีน้ำเงิน: ผู้ใช้งาน (คน) | แท่งสีทอง: จำนวนครั้งการยืม (ครั้ง)</p>
+                  </div>
+                  <div class="flex items-center gap-3 text-[11px] font-medium">
+                    <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-tcc-600"></span> คน</span>
+                    <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-amber-400"></span> ครั้ง</span>
+                  </div>
+                </div>
+                <div class="w-full overflow-x-auto pb-2">
+                  <div id="monthlyChartBarsContainer" class="min-w-[500px] h-48 flex items-end justify-between gap-2 px-2 border-b border-slate-200"></div>
+                </div>
+              </div>
+
+              <!-- Chart 2: Helpdesk Category Breakdown & SLA Health -->
+              <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+                    <div>
+                      <h3 class="font-bold text-slate-900 text-sm">สัดส่วนเคสแจ้งปัญหาตามหมวดหมู่งาน</h3>
+                      <p class="text-[11px] text-slate-400">จำแนกตามประเภทปัญหาเพื่อวางแผนบำรุงรักษาเชิงป้องกัน</p>
+                    </div>
+                    <span id="ticketTotalSummaryBadge" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700">รวม 0 เคส</span>
+                  </div>
+                  <div id="categoryProgressContainer" class="space-y-3"></div>
+                </div>
+                <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                  <span>สถานะ SLA เคสที่เปิดอยู่:</span>
+                  <span id="slaHealthIndicator" class="font-bold text-emerald-600">✓ ทุกเคสอยู่ในเกณฑ์ปกติ</span>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Summary Tables Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <!-- Top Borrowing Departments -->
+              <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                <h3 class="font-bold text-slate-900 text-sm mb-3">5 อันดับฝ่าย/แผนกที่ใช้บริการระบบสูงสุด</h3>
+                <div class="overflow-x-auto">
+                  <table class="w-full text-left text-xs">
+                    <thead class="bg-slate-50 text-slate-600 uppercase border-y border-slate-100">
+                      <tr>
+                        <th class="py-2.5 px-3">แผนก / สังกัด</th>
+                        <th class="py-2.5 px-3 text-center">ยืมอุปกรณ์ (ครั้ง)</th>
+                        <th class="py-2.5 px-3 text-center">แจ้งซ่อม (เคส)</th>
+                      </tr>
+                    </thead>
+                    <tbody id="topDeptTableBody" class="divide-y divide-slate-100"></tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Urgent SLA Watchlist -->
+              <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                <div class="flex items-center justify-between mb-3">
+                  <h3 class="font-bold text-slate-900 text-sm">เคสงานที่ต้องเฝ้าระวัง SLA (ใกล้ครบกำหนด / หลุด SLA)</h3>
+                  <span class="text-[10px] text-slate-400">จัดลำดับความเร่งด่วน</span>
+                </div>
+                <div id="slaWatchlistContainer" class="space-y-2 overflow-y-auto max-h-56"></div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- TAB: BORROW FORM -->
+        <!-- ============================================================== -->
+        <div id="tabContent-borrowTab" class="tab-content">
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 items-stretch">
+            
+            <!-- Left: Form -->
+            <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6 flex flex-col justify-between">
               <div>
-                <div class="flex items-center justify-between mb-1.5">
-                  <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
-                    1. เลือกอุปกรณ์ที่พร้อมใช้งาน <span class="text-rose-500">*</span>
-                  </label>
-                  <span id="selectedItemsCountBadge" class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
-                    เลือกแล้ว 0 ชิ้น
+                <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-5">
+                  <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-tcc-600"></span>
+                    <div>
+                      <h2 class="text-base sm:text-lg font-bold text-slate-900">บันทึกการขอยืมอุปกรณ์ไอที</h2>
+                      <p class="text-xs text-slate-500 mt-0.5">เลือกอุปกรณ์ที่ต้องการ (ยืมได้พร้อมกันหลายชิ้น) และระบุกำหนดส่งคืน</p>
+                    </div>
+                  </div>
+                  <span class="hidden sm:inline-flex items-center gap-1 text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-xl font-medium">
+                    ✓ เข้าระบบแล้ว
                   </span>
                 </div>
 
-                <div id="itemPickerWrapper" class="relative">
-                  <div class="flex gap-2">
-                    <div class="relative flex-1">
-                      <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                <form id="borrowForm" onsubmit="handleBorrowSubmit(event)" class="space-y-4">
+                  
+                  <!-- Multi-Item Selection Combobox -->
+                  <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                      <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                        1. เลือกอุปกรณ์ที่พร้อมใช้งาน <span class="text-rose-500">*</span>
+                      </label>
+                      <span id="selectedItemsCountBadge" class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
+                        เลือกแล้ว 0 ชิ้น
                       </span>
-                      <input type="text" id="itemPickerSearchInput" 
-                             placeholder="พิมพ์ค้นหาชื่ออุปกรณ์, รหัส IT-xxx, S/N..." 
-                             oninput="filterSearchableItemDropdown()"
-                             onfocus="openSearchableItemDropdown()"
-                             autocomplete="off"
-                             class="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-tcc-500 text-xs sm:text-sm transition">
                     </div>
-                    <button type="button" onclick="toggleSearchableItemDropdown()" class="px-3 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition shrink-0">
-                      แสดงรายการ
+
+                    <div id="itemPickerWrapper" class="relative">
+                      <div class="flex gap-2">
+                        <div class="relative flex-1">
+                          <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                          </span>
+                          <input type="text" id="itemPickerSearchInput" 
+                                 placeholder="พิมพ์ค้นหาชื่ออุปกรณ์, รหัส IT-xxx, S/N..." 
+                                 oninput="filterSearchableItemDropdown()"
+                                 onfocus="openSearchableItemDropdown()"
+                                 autocomplete="off"
+                                 class="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-tcc-500 text-xs sm:text-sm transition">
+                        </div>
+                        <button type="button" onclick="toggleSearchableItemDropdown()" class="px-3 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition shrink-0">
+                          แสดงรายการ
+                        </button>
+                      </div>
+
+                      <div id="searchableItemDropdownMenu" class="hidden absolute left-0 right-0 top-full mt-1.5 bg-white border border-slate-200 rounded-2xl shadow-xl z-20 max-h-60 overflow-y-auto p-1.5 animate-fadeIn">
+                        <div id="searchableItemOptionsContainer" class="space-y-1"></div>
+                      </div>
+                    </div>
+
+                    <!-- Selected Items Container -->
+                    <div class="mt-2.5 p-3 bg-slate-50 rounded-xl border border-slate-200 min-h-[75px]">
+                      <div class="flex items-center justify-between mb-1.5 pb-1 border-b border-slate-200 text-[11px] text-slate-500">
+                        <span>รายการอุปกรณ์ที่จะขอยืมในรอบนี้:</span>
+                        <button type="button" onclick="clearSelectedBorrowItems()" class="text-rose-500 hover:text-rose-700 font-semibold">ล้างทั้งหมด</button>
+                      </div>
+                      <div id="selectedItemsContainer" class="flex flex-wrap gap-2"></div>
+                    </div>
+                  </div>
+
+                  <!-- Borrower & Department -->
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label for="borrowerName" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        2. ชื่อ-นามสกุล ผู้ยืม <span class="text-rose-500">*</span>
+                      </label>
+                      <input type="text" id="borrowerName" required placeholder="เช่น สมชาย ใจดี" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-tcc-500 outline-none">
+                    </div>
+
+                    <div>
+                      <div class="flex items-center justify-between mb-1.5">
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                          3. ฝ่าย / แผนก <span class="text-rose-500">*</span>
+                        </label>
+                      </div>
+                      <div id="deptPickerWrapper" class="relative">
+                        <input type="text" id="borrowerDeptSearchInput" 
+                               placeholder="คลิกเลือกหรือพิมพ์ค้นหาแผนก..." 
+                               oninput="handleDeptSearchInput(this.value)" 
+                               onfocus="openDepartmentDropdown()"
+                               autocomplete="off"
+                               required
+                               class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-tcc-500 outline-none cursor-pointer">
+                        <input type="hidden" id="borrowerDept">
+                        <div id="deptDropdownMenu" class="hidden absolute left-0 right-0 top-full mt-1.5 bg-white border border-slate-200 rounded-2xl shadow-xl z-20 max-h-52 overflow-y-auto p-1.5 animate-fadeIn">
+                          <div id="deptOptionsContainer" class="space-y-0.5"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Contact & Return Date -->
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label for="borrowerContact" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        4. อีเมล (@thaichamber.or.th) หรือ เบอร์โทร <span class="text-rose-500">*</span>
+                      </label>
+                      <input type="text" id="borrowerContact" required placeholder="เช่น user@thaichamber.or.th" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-tcc-500 outline-none">
+                    </div>
+
+                    <div>
+                      <label for="expectedReturnDate" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        5. กำหนดวันที่ส่งคืน <span class="text-rose-500">*</span>
+                      </label>
+                      <input type="date" id="expectedReturnDate" required class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-tcc-500 outline-none">
+                    </div>
+                  </div>
+
+                  <!-- Purpose -->
+                  <div>
+                    <label for="borrowPurpose" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                      6. วัตถุประสงค์ในการยืม / สถานที่ใช้งาน
+                    </label>
+                    <textarea id="borrowPurpose" rows="2" placeholder="เช่น ใช้จัดประชุมคณะกรรมการ, สัมมนา WFH ชั่วคราว" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-tcc-500 outline-none"></textarea>
+                  </div>
+
+                  <div class="pt-3 flex items-center justify-end gap-3 border-t border-slate-100">
+                    <button type="reset" onclick="handleResetBorrowForm()" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-100 transition">
+                      ล้างข้อมูล
+                    </button>
+                    <button type="submit" id="btnSubmitBorrow" class="px-6 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-tcc-600 hover:bg-tcc-700 active:bg-tcc-800 text-white shadow-md shadow-tcc-600/20 flex items-center gap-2 transition">
+                      <span id="btnBorrowSpinner" class="hidden animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></span>
+                      <span id="btnBorrowText">ยืนยันการยืมอุปกรณ์ (0 ชิ้น)</span>
                     </button>
                   </div>
+                </form>
+              </div>
+            </div>
 
-                  <div id="searchableItemDropdownMenu" class="hidden absolute left-0 right-0 top-full mt-1.5 bg-white border border-slate-200 rounded-2xl shadow-xl z-20 max-h-60 overflow-y-auto p-1.5 animate-fadeIn">
-                    <div id="searchableItemOptionsContainer" class="space-y-1"></div>
-                  </div>
+            <!-- Right: Quick Peek Available List -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-5 flex flex-col h-[500px] lg:h-auto">
+              <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3 shrink-0">
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                  <h3 class="font-bold text-slate-900 text-sm">อุปกรณ์ที่ว่างพร้อมยืม</h3>
                 </div>
-
-                <!-- Selected Items Container -->
-                <div class="mt-2.5 p-3 bg-slate-50 rounded-xl border border-slate-200 min-h-[75px]">
-                  <div class="flex items-center justify-between mb-1.5 pb-1 border-b border-slate-200 text-[11px] text-slate-500">
-                    <span>รายการอุปกรณ์ที่จะขอยืมในรอบนี้:</span>
-                    <button type="button" onclick="clearSelectedBorrowItems()" class="text-rose-500 hover:text-rose-700 font-semibold">ล้างทั้งหมด</button>
-                  </div>
-                  <div id="selectedItemsContainer" class="flex flex-wrap gap-2"></div>
-                </div>
+                <span id="quickAvailableCount" class="text-xs bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">0 ชิ้น</span>
               </div>
 
-              <!-- Borrower & Department -->
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label for="borrowerName" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                    2. ชื่อ-นามสกุล ผู้ยืม <span class="text-rose-500">*</span>
-                  </label>
-                  <input type="text" id="borrowerName" required placeholder="เช่น สมชาย ใจดี" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-tcc-500 outline-none">
-                </div>
-
-                <div>
-                  <div class="flex items-center justify-between mb-1.5">
-                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
-                      3. ฝ่าย / แผนก <span class="text-rose-500">*</span>
-                    </label>
-                  </div>
-                  <div id="deptPickerWrapper" class="relative">
-                    <input type="text" id="borrowerDeptSearchInput" 
-                           placeholder="คลิกเลือกหรือพิมพ์ค้นหาแผนก..." 
-                           oninput="handleDeptSearchInput(this.value)" 
-                           onfocus="openDepartmentDropdown()"
-                           autocomplete="off"
-                           required
-                           class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-tcc-500 outline-none cursor-pointer">
-                    <input type="hidden" id="borrowerDept">
-                    <div id="deptDropdownMenu" class="hidden absolute left-0 right-0 top-full mt-1.5 bg-white border border-slate-200 rounded-2xl shadow-xl z-20 max-h-52 overflow-y-auto p-1.5 animate-fadeIn">
-                      <div id="deptOptionsContainer" class="space-y-0.5"></div>
-                    </div>
-                  </div>
-                </div>
+              <div class="mb-3 shrink-0">
+                <input type="text" id="quickAvailableSearch" oninput="renderQuickAvailableList()" placeholder="🔍 ค้นหากรองอุปกรณ์ว่าง..." class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-1 focus:ring-tcc-500 bg-slate-50">
               </div>
 
-              <!-- Contact & Return Date -->
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label for="borrowerContact" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                    4. อีเมล (@thaichamber.or.th) หรือ เบอร์โทร <span class="text-rose-500">*</span>
-                  </label>
-                  <input type="text" id="borrowerContact" required placeholder="เช่น user@thaichamber.or.th" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-tcc-500 outline-none">
-                </div>
+              <div id="quickAvailableContainer" class="flex-1 min-h-0 overflow-y-auto space-y-2 pr-1"></div>
+            </div>
 
-                <div>
-                  <label for="expectedReturnDate" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                    5. กำหนดวันที่ส่งคืน <span class="text-rose-500">*</span>
-                  </label>
-                  <input type="date" id="expectedReturnDate" required class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-tcc-500 outline-none">
-                </div>
-              </div>
+          </div>
+        </div>
 
-              <!-- Purpose -->
+        <!-- ============================================================== -->
+        <!-- TAB: MY BORROWS -->
+        <!-- ============================================================== -->
+        <div id="tabContent-myBorrowsTab" class="tab-content hidden">
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 mb-4">
               <div>
-                <label for="borrowPurpose" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                  6. วัตถุประสงค์ในการยืม / สถานที่ใช้งาน
+                <h2 class="text-base sm:text-lg font-bold text-slate-900">รายการอุปกรณ์ที่ฉันยืมไว้</h2>
+                <p class="text-xs text-slate-500">ตรวจสอบกำหนดส่งคืนและประวัติการยืมของคุณ</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <input type="text" id="searchMyBorrowsInput" onkeyup="renderMyBorrowsTable()" placeholder="ค้นหารหัส หรือชื่ออุปกรณ์..." class="px-3 py-1.5 text-xs rounded-xl border border-slate-300 focus:ring-2 focus:ring-tcc-500 outline-none">
+              </div>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs sm:text-sm">
+                <thead class="bg-slate-50 text-slate-600 uppercase border-y border-slate-100 text-xs">
+                  <tr>
+                    <th class="py-3 px-4 font-semibold">รหัสธุรกรรม</th>
+                    <th class="py-3 px-4 font-semibold">อุปกรณ์</th>
+                    <th class="py-3 px-4 font-semibold">ผู้ยืม / แผนก</th>
+                    <th class="py-3 px-4 font-semibold">วันที่ยืม</th>
+                    <th class="py-3 px-4 font-semibold">กำหนดคืน</th>
+                    <th class="py-3 px-4 font-semibold text-center">สถานะ</th>
+                  </tr>
+                </thead>
+                <tbody id="myBorrowsTableBody" class="divide-y divide-slate-100"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- TAB: CREATE TICKET (Helpdesk Service Desk) -->
+        <!-- ============================================================== -->
+        <div id="tabContent-ticketCreateTab" class="tab-content hidden">
+          <div class="max-w-3xl mx-auto bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-5">
+              <div class="flex items-center gap-2.5">
+                <span class="w-3 h-3 rounded-full bg-rose-500 animate-pulse"></span>
+                <div>
+                  <h2 class="text-base sm:text-lg font-bold text-slate-900">เปิดเคสแจ้งซ่อมและงานบริการไอที</h2>
+                  <p class="text-xs text-slate-500 mt-0.5">ระบุรายละเอียดปัญหาเพื่อส่งต่อให้เจ้าหน้าที่ไอทีเข้าดำเนินการตามเวลา SLA</p>
+                </div>
+              </div>
+              <span class="hidden sm:inline-flex px-2.5 py-1 bg-rose-50 text-rose-700 text-xs font-semibold rounded-xl border border-rose-200">
+                ระบบติดตาม SLA อัตโนมัติ
+              </span>
+            </div>
+
+            <form id="createTicketForm" onsubmit="handleCreateTicketSubmit(event)" class="space-y-4">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    หมวดหมู่ปัญหา (Category) <span class="text-rose-500">*</span>
+                  </label>
+                  <select id="ticketCategory" required class="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-tcc-500 bg-white text-xs sm:text-sm">
+                    <option value="">-- เลือกหมวดหมู่งาน --</option>
+                    <option value="Hardware">ฮาร์ดแวร์ / เครื่องคอมพิวเตอร์ / ปริ้นเตอร์</option>
+                    <option value="Software">ซอฟต์แวร์ / MS Office / โปรแกรมทั่วไป</option>
+                    <option value="Network">ระบบเครือข่าย / อินเทอร์เน็ต / Wi-Fi / VPN</option>
+                    <option value="Internal System">ระบบสารสนเทศภายใน / เว็บไซต์</option>
+                    <option value="Email & Account">อีเมลองค์กร / รหัสผ่าน / สิทธิ์ผู้ใช้</option>
+                    <option value="Other">งานบริการด้านไอทีอื่นๆ</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    ระดับความสำคัญ (Priority / SLA) <span class="text-rose-500">*</span>
+                  </label>
+                  <select id="ticketPriority" required class="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-tcc-500 bg-white text-xs sm:text-sm font-semibold">
+                    <option value="Medium" selected>ปานกลาง (Medium - SLA แก้ไขใน 24 ชม.)</option>
+                    <option value="Low">ต่ำ (Low - งานสอบถามทั่วไป SLA 48 ชม.)</option>
+                    <option value="High">สูง (High - กระทบงานหลัก SLA 4 ชม.)</option>
+                    <option value="Critical">วิกฤต (Critical - ระบบหลักล่ม SLA 2 ชม.)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  หัวข้อปัญหา / อาการที่พบ (Title) <span class="text-rose-500">*</span>
                 </label>
-                <textarea id="borrowPurpose" rows="2" placeholder="เช่น ใช้จัดประชุมคณะกรรมการ, สัมมนา WFH ชั่วคราว" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-tcc-500 outline-none"></textarea>
+                <input type="text" id="ticketTitle" required placeholder="เช่น ไม่สามารถเชื่อมต่อ Wi-Fi หอการค้าไทยได้" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-tcc-500 text-xs sm:text-sm">
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  รายละเอียดของปัญหา (Description) <span class="text-rose-500">*</span>
+                </label>
+                <textarea id="ticketDescription" rows="3" required placeholder="อธิบายขั้นตอนที่เกิดปัญหา หมายเลขเครื่อง หรือข้อความ Error ที่ปรากฏ..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-tcc-500 text-xs sm:text-sm"></textarea>
+              </div>
+
+              <!-- File Attachment -->
+              <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  แนบรูปภาพหรือเอกสาร (ภาพหน้าจอ Error, เอกสารประกอบ)
+                </label>
+                <div class="border-2 border-dashed border-slate-200 hover:border-tcc-400 rounded-2xl p-4 text-center bg-slate-50 transition cursor-pointer">
+                  <input type="file" id="ticketFileInput" onchange="handleTicketFileSelect(this)" accept="image/*,.pdf,.txt" class="hidden">
+                  <label for="ticketFileInput" class="cursor-pointer flex flex-col items-center justify-center gap-1">
+                    <svg class="w-6 h-6 text-tcc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    <span class="text-xs font-bold text-tcc-700">คลิกเลือกไฟล์ หรือลากไฟล์มาวาง</span>
+                    <span class="text-[10px] text-slate-400">รองรับภาพ PNG, JPG หรือ PDF (ไม่เกิน 5MB)</span>
+                  </label>
+                  <div id="ticketFilePreviewContainer" class="hidden mt-2 p-2 bg-white rounded-xl border border-slate-200 items-center justify-between text-xs max-w-sm mx-auto">
+                    <span id="ticketFileNameLabel" class="truncate text-slate-700 font-medium"></span>
+                    <button type="button" onclick="clearTicketAttachment()" class="text-rose-500 hover:text-rose-700 font-bold ml-2">✕</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Reporter Info Review -->
+              <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                <div>
+                  <span class="text-slate-400 block text-[10px]">ผู้แจ้ง:</span>
+                  <input type="text" id="ticketReporterName" required class="w-full bg-white px-2.5 py-1.5 rounded-lg border border-slate-300 font-semibold text-slate-800">
+                </div>
+                <div>
+                  <span class="text-slate-400 block text-[10px]">แผนก/สังกัด:</span>
+                  <input type="text" id="ticketReporterDept" required placeholder="ระบุแผนก" class="w-full bg-white px-2.5 py-1.5 rounded-lg border border-slate-300 font-semibold text-slate-800">
+                </div>
+                <div>
+                  <span class="text-slate-400 block text-[10px]">เบอร์ติดต่อ/อีเมล:</span>
+                  <input type="text" id="ticketReporterContact" required class="w-full bg-white px-2.5 py-1.5 rounded-lg border border-slate-300 font-semibold text-slate-800">
+                </div>
               </div>
 
               <div class="pt-3 flex items-center justify-end gap-3 border-t border-slate-100">
-                <button type="reset" onclick="handleResetBorrowForm()" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-100 transition">
+                <button type="reset" onclick="clearTicketAttachment()" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-100 transition">
                   ล้างข้อมูล
                 </button>
-                <button type="submit" id="btnSubmitBorrow" class="px-6 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-tcc-600 hover:bg-tcc-700 active:bg-tcc-800 text-white shadow-md shadow-tcc-600/20 flex items-center gap-2 transition">
-                  <span id="btnBorrowSpinner" class="hidden animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></span>
-                  <span id="btnBorrowText">ยืนยันการยืมอุปกรณ์ (0 ชิ้น)</span>
+                <button type="submit" id="btnSubmitTicket" class="px-6 py-2.5 bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white font-bold text-xs sm:text-sm rounded-xl shadow-md shadow-rose-600/20 flex items-center gap-2 transition">
+                  <span id="btnTicketSpinner" class="hidden animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></span>
+                  <span>ยืนยันเปิดเคสแจ้งซ่อม</span>
                 </button>
               </div>
             </form>
           </div>
         </div>
 
-        <!-- Right: Quick Peek Available List -->
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-5 flex flex-col h-[500px] lg:h-auto">
-          <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3 shrink-0">
-            <div class="flex items-center gap-2">
-              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-              <h3 class="font-bold text-slate-900 text-sm">อุปกรณ์ที่ว่างพร้อมยืม</h3>
+        <!-- ============================================================== -->
+        <!-- TAB: MY TICKETS -->
+        <!-- ============================================================== -->
+        <div id="tabContent-myTicketsTab" class="tab-content hidden">
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 mb-4">
+              <div>
+                <h2 class="text-base sm:text-lg font-bold text-slate-900">ติดตามสถานะเคสของฉัน</h2>
+                <p class="text-xs text-slate-500">ตรวจสอบความคืบหน้า พูดคุยสอบถาม และให้คะแนนความพึงพอใจการให้บริการ</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <select id="filterMyTicketStatus" onchange="renderMyTicketsList()" class="px-3 py-1.5 text-xs rounded-xl border border-slate-300 bg-white">
+                  <option value="">ทุกสถานะเคส</option>
+                  <option value="Open">Open (รอรับเรื่อง)</option>
+                  <option value="In Progress">In Progress (กำลังทำ)</option>
+                  <option value="Pending User">Pending User (รอข้อมูล)</option>
+                  <option value="Resolved">Resolved (แก้ไขแล้ว)</option>
+                  <option value="Closed">Closed (ปิดเคสแล้ว)</option>
+                </select>
+              </div>
             </div>
-            <span id="quickAvailableCount" class="text-xs bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">0 ชิ้น</span>
-          </div>
 
-          <div class="mb-3 shrink-0">
-            <input type="text" id="quickAvailableSearch" oninput="renderQuickAvailableList()" placeholder="🔍 ค้นหากรองอุปกรณ์ว่าง..." class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-1 focus:ring-tcc-500 bg-slate-50">
-          </div>
-
-          <div id="quickAvailableContainer" class="flex-1 min-h-0 overflow-y-auto space-y-2 pr-1"></div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- ============================================================== -->
-    <!-- TAB: MY BORROWS (Properly Structured Table) -->
-    <!-- ============================================================== -->
-    <div id="tabContent-myBorrowsTab" class="tab-content hidden">
-      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 mb-4">
-          <div>
-            <h2 class="text-base sm:text-lg font-bold text-slate-900">รายการอุปกรณ์ที่ฉันยืมไว้</h2>
-            <p class="text-xs text-slate-500">ตรวจสอบกำหนดส่งคืนและประวัติการยืมของคุณ</p>
-          </div>
-          <div class="flex items-center gap-2">
-            <input type="text" id="searchMyBorrowsInput" onkeyup="renderMyBorrowsTable()" placeholder="ค้นหารหัส หรือชื่ออุปกรณ์..." class="px-3 py-1.5 text-xs rounded-xl border border-slate-300 focus:ring-2 focus:ring-tcc-500 outline-none">
+            <div id="myTicketsListContainer" class="space-y-3"></div>
           </div>
         </div>
 
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs sm:text-sm">
-            <thead class="bg-slate-50 text-slate-600 uppercase border-y border-slate-100 text-xs">
-              <tr>
-                <th class="py-3 px-4 font-semibold">รหัสธุรกรรม</th>
-                <th class="py-3 px-4 font-semibold">อุปกรณ์</th>
-                <th class="py-3 px-4 font-semibold">ผู้ยืม / แผนก</th>
-                <th class="py-3 px-4 font-semibold">วันที่ยืม</th>
-                <th class="py-3 px-4 font-semibold">กำหนดคืน</th>
-                <th class="py-3 px-4 font-semibold text-center">สถานะ</th>
-              </tr>
-            </thead>
-            <tbody id="myBorrowsTableBody" class="divide-y divide-slate-100"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+        <!-- ============================================================== -->
+        <!-- TAB: ADMIN TICKET MANAGEMENT (Kanban & Table View) -->
+        <!-- ============================================================== -->
+        <div id="tabContent-ticketAdminTab" class="tab-content hidden admin-only-view">
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6 space-y-4">
+            
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-4 border-b border-slate-100">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-300">IT Agent Center</span>
+                  <h2 class="text-base sm:text-lg font-bold text-slate-900">กระดานบริหารเคสงานไอที</h2>
+                </div>
+                <p class="text-xs text-slate-500 mt-0.5">รับเรื่อง มอบหมายงานเจ้าหน้าที่ไอที ควบคุม SLA และสื่อสารกับผู้ใช้งาน</p>
+              </div>
 
-    <!-- ============================================================== -->
-    <!-- TAB: CREATE TICKET (Helpdesk Service Desk) -->
-    <!-- ============================================================== -->
-    <div id="tabContent-ticketCreateTab" class="tab-content hidden">
-      <div class="max-w-3xl mx-auto bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6">
-        <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-5">
-          <div class="flex items-center gap-2.5">
-            <span class="w-3 h-3 rounded-full bg-rose-500 animate-pulse"></span>
-            <div>
-              <h2 class="text-base sm:text-lg font-bold text-slate-900">เปิดเคสแจ้งซ่อมและงานบริการไอที</h2>
-              <p class="text-xs text-slate-500 mt-0.5">ระบุรายละเอียดปัญหาเพื่อส่งต่อให้เจ้าหน้าที่ไอทีเข้าดำเนินการตามเวลา SLA</p>
+              <div class="flex flex-wrap items-center gap-2">
+                <div class="flex items-center bg-slate-100 p-0.5 rounded-xl border border-slate-200 text-xs">
+                  <button type="button" onclick="setTicketViewMode('kanban')" id="btnViewKanban" class="px-3 py-1.5 rounded-lg font-bold transition bg-white text-tcc-700 shadow-sm">
+                    📊 Kanban Board
+                  </button>
+                  <button type="button" onclick="setTicketViewMode('table')" id="btnViewTable" class="px-3 py-1.5 rounded-lg font-medium text-slate-600 transition hover:text-slate-900">
+                    📄 Table View
+                  </button>
+                </div>
+
+                <button onclick="runAutoAssignRoundRobin()" class="px-3 py-1.5 bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition" title="จ่ายงานที่ค้างให้เจ้าหน้าที่ไอทีโดยอัตโนมัติ">
+                  <span>⚡ จ่ายงานอัตโนมัติ (Round-robin)</span>
+                </button>
+              </div>
             </div>
-          </div>
-          <span class="hidden sm:inline-flex px-2.5 py-1 bg-rose-50 text-rose-700 text-xs font-semibold rounded-xl border border-rose-200">
-            ระบบติดตาม SLA อัตโนมัติ
-          </span>
-        </div>
 
-        <form id="createTicketForm" onsubmit="handleCreateTicketSubmit(event)" class="space-y-4">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                หมวดหมู่ปัญหา (Category) <span class="text-rose-500">*</span>
-              </label>
-              <select id="ticketCategory" required class="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-tcc-500 bg-white text-xs sm:text-sm">
-                <option value="">-- เลือกหมวดหมู่งาน --</option>
-                <option value="Hardware">ฮาร์ดแวร์ / เครื่องคอมพิวเตอร์ / ปริ้นเตอร์</option>
-                <option value="Software">ซอฟต์แวร์ / MS Office / โปรแกรมทั่วไป</option>
-                <option value="Network">ระบบเครือข่าย / อินเทอร์เน็ต / Wi-Fi / VPN</option>
-                <option value="Internal System">ระบบสารสนเทศภายใน / เว็บไซต์</option>
-                <option value="Email & Account">อีเมลองค์กร / รหัสผ่าน / สิทธิ์ผู้ใช้</option>
-                <option value="Other">งานบริการด้านไอทีอื่นๆ</option>
+            <!-- Filters -->
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-2.5 text-xs">
+              <input type="text" id="adminTicketSearchInput" onkeyup="renderAdminTicketsView()" placeholder="ค้นหารหัส TKT, หัวข้อ, ผู้แจ้ง..." class="px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-tcc-500 outline-none">
+              <select id="adminTicketFilterPriority" onchange="renderAdminTicketsView()" class="px-3 py-2 rounded-xl border border-slate-300 bg-white">
+                <option value="">ทุกระดับความสำคัญ</option>
+                <option value="Critical">🔴 Critical (วิกฤต)</option>
+                <option value="High">🟠 High (สูง)</option>
+                <option value="Medium">🟡 Medium (ปานกลาง)</option>
+                <option value="Low">🟢 Low (ต่ำ)</option>
+              </select>
+              <select id="adminTicketFilterAgent" onchange="renderAdminTicketsView()" class="px-3 py-2 rounded-xl border border-slate-300 bg-white">
+                <option value="">เจ้าหน้าที่ทั้งหมด</option>
+              </select>
+              <select id="adminTicketFilterSla" onchange="renderAdminTicketsView()" class="px-3 py-2 rounded-xl border border-slate-300 bg-white">
+                <option value="">สถานะ SLA ทั้งหมด</option>
+                <option value="breached">⚠️ หลุด SLA แล้ว</option>
+                <option value="near_breach">⏳ ใกล้หมดเวลา SLA (&lt; 1 ชม.)</option>
+                <option value="on_track">✓ ปกติ (On Track)</option>
               </select>
             </div>
 
-            <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                ระดับความสำคัญ (Priority / SLA) <span class="text-rose-500">*</span>
-              </label>
-              <select id="ticketPriority" required class="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-tcc-500 bg-white text-xs sm:text-sm font-semibold">
-                <option value="Medium" selected>ปานกลาง (Medium - SLA แก้ไขใน 24 ชม.)</option>
-                <option value="Low">ต่ำ (Low - งานสอบถามทั่วไป SLA 48 ชม.)</option>
-                <option value="High">สูง (High - กระทบงานหลัก SLA 4 ชม.)</option>
-                <option value="Critical">วิกฤต (Critical - ระบบหลักล่ม SLA 2 ชม.)</option>
-              </select>
-            </div>
-          </div>
+            <!-- Kanban View -->
+            <div id="adminTicketKanbanView" class="overflow-x-auto pb-4">
+              <div class="min-w-[950px] grid grid-cols-5 gap-3">
+                <!-- Open -->
+                <div class="bg-slate-50 rounded-2xl border border-slate-200 p-3 flex flex-col h-[600px]">
+                  <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-200">
+                    <span class="font-bold text-xs text-slate-800">รอรับเรื่อง (Open)</span>
+                    <span id="kanbanCount-Open" class="text-[11px] font-bold bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">0</span>
+                  </div>
+                  <div id="kanbanColumn-Open" class="flex-1 overflow-y-auto space-y-2.5 pr-1"></div>
+                </div>
 
-          <div>
-            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-              หัวข้อปัญหา / อาการที่พบ (Title) <span class="text-rose-500">*</span>
-            </label>
-            <input type="text" id="ticketTitle" required placeholder="เช่น ไม่สามารถเชื่อมต่อ Wi-Fi หอการค้าไทยได้" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-tcc-500 text-xs sm:text-sm">
-          </div>
+                <!-- In Progress -->
+                <div class="bg-amber-50/50 rounded-2xl border border-amber-200 p-3 flex flex-col h-[600px]">
+                  <div class="flex items-center justify-between pb-2 mb-2 border-b border-amber-200">
+                    <span class="font-bold text-xs text-amber-950">กำลังดำเนินการ (In Progress)</span>
+                    <span id="kanbanCount-InProgress" class="text-[11px] font-bold bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full">0</span>
+                  </div>
+                  <div id="kanbanColumn-InProgress" class="flex-1 overflow-y-auto space-y-2.5 pr-1"></div>
+                </div>
 
-          <div>
-            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-              รายละเอียดของปัญหา (Description) <span class="text-rose-500">*</span>
-            </label>
-            <textarea id="ticketDescription" rows="3" required placeholder="อธิบายขั้นตอนที่เกิดปัญหา หมายเลขเครื่อง หรือข้อความ Error ที่ปรากฏ..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-tcc-500 text-xs sm:text-sm"></textarea>
-          </div>
+                <!-- Pending User -->
+                <div class="bg-purple-50/50 rounded-2xl border border-purple-200 p-3 flex flex-col h-[600px]">
+                  <div class="flex items-center justify-between pb-2 mb-2 border-b border-purple-200">
+                    <span class="font-bold text-xs text-purple-950">รอผู้ใช้ (Pending User)</span>
+                    <span id="kanbanCount-PendingUser" class="text-[11px] font-bold bg-purple-100 text-purple-900 px-2 py-0.5 rounded-full">0</span>
+                  </div>
+                  <div id="kanbanColumn-PendingUser" class="flex-1 overflow-y-auto space-y-2.5 pr-1"></div>
+                </div>
 
-          <!-- File Attachment -->
-          <div>
-            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-              แนบรูปภาพหรือเอกสาร (ภาพหน้าจอ Error, เอกสารประกอบ)
-            </label>
-            <div class="border-2 border-dashed border-slate-200 hover:border-tcc-400 rounded-2xl p-4 text-center bg-slate-50 transition cursor-pointer">
-              <input type="file" id="ticketFileInput" onchange="handleTicketFileSelect(this)" accept="image/*,.pdf,.txt" class="hidden">
-              <label for="ticketFileInput" class="cursor-pointer flex flex-col items-center justify-center gap-1">
-                <svg class="w-6 h-6 text-tcc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                <span class="text-xs font-bold text-tcc-700">คลิกเลือกไฟล์ หรือลากไฟล์มาวาง</span>
-                <span class="text-[10px] text-slate-400">รองรับภาพ PNG, JPG หรือ PDF (ไม่เกิน 5MB)</span>
-              </label>
-              <div id="ticketFilePreviewContainer" class="hidden mt-2 p-2 bg-white rounded-xl border border-slate-200 items-center justify-between text-xs max-w-sm mx-auto">
-                <span id="ticketFileNameLabel" class="truncate text-slate-700 font-medium"></span>
-                <button type="button" onclick="clearTicketAttachment()" class="text-rose-500 hover:text-rose-700 font-bold ml-2">✕</button>
+                <!-- Resolved -->
+                <div class="bg-emerald-50/50 rounded-2xl border border-emerald-200 p-3 flex flex-col h-[600px]">
+                  <div class="flex items-center justify-between pb-2 mb-2 border-b border-emerald-200">
+                    <span class="font-bold text-xs text-emerald-950">แก้ไขแล้ว (Resolved)</span>
+                    <span id="kanbanCount-Resolved" class="text-[11px] font-bold bg-emerald-100 text-emerald-900 px-2 py-0.5 rounded-full">0</span>
+                  </div>
+                  <div id="kanbanColumn-Resolved" class="flex-1 overflow-y-auto space-y-2.5 pr-1"></div>
+                </div>
+
+                <!-- Closed -->
+                <div class="bg-slate-100/70 rounded-2xl border border-slate-200 p-3 flex flex-col h-[600px]">
+                  <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-200">
+                    <span class="font-bold text-xs text-slate-800">ปิดเคส (Closed)</span>
+                    <span id="kanbanCount-Closed" class="text-[11px] font-bold bg-slate-200 text-slate-800 px-2 py-0.5 rounded-full">0</span>
+                  </div>
+                  <div id="kanbanColumn-Closed" class="flex-1 overflow-y-auto space-y-2.5 pr-1"></div>
+                </div>
               </div>
             </div>
-          </div>
 
-          <!-- Reporter Info Review -->
-          <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-            <div>
-              <span class="text-slate-400 block text-[10px]">ผู้แจ้ง:</span>
-              <input type="text" id="ticketReporterName" required class="w-full bg-white px-2.5 py-1.5 rounded-lg border border-slate-300 font-semibold text-slate-800">
+            <!-- Table View -->
+            <div id="adminTicketTableView" class="hidden overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 text-slate-600 uppercase border-y border-slate-100 font-semibold">
+                  <tr>
+                    <th class="py-3 px-3">รหัสเคส</th>
+                    <th class="py-3 px-3">หัวข้อปัญหา</th>
+                    <th class="py-3 px-3">ผู้แจ้ง / แผนก</th>
+                    <th class="py-3 px-3 text-center">ระดับความสำคัญ</th>
+                    <th class="py-3 px-3 text-center">สถานะ</th>
+                    <th class="py-3 px-3">เจ้าหน้าที่ (Agent)</th>
+                    <th class="py-3 px-3 text-center">SLA สถานะ</th>
+                    <th class="py-3 px-3 text-center">จัดการ</th>
+                  </tr>
+                </thead>
+                <tbody id="adminTicketTableBody" class="divide-y divide-slate-100"></tbody>
+              </table>
             </div>
-            <div>
-              <span class="text-slate-400 block text-[10px]">แผนก/สังกัด:</span>
-              <input type="text" id="ticketReporterDept" required placeholder="ระบุแผนก" class="w-full bg-white px-2.5 py-1.5 rounded-lg border border-slate-300 font-semibold text-slate-800">
-            </div>
-            <div>
-              <span class="text-slate-400 block text-[10px]">เบอร์ติดต่อ/อีเมล:</span>
-              <input type="text" id="ticketReporterContact" required class="w-full bg-white px-2.5 py-1.5 rounded-lg border border-slate-300 font-semibold text-slate-800">
-            </div>
-          </div>
 
-          <div class="pt-3 flex items-center justify-end gap-3 border-t border-slate-100">
-            <button type="reset" onclick="clearTicketAttachment()" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-100 transition">
-              ล้างข้อมูล
-            </button>
-            <button type="submit" id="btnSubmitTicket" class="px-6 py-2.5 bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white font-bold text-xs sm:text-sm rounded-xl shadow-md shadow-rose-600/20 flex items-center gap-2 transition">
-              <span id="btnTicketSpinner" class="hidden animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></span>
-              <span>ยืนยันเปิดเคสแจ้งซ่อม</span>
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <!-- ============================================================== -->
-    <!-- TAB: MY TICKETS (User Tracking & CSAT Rating) -->
-    <!-- ============================================================== -->
-    <div id="tabContent-myTicketsTab" class="tab-content hidden">
-      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 mb-4">
-          <div>
-            <h2 class="text-base sm:text-lg font-bold text-slate-900">ติดตามสถานะเคสของฉัน</h2>
-            <p class="text-xs text-slate-500">ตรวจสอบความคืบหน้า พูดคุยสอบถาม และให้คะแนนความพึงพอใจการให้บริการ</p>
-          </div>
-          <div class="flex items-center gap-2">
-            <select id="filterMyTicketStatus" onchange="renderMyTicketsList()" class="px-3 py-1.5 text-xs rounded-xl border border-slate-300 bg-white">
-              <option value="">ทุกสถานะเคส</option>
-              <option value="Open">Open (รอรับเรื่อง)</option>
-              <option value="In Progress">In Progress (กำลังทำ)</option>
-              <option value="Pending User">Pending User (รอข้อมูล)</option>
-              <option value="Resolved">Resolved (แก้ไขแล้ว)</option>
-              <option value="Closed">Closed (ปิดเคสแล้ว)</option>
-            </select>
           </div>
         </div>
 
-        <div id="myTicketsListContainer" class="space-y-3"></div>
-      </div>
-    </div>
-
-    <!-- ============================================================== -->
-    <!-- TAB: ADMIN TICKET MANAGEMENT (Kanban & Table View) -->
-    <!-- ============================================================== -->
-    <div id="tabContent-ticketAdminTab" class="tab-content hidden admin-only-view">
-      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6 space-y-4">
-        
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-4 border-b border-slate-100">
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-300">IT Agent Center</span>
-              <h2 class="text-base sm:text-lg font-bold text-slate-900">กระดานบริหารเคสงานไอที</h2>
-            </div>
-            <p class="text-xs text-slate-500 mt-0.5">รับเรื่อง มอบหมายงานเจ้าหน้าที่ไอที ควบคุม SLA และสื่อสารกับผู้ใช้งาน</p>
-          </div>
-
-          <div class="flex flex-wrap items-center gap-2">
-            <div class="flex items-center bg-slate-100 p-0.5 rounded-xl border border-slate-200 text-xs">
-              <button type="button" onclick="setTicketViewMode('kanban')" id="btnViewKanban" class="px-3 py-1.5 rounded-lg font-bold transition bg-white text-tcc-700 shadow-sm">
-                📊 Kanban Board
-              </button>
-              <button type="button" onclick="setTicketViewMode('table')" id="btnViewTable" class="px-3 py-1.5 rounded-lg font-medium text-slate-600 transition hover:text-slate-900">
-                📄 Table View
+        <!-- ============================================================== -->
+        <!-- TAB: KNOWLEDGE BASE -->
+        <!-- ============================================================== -->
+        <div id="tabContent-kbTab" class="tab-content hidden">
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 mb-4">
+              <div>
+                <h2 class="text-base sm:text-lg font-bold text-slate-900">คลังความรู้และคู่มือไอที (Knowledge Base)</h2>
+                <p class="text-xs text-slate-500">รวบรวมวิธีแก้ปัญหาที่พบบ่อย สามารถดึงคำตอบไปตอบเคสผู้ใช้งานได้ทันที</p>
+              </div>
+              <button onclick="openAddKbModal()" class="admin-only admin-hidden px-3.5 py-2 bg-tcc-600 hover:bg-tcc-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition">
+                <span>+ เพิ่มบทความแก้ปัญหา</span>
               </button>
             </div>
 
-            <button onclick="runAutoAssignRoundRobin()" class="px-3 py-1.5 bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition" title="จ่ายงานที่ค้างให้เจ้าหน้าที่ไอทีโดยอัตโนมัติ">
-              <span>⚡ จ่ายงานอัตโนมัติ (Round-robin)</span>
-            </button>
+            <div class="mb-4">
+              <input type="text" id="kbSearchInput" onkeyup="renderKnowledgeBaseList()" placeholder="พิมพ์ค้นหาชื่อปัญหา, คีย์เวิร์ด หรือวิธีแก้ไข..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-tcc-500 outline-none">
+            </div>
+
+            <div id="kbListContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
           </div>
         </div>
 
-        <!-- Filters -->
-        <div class="grid grid-cols-1 sm:grid-cols-4 gap-2.5 text-xs">
-          <input type="text" id="adminTicketSearchInput" onkeyup="renderAdminTicketsView()" placeholder="ค้นหารหัส TKT, หัวข้อ, ผู้แจ้ง..." class="px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-tcc-500 outline-none">
-          <select id="adminTicketFilterPriority" onchange="renderAdminTicketsView()" class="px-3 py-2 rounded-xl border border-slate-300 bg-white">
-            <option value="">ทุกระดับความสำคัญ</option>
-            <option value="Critical">🔴 Critical (วิกฤต)</option>
-            <option value="High">🟠 High (สูง)</option>
-            <option value="Medium">🟡 Medium (ปานกลาง)</option>
-            <option value="Low">🟢 Low (ต่ำ)</option>
-          </select>
-          <select id="adminTicketFilterAgent" onchange="renderAdminTicketsView()" class="px-3 py-2 rounded-xl border border-slate-300 bg-white">
-            <option value="">เจ้าหน้าที่ทั้งหมด</option>
-          </select>
-          <select id="adminTicketFilterSla" onchange="renderAdminTicketsView()" class="px-3 py-2 rounded-xl border border-slate-300 bg-white">
-            <option value="">สถานะ SLA ทั้งหมด</option>
-            <option value="breached">⚠️ หลุด SLA แล้ว</option>
-            <option value="near_breach">⏳ ใกล้หมดเวลา SLA (&lt; 1 ชม.)</option>
-            <option value="on_track">✓ ปกติ (On Track)</option>
-          </select>
-        </div>
-
-        <!-- Kanban View -->
-        <div id="adminTicketKanbanView" class="overflow-x-auto pb-4">
-          <div class="min-w-[950px] grid grid-cols-5 gap-3">
-            <!-- Open -->
-            <div class="bg-slate-50 rounded-2xl border border-slate-200 p-3 flex flex-col h-[600px]">
-              <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-200">
-                <span class="font-bold text-xs text-slate-800">รอรับเรื่อง (Open)</span>
-                <span id="kanbanCount-Open" class="text-[11px] font-bold bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">0</span>
+        <!-- ============================================================== -->
+        <!-- TAB: RETURN CENTER (Admin Only) -->
+        <!-- ============================================================== -->
+        <div id="tabContent-returnTab" class="tab-content hidden admin-only-view">
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 mb-4">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">ฝ่ายเทคโนโลยีสารสนเทศ</span>
+                  <h2 class="text-base sm:text-lg font-bold text-slate-900">รายการอุปกรณ์ที่กำลังถูกยืม (รอรับคืน)</h2>
+                </div>
+                <p class="text-xs text-slate-500 mt-0.5">ตรวจรับคืนอุปกรณ์เข้าคลังสต็อก (รองรับการเลือกรับคืนพร้อมกันหลายรายการ)</p>
               </div>
-              <div id="kanbanColumn-Open" class="flex-1 overflow-y-auto space-y-2.5 pr-1"></div>
-            </div>
-
-            <!-- In Progress -->
-            <div class="bg-amber-50/50 rounded-2xl border border-amber-200 p-3 flex flex-col h-[600px]">
-              <div class="flex items-center justify-between pb-2 mb-2 border-b border-amber-200">
-                <span class="font-bold text-xs text-amber-950">กำลังดำเนินการ (In Progress)</span>
-                <span id="kanbanCount-InProgress" class="text-[11px] font-bold bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full">0</span>
+              <div class="flex items-center gap-2">
+                <input type="text" id="searchReturnInput" onkeyup="filterActiveBorrows()" placeholder="ค้นหารหัส, ชื่อผู้ยืม..." class="px-3 py-1.5 text-xs rounded-xl border border-slate-300 focus:ring-2 focus:ring-tcc-500 outline-none">
               </div>
-              <div id="kanbanColumn-InProgress" class="flex-1 overflow-y-auto space-y-2.5 pr-1"></div>
             </div>
 
-            <!-- Pending User -->
-            <div class="bg-purple-50/50 rounded-2xl border border-purple-200 p-3 flex flex-col h-[600px]">
-              <div class="flex items-center justify-between pb-2 mb-2 border-b border-purple-200">
-                <span class="font-bold text-xs text-purple-950">รอผู้ใช้ (Pending User)</span>
-                <span id="kanbanCount-PendingUser" class="text-[11px] font-bold bg-purple-100 text-purple-900 px-2 py-0.5 rounded-full">0</span>
+            <!-- Bulk Return Bar -->
+            <div id="bulkReturnBar" class="hidden mb-4 p-3 bg-emerald-50 border border-emerald-200 rounded-xl flex flex-wrap items-center justify-between gap-3">
+              <div class="flex items-center gap-2 text-xs">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span id="bulkReturnCountText" class="font-bold text-emerald-900">เลือกแล้ว 0 รายการ</span>
               </div>
-              <div id="kanbanColumn-PendingUser" class="flex-1 overflow-y-auto space-y-2.5 pr-1"></div>
-            </div>
-
-            <!-- Resolved -->
-            <div class="bg-emerald-50/50 rounded-2xl border border-emerald-200 p-3 flex flex-col h-[600px]">
-              <div class="flex items-center justify-between pb-2 mb-2 border-b border-emerald-200">
-                <span class="font-bold text-xs text-emerald-950">แก้ไขแล้ว (Resolved)</span>
-                <span id="kanbanCount-Resolved" class="text-[11px] font-bold bg-emerald-100 text-emerald-900 px-2 py-0.5 rounded-full">0</span>
+              <div class="flex items-center gap-2">
+                <button type="button" onclick="clearReturnSelections()" class="px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-white rounded-lg">ยกเลิก</button>
+                <button type="button" onclick="requestBulkReturn()" class="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow-sm">
+                  <span id="bulkReturnBtnLabel">รับคืนอุปกรณ์ที่เลือก</span>
+                </button>
               </div>
-              <div id="kanbanColumn-Resolved" class="flex-1 overflow-y-auto space-y-2.5 pr-1"></div>
             </div>
 
-            <!-- Closed -->
-            <div class="bg-slate-100/70 rounded-2xl border border-slate-200 p-3 flex flex-col h-[600px]">
-              <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-200">
-                <span class="font-bold text-xs text-slate-800">ปิดเคส (Closed)</span>
-                <span id="kanbanCount-Closed" class="text-[11px] font-bold bg-slate-200 text-slate-800 px-2 py-0.5 rounded-full">0</span>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs sm:text-sm">
+                <thead class="bg-slate-50 text-slate-600 uppercase border-y border-slate-100 text-xs">
+                  <tr>
+                    <th class="py-3 px-3 w-10 text-center">
+                      <input type="checkbox" id="selectAllReturns" onchange="toggleSelectAllReturns(this.checked)" class="w-4 h-4 rounded text-tcc-600 focus:ring-tcc-500 cursor-pointer">
+                    </th>
+                    <th class="py-3 px-4 font-semibold">รหัสธุรกรรม</th>
+                    <th class="py-3 px-4 font-semibold">อุปกรณ์</th>
+                    <th class="py-3 px-4 font-semibold">ผู้ยืม / แผนก</th>
+                    <th class="py-3 px-4 font-semibold">วันที่ยืม</th>
+                    <th class="py-3 px-4 font-semibold">กำหนดคืน</th>
+                    <th class="py-3 px-4 font-semibold text-center">สถานะ</th>
+                    <th class="py-3 px-4 font-semibold text-right">ดำเนินการ</th>
+                  </tr>
+                </thead>
+                <tbody id="returnTableBody" class="divide-y divide-slate-100"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- TAB: INVENTORY (Admin Only) -->
+        <!-- ============================================================== -->
+        <div id="tabContent-inventoryTab" class="tab-content hidden admin-only-view">
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 mb-4">
+              <div>
+                <h2 class="text-base sm:text-lg font-bold text-slate-900">ทะเบียนคลังอุปกรณ์ทั้งหมด</h2>
+                <p class="text-xs text-slate-500">ตรวจสอบสต็อก ปรับสถานะซ่อมบำรุง และแก้ไขอุปกรณ์</p>
               </div>
-              <div id="kanbanColumn-Closed" class="flex-1 overflow-y-auto space-y-2.5 pr-1"></div>
+              <div class="flex flex-wrap items-center gap-2">
+                <select id="filterStatus" onchange="filterInventory()" class="px-3 py-1.5 text-xs rounded-xl border border-slate-300 bg-white">
+                  <option value="">ทุกสถานะ</option>
+                  <option value="Available">พร้อมใช้งาน</option>
+                  <option value="Borrowed">กำลังถูกยืม</option>
+                  <option value="Maintenance">ซ่อมบำรุง</option>
+                </select>
+                <select id="filterCategory" onchange="filterInventory()" class="px-3 py-1.5 text-xs rounded-xl border border-slate-300 bg-white">
+                  <option value="">ทุกหมวดหมู่</option>
+                </select>
+                <input type="text" id="searchInventoryInput" onkeyup="filterInventory()" placeholder="ค้นหาชื่อ, S/N..." class="px-3 py-1.5 text-xs rounded-xl border border-slate-300">
+                <button onclick="openAddItemModal()" class="px-3 py-1.5 bg-tcc-600 hover:bg-tcc-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1">
+                  <span>+ เพิ่มอุปกรณ์</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs sm:text-sm">
+                <thead class="bg-slate-50 text-slate-600 uppercase border-y border-slate-100 text-xs">
+                  <tr>
+                    <th class="py-3 px-4 font-semibold">รหัสอุปกรณ์</th>
+                    <th class="py-3 px-4 font-semibold">ชื่ออุปกรณ์</th>
+                    <th class="py-3 px-4 font-semibold">หมวดหมู่</th>
+                    <th class="py-3 px-4 font-semibold">Serial Number</th>
+                    <th class="py-3 px-4 font-semibold text-center">สถานะ</th>
+                    <th class="py-3 px-4 font-semibold text-center">จัดการ</th>
+                  </tr>
+                </thead>
+                <tbody id="inventoryTableBody" class="divide-y divide-slate-100"></tbody>
+              </table>
             </div>
           </div>
         </div>
 
-        <!-- Table View -->
-        <div id="adminTicketTableView" class="hidden overflow-x-auto">
-          <table class="w-full text-left text-xs">
-            <thead class="bg-slate-50 text-slate-600 uppercase border-y border-slate-100 font-semibold">
-              <tr>
-                <th class="py-3 px-3">รหัสเคส</th>
-                <th class="py-3 px-3">หัวข้อปัญหา</th>
-                <th class="py-3 px-3">ผู้แจ้ง / แผนก</th>
-                <th class="py-3 px-3 text-center">ระดับความสำคัญ</th>
-                <th class="py-3 px-3 text-center">สถานะ</th>
-                <th class="py-3 px-3">เจ้าหน้าที่ (Agent)</th>
-                <th class="py-3 px-3 text-center">SLA สถานะ</th>
-                <th class="py-3 px-3 text-center">จัดการ</th>
-              </tr>
-            </thead>
-            <tbody id="adminTicketTableBody" class="divide-y divide-slate-100"></tbody>
-          </table>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- ============================================================== -->
-    <!-- TAB: KNOWLEDGE BASE (KB / FAQ) -->
-    <!-- ============================================================== -->
-    <div id="tabContent-kbTab" class="tab-content hidden">
-      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 mb-4">
-          <div>
-            <h2 class="text-base sm:text-lg font-bold text-slate-900">คลังความรู้และคู่มือไอที (Knowledge Base)</h2>
-            <p class="text-xs text-slate-500">รวบรวมวิธีแก้ปัญหาที่พบบ่อย สามารถดึงคำตอบไปตอบเคสผู้ใช้งานได้ทันที</p>
-          </div>
-          <button onclick="openAddKbModal()" class="admin-only admin-hidden px-3.5 py-2 bg-tcc-600 hover:bg-tcc-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition">
-            <span>+ เพิ่มบทความแก้ปัญหา</span>
-          </button>
-        </div>
-
-        <div class="mb-4">
-          <input type="text" id="kbSearchInput" onkeyup="renderKnowledgeBaseList()" placeholder="พิมพ์ค้นหาชื่อปัญหา, คีย์เวิร์ด หรือวิธีแก้ไข..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-tcc-500 outline-none">
-        </div>
-
-        <div id="kbListContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-      </div>
-    </div>
-
-    <!-- ============================================================== -->
-    <!-- TAB: RETURN CENTER (Admin Only) -->
-    <!-- ============================================================== -->
-    <div id="tabContent-returnTab" class="tab-content hidden admin-only-view">
-      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 mb-4">
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">ฝ่ายเทคโนโลยีสารสนเทศ</span>
-              <h2 class="text-base sm:text-lg font-bold text-slate-900">รายการอุปกรณ์ที่กำลังถูกยืม (รอรับคืน)</h2>
+        <!-- ============================================================== -->
+        <!-- TAB: HISTORY (Admin Only) -->
+        <!-- ============================================================== -->
+        <div id="tabContent-historyTab" class="tab-content hidden admin-only-view">
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 mb-4">
+              <div>
+                <h2 class="text-base sm:text-lg font-bold text-slate-900">ประวัติบันทึกการยืม-คืน & จัดการหลังบ้าน</h2>
+                <p class="text-xs text-slate-500">ตรวจสอบย้อนหลัง ส่งออก CSV และแก้ไขข้อมูลย้อนหลังได้โดยตรง</p>
+              </div>
+              <div class="flex flex-wrap items-center gap-2">
+                <select id="filterHistoryStatus" onchange="filterHistory()" class="px-3 py-1.5 text-xs rounded-xl border border-slate-300 bg-white">
+                  <option value="">สถานะทั้งหมด</option>
+                  <option value="Borrowed">กำลังยืม (ยังไม่คืน)</option>
+                  <option value="Returned">คืนแล้วเรียบร้อย</option>
+                </select>
+                <input type="text" id="searchHistoryInput" onkeyup="filterHistory()" placeholder="ค้นหารหัส, ผู้ยืม..." class="px-3 py-1.5 text-xs rounded-xl border border-slate-300">
+                <button onclick="exportHistoryCsv()" class="px-3 py-1.5 text-xs font-semibold rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center gap-1.5">
+                  <span>ส่งออก CSV</span>
+                </button>
+              </div>
             </div>
-            <p class="text-xs text-slate-500 mt-0.5">ตรวจรับคืนอุปกรณ์เข้าคลังสต็อก (รองรับการเลือกรับคืนพร้อมกันหลายรายการ)</p>
-          </div>
-          <div class="flex items-center gap-2">
-            <input type="text" id="searchReturnInput" onkeyup="filterActiveBorrows()" placeholder="ค้นหารหัส, ชื่อผู้ยืม..." class="px-3 py-1.5 text-xs rounded-xl border border-slate-300 focus:ring-2 focus:ring-tcc-500 outline-none">
-          </div>
-        </div>
 
-        <!-- Bulk Return Bar -->
-        <div id="bulkReturnBar" class="hidden mb-4 p-3 bg-emerald-50 border border-emerald-200 rounded-xl flex flex-wrap items-center justify-between gap-3">
-          <div class="flex items-center gap-2 text-xs">
-            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span id="bulkReturnCountText" class="font-bold text-emerald-900">เลือกแล้ว 0 รายการ</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <button type="button" onclick="clearReturnSelections()" class="px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-white rounded-lg">ยกเลิก</button>
-            <button type="button" onclick="requestBulkReturn()" class="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow-sm">
-              <span id="bulkReturnBtnLabel">รับคืนอุปกรณ์ที่เลือก</span>
-            </button>
-          </div>
-        </div>
-
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs sm:text-sm">
-            <thead class="bg-slate-50 text-slate-600 uppercase border-y border-slate-100 text-xs">
-              <tr>
-                <th class="py-3 px-3 w-10 text-center">
-                  <input type="checkbox" id="selectAllReturns" onchange="toggleSelectAllReturns(this.checked)" class="w-4 h-4 rounded text-tcc-600 focus:ring-tcc-500 cursor-pointer">
-                </th>
-                <th class="py-3 px-4 font-semibold">รหัสธุรกรรม</th>
-                <th class="py-3 px-4 font-semibold">อุปกรณ์</th>
-                <th class="py-3 px-4 font-semibold">ผู้ยืม / แผนก</th>
-                <th class="py-3 px-4 font-semibold">วันที่ยืม</th>
-                <th class="py-3 px-4 font-semibold">กำหนดคืน</th>
-                <th class="py-3 px-4 font-semibold text-center">สถานะ</th>
-                <th class="py-3 px-4 font-semibold text-right">ดำเนินการ</th>
-              </tr>
-            </thead>
-            <tbody id="returnTableBody" class="divide-y divide-slate-100"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- ============================================================== -->
-    <!-- TAB: INVENTORY (Admin Only) -->
-    <!-- ============================================================== -->
-    <div id="tabContent-inventoryTab" class="tab-content hidden admin-only-view">
-      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 mb-4">
-          <div>
-            <h2 class="text-base sm:text-lg font-bold text-slate-900">ทะเบียนคลังอุปกรณ์ทั้งหมด</h2>
-            <p class="text-xs text-slate-500">ตรวจสอบสต็อก ปรับสถานะซ่อมบำรุง และแก้ไขอุปกรณ์</p>
-          </div>
-          <div class="flex flex-wrap items-center gap-2">
-            <select id="filterStatus" onchange="filterInventory()" class="px-3 py-1.5 text-xs rounded-xl border border-slate-300 bg-white">
-              <option value="">ทุกสถานะ</option>
-              <option value="Available">พร้อมใช้งาน</option>
-              <option value="Borrowed">กำลังถูกยืม</option>
-              <option value="Maintenance">ซ่อมบำรุง</option>
-            </select>
-            <select id="filterCategory" onchange="filterInventory()" class="px-3 py-1.5 text-xs rounded-xl border border-slate-300 bg-white">
-              <option value="">ทุกหมวดหมู่</option>
-            </select>
-            <input type="text" id="searchInventoryInput" onkeyup="filterInventory()" placeholder="ค้นหาชื่อ, S/N..." class="px-3 py-1.5 text-xs rounded-xl border border-slate-300">
-            <button onclick="openAddItemModal()" class="px-3 py-1.5 bg-tcc-600 hover:bg-tcc-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1">
-              <span>+ เพิ่มอุปกรณ์</span>
-            </button>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs sm:text-sm">
+                <thead class="bg-slate-50 text-slate-600 uppercase border-y border-slate-100 text-xs">
+                  <tr>
+                    <th class="py-3 px-4 font-semibold">รหัสธุรกรรม</th>
+                    <th class="py-3 px-4 font-semibold">อุปกรณ์</th>
+                    <th class="py-3 px-4 font-semibold">ผู้ยืม / แผนก</th>
+                    <th class="py-3 px-4 font-semibold">วันที่ยืม</th>
+                    <th class="py-3 px-4 font-semibold">กำหนดคืน</th>
+                    <th class="py-3 px-4 font-semibold">วันที่คืนจริง</th>
+                    <th class="py-3 px-4 font-semibold text-center">สถานะ</th>
+                    <th class="py-3 px-4 font-semibold">หมายเหตุ</th>
+                    <th class="py-3 px-4 font-semibold text-center">จัดการหลังบ้าน</th>
+                  </tr>
+                </thead>
+                <tbody id="historyTableBody" class="divide-y divide-slate-100"></tbody>
+              </table>
+            </div>
           </div>
         </div>
 
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs sm:text-sm">
-            <thead class="bg-slate-50 text-slate-600 uppercase border-y border-slate-100 text-xs">
-              <tr>
-                <th class="py-3 px-4 font-semibold">รหัสอุปกรณ์</th>
-                <th class="py-3 px-4 font-semibold">ชื่ออุปกรณ์</th>
-                <th class="py-3 px-4 font-semibold">หมวดหมู่</th>
-                <th class="py-3 px-4 font-semibold">Serial Number</th>
-                <th class="py-3 px-4 font-semibold text-center">สถานะ</th>
-                <th class="py-3 px-4 font-semibold text-center">จัดการ</th>
-              </tr>
-            </thead>
-            <tbody id="inventoryTableBody" class="divide-y divide-slate-100"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- ============================================================== -->
-    <!-- TAB: HISTORY (Admin Only) -->
-    <!-- ============================================================== -->
-    <div id="tabContent-historyTab" class="tab-content hidden admin-only-view">
-      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 mb-4">
-          <div>
-            <h2 class="text-base sm:text-lg font-bold text-slate-900">ประวัติบันทึกการยืม-คืน & จัดการหลังบ้าน</h2>
-            <p class="text-xs text-slate-500">ตรวจสอบย้อนหลัง ส่งออก CSV และแก้ไขข้อมูลย้อนหลังได้โดยตรง</p>
-          </div>
-          <div class="flex flex-wrap items-center gap-2">
-            <select id="filterHistoryStatus" onchange="filterHistory()" class="px-3 py-1.5 text-xs rounded-xl border border-slate-300 bg-white">
-              <option value="">สถานะทั้งหมด</option>
-              <option value="Borrowed">กำลังยืม (ยังไม่คืน)</option>
-              <option value="Returned">คืนแล้วเรียบร้อย</option>
-            </select>
-            <input type="text" id="searchHistoryInput" onkeyup="filterHistory()" placeholder="ค้นหารหัส, ผู้ยืม..." class="px-3 py-1.5 text-xs rounded-xl border border-slate-300">
-            <button onclick="exportHistoryCsv()" class="px-3 py-1.5 text-xs font-semibold rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center gap-1.5">
-              <span>ส่งออก CSV</span>
-            </button>
-          </div>
-        </div>
-
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs sm:text-sm">
-            <thead class="bg-slate-50 text-slate-600 uppercase border-y border-slate-100 text-xs">
-              <tr>
-                <th class="py-3 px-4 font-semibold">รหัสธุรกรรม</th>
-                <th class="py-3 px-4 font-semibold">อุปกรณ์</th>
-                <th class="py-3 px-4 font-semibold">ผู้ยืม / แผนก</th>
-                <th class="py-3 px-4 font-semibold">วันที่ยืม</th>
-                <th class="py-3 px-4 font-semibold">กำหนดคืน</th>
-                <th class="py-3 px-4 font-semibold">วันที่คืนจริง</th>
-                <th class="py-3 px-4 font-semibold text-center">สถานะ</th>
-                <th class="py-3 px-4 font-semibold">หมายเหตุ</th>
-                <th class="py-3 px-4 font-semibold text-center">จัดการหลังบ้าน</th>
-              </tr>
-            </thead>
-            <tbody id="historyTableBody" class="divide-y divide-slate-100"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- ============================================================== -->
-    <!-- TAB: USER ROLES MANAGEMENT -->
-    <!-- ============================================================== -->
-    <div id="tabContent-rolesTab" class="tab-content hidden admin-only-view">
-      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 mb-4">
-          <div>
-            <h2 class="text-base sm:text-lg font-bold text-slate-900">กำหนดและจัดการสิทธิ์ผู้ใช้งาน (Role Management)</h2>
-            <p class="text-xs text-slate-500">Super Admin สามารถกำหนดสิทธิ์ (Super Admin, Admin, User) ให้อีเมลต่างๆ</p>
-          </div>
-          <button onclick="openRoleModal()" class="superadmin-only hidden px-3.5 py-2 bg-tcc-600 hover:bg-tcc-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm">
-            <span>+ เพิ่ม/กำหนดสิทธิ์ผู้ใช้</span>
-          </button>
-        </div>
-
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs sm:text-sm">
-            <thead class="bg-slate-50 text-slate-600 uppercase border-y border-slate-100 text-xs">
-              <tr>
-                <th class="py-3 px-4 font-semibold">อีเมล (Email)</th>
-                <th class="py-3 px-4 font-semibold">ชื่อ-นามสกุล / แผนก</th>
-                <th class="py-3 px-4 font-semibold text-center">ระดับสิทธิ์</th>
-                <th class="py-3 px-4 font-semibold">หมายเหตุ</th>
-                <th class="py-3 px-4 font-semibold text-center">จัดการ</th>
-              </tr>
-            </thead>
-            <tbody id="rolesTableBody" class="divide-y divide-slate-100"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- ============================================================== -->
-    <!-- TAB: AI ASSISTANT -->
-    <!-- ============================================================== -->
-    <div id="tabContent-aiAssistantTab" class="tab-content hidden">
-      <div class="max-w-2xl mx-auto bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-4">
-        <div class="flex items-center gap-2 pb-3 border-b border-slate-100">
-          <span class="w-3 h-3 rounded-full bg-amber-500"></span>
-          <h2 class="text-base sm:text-lg font-bold text-slate-900">Gemini AI Assistant สำหรับงานไอที</h2>
-        </div>
-
-        <div class="space-y-3 text-xs">
-          <div>
-            <label class="block font-semibold text-slate-700 mb-1">แนะนำอุปกรณ์ตามลักษณะการใช้งาน:</label>
-            <div class="flex gap-2">
-              <input type="text" id="aiWorkPrompt" placeholder="เช่น ใช้ประชุมคณะกรรมการออนไลน์พร้อมฉายภาพ 50 คน..." class="flex-1 px-3 py-2 rounded-xl border border-slate-300">
-              <button onclick="runAiEquipmentRecommendation()" id="aiRecommendBtn" class="px-4 py-2 bg-tcc-600 hover:bg-tcc-700 text-white rounded-xl font-bold flex items-center gap-1.5">
-                <span id="aiRecommendSpinner" class="hidden animate-spin w-3 h-3 border-2 border-white border-t-transparent rounded-full"></span>
-                <span>วิเคราะห์</span>
+        <!-- ============================================================== -->
+        <!-- TAB: USER ROLES MANAGEMENT -->
+        <!-- ============================================================== -->
+        <div id="tabContent-rolesTab" class="tab-content hidden admin-only-view">
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 mb-4">
+              <div>
+                <h2 class="text-base sm:text-lg font-bold text-slate-900">กำหนดและจัดการสิทธิ์ผู้ใช้งาน (Role Management)</h2>
+                <p class="text-xs text-slate-500">Super Admin สามารถกำหนดสิทธิ์ (Super Admin, Admin, User) ให้อีเมลต่างๆ</p>
+              </div>
+              <button onclick="openRoleModal()" class="superadmin-only hidden px-3.5 py-2 bg-tcc-600 hover:bg-tcc-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm">
+                <span>+ เพิ่ม/กำหนดสิทธิ์ผู้ใช้</span>
               </button>
             </div>
-            <div id="aiRecommendResult" class="hidden mt-2 p-3 bg-sky-50 rounded-xl border border-sky-200 animate-fadeIn"></div>
-          </div>
 
-          <div class="pt-3 border-t border-slate-100">
-            <label class="block font-semibold text-slate-700 mb-1">สร้างข้อความติดตามอุปกรณ์ (Follow-up Reminder):</label>
-            <select id="aiBorrowSelect" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white mb-2"></select>
-            <button onclick="runAiDraftReminder()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl font-semibold">
-              ร่างข้อความติดตาม
-            </button>
-            <div id="aiReminderResult" class="hidden mt-2 p-3 bg-amber-50 rounded-xl border border-amber-200 animate-fadeIn"></div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs sm:text-sm">
+                <thead class="bg-slate-50 text-slate-600 uppercase border-y border-slate-100 text-xs">
+                  <tr>
+                    <th class="py-3 px-4 font-semibold">อีเมล (Email)</th>
+                    <th class="py-3 px-4 font-semibold">ชื่อ-นามสกุล / แผนก</th>
+                    <th class="py-3 px-4 font-semibold text-center">ระดับสิทธิ์</th>
+                    <th class="py-3 px-4 font-semibold">หมายเหตุ</th>
+                    <th class="py-3 px-4 font-semibold text-center">จัดการ</th>
+                  </tr>
+                </thead>
+                <tbody id="rolesTableBody" class="divide-y divide-slate-100"></tbody>
+              </table>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
+
+        <!-- ============================================================== -->
+        <!-- TAB: AI ASSISTANT -->
+        <!-- ============================================================== -->
+        <div id="tabContent-aiAssistantTab" class="tab-content hidden">
+          <div class="max-w-2xl mx-auto bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-4">
+            <div class="flex items-center gap-2 pb-3 border-b border-slate-100">
+              <span class="w-3 h-3 rounded-full bg-amber-500"></span>
+              <h2 class="text-base sm:text-lg font-bold text-slate-900">Gemini AI Assistant สำหรับงานไอที</h2>
+            </div>
+
+            <div class="space-y-3 text-xs">
+              <div>
+                <label class="block font-semibold text-slate-700 mb-1">แนะนำอุปกรณ์ตามลักษณะการใช้งาน:</label>
+                <div class="flex gap-2">
+                  <input type="text" id="aiWorkPrompt" placeholder="เช่น ใช้ประชุมคณะกรรมการออนไลน์พร้อมฉายภาพ 50 คน..." class="flex-1 px-3 py-2 rounded-xl border border-slate-300">
+                  <button onclick="runAiEquipmentRecommendation()" id="aiRecommendBtn" class="px-4 py-2 bg-tcc-600 hover:bg-tcc-700 text-white rounded-xl font-bold flex items-center gap-1.5">
+                    <span id="aiRecommendSpinner" class="hidden animate-spin w-3 h-3 border-2 border-white border-t-transparent rounded-full"></span>
+                    <span>วิเคราะห์</span>
+                  </button>
+                </div>
+                <div id="aiRecommendResult" class="hidden mt-2 p-3 bg-sky-50 rounded-xl border border-sky-200 animate-fadeIn"></div>
+              </div>
+
+              <div class="pt-3 border-t border-slate-100">
+                <label class="block font-semibold text-slate-700 mb-1">สร้างข้อความติดตามอุปกรณ์ (Follow-up Reminder):</label>
+                <select id="aiBorrowSelect" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white mb-2"></select>
+                <button onclick="runAiDraftReminder()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl font-semibold">
+                  ร่างข้อความติดตาม
+                </button>
+                <div id="aiReminderResult" class="hidden mt-2 p-3 bg-amber-50 rounded-xl border border-amber-200 animate-fadeIn"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div> <!-- End of Right Content Area -->
+    </div> <!-- End of Flex Layout Wrapper -->
 
   </main>
 
@@ -1443,6 +1478,43 @@
     </div>
   </div>
 
+  <!-- MODAL: EDIT ASSET IN INVENTORY -->
+  <div id="editItemModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100 animate-fadeIn">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+        <h3 class="font-bold text-slate-900 text-sm">แก้ไขข้อมูลและสถานะอุปกรณ์</h3>
+        <button onclick="closeEditItemModal()" class="text-slate-400 hover:text-slate-600">✕</button>
+      </div>
+      <form onsubmit="handleSaveItemEdit(event)" class="space-y-3 text-xs">
+        <input type="hidden" id="editItemId">
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">ชื่ออุปกรณ์ *</label>
+          <input type="text" id="editItemName" required class="w-full px-3 py-2 rounded-xl border border-slate-300">
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">หมวดหมู่ *</label>
+          <input type="text" id="editItemCategory" required class="w-full px-3 py-2 rounded-xl border border-slate-300">
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Serial Number</label>
+          <input type="text" id="editItemSerial" class="w-full px-3 py-2 rounded-xl border border-slate-300">
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">สถานะอุปกรณ์ *</label>
+          <select id="editItemStatus" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white font-semibold">
+            <option value="Available">Available (พร้อมใช้งาน)</option>
+            <option value="Maintenance">Maintenance (ซ่อมบำรุง)</option>
+            <option value="Borrowed">Borrowed (กำลังถูกยืม)</option>
+          </select>
+        </div>
+        <div class="pt-3 flex justify-end gap-2 border-t border-slate-100">
+          <button type="button" onclick="closeEditItemModal()" class="px-4 py-2 rounded-xl font-semibold text-slate-600 hover:bg-slate-100">ยกเลิก</button>
+          <button type="submit" class="px-4 py-2 rounded-xl font-semibold bg-tcc-600 hover:bg-tcc-700 text-white shadow-sm">บันทึกการแก้ไข</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- MODAL: EDIT HISTORY LOG -->
   <div id="editHistoryModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl border border-slate-100 max-h-[90vh] overflow-y-auto animate-fadeIn">
@@ -1543,43 +1615,6 @@
     </div>
   </div>
 
-  <!-- MODAL: EDIT ASSET IN INVENTORY -->
-  <div id="editItemModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100 animate-fadeIn">
-      <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
-        <h3 class="font-bold text-slate-900 text-sm">แก้ไขข้อมูลและสถานะอุปกรณ์</h3>
-        <button onclick="closeEditItemModal()" class="text-slate-400 hover:text-slate-600">✕</button>
-      </div>
-      <form onsubmit="handleSaveItemEdit(event)" class="space-y-3 text-xs">
-        <input type="hidden" id="editItemId">
-        <div>
-          <label class="block font-semibold text-slate-700 mb-1">ชื่ออุปกรณ์ *</label>
-          <input type="text" id="editItemName" required class="w-full px-3 py-2 rounded-xl border border-slate-300">
-        </div>
-        <div>
-          <label class="block font-semibold text-slate-700 mb-1">หมวดหมู่ *</label>
-          <input type="text" id="editItemCategory" required class="w-full px-3 py-2 rounded-xl border border-slate-300">
-        </div>
-        <div>
-          <label class="block font-semibold text-slate-700 mb-1">Serial Number</label>
-          <input type="text" id="editItemSerial" class="w-full px-3 py-2 rounded-xl border border-slate-300">
-        </div>
-        <div>
-          <label class="block font-semibold text-slate-700 mb-1">สถานะอุปกรณ์ *</label>
-          <select id="editItemStatus" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white font-semibold">
-            <option value="Available">Available (พร้อมใช้งาน)</option>
-            <option value="Maintenance">Maintenance (ซ่อมบำรุง)</option>
-            <option value="Borrowed">Borrowed (กำลังถูกยืม)</option>
-          </select>
-        </div>
-        <div class="pt-3 flex justify-end gap-2 border-t border-slate-100">
-          <button type="button" onclick="closeEditItemModal()" class="px-4 py-2 rounded-xl font-semibold text-slate-600 hover:bg-slate-100">ยกเลิก</button>
-          <button type="submit" class="px-4 py-2 rounded-xl font-semibold bg-tcc-600 hover:bg-tcc-700 text-white shadow-sm">บันทึกการแก้ไข</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
   <!-- MODAL: ADD ASSET -->
   <div id="addItemModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100 animate-fadeIn">
@@ -1671,9 +1706,7 @@
     </div>
   </div>
 
-  <!-- ============================================================== -->
-  <!-- JAVASCRIPT APPLICATION LOGIC & TESTS (ข้อ 3) -->
-  <!-- ============================================================== -->
+  <!-- JAVASCRIPT APPLICATION LOGIC -->
   <script>
     const DEFAULT_GOOGLE_CLIENT_ID = "628112292012-4318svsm8bht6md74meltttnvnugtuk4.apps.googleusercontent.com";
     const STORAGE_KEY_URL = "it_asset_webapp_url";
@@ -1904,9 +1937,7 @@
       userRoles: loadSavedUserRoles()
     };
 
-    /* =========================================================
-     * AUTHENTICATION & RBAC
-     * ========================================================= */
+    /* AUTH & RBAC */
     function parseJwt(token) {
       try {
         const base64Url = token.split('.')[1];
@@ -1991,7 +2022,7 @@
       state.currentUser = null;
       localStorage.removeItem(STORAGE_KEY_USER);
       applyUserRoleUI();
-      switchServiceCategory('assetService');
+      switchTab('borrowTab');
       showNotification("ออกจากระบบเรียบร้อยแล้ว", "info");
     }
 
@@ -2058,6 +2089,19 @@
         else el.classList.add("admin-hidden");
       });
 
+      const sidebarRoleLabel = document.getElementById("sidebarRoleLabel");
+      if (sidebarRoleLabel && user) {
+        sidebarRoleLabel.innerText = isSuperAdmin ? "Super Admin Console" : "Admin Console";
+      }
+
+      const adminSidebar = document.getElementById("adminSidebar");
+      if (isAdmin) {
+        adminSidebar?.classList.remove("admin-hidden");
+        if (window.innerWidth >= 1024) adminSidebar?.classList.remove("hidden");
+      } else {
+        adminSidebar?.classList.add("admin-hidden");
+      }
+
       renderAll();
     }
 
@@ -2093,51 +2137,35 @@
       processUserLogin(email, null, null);
     }
 
-    /* =========================================================
-     * 1. NAVIGATION & MENU CONTROLLERS (ข้อ 1)
-     * ========================================================= */
-    let currentServiceCategory = 'assetService';
-
-    function switchServiceCategory(catId) {
-      currentServiceCategory = catId;
-      document.querySelectorAll(".service-cat-btn").forEach(btn => {
-        btn.classList.remove("bg-tcc-600", "text-white", "shadow-sm");
-        btn.classList.add("text-slate-600", "hover:bg-slate-100");
-      });
-
-      const activeBtn = document.getElementById("catBtn-" + catId);
-      if (activeBtn) {
-        activeBtn.classList.add("bg-tcc-600", "text-white", "shadow-sm");
-        activeBtn.classList.remove("text-slate-600", "hover:bg-slate-100");
-      }
-
-      document.querySelectorAll(".subnav-group").forEach(el => el.classList.add("hidden"));
-      const activeSubnav = document.getElementById("subnav-" + catId);
-      if (activeSubnav) activeSubnav.classList.remove("hidden");
-
-      // Auto route to first tab of category
-      if (catId === 'assetService') switchTab('borrowTab');
-      else if (catId === 'ticketService') switchTab('ticketCreateTab');
-      else if (catId === 'dashboardService') switchTab('dashboardTab');
-      else if (catId === 'kbService') switchTab('kbTab');
-      else if (catId === 'adminService') switchTab('rolesTab');
-      else if (catId === 'aiService') switchTab('aiAssistantTab');
-    }
-
+    /* NAVIGATION CONTROLLER (SIDEBAR & USER TABS) */
     function switchTab(tabId) {
       document.querySelectorAll(".tab-content").forEach(el => el.classList.add("hidden"));
-      document.querySelectorAll(".sub-tab-btn").forEach(el => {
-        el.classList.remove("bg-tcc-600", "text-white", "shadow-sm");
-        el.classList.add("text-slate-600");
-      });
 
-      const targetTab = document.getElementById("tabContent-" + tabId);
-      const targetBtn = document.getElementById("tabBtn-" + tabId);
-      if (targetTab) targetTab.classList.remove("hidden");
-      if (targetBtn) {
-        targetBtn.classList.add("bg-tcc-600", "text-white", "shadow-sm");
-        targetBtn.classList.remove("text-slate-600");
+      // Update User Top Nav Button styling
+      document.querySelectorAll(".user-nav-btn").forEach(el => {
+        el.classList.remove("bg-tcc-600", "text-white", "shadow-sm");
+        el.classList.add("text-slate-600", "hover:bg-slate-100");
+      });
+      const targetUserBtn = document.getElementById("tabBtn-" + tabId);
+      if (targetUserBtn) {
+        targetUserBtn.classList.add("bg-tcc-600", "text-white", "shadow-sm");
+        targetUserBtn.classList.remove("text-slate-600", "hover:bg-slate-100");
       }
+
+      // Update Admin Sidebar Button styling
+      document.querySelectorAll(".admin-sidebar-btn").forEach(el => {
+        el.classList.remove("bg-tcc-600", "text-white", "shadow-sm", "font-bold");
+        el.classList.add("text-slate-700", "hover:bg-slate-100");
+      });
+      const targetSidebarBtn = document.getElementById("sidebarBtn-" + tabId);
+      if (targetSidebarBtn) {
+        targetSidebarBtn.classList.add("bg-tcc-600", "text-white", "shadow-sm", "font-bold");
+        targetSidebarBtn.classList.remove("text-slate-700", "hover:bg-slate-100");
+      }
+
+      // Show target tab
+      const targetTab = document.getElementById("tabContent-" + tabId);
+      if (targetTab) targetTab.classList.remove("hidden");
 
       if (tabId === "dashboardTab") renderMonthlyDashboard();
       if (tabId === "myTicketsTab") renderMyTicketsList();
@@ -2145,19 +2173,14 @@
       if (tabId === "kbTab") renderKnowledgeBaseList();
     }
 
-    function quickGoAction(targetTab) {
-      if (targetTab === 'borrowTab') {
-        switchServiceCategory('assetService');
-        switchTab('borrowTab');
-      } else if (targetTab === 'ticketCreateTab') {
-        switchServiceCategory('ticketService');
-        switchTab('ticketCreateTab');
+    function toggleAdminSidebarMobile() {
+      const sidebar = document.getElementById("adminSidebar");
+      if (sidebar) {
+        sidebar.classList.toggle("hidden");
       }
     }
 
-    /* =========================================================
-     * 2. REDESIGNED UNIFIED DASHBOARD ANALYTICS (ข้อ 2)
-     * ========================================================= */
+    /* UNIFIED DASHBOARD ANALYTICS */
     const THAI_MONTHS = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
 
     function renderMonthlyDashboard() {
@@ -2344,9 +2367,7 @@
       }
     }
 
-    /* =========================================================
-     * 3. TICKETING & HELPDESK FULL LOGIC (ข้อ 3)
-     * ========================================================= */
+    /* TICKETING & HELPDESK FULL LOGIC */
     function calculateSlaTarget(priority) {
       let hours = 24;
       if (priority === "Critical") hours = 2;
@@ -2509,8 +2530,7 @@
         return matchQ && matchP && matchA && matchS;
       });
 
-      // Update badge
-      const badge = document.getElementById("tabBadgeAdminTickets");
+      const badge = document.getElementById("tabBadgeAdminTickets") || document.getElementById("sidebarBadgeTickets");
       if (badge) badge.innerText = filtered.length;
 
       // Render Kanban Columns
@@ -2584,17 +2604,15 @@
       document.getElementById("detailTicketStatusBadge").innerText = ticket.status;
       document.getElementById("detailTicketSlaBadge").innerText = `${ticket.sla_target} น.`;
 
-      // Attachment
       const attachBox = document.getElementById("detailAttachmentBox");
       const attachCont = document.getElementById("detailAttachmentContainer");
       if (ticket.attachment_name) {
         attachBox.classList.remove("hidden");
-        attachCont.innerHTML = `<span class="font-medium text-slate-700">📎 ${ticket.attachment_name}</span><span class="text-tcc-600 font-bold">ดาวน์โหลด/ดูภาพ</span>`;
+        attachCont.innerHTML = `<span class="font-medium text-slate-700">📎 ${ticket.attachment_name}</span><span class="text-tcc-600 font-bold">ดูเอกสาร</span>`;
       } else {
         attachBox.classList.add("hidden");
       }
 
-      // CSAT Area
       const csatBox = document.getElementById("detailCsatBox");
       const csatLabel = document.getElementById("detailCsatStatusLabel");
       if (ticket.status === "Resolved" || ticket.status === "Closed") {
@@ -2684,7 +2702,6 @@
       document.getElementById("adminActionTicketNumber").innerText = `รหัสเคส: ${ticket.ticket_id} - ${ticket.title}`;
       document.getElementById("adminActionStatus").value = ticket.status;
 
-      // Populate agent select
       const agentSel = document.getElementById("adminActionAgent");
       if (agentSel) {
         const admins = state.userRoles.filter(r => r.role === "admin" || r.role === "superadmin");
@@ -2748,9 +2765,7 @@
       renderAll();
     }
 
-    /* =========================================================
-     * KNOWLEDGE BASE FUNCTIONS
-     * ========================================================= */
+    /* KNOWLEDGE BASE FUNCTIONS */
     function renderKnowledgeBaseList() {
       const container = document.getElementById("kbListContainer");
       const q = (document.getElementById("kbSearchInput")?.value || "").toLowerCase().trim();
@@ -2810,9 +2825,7 @@
       closeKbQuickSelectModal();
     }
 
-    /* =========================================================
-     * ASSET FUNCTIONS & GENERAL HELPERS
-     * ========================================================= */
+    /* ASSET FUNCTIONS & GENERAL HELPERS */
     function isItemBorrowed(item) {
       if (!item) return false;
       const itemId = String(item.item_id || item).trim().toLowerCase();
@@ -3064,17 +3077,18 @@
       }).join("");
     }
 
-    function renderReturnTable() {
+    function renderReturnTable(filteredList = null) {
+      const list = filteredList || state.activeBorrows;
       const tbody = document.getElementById("returnTableBody");
       const today = getOffsetDate(0);
       if (!tbody) return;
 
-      if (state.activeBorrows.length === 0) {
+      if (list.length === 0) {
         tbody.innerHTML = '<tr><td colspan="8" class="py-8 text-center text-slate-400 text-xs">ไม่มีรายการค้างส่งคืน 🎉</td></tr>';
         return;
       }
 
-      tbody.innerHTML = state.activeBorrows.map(b => {
+      tbody.innerHTML = list.map(b => {
         const item = state.items.find(i => i.item_id === b.item_id) || { item_name: b.item_id };
         const isOverdue = b.expected_return && b.expected_return < today;
         const isSel = state.selectedReturnTransIds.includes(b.trans_id);
@@ -3162,10 +3176,11 @@
       renderAll();
     }
 
-    function renderInventoryTable() {
+    function renderInventoryTable(filteredList = null) {
+      const list = filteredList || state.items;
       const tbody = document.getElementById("inventoryTableBody");
       if (!tbody) return;
-      tbody.innerHTML = state.items.map(item => `
+      tbody.innerHTML = list.map(item => `
         <tr class="hover:bg-slate-50 transition">
           <td class="py-3 px-4 font-mono font-bold text-tcc-700">${item.item_id}</td>
           <td class="py-3 px-4 font-bold text-slate-900">${item.item_name}</td>
@@ -3181,10 +3196,11 @@
       `).join("");
     }
 
-    function renderHistoryTable() {
+    function renderHistoryTable(filteredList = null) {
+      const list = filteredList || state.allLogs;
       const tbody = document.getElementById("historyTableBody");
       if (!tbody) return;
-      tbody.innerHTML = state.allLogs.map(l => {
+      tbody.innerHTML = list.map(l => {
         const item = state.items.find(i => i.item_id === l.item_id) || { item_name: l.item_id };
         const isRet = l.trans_status === "Returned";
         return `
@@ -3388,7 +3404,7 @@
         res.innerHTML = `
           <div class="flex items-center justify-between">
             <span class="font-bold text-slate-900">[${item.item_id}] ${item.item_name}</span>
-            <button onclick="addSelectedItem('${item.item_id}'); switchServiceCategory('assetService'); switchTab('borrowTab');" class="px-2.5 py-1 bg-tcc-600 text-white rounded text-xs font-bold">เลือกยืมทันที</button>
+            <button onclick="addSelectedItem('${item.item_id}'); switchTab('borrowTab');" class="px-2.5 py-1 bg-tcc-600 text-white rounded text-xs font-bold">เลือกยืมทันที</button>
           </div>
           <p class="text-slate-600 text-xs mt-1">แนะนำอุปกรณ์นี้เนื่องจากมีสเปกพร้อมใช้งานและตรงกับงาน "${p}"</p>
         `;
@@ -3443,15 +3459,19 @@
         aiSel.innerHTML = '<option value="">-- เลือกรายการยืมเพื่อร่างทวงของ --</option>' + state.activeBorrows.map(b => `<option value="${b.trans_id}">${b.borrower_name} ยืม [${b.item_id}] (กำหนดส่ง: ${b.expected_return})</option>`).join("");
       }
 
-      const catBadges = document.getElementById("badgeActiveTicketsCat");
       const activeTickets = state.tickets.filter(t => t.status === "Open" || t.status === "In Progress");
-      if (catBadges) {
-        if (activeTickets.length > 0) {
-          catBadges.innerText = activeTickets.length;
-          catBadges.classList.remove("hidden");
-        } else {
-          catBadges.classList.add("hidden");
-        }
+      const sidebarBadgeTickets = document.getElementById("sidebarBadgeTickets");
+      if (sidebarBadgeTickets) sidebarBadgeTickets.innerText = activeTickets.length;
+
+      const sidebarBadgeReturns = document.getElementById("sidebarBadgeReturns");
+      if (sidebarBadgeReturns) sidebarBadgeReturns.innerText = state.activeBorrows.length;
+
+      const sidebarBadgeHistory = document.getElementById("sidebarBadgeHistory");
+      if (sidebarBadgeHistory) sidebarBadgeHistory.innerText = state.allLogs.length;
+
+      const sidebarRoleLabel = document.getElementById("sidebarRoleLabel");
+      if (sidebarRoleLabel && state.currentUser) {
+        sidebarRoleLabel.innerText = state.currentUser.role === 'superadmin' ? '👑 Super Admin Console' : '🛡️ Admin Console';
       }
     }
 
@@ -3575,22 +3595,7 @@ function handleGetInitialData() {
         const matchQ = !q || i.item_name.toLowerCase().includes(q) || i.item_id.toLowerCase().includes(q);
         return matchS && matchC && matchQ;
       });
-      const tbody = document.getElementById("inventoryTableBody");
-      if (!tbody) return;
-      tbody.innerHTML = filtered.map(item => `
-        <tr class="hover:bg-slate-50 transition">
-          <td class="py-3 px-4 font-mono font-bold text-tcc-700">${item.item_id}</td>
-          <td class="py-3 px-4 font-bold text-slate-900">${item.item_name}</td>
-          <td class="py-3 px-4 text-xs"><span class="bg-slate-100 px-2 py-0.5 rounded">${item.category}</span></td>
-          <td class="py-3 px-4 font-mono text-xs text-slate-500">${item.serial_number || '-'}</td>
-          <td class="py-3 px-4 text-center">
-            ${isItemBorrowed(item) ? '<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800">กำลังยืม</span>' : (item.status === 'Maintenance' ? '<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800">ซ่อมบำรุง</span>' : '<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">พร้อมใช้งาน</span>')}
-          </td>
-          <td class="py-3 px-4 text-center">
-            <button onclick="openEditItemModal('${escapeQuotes(item.item_id)}')" class="px-2.5 py-1 text-xs text-tcc-700 hover:bg-tcc-50 rounded-lg border border-slate-200">✏️ แก้ไข</button>
-          </td>
-        </tr>
-      `).join("");
+      renderInventoryTable(filtered);
     }
 
     function filterHistory() {
@@ -3601,27 +3606,7 @@ function handleGetInitialData() {
         const matchQ = !q || l.trans_id.toLowerCase().includes(q) || l.borrower_name.toLowerCase().includes(q) || l.item_id.toLowerCase().includes(q);
         return matchS && matchQ;
       });
-      const tbody = document.getElementById("historyTableBody");
-      if (!tbody) return;
-      tbody.innerHTML = filtered.map(l => {
-        const item = state.items.find(i => i.item_id === l.item_id) || { item_name: l.item_id };
-        const isRet = l.trans_status === "Returned";
-        return `
-          <tr class="hover:bg-slate-50 transition">
-            <td class="py-3 px-4 font-mono text-xs font-bold">${l.trans_id}</td>
-            <td class="py-3 px-4 font-bold text-slate-900">${item.item_name} <span class="font-mono text-xs text-slate-400 block">[${l.item_id}]</span></td>
-            <td class="py-3 px-4">${l.borrower_name} <span class="text-xs text-slate-500 block">${l.borrower_dept}</span></td>
-            <td class="py-3 px-4 text-xs">${l.borrow_date}</td>
-            <td class="py-3 px-4 text-xs">${l.expected_return}</td>
-            <td class="py-3 px-4 text-xs text-emerald-700">${isRet ? (l.actual_return || '-') : '-'}</td>
-            <td class="py-3 px-4 text-center">${isRet ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">คืนแล้ว</span>' : '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">กำลังยืม</span>'}</td>
-            <td class="py-3 px-4 text-xs max-w-xs truncate text-slate-600">${l.notes || '-'}</td>
-            <td class="py-3 px-4 text-center">
-              <button onclick="openEditHistoryModal('${escapeQuotes(l.trans_id)}')" class="px-2 py-1 text-xs text-tcc-700 hover:bg-tcc-50 rounded-lg">✏️ แก้ไข</button>
-            </td>
-          </tr>
-        `;
-      }).join("");
+      renderHistoryTable(filtered);
     }
 
     function openEditItemModal(itemId) {
@@ -3697,7 +3682,7 @@ function handleGetInitialData() {
       }
 
       applyUserRoleUI();
-      switchServiceCategory('assetService');
+      switchTab('borrowTab');
       setTimeout(() => initGoogleSignIn(), 300);
     });
   </script>

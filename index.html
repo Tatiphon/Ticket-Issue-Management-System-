@@ -26,7 +26,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ศูนย์บริการเทคโนโลยีสารสนเทศ | ฝ่ายเทคโนโลยีสารสนเทศ หอการค้าไทย</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script>
     tailwind.config = {
       theme: {
@@ -139,12 +138,7 @@
           <!-- Auth Status & Profile -->
           <div id="authContainer" class="flex items-center gap-2 pl-2 border-l border-slate-200">
             <button id="btnLoginModal" onclick="openLoginModal()" class="px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm transition">
-              <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24">
-                <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.66v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.15z"/>
-                <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.92l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.26v3.14C3.27 21.39 7.35 24 12 24z"/>
-                <path fill="#FBBC05" d="M5.28 14.26c-.25-.72-.38-1.49-.38-2.26s.13-1.54.38-2.26V6.6H1.26C.46 8.21 0 10.05 0 12s.46 3.79 1.26 5.4l4.02-3.14z"/>
-                <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.35 0 3.27 2.61 1.26 6.6l4.02 3.14c.95-2.83 3.6-4.99 6.72-4.99z"/>
-              </svg>
+              <svg class="w-4 h-4 shrink-0 text-tcc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
               <span>เข้าสู่ระบบ</span>
             </button>
 
@@ -179,49 +173,62 @@
       <h2 class="text-lg sm:text-xl font-bold text-slate-900">ศูนย์บริการเทคโนโลยีสารสนเทศ</h2>
       <p class="text-xs font-semibold text-tcc-700 mb-5">ฝ่ายเทคโนโลยีสารสนเทศ หอการค้าไทย</p>
 
-      <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-left mb-4 space-y-3">
-        <div class="flex items-center gap-2 text-xs font-bold text-slate-800">
+      <div class="p-5 bg-slate-50 rounded-2xl border border-slate-200 text-left mb-4 space-y-3.5">
+        <div class="flex items-center gap-2 text-xs font-bold text-slate-800 pb-2 border-b border-slate-200/70">
           <svg class="w-4 h-4 text-tcc-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-          <span>เข้าสู่ระบบเพื่อใช้งานยืมอุปกรณ์ / แจ้งซ่อมไอที</span>
+          <span>เข้าสู่ระบบด้วยชื่อผู้ใช้และรหัสผ่าน (User &amp; Password)</span>
         </div>
 
-        <form onsubmit="event.preventDefault(); handleGateEmailLogin();" class="space-y-2.5">
+        <form onsubmit="event.preventDefault(); handleGateUserPassLogin();" class="space-y-3">
           <div>
-            <label class="block text-[11px] font-semibold text-slate-600 mb-1">ชื่อ-นามสกุล:</label>
-            <input type="text" id="gateLoginNameInput" placeholder="เช่น สมชาย ใจดี" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-tcc-500 outline-none bg-white">
+            <label class="block text-[11px] font-semibold text-slate-700 mb-1">
+              บัญชีผู้ใช้งาน / อีเมล: <span class="text-rose-500">*</span>
+            </label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+              </span>
+              <input type="text" id="gateLoginEmailInput" required placeholder="name@thaichamber.or.th หรือชื่อผู้ใช้" class="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-tcc-500 outline-none bg-white">
+            </div>
           </div>
           <div>
-            <label class="block text-[11px] font-semibold text-slate-600 mb-1">อีเมลองค์กร (@thaichamber.or.th) หรือแอดมิน: <span class="text-rose-500">*</span></label>
-            <input type="email" id="gateLoginEmailInput" required placeholder="name@thaichamber.or.th" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-tcc-500 outline-none bg-white">
+            <label class="block text-[11px] font-semibold text-slate-700 mb-1">
+              รหัสผ่าน (Password): <span class="text-rose-500">*</span>
+            </label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+              </span>
+              <input type="password" id="gateLoginPasswordInput" required placeholder="กรอกรหัสผ่านของคุณ" class="w-full pl-9 pr-10 py-2.5 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-tcc-500 outline-none bg-white font-medium">
+              <button type="button" onclick="togglePasswordVisibility('gateLoginPasswordInput', 'gatePassToggleIcon')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer" title="ดู/ซ่อนรหัสผ่าน">
+                <span id="gatePassToggleIcon" class="text-xs">👁️</span>
+              </button>
+            </div>
           </div>
           <button type="submit" class="w-full py-2.5 bg-tcc-600 hover:bg-tcc-700 active:bg-tcc-800 text-white rounded-xl text-xs font-bold shadow-md shadow-tcc-600/20 transition flex items-center justify-center gap-2">
-            <span>เข้าสู่ระบบด้วยอีเมล</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
+            <span>เข้าสู่ระบบ (Sign In)</span>
           </button>
         </form>
-
-        <div class="pt-2 border-t border-slate-200 flex flex-col items-center">
-          <span class="text-[10px] text-slate-400 mb-2">หรือลงชื่อเข้าใช้ผ่านบัญชี Google</span>
-          <div id="googleGateButtonWrapper" class="min-h-[40px] flex items-center justify-center w-full"></div>
-        </div>
       </div>
 
       <!-- Quick Role Test Switcher -->
       <div class="text-left border-t border-slate-100 pt-3">
-        <span class="text-[11px] font-semibold text-slate-500 block mb-2">⚡ ทดสอบเข้าใช้งานด่วนตามสิทธิ์:</span>
+        <span class="text-[11px] font-semibold text-slate-500 block mb-2">⚡ ทดสอบเข้าใช้งานด่วนตามสิทธิ์ (คลิกเพื่อเข้าสู่ระบบทันที):</span>
         <div class="grid grid-cols-2 gap-1.5 text-[11px]">
-          <button type="button" onclick="loginDemoAccount('tatitop07@gmail.com')" class="px-2 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 rounded-xl font-semibold transition truncate text-left">
+          <button type="button" onclick="loginDemoAccount('tatitop07@gmail.com', 'admin1234')" class="px-2.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 rounded-xl font-semibold transition truncate text-left shadow-2xs">
             👑 Super Admin 1
           </button>
-          <button type="button" onclick="loginDemoAccount('tatiphon.hi@thaichamber.or.th')" class="px-2 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 rounded-xl font-semibold transition truncate text-left">
+          <button type="button" onclick="loginDemoAccount('tatiphon.hi@thaichamber.or.th', 'admin1234')" class="px-2.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 rounded-xl font-semibold transition truncate text-left shadow-2xs">
             👑 Super Admin 2
           </button>
-          <button type="button" onclick="loginDemoAccount('wattanachai.mi@thaichamber.or.th')" class="px-2 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200 rounded-xl font-semibold transition truncate text-left">
+          <button type="button" onclick="loginDemoAccount('wattanachai.mi@thaichamber.or.th', 'admin1234')" class="px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200 rounded-xl font-semibold transition truncate text-left shadow-2xs">
             🛡️ Admin (wattanachai)
           </button>
-          <button type="button" onclick="loginDemoAccount('supakon.su@thaichamber.or.th')" class="px-2 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200 rounded-xl font-semibold transition truncate text-left">
+          <button type="button" onclick="loginDemoAccount('supakon.su@thaichamber.or.th', 'admin1234')" class="px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200 rounded-xl font-semibold transition truncate text-left shadow-2xs">
             🛡️ Admin (supakon)
           </button>
-          <button type="button" onclick="loginDemoAccount('somchai.user@thaichamber.or.th')" class="col-span-2 px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-xl font-semibold transition text-center truncate">
+          <button type="button" onclick="loginDemoAccount('somchai.user@thaichamber.or.th', 'user1234')" class="col-span-2 px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-xl font-semibold transition text-center truncate shadow-2xs">
             👤 พนักงานทั่วไป (somchai.user@thaichamber.or.th)
           </button>
         </div>
@@ -1189,31 +1196,169 @@
         <!-- TAB: USER ROLES MANAGEMENT -->
         <!-- ============================================================== -->
         <div id="tabContent-rolesTab" class="tab-content hidden admin-only-view">
-          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 mb-4">
-              <div>
-                <h2 class="text-base sm:text-lg font-bold text-slate-900">กำหนดและจัดการสิทธิ์ผู้ใช้งาน (Role Management)</h2>
-                <p class="text-xs text-slate-500">Super Admin สามารถกำหนดสิทธิ์ (Super Admin, Admin, User) ให้อีเมลต่างๆ</p>
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-5 space-y-3.5 max-w-[888px] mx-auto w-full">
+            
+            <!-- Header Bar with Actions: Clean 2-button layout that never wraps -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3.5 border-b border-slate-100">
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-amber-500 shrink-0"></span>
+                  <h2 class="text-sm sm:text-base md:text-lg font-bold text-slate-900 tracking-tight whitespace-nowrap">
+                    กำหนดและจัดการสิทธิ์ผู้ใช้งาน <span class="text-slate-500 font-semibold text-xs sm:text-sm font-sans">(User &amp; Role Management)</span>
+                  </h2>
+                </div>
+                <p class="text-xs text-slate-500 mt-0.5 truncate">บริหารจัดการบัญชีผู้ใช้ กำหนดสิทธิ์ และนำเข้า-ส่งออกไฟล์ข้อมูล Excel</p>
               </div>
-              <button onclick="openRoleModal()" class="superadmin-only hidden px-3.5 py-2 bg-tcc-600 hover:bg-tcc-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm">
-                <span>+ เพิ่ม/กำหนดสิทธิ์ผู้ใช้</span>
-              </button>
+
+              <!-- Action Buttons: Clean 2-button group on single line -->
+              <div class="flex items-center gap-2 shrink-0">
+                <!-- Dropdown Menu for Excel / Batch Data Operations -->
+                <div class="relative inline-block text-left" id="excelDropdownContainer">
+                  <button type="button" 
+                          id="btnExcelMenuToggle" 
+                          onclick="toggleExcelDropdown(event)" 
+                          class="px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition shadow-2xs cursor-pointer select-none"
+                          title="จัดการข้อมูล Excel (นำเข้า, ส่งออก, แบบฟอร์ม Template)">
+                    <svg class="w-3.5 h-3.5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    <span>จัดการข้อมูล Excel</span>
+                    <svg class="w-3 h-3 text-slate-400 shrink-0 ml-0.5 transition-transform duration-200" id="excelMenuChevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                  </button>
+
+                  <!-- Floating Dropdown Menu -->
+                  <div id="excelDropdownMenu" class="hidden absolute right-0 mt-1.5 w-64 bg-white rounded-xl shadow-xl border border-slate-200 py-1 z-40 text-xs divide-y divide-slate-100">
+                    <div class="p-1 space-y-0.5">
+                      <!-- Import -->
+                      <button type="button" 
+                              onclick="triggerExcelAction('import')" 
+                              class="w-full text-left px-2.5 py-2 rounded-lg hover:bg-sky-50 text-slate-700 hover:text-sky-900 flex items-center gap-2.5 transition cursor-pointer group">
+                        <div class="w-7 h-7 rounded-lg bg-sky-100 text-sky-600 flex items-center justify-center shrink-0 group-hover:bg-sky-200 transition">
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                        </div>
+                        <div class="min-w-0">
+                          <div class="font-bold text-slate-800 group-hover:text-sky-900">นำเข้าไฟล์ (Import)</div>
+                          <div class="text-[11px] text-slate-400 group-hover:text-sky-700">อัปโหลดไฟล์รายชื่อผู้ใช้จาก Excel / CSV</div>
+                        </div>
+                      </button>
+
+                      <!-- Export -->
+                      <button type="button" 
+                              onclick="triggerExcelAction('export')" 
+                              class="w-full text-left px-2.5 py-2 rounded-lg hover:bg-emerald-50 text-slate-700 hover:text-emerald-900 flex items-center gap-2.5 transition cursor-pointer group">
+                        <div class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0 group-hover:bg-emerald-200 transition">
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                        </div>
+                        <div class="min-w-0">
+                          <div class="font-bold text-slate-800 group-hover:text-emerald-900">ส่งออก Excel (Export)</div>
+                          <div class="text-[11px] text-slate-400 group-hover:text-emerald-700">ดาวน์โหลดรายชื่อผู้ใช้ทั้งหมดเป็นไฟล์ Excel</div>
+                        </div>
+                      </button>
+                    </div>
+
+                    <!-- Template -->
+                    <div class="p-1">
+                      <button type="button" 
+                              onclick="triggerExcelAction('template')" 
+                              class="w-full text-left px-2.5 py-2 rounded-lg hover:bg-slate-100 text-slate-700 hover:text-slate-900 flex items-center gap-2.5 transition cursor-pointer group">
+                        <div class="w-7 h-7 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center shrink-0 group-hover:bg-slate-200 transition">
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        </div>
+                        <div class="min-w-0">
+                          <div class="font-bold text-slate-800 group-hover:text-slate-900">แบบฟอร์ม Template</div>
+                          <div class="text-[11px] text-slate-400 group-hover:text-slate-600">ดาวน์โหลดไฟล์ตัวอย่างสำหรับกรอกข้อมูล</div>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Add User Button (Primary Action) -->
+                <button type="button" 
+                        onclick="openRoleModal(-1)" 
+                        class="px-3.5 py-1.5 bg-tcc-600 hover:bg-tcc-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm hover:shadow transition cursor-pointer shrink-0" 
+                        title="เพิ่มผู้ใช้งานระบบคนใหม่">
+                  <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                  </svg>
+                  <span>เพิ่มผู้ใช้งาน</span>
+                </button>
+              </div>
             </div>
 
-            <div class="overflow-x-auto">
-              <table class="w-full text-left text-xs sm:text-sm">
-                <thead class="bg-slate-50 text-slate-600 uppercase border-y border-slate-100 text-xs">
+            <!-- Search & Filters Toolbar -->
+            <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200/80 flex flex-col gap-2.5 text-xs">
+              <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
+                <!-- Search Box -->
+                <div class="relative flex-1">
+                  <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                  </span>
+                  <input type="text" id="searchRoleInput" oninput="handleRoleSearchInput(this.value)" placeholder="ค้นหาชื่อ, บัญชีผู้ใช้, อีเมล หรือแผนก..." class="w-full pl-9 pr-8 py-1.5 rounded-xl border border-slate-300 text-xs bg-white outline-none focus:ring-2 focus:ring-tcc-500 shadow-2xs">
+                  <button type="button" onclick="clearRoleSearchInput()" id="btnClearRoleSearch" class="hidden absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer">
+                    <span class="text-sm font-bold">&times;</span>
+                  </button>
+                </div>
+
+                <!-- Department Filter -->
+                <div class="w-full sm:w-52 shrink-0">
+                  <select id="filterRoleDept" onchange="filterRolesTable()" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white font-medium text-slate-700 outline-none text-xs focus:ring-2 focus:ring-tcc-500 shadow-2xs">
+                    <option value="">ทุกฝ่าย / แผนก</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Secondary Filters & Results Counter -->
+              <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-200/60">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <!-- Role Filter -->
+                  <select id="filterRoleLevel" onchange="filterRolesTable()" class="px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white font-medium text-slate-700 outline-none text-xs focus:ring-2 focus:ring-tcc-500 shadow-2xs">
+                    <option value="">ทุกระดับสิทธิ์</option>
+                    <option value="superadmin">Super Admin</option>
+                    <option value="admin">Admin</option>
+                    <option value="user">User</option>
+                  </select>
+
+                  <!-- Status Filter -->
+                  <select id="filterRoleStatus" onchange="filterRolesTable()" class="px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white font-medium text-slate-700 outline-none text-xs focus:ring-2 focus:ring-tcc-500 shadow-2xs">
+                    <option value="">ทุกสถานะ</option>
+                    <option value="active">เปิดใช้งาน</option>
+                    <option value="disabled">ปิดการใช้งาน</option>
+                  </select>
+
+                  <!-- Reset Filters Button -->
+                  <button type="button" onclick="resetRoleFilters()" class="px-2.5 py-1.5 text-slate-600 hover:text-slate-900 bg-white hover:bg-slate-100 border border-slate-200 rounded-xl font-medium text-xs flex items-center gap-1.5 transition shadow-2xs cursor-pointer">
+                    <svg class="w-3.5 h-3.5 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                    <span>รีเซ็ตตัวกรอง</span>
+                  </button>
+                </div>
+
+                <div class="flex items-center gap-2">
+                  <span id="roleCountBadge" class="px-2.5 py-1 bg-slate-200 text-slate-700 font-bold rounded-lg text-[11px] shrink-0">แสดง 0 จาก 0 คน</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Table of Users (Fits comfortably in 838px with zero wrap and all 7 columns fully visible) -->
+            <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-2xs">
+              <table class="w-full text-left text-xs whitespace-nowrap divide-y divide-slate-100">
+                <thead class="bg-slate-50 text-slate-600 uppercase font-bold text-[11px] border-b border-slate-200 whitespace-nowrap">
                   <tr>
-                    <th class="py-3 px-4 font-semibold">อีเมล (Email)</th>
-                    <th class="py-3 px-4 font-semibold">ชื่อ-นามสกุล / แผนก</th>
-                    <th class="py-3 px-4 font-semibold text-center">ระดับสิทธิ์</th>
-                    <th class="py-3 px-4 font-semibold">หมายเหตุ</th>
-                    <th class="py-3 px-4 font-semibold text-center">จัดการ</th>
+                    <th class="py-2.5 px-2 text-center w-10 whitespace-nowrap">ลำดับ</th>
+                    <th class="py-2.5 px-3 font-semibold whitespace-nowrap">บัญชีผู้ใช้ / อีเมล</th>
+                    <th class="py-2.5 px-3 font-semibold whitespace-nowrap">ชื่อ-นามสกุล</th>
+                    <th class="py-2.5 px-3 font-semibold whitespace-nowrap">ฝ่าย / แผนก</th>
+                    <th class="py-2.5 px-2.5 font-semibold text-center whitespace-nowrap">สิทธิ์การใช้งาน</th>
+                    <th class="py-2.5 px-2.5 font-semibold text-center whitespace-nowrap">สถานะ</th>
+                    <th class="py-2.5 px-2 text-center w-12 whitespace-nowrap">จัดการ</th>
                   </tr>
                 </thead>
-                <tbody id="rolesTableBody" class="divide-y divide-slate-100"></tbody>
+                <tbody id="rolesTableBody" class="divide-y divide-slate-100 bg-white whitespace-nowrap"></tbody>
               </table>
             </div>
+
           </div>
         </div>
 
@@ -1272,26 +1417,35 @@
              onerror="applyTccLogo(this)" 
              alt="โลโก้หอการค้าไทย" class="tcc-logo-img w-full h-full object-contain" />
       </div>
-      <h3 class="font-bold text-slate-900 text-base">เข้าสู่ระบบหอการค้าไทย</h3>
+      <h3 class="font-bold text-slate-900 text-base mb-4">เข้าสู่ระบบหอการค้าไทย</h3>
 
-      <div class="space-y-3 text-xs text-left">
+      <form onsubmit="event.preventDefault(); handleModalUserPassLogin();" class="space-y-3.5 text-xs text-left">
         <div>
-          <label class="block font-semibold text-slate-600 mb-1">อีเมล @thaichamber.or.th:</label>
-          <input type="email" id="manualLoginEmailInput" placeholder="name@thaichamber.or.th" class="w-full px-3 py-2 rounded-xl border border-slate-300 outline-none focus:ring-2 focus:ring-tcc-500">
+          <label class="block font-semibold text-slate-700 mb-1">บัญชีผู้ใช้ / อีเมล: <span class="text-rose-500">*</span></label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+            </span>
+            <input type="text" id="manualLoginEmailInput" required placeholder="name@thaichamber.or.th หรือชื่อผู้ใช้" class="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-300 outline-none focus:ring-2 focus:ring-tcc-500 text-xs">
+          </div>
         </div>
         <div>
-          <label class="block font-semibold text-slate-600 mb-1">ชื่อ-นามสกุล:</label>
-          <input type="text" id="manualLoginNameInput" placeholder="เช่น สมชาย ใจดี" class="w-full px-3 py-2 rounded-xl border border-slate-300 outline-none focus:ring-2 focus:ring-tcc-500">
+          <label class="block font-semibold text-slate-700 mb-1">รหัสผ่าน (Password): <span class="text-rose-500">*</span></label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+            </span>
+            <input type="password" id="manualLoginPasswordInput" required placeholder="กรอกรหัสผ่านของคุณ" class="w-full pl-9 pr-10 py-2.5 rounded-xl border border-slate-300 outline-none focus:ring-2 focus:ring-tcc-500 text-xs font-medium">
+            <button type="button" onclick="togglePasswordVisibility('manualLoginPasswordInput', 'modalPassToggleIcon')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer" title="ดู/ซ่อนรหัสผ่าน">
+              <span id="modalPassToggleIcon" class="text-xs">👁️</span>
+            </button>
+          </div>
         </div>
-        <button onclick="handleManualEmailLogin()" class="w-full py-2 bg-tcc-600 hover:bg-tcc-700 text-white rounded-xl font-bold transition">
-          เข้าสู่ระบบ
+        <button type="submit" class="w-full py-2.5 bg-tcc-600 hover:bg-tcc-700 active:bg-tcc-800 text-white rounded-xl font-bold transition shadow-md shadow-tcc-600/20 flex items-center justify-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
+          <span>เข้าสู่ระบบ</span>
         </button>
-
-        <div class="pt-2 border-t border-slate-200 flex flex-col items-center">
-          <span class="text-[10px] text-slate-400 mb-2">หรือลงชื่อเข้าใช้ผ่าน Google</span>
-          <div id="googleSignInButtonWrapper" class="min-h-[40px] flex items-center justify-center w-full"></div>
-        </div>
-      </div>
+      </form>
     </div>
   </div>
 
@@ -1438,13 +1592,13 @@
           <h3 class="font-bold text-slate-900 text-sm">เพิ่มบทความคลังความรู้ไอที</h3>
           <p class="text-[11px] text-slate-500">บันทึกวิธีแก้ปัญหาเพื่อให้ทีมงานค้นหาและดึงไปตอบได้รวดเร็ว</p>
         </div>
-        <button onclick="closeAddKbModal()" class="text-slate-400 hover:text-slate-600">✕</button>
+        <button onclick="closeAddKbModal()" class="text-slate-400 hover:text-slate-600 font-bold">&times;</button>
       </div>
 
-      <form onsubmit="handleSaveKbArticle(event)" class="space-y-3 text-xs">
+      <form onsubmit="handleSaveKbArticle(event)" class="space-y-3.5 text-xs">
         <div>
-          <label class="block font-semibold text-slate-700 mb-1">หมวดหมู่ปัญหา *</label>
-          <select id="inputKbCategory" required class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white font-medium text-slate-800">
+          <label class="block font-semibold text-slate-700 mb-1">หมวดหมู่ปัญหา <span class="text-rose-500">*</span></label>
+          <select id="inputKbCategory" required class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white font-medium text-slate-800 outline-none focus:ring-2 focus:ring-tcc-500">
             <option value="ฮาร์ดแวร์ / เครื่องคอมพิวเตอร์ / จอภาพ">ฮาร์ดแวร์ / เครื่องคอมพิวเตอร์ / จอภาพ</option>
             <option value="ซอฟต์แวร์ / MS Office / โปรแกรมทั่วไป">ซอฟต์แวร์ / MS Office / โปรแกรมทั่วไป</option>
             <option value="ระบบเครือข่าย / อินเทอร์เน็ต / Wi-Fi / VPN">ระบบเครือข่าย / อินเทอร์เน็ต / Wi-Fi / VPN</option>
@@ -1456,24 +1610,13 @@
         </div>
 
         <div>
-          <label class="block font-semibold text-slate-700 mb-1">หัวข้อปัญหา (Title) *</label>
-          <select id="selectKbTitlePreset" onchange="handleKbPresetSelect(this.value)" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white mb-1.5 text-xs text-slate-700 font-medium">
-            <option value="">-- เลือกจากรายการปัญหาที่พบบ่อย (หรือเลือกเพื่อกรอกอัตโนมัติ) --</option>
-            <option value="วิธีแก้ไขปัญหาเชื่อมต่อสัญญาณ Wi-Fi หอการค้าไทย (TCC-WiFi)">วิธีแก้ไขปัญหาเชื่อมต่อสัญญาณ Wi-Fi หอการค้าไทย (TCC-WiFi)</option>
-            <option value="วิธีเชื่อมต่อระบบ VPN สำหรับทำงานนอกสถานที่ (WFH)">วิธีเชื่อมต่อระบบ VPN สำหรับทำงานนอกสถานที่ (WFH)</option>
-            <option value="ขั้นตอนการตั้งค่า Outlook และ Microsoft 365 บนเครื่องใหม่">ขั้นตอนการตั้งค่า Outlook และ Microsoft 365 บนเครื่องใหม่</option>
-            <option value="วิธีแก้ปัญหาเครื่องพิมพ์ (Printer) ไม่ตอบสนอง หรือสั่งพิมพ์ไม่ออก">วิธีแก้ปัญหาเครื่องพิมพ์ (Printer) ไม่ตอบสนอง หรือสั่งพิมพ์ไม่ออก</option>
-            <option value="วิธีขอรีเซ็ตรหัสผ่านอีเมลองค์กร และบัญชี Windows">วิธีขอรีเซ็ตรหัสผ่านอีเมลองค์กร และบัญชี Windows</option>
-            <option value="วิธีแก้ไขปัญหาหน้าจอต่อไม่ติด หรือสายแปลงสัญญาณภาพจอ">วิธีแก้ไขปัญหาหน้าจอต่อไม่ติด หรือสายแปลงสัญญาณภาพจอ</option>
-            <option value="วิธีเข้าใช้งาน File Server / Share Drive ส่วนกลาง">วิธีเข้าใช้งาน File Server / Share Drive ส่วนกลาง</option>
-            <option value="__custom__">+ ระบุหัวข้อปัญหาใหม่เอง...</option>
-          </select>
-          <input type="text" id="inputKbTitle" required placeholder="พิมพ์หัวข้อปัญหา หรือเลือกจากตัวเลือกด้านบน..." class="w-full px-3 py-2 rounded-xl border border-slate-300">
+          <label class="block font-semibold text-slate-700 mb-1">หัวข้อปัญหา (Title) <span class="text-rose-500">*</span></label>
+          <input type="text" id="inputKbTitle" required placeholder="ระบุหัวข้อปัญหา หรือชื่อคู่มือการใช้งาน เช่น วิธีเชื่อมต่อ Wi-Fi หรือตั้งค่า VPN..." class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs outline-none focus:ring-2 focus:ring-tcc-500">
         </div>
 
         <div>
-          <label class="block font-semibold text-slate-700 mb-1">ขั้นตอนหรือคำตอบแนะนำ *</label>
-          <textarea id="inputKbContent" rows="4" required placeholder="เขียนขั้นตอนการแก้ปัญหา หรือข้อความที่ใช้ตอบผู้ใช้งาน..." class="w-full px-3 py-2 rounded-xl border border-slate-300"></textarea>
+          <label class="block font-semibold text-slate-700 mb-1">ขั้นตอนหรือคำตอบแนะนำ <span class="text-rose-500">*</span></label>
+          <textarea id="inputKbContent" rows="4" required placeholder="เขียนขั้นตอนการแก้ปัญหา หรือข้อความที่ใช้ตอบผู้ใช้งาน..." class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs outline-none focus:ring-2 focus:ring-tcc-500"></textarea>
         </div>
 
         <!-- Attachment support for KB (Req 4) -->
@@ -1488,7 +1631,7 @@
           </div>
           <div>
             <span class="text-[10px] text-slate-400 block mb-0.5">หรือระบุลิงก์เอกสารออนไลน์ (Google Drive / OneDrive):</span>
-            <input type="url" id="inputKbDocUrl" placeholder="https://drive.google.com/..." class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs bg-white">
+            <input type="url" id="inputKbDocUrl" placeholder="https://drive.google.com/..." class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs bg-white outline-none focus:ring-2 focus:ring-tcc-500">
           </div>
         </div>
 
@@ -1554,42 +1697,215 @@
 
   <!-- MODAL: ADD/EDIT USER ROLE -->
   <div id="roleModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100 animate-fadeIn">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl border border-slate-100 animate-fadeIn max-h-[92vh] overflow-y-auto">
       <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
-        <div>
-          <h3 class="font-bold text-slate-900 text-sm">กำหนดและแก้ไขสิทธิ์ผู้ใช้งาน</h3>
-          <p class="text-[11px] text-slate-500">บันทึกสิทธิ์ลงฐานข้อมูลระบบหอการค้าไทย</p>
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-xl bg-tcc-50 text-tcc-700 flex items-center justify-center font-bold text-sm">👤</div>
+          <div>
+            <h3 id="roleModalTitle" class="font-bold text-slate-900 text-sm">กำหนดและแก้ไขผู้ใช้งานระบบ</h3>
+            <p class="text-[11px] text-slate-500">บันทึกข้อมูลบัญชี สิทธิ์ รหัสผ่าน และสถานะการใช้งาน</p>
+          </div>
         </div>
-        <button onclick="closeRoleModal()" class="text-slate-400 hover:text-slate-600">✕</button>
+        <button onclick="closeRoleModal()" class="text-slate-400 hover:text-slate-600 font-bold">&times;</button>
       </div>
 
-      <form id="roleForm" onsubmit="handleSaveUserRole(event)" class="space-y-3 text-xs">
+      <form id="roleForm" onsubmit="handleSaveUserRole(event)" class="space-y-3.5 text-xs">
         <input type="hidden" id="roleEditIndex" value="-1">
+        
         <div>
-          <label class="block font-semibold text-slate-700 mb-1">อีเมลผู้ใช้งาน (Email) *</label>
-          <input type="email" id="inputRoleEmail" required placeholder="user@thaichamber.or.th" class="w-full px-3 py-2 rounded-xl border border-slate-300 outline-none">
+          <label class="block font-semibold text-slate-700 mb-1">บัญชีผู้ใช้งาน / อีเมล: <span class="text-rose-500">*</span></label>
+          <input type="text" id="inputRoleEmail" required placeholder="user@thaichamber.or.th หรือชื่อบัญชี" class="w-full px-3 py-2 rounded-xl border border-slate-300 outline-none focus:ring-2 focus:ring-tcc-500">
         </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">ชื่อ-นามสกุล:</label>
+            <input type="text" id="inputRoleName" placeholder="เช่น นายสมชาย ใจดี" class="w-full px-3 py-2 rounded-xl border border-slate-300 outline-none focus:ring-2 focus:ring-tcc-500">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">ฝ่าย / แผนก:</label>
+            <select id="inputRoleDept" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white outline-none focus:ring-2 focus:ring-tcc-500"></select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">ระดับสิทธิ์ (Role): <span class="text-rose-500">*</span></label>
+            <select id="inputRoleLevel" required class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white font-semibold outline-none focus:ring-2 focus:ring-tcc-500">
+              <option value="user">👤 User ทั่วไป (ยืมอุปกรณ์ &amp; แจ้งซ่อม)</option>
+              <option value="admin">🛡️ Admin (ผู้ดูแลระบบไอที รับคืน คลัง เคส)</option>
+              <option value="superadmin">👑 Super Admin (สิทธิ์สูงสุด ควบคุมทั้งระบบ)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">สถานะการใช้งาน: <span class="text-rose-500">*</span></label>
+            <select id="inputRoleStatus" required class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white font-semibold outline-none focus:ring-2 focus:ring-tcc-500">
+              <option value="active">🟢 เปิดใช้งาน (Active)</option>
+              <option value="disabled">🔴 ปิดการใช้งาน (Disabled)</option>
+            </select>
+          </div>
+        </div>
+
         <div>
-          <label class="block font-semibold text-slate-700 mb-1">ชื่อ-นามสกุล / แผนก</label>
-          <input type="text" id="inputRoleName" placeholder="เช่น เจ้าหน้าที่ฝ่ายไอที" class="w-full px-3 py-2 rounded-xl border border-slate-300 outline-none">
+          <div class="flex items-center justify-between mb-1">
+            <label class="block font-semibold text-slate-700">รหัสผ่าน (Password): <span class="text-rose-500">*</span></label>
+            <button type="button" onclick="generateRandomPassForInput('inputRolePassword')" class="text-tcc-600 hover:underline text-[11px] font-semibold flex items-center gap-1">
+              <span>🎲 สุ่มรหัสผ่านปลอดภัย</span>
+            </button>
+          </div>
+          <div class="relative">
+            <input type="password" id="inputRolePassword" required placeholder="กำหนดรหัสผ่านเข้าใช้งาน" class="w-full pl-3 pr-10 py-2 rounded-xl border border-slate-300 font-mono text-xs outline-none focus:ring-2 focus:ring-tcc-500">
+            <button type="button" onclick="togglePasswordVisibility('inputRolePassword', 'roleModalPassToggleIcon')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer" title="ดู/ซ่อนรหัสผ่าน">
+              <span id="roleModalPassToggleIcon" class="text-xs">👁️</span>
+            </button>
+          </div>
         </div>
+
         <div>
-          <label class="block font-semibold text-slate-700 mb-1">ระดับสิทธิ์ (Role) *</label>
-          <select id="inputRoleLevel" required class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white font-semibold outline-none">
-            <option value="superadmin">Super Admin (สิทธิ์สูงสุด ควบคุมระบบ)</option>
-            <option value="admin">Admin (ผู้ดูแลระบบไอที รับคืน คลัง เคส)</option>
-            <option value="user">User ทั่วไป (ยืมอุปกรณ์ &amp; แจ้งซ่อม)</option>
-          </select>
+          <label class="block font-semibold text-slate-700 mb-1">หมายเหตุ:</label>
+          <input type="text" id="inputRoleRemark" placeholder="เช่น ผู้ประสานงานไอที, บัญชีชั่วคราว..." class="w-full px-3 py-2 rounded-xl border border-slate-300 outline-none focus:ring-2 focus:ring-tcc-500">
         </div>
-        <div>
-          <label class="block font-semibold text-slate-700 mb-1">หมายเหตุ</label>
-          <input type="text" id="inputRoleRemark" placeholder="เช่น ไอทีส่วนกลาง" class="w-full px-3 py-2 rounded-xl border border-slate-300 outline-none">
-        </div>
+
         <div class="pt-3 flex justify-end gap-2 border-t border-slate-100">
           <button type="button" onclick="closeRoleModal()" class="px-4 py-2 rounded-xl text-slate-600 hover:bg-slate-100 font-semibold">ยกเลิก</button>
-          <button type="submit" class="px-4 py-2 rounded-xl bg-tcc-600 hover:bg-tcc-700 text-white font-semibold shadow-sm">บันทึกสิทธิ์</button>
+          <button type="submit" class="px-4 py-2 rounded-xl bg-tcc-600 hover:bg-tcc-700 text-white font-semibold shadow-sm">บันทึกข้อมูลผู้ใช้</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- MODAL: RESET USER PASSWORD -->
+  <div id="resetPasswordModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-xl border border-slate-100 animate-fadeIn">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+        <div class="flex items-center gap-2">
+          <span class="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-sm">🔑</span>
+          <div>
+            <h3 class="font-bold text-slate-900 text-sm">รีเซ็ตรหัสผ่านผู้ใช้งาน</h3>
+            <p id="resetPassUserLabel" class="text-[11px] text-slate-500 font-mono truncate max-w-[200px]">-</p>
+          </div>
+        </div>
+        <button onclick="closeResetPasswordModal()" class="text-slate-400 hover:text-slate-600 font-bold">&times;</button>
+      </div>
+
+      <form onsubmit="event.preventDefault(); submitResetPassword();" class="space-y-3.5 text-xs">
+        <input type="hidden" id="resetPassTargetEmail">
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="block font-semibold text-slate-700">รหัสผ่านใหม่: <span class="text-rose-500">*</span></label>
+            <button type="button" onclick="generateRandomPassForReset()" class="text-amber-600 hover:underline text-[11px] font-semibold">
+              🎲 สุ่มรหัส
+            </button>
+          </div>
+          <div class="relative">
+            <input type="text" id="inputNewPassword" required placeholder="กำหนดรหัสผ่านใหม่" class="w-full px-3 py-2 rounded-xl border border-slate-300 font-mono text-xs outline-none focus:ring-2 focus:ring-amber-500 bg-white">
+          </div>
+        </div>
+
+        <div class="pt-2 flex justify-end gap-2 border-t border-slate-100">
+          <button type="button" onclick="closeResetPasswordModal()" class="px-3.5 py-2 rounded-xl text-slate-600 hover:bg-slate-100 font-semibold">ยกเลิก</button>
+          <button type="submit" class="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-semibold shadow-sm">บันทึกรหัสผ่านใหม่</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <!-- MODAL: IMPORT USER ROLES FROM CSV / EXCEL (Req 1) -->
+  <!-- MODAL: IMPORT USER ROLES FROM CSV / EXCEL (Req 1) -->
+  <div id="importUserModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 animate-fadeIn max-h-[92vh] overflow-y-auto">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-2xl bg-sky-50 text-sky-700 flex items-center justify-center font-bold text-base shadow-2xs">
+            <svg class="w-5 h-5 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+          </div>
+          <div>
+            <h3 class="font-bold text-slate-900 text-sm">นำเข้าผู้ใช้งานจากไฟล์ Excel / CSV</h3>
+            <p class="text-[11px] text-slate-500">เพิ่มหรืออัปเดตบัญชีผู้ใช้จำนวนมากในครั้งเดียว</p>
+          </div>
+        </div>
+        <button onclick="closeImportUserModal()" class="text-slate-400 hover:text-slate-600 font-bold text-lg p-1">&times;</button>
+      </div>
+
+      <div class="space-y-4 text-xs">
+        <!-- Step 1: Template Download Banner -->
+        <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200/80 flex items-center justify-between gap-3">
+          <div>
+            <h4 class="font-bold text-slate-800 text-xs">ยังไม่มีไฟล์แบบฟอร์ม?</h4>
+            <p class="text-[11px] text-slate-500 mt-0.5">ดาวน์โหลด Template มาตรฐานเพื่อเปิดกรอกใน Excel</p>
+          </div>
+          <button type="button" onclick="downloadUserRolesTemplate()" class="px-3 py-1.5 bg-white hover:bg-slate-100 text-tcc-700 border border-slate-300 rounded-xl font-semibold flex items-center gap-1.5 shadow-2xs shrink-0 transition cursor-pointer">
+            <svg class="w-3.5 h-3.5 text-tcc-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            <span>ดาวน์โหลด Template</span>
+          </button>
+        </div>
+
+        <!-- Step 2: Upload Area / Drop Zone -->
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1.5">เลือกไฟล์ Excel / CSV ที่เตรียมไว้:</label>
+          <div id="importDropZone" onclick="document.getElementById('inputImportCsvFile').click()" class="border-2 border-dashed border-slate-300 hover:border-tcc-500 bg-slate-50/60 hover:bg-sky-50/40 rounded-2xl p-5 text-center cursor-pointer transition">
+            <svg class="w-9 h-9 text-slate-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+            <p class="font-bold text-slate-700 text-xs">คลิกเพื่อเลือกไฟล์ หรือลากไฟล์มาวางที่นี่</p>
+            <p class="text-[11px] text-slate-400 mt-0.5">รองรับไฟล์ .csv (บันทึกจาก Excel มีภาษาไทย UTF-8)</p>
+            <input type="file" id="inputImportCsvFile" accept=".csv,.txt" onchange="previewImportCsvFile(event)" class="hidden">
+          </div>
+        </div>
+
+        <!-- Step 3: Preview Area (Initially Hidden) -->
+        <div id="importPreviewContainer" class="hidden space-y-2">
+          <div class="flex items-center justify-between text-[11px] font-bold">
+            <span id="importPreviewSummary" class="text-slate-700 font-mono">ไฟล์: -</span>
+            <span id="importPreviewValidCount" class="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">พร้อมนำเข้า 0 รายการ</span>
+          </div>
+          <div class="max-h-44 overflow-y-auto border border-slate-200 rounded-xl overflow-x-auto shadow-2xs">
+            <table class="w-full text-left text-[11px] whitespace-nowrap">
+              <thead class="bg-slate-100 text-slate-600 border-b border-slate-200 sticky top-0 font-semibold">
+                <tr>
+                  <th class="py-1.5 px-2.5">อีเมล (บัญชี)</th>
+                  <th class="py-1.5 px-2.5">ชื่อ-นามสกุล</th>
+                  <th class="py-1.5 px-2.5">ฝ่าย/แผนก</th>
+                  <th class="py-1.5 px-2.5">สิทธิ์</th>
+                  <th class="py-1.5 px-2.5">สถานะ</th>
+                </tr>
+              </thead>
+              <tbody id="importPreviewTbody" class="divide-y divide-slate-100 bg-white"></tbody>
+            </table>
+          </div>
+          <p class="text-[10px] text-slate-400 italic">* ระบบจะอัปเดตข้อมูลอัตโนมัติหากมีอีเมลซ้ำ หรือเพิ่มเป็นผู้ใช้ใหม่หากยังไม่มีในระบบ</p>
+        </div>
+
+        <div class="pt-3 flex justify-end gap-2 border-t border-slate-100">
+          <button type="button" onclick="closeImportUserModal()" class="px-4 py-2 rounded-xl text-slate-600 hover:bg-slate-100 font-semibold cursor-pointer">ยกเลิก</button>
+          <button type="button" id="btnConfirmImportCsv" onclick="executeImportCsv()" disabled class="px-4 py-2 rounded-xl bg-tcc-600 hover:bg-tcc-700 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold shadow-sm transition cursor-pointer">ยืนยันนำเข้าข้อมูล</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLOATING ACTION MENU FOR USER ROLES (Clean SVG Icons, No duplicate emojis) -->
+  <div id="roleActionFloatingMenu" class="fixed hidden z-50 bg-white rounded-2xl shadow-2xl border border-slate-200/90 py-1.5 w-48 text-xs animate-fadeIn select-none">
+    <div class="px-3 py-2 border-b border-slate-100 bg-slate-50/80 rounded-t-2xl">
+      <p id="actionMenuUserEmail" class="font-mono font-bold text-slate-800 text-[11px] truncate">-</p>
+      <p id="actionMenuUserName" class="text-[10px] text-slate-500 truncate">-</p>
+    </div>
+    <div class="py-1">
+      <button type="button" onclick="executeRoleAction('edit')" class="w-full text-left px-3.5 py-2 hover:bg-slate-50 text-slate-700 flex items-center gap-2.5 font-medium transition cursor-pointer">
+        <svg class="w-3.5 h-3.5 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+        <span>แก้ไขข้อมูลผู้ใช้</span>
+      </button>
+      <button type="button" onclick="executeRoleAction('resetPass')" class="w-full text-left px-3.5 py-2 hover:bg-amber-50/70 text-amber-700 flex items-center gap-2.5 font-medium transition cursor-pointer">
+        <svg class="w-3.5 h-3.5 text-amber-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+        <span>รีเซ็ต / ดูรหัสผ่าน</span>
+      </button>
+      <button type="button" id="actionMenuToggleStatusBtn" onclick="executeRoleAction('toggleStatus')" class="w-full text-left px-3.5 py-2 hover:bg-slate-50 text-slate-700 flex items-center gap-2.5 font-medium transition cursor-pointer">
+        <svg class="w-3.5 h-3.5 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+        <span id="actionMenuToggleStatusText">เปิด/ปิดการใช้งาน</span>
+      </button>
+    </div>
+    <div class="pt-1 border-t border-slate-100">
+      <button type="button" id="actionMenuDeleteBtn" onclick="executeRoleAction('delete')" class="w-full text-left px-3.5 py-2 hover:bg-rose-50 text-rose-600 flex items-center gap-2.5 font-medium transition cursor-pointer">
+        <svg class="w-3.5 h-3.5 text-rose-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+        <span>ลบผู้ใช้งาน</span>
+      </button>
     </div>
   </div>
 
@@ -1776,7 +2092,7 @@
           <h3 class="font-bold text-slate-900">ตั้งค่าเชื่อมต่อ Google Sheets &amp; Apps Script</h3>
           <p class="text-[11px] text-slate-500">ระบบ Self-Healing สร้างแท็บตารางทั้งหมดให้อัตโนมัติ</p>
         </div>
-        <button onclick="closeSetupModal()" class="text-slate-400 hover:text-slate-600">✕</button>
+        <button onclick="closeSetupModal()" class="text-slate-400 hover:text-slate-600 font-bold">&times;</button>
       </div>
 
       <div class="space-y-4 text-xs text-slate-700">
@@ -1789,20 +2105,12 @@
           </div>
         </div>
 
-        <div class="p-3 bg-sky-50 rounded-xl border border-sky-200 space-y-1.5">
-          <label class="block font-bold text-sky-950 mb-1">2. Google Client ID (สำหรับ Google Sign-In จริง):</label>
-          <div class="flex gap-2">
-            <input type="text" id="inputGoogleClientId" placeholder="เช่น 123456789-xxxx.apps.googleusercontent.com" class="flex-1 px-3 py-2 rounded-xl border border-slate-300 text-xs bg-white">
-            <button onclick="saveGoogleClientId()" class="px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-xl font-semibold">บันทึก</button>
-          </div>
-        </div>
-
         <div>
           <div class="flex items-center justify-between mb-1">
-            <span class="font-bold text-slate-800">3. โค้ด Apps Script เวอร์ชันล่าสุด (Code.gs):</span>
+            <span class="font-bold text-slate-800">2. โค้ด Apps Script เวอร์ชันล่าสุด (Code.gs):</span>
             <button onclick="copyGasCode()" class="text-tcc-600 font-semibold hover:underline">คัดลอกโค้ดทั้งหมด</button>
           </div>
-          <pre id="gasCodeBlock" class="p-3 bg-slate-900 text-slate-100 rounded-xl text-[11px] font-mono overflow-x-auto max-h-52 leading-relaxed"></pre>
+          <pre id="gasCodeBlock" class="p-3 bg-slate-900 text-slate-100 rounded-xl text-[11px] font-mono overflow-x-auto max-h-56 leading-relaxed"></pre>
         </div>
       </div>
     </div>
@@ -1825,17 +2133,10 @@
 
   <!-- JAVASCRIPT APPLICATION LOGIC -->
   <script>
-    const DEFAULT_GOOGLE_CLIENT_ID = "628112292012-4318svsm8bht6md74meltttnvnugtuk4.apps.googleusercontent.com";
     const STORAGE_KEY_URL = "it_asset_webapp_url";
     const STORAGE_KEY_USER = "it_asset_logged_user";
     const STORAGE_KEY_ROLES = "it_asset_custom_user_roles";
-    const STORAGE_KEY_CLIENT_ID = "it_asset_google_client_id";
     const DEFAULT_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxEj-79eHal39qVlnENM2GxRTn5C1TVXYjE8IxehEKXokpOHh5VtfHCbuc7_PSr4xO0/exec";
-
-    let storedClientId = localStorage.getItem(STORAGE_KEY_CLIENT_ID);
-    let currentGoogleClientId = (DEFAULT_GOOGLE_CLIENT_ID && !DEFAULT_GOOGLE_CLIENT_ID.includes("วาง_CLIENT_ID"))
-      ? DEFAULT_GOOGLE_CLIENT_ID
-      : (storedClientId || DEFAULT_GOOGLE_CLIENT_ID);
 
     let storedUrl = localStorage.getItem(STORAGE_KEY_URL);
     if (!storedUrl || storedUrl.includes("AKfycbxypntn") || storedUrl.includes("AKfycbEj-") || storedUrl === "DEMO") {
@@ -1844,11 +2145,13 @@
     }
     const initialUrl = storedUrl || DEFAULT_WEB_APP_URL;
 
+    /* BUILT-IN ACCOUNTS WITH PASSWORDS (Req 2 & Req 4) */
     const BUILTIN_ROLES = [
-      { email: "tatitop07@gmail.com", role: "superadmin", name: "Tatitop (Super Admin)", remark: "ผู้ดูแลระบบหลัก" },
-      { email: "tatiphon.hi@thaichamber.or.th", role: "superadmin", name: "Tatiphon (Super Admin)", remark: "ผู้ดูแลระบบหลัก หอการค้าไทย" },
-      { email: "wattanachai.mi@thaichamber.or.th", role: "admin", name: "Wattanachai (Admin)", remark: "เจ้าหน้าที่ฝ่ายไอที" },
-      { email: "supakon.su@thaichamber.or.th", role: "admin", name: "Supakon (Admin)", remark: "เจ้าหน้าที่ฝ่ายไอที" }
+      { email: "tatitop07@gmail.com", role: "superadmin", name: "Tatitop (Super Admin)", dept: "ฝ่ายเทคโนโลยีสารสนเทศ (IT)", password: "admin1234", status: "active", remark: "ผู้ดูแลระบบหลัก" },
+      { email: "tatiphon.hi@thaichamber.or.th", role: "superadmin", name: "Tatiphon (Super Admin)", dept: "ฝ่ายเทคโนโลยีสารสนเทศ (IT)", password: "admin1234", status: "active", remark: "ผู้ดูแลระบบหลัก หอการค้าไทย" },
+      { email: "wattanachai.mi@thaichamber.or.th", role: "admin", name: "Wattanachai (Admin)", dept: "ฝ่ายเทคโนโลยีสารสนเทศ (IT)", password: "admin1234", status: "active", remark: "เจ้าหน้าที่ฝ่ายไอที" },
+      { email: "supakon.su@thaichamber.or.th", role: "admin", name: "Supakon (Admin)", dept: "ฝ่ายเทคโนโลยีสารสนเทศ (IT)", password: "admin1234", status: "active", remark: "เจ้าหน้าที่ฝ่ายไอที" },
+      { email: "somchai.user@thaichamber.or.th", role: "user", name: "สมชาย ใจดี", dept: "ฝ่ายการเงินและการบัญชี", password: "user1234", status: "active", remark: "พนักงานทั่วไป" }
     ];
 
     function getOffsetDate(daysOffset = 0, hoursOffset = 0) {
@@ -1877,9 +2180,9 @@
       return String(str).replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/"/g, "&quot;").replace(/\n/g, " ").replace(/\r/g, "");
     }
 
-    /* ID GENERATORS (Req 6 & Req 7) */
+    /* ID GENERATORS (Req 1 & Req 6) */
     function generateTicketId() {
-      // Req 6: ITC ตามด้วย ปี-เดือน-วัน ตามด้วยเลข 4 หลัก (ITC-YYYY-MM-DD-XXXX)
+      // ITC ตามด้วย ปี-เดือน-วัน ตามด้วยเลข 4 หลัก (ITC-YYYY-MM-DD-XXXX)
       // กรณีขึ้นปีใหม่ ให้เริ่มนับเลข 4 หลักใหม่ (0001)
       const now = new Date();
       const yyyy = now.getFullYear();
@@ -1904,9 +2207,8 @@
       return `ITC-${datePart}-${String(nextSeq).padStart(4, "0")}`;
     }
 
-    function generateBorrowBatchId() {
-      // Req 7: ITB ตามด้วย ปี-เดือน-วัน ตามด้วยเลข 4 หลัก (ITB-YYYY-MM-DD-XXXX)
-      // กรณีขึ้นปีใหม่ ให้เริ่มนับเลข 4 หลักใหม่ (0001)
+    // Req 1: เลขรหัสธุรกรรมใช้ ITB-YYYY-MM-DD-XXXX (รีเซ็ตทุกปีใหม่)
+    function generateNextBorrowTransId(offset = 0) {
       const now = new Date();
       const yyyy = now.getFullYear();
       const mm = String(now.getMonth() + 1).padStart(2, "0");
@@ -1919,7 +2221,7 @@
       allTx.forEach(l => {
         const id = String(l.trans_id || "").trim();
         if (id.startsWith(prefixYear)) {
-          const m = id.match(/^ITB-\d{4}-\d{2}-\d{2}-(\d{4})(?:-\d+)?$/);
+          const m = id.match(/^ITB-\d{4}-\d{2}-\d{2}-(\d{4})/);
           if (m) {
             const seq = parseInt(m[1], 10);
             if (!isNaN(seq) && seq > maxSeq) maxSeq = seq;
@@ -1927,9 +2229,11 @@
         }
       });
 
-      const nextSeq = maxSeq + 1;
+      const nextSeq = maxSeq + 1 + offset;
       return `ITB-${datePart}-${String(nextSeq).padStart(4, "0")}`;
     }
+
+    const generateBorrowBatchId = () => generateNextBorrowTransId(0);
 
     const INITIAL_DEMO_CATEGORIES = [
       "Laptop", "Monitor", "Projector", "Adapter", "Audio", "Tablet", "Accessory", "Other"
@@ -2052,19 +2356,19 @@
     const INITIAL_DEMO_KB = [
       {
         kb_id: "KB-001",
-        category: "Network",
+        category: "ระบบเครือข่าย / อินเทอร์เน็ต / Wi-Fi / VPN",
         title: "วิธีเชื่อมต่อ VPN หอการค้าไทยจากภายนอกสำนักงาน",
         content: "1. เปิดโปรแกรม FortiClient VPN\n2. ใส่ Remote Gateway: vpn.thaichamber.or.th\n3. ใส่ Username และ Password อีเมลองค์กร\n4. รอระบบยืนยันตัวตน OTP ทางโทรศัพท์"
       },
       {
         kb_id: "KB-002",
-        category: "Email & Account",
+        category: "อีเมลองค์กร / บัญชีผู้ใช้งาน / รหัสผ่าน",
         title: "ขั้นตอนการเปลี่ยนรหัสผ่านอีเมล @thaichamber.or.th",
         content: "1. เข้าสู่ระบบ https://myaccount.google.com\n2. ไปที่เมนู Security (ความปลอดภัย)\n3. เลือก Password (รหัสผ่าน)\n4. กำหนดรหัสผ่านใหม่ความยาวอย่างน้อย 8 ตัวอักษรที่มีอักขระพิเศษ"
       },
       {
         kb_id: "KB-003",
-        category: "Hardware",
+        category: "ฮาร์ดแวร์ / เครื่องคอมพิวเตอร์ / จอภาพ",
         title: "วิธีแก้ปัญหาเครื่องปริ้นเตอร์ไม่ออกหรือเอกสารค้างคิว (Spooler)",
         content: "1. กดปุ่ม Windows + R พิมพ์ services.msc\n2. หาบริการ Print Spooler แล้วคลิกขวา Restart\n3. สั่งพิมพ์งานใหม่อีกครั้ง"
       }
@@ -2078,9 +2382,23 @@
           const idx = merged.findIndex(m => m.email.toLowerCase() === custom.email.toLowerCase());
           if (idx !== -1) {
             const isPrimary = merged[idx].email === "tatitop07@gmail.com" || merged[idx].email === "tatiphon.hi@thaichamber.or.th";
-            merged[idx] = { ...merged[idx], ...custom, role: isPrimary ? "superadmin" : (custom.role || merged[idx].role) };
+            merged[idx] = {
+              ...merged[idx],
+              ...custom,
+              role: isPrimary ? "superadmin" : (custom.role || merged[idx].role),
+              password: custom.password || merged[idx].password || "admin1234",
+              status: custom.status || merged[idx].status || "active"
+            };
           } else {
-            merged.push(custom);
+            merged.push({
+              email: custom.email,
+              name: custom.name || custom.email.split('@')[0],
+              dept: custom.dept || "",
+              role: custom.role || "user",
+              password: custom.password || "123456",
+              status: custom.status || "active",
+              remark: custom.remark || ""
+            });
           }
         });
       }
@@ -2122,58 +2440,76 @@
       userRoles: loadSavedUserRoles()
     };
 
-    /* AUTH & RBAC */
-    function parseJwt(token) {
-      try {
-        const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
-        return JSON.parse(jsonPayload);
-      } catch (e) { return null; }
+    /* AUTH & RBAC (Req 2 & Req 4: USER & PASS ONLY) */
+    function togglePasswordVisibility(inputId, iconId) {
+      const el = document.getElementById(inputId);
+      const icon = document.getElementById(iconId);
+      if (!el) return;
+      if (el.type === "password") {
+        el.type = "text";
+        if (icon) icon.innerText = "🙈";
+      } else {
+        el.type = "password";
+        if (icon) icon.innerText = "👁️";
+      }
     }
 
-    function evaluateUserRole(email) {
-      if (!email) return { allowed: false, reason: "ไม่พบบัญชีอีเมล" };
-      const lower = email.trim().toLowerCase();
-      const found = state.userRoles.find(r => r.email.trim().toLowerCase() === lower);
-      if (found) return { allowed: true, role: found.role, name: found.name || email.split('@')[0] };
-      if (lower.endsWith("@thaichamber.or.th")) return { allowed: true, role: "user", name: email.split('@')[0] };
-      return { allowed: false, reason: "ผู้ใช้งานทั่วไปต้องใช้อีเมลที่ลงท้ายด้วย @thaichamber.or.th เท่านั้น" };
+    function generateRandomPassForInput(inputId) {
+      const chars = "abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789!@#$%";
+      let pwd = "";
+      for (let i = 0; i < 8; i++) {
+        pwd += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      const el = document.getElementById(inputId);
+      if (el) {
+        el.value = pwd;
+        el.type = "text";
+        showNotification(`สุ่มรหัสผ่านเรียบร้อย: ${pwd}`, "info");
+      }
     }
 
-    function handleGateEmailLogin() {
-      const email = document.getElementById("gateLoginEmailInput")?.value.trim();
-      const customName = document.getElementById("gateLoginNameInput")?.value.trim();
-      if (!email) return showNotification("กรุณากรอกอีเมลก่อนเข้าสู่ระบบ", "warning");
-      processUserLogin(email, customName || null, null);
+    function handleGateUserPassLogin() {
+      const emailOrUser = document.getElementById("gateLoginEmailInput")?.value.trim();
+      const password = document.getElementById("gateLoginPasswordInput")?.value;
+      if (!emailOrUser) return showNotification("กรุณาระบุบัญชีผู้ใช้งานหรืออีเมล", "warning");
+      if (!password) return showNotification("กรุณาระบุรหัสผ่าน", "warning");
+      processUserLogin(emailOrUser, password);
     }
 
-    function handleManualEmailLogin() {
-      const email = document.getElementById("manualLoginEmailInput")?.value.trim();
-      const customName = document.getElementById("manualLoginNameInput")?.value.trim();
-      if (!email) return showNotification("กรุณากรอกอีเมลก่อนเข้าสู่ระบบ", "warning");
-      processUserLogin(email, customName || null, null);
+    function handleModalUserPassLogin() {
+      const emailOrUser = document.getElementById("manualLoginEmailInput")?.value.trim();
+      const password = document.getElementById("manualLoginPasswordInput")?.value;
+      if (!emailOrUser) return showNotification("กรุณาระบุบัญชีผู้ใช้งานหรืออีเมล", "warning");
+      if (!password) return showNotification("กรุณาระบุรหัสผ่าน", "warning");
+      processUserLogin(emailOrUser, password);
     }
 
-    function handleGoogleCredentialResponse(response) {
-      const payload = parseJwt(response.credential);
-      if (!payload || !payload.email) return showNotification("ไม่สามารถยืนยันตัวตนกับ Google ได้", "error");
-      processUserLogin(payload.email, payload.name, payload.picture);
-    }
+    function processUserLogin(emailOrUser, password) {
+      const lower = emailOrUser.trim().toLowerCase();
+      const user = state.userRoles.find(r => r.email.trim().toLowerCase() === lower || (r.name && r.name.trim().toLowerCase() === lower));
 
-    function processUserLogin(email, name, picture) {
-      const authResult = evaluateUserRole(email);
-      if (!authResult.allowed) {
-        showNotification(`⛔ ปฏิเสธการเข้าถึง: ${authResult.reason}`, "error");
+      if (!user) {
+        showNotification("⛔ ไม่พบบัญชีผู้ใช้งานในระบบ (กรุณาให้ผู้ดูแลระบบ Super Admin เพิ่มบัญชีก่อน)", "error");
         return false;
       }
 
-      const displayName = name || authResult.name || email.split('@')[0];
+      if (user.status === "disabled") {
+        showNotification("⛔ บัญชีผู้ใช้นี้ถูกปิดการใช้งาน กรุณาติดต่อผู้ดูแลระบบ (Super Admin)", "error");
+        return false;
+      }
+
+      if (user.password && user.password !== password) {
+        showNotification("⛔ รหัสผ่านไม่ถูกต้อง กรุณาตรวจสอบและลองใหม่อีกครั้ง", "error");
+        return false;
+      }
+
       const userObj = {
-        name: displayName,
-        email: email.trim().toLowerCase(),
-        picture: picture || `https://placehold.co/100x100/005ba6/ffffff?text=${encodeURIComponent(displayName.charAt(0).toUpperCase())}`,
-        role: authResult.role
+        name: user.name || user.email.split('@')[0],
+        email: user.email.trim().toLowerCase(),
+        dept: user.dept || "",
+        picture: `https://placehold.co/100x100/005ba6/ffffff?text=${encodeURIComponent((user.name || user.email).charAt(0).toUpperCase())}`,
+        role: user.role || "user",
+        status: user.status || "active"
       };
 
       setCurrentUser(userObj);
@@ -2181,9 +2517,17 @@
 
       if (userObj.role === "superadmin") showNotification(`👑 ยินดีต้อนรับ Super Admin: ${userObj.name}`, "success");
       else if (userObj.role === "admin") showNotification(`🛡️ ยินดีต้อนรับเจ้าหน้าที่ไอที (Admin): ${userObj.name}`, "success");
-      else showNotification(`✓ ยินดีต้อนรับคุณ ${userObj.name} (@thaichamber.or.th)`, "success");
+      else showNotification(`✓ ยินดีต้อนรับคุณ ${userObj.name}`, "success");
 
       return true;
+    }
+
+    function loginDemoAccount(email, password) {
+      const gateUser = document.getElementById("gateLoginEmailInput");
+      const gatePass = document.getElementById("gateLoginPasswordInput");
+      if (gateUser) gateUser.value = email;
+      if (gatePass) gatePass.value = password;
+      processUserLogin(email, password);
     }
 
     function setCurrentUser(user) {
@@ -2194,13 +2538,21 @@
       if (user) {
         const bName = document.getElementById("borrowerName");
         const bContact = document.getElementById("borrowerContact");
+        const bDept = document.getElementById("borrowerDept");
         const tName = document.getElementById("ticketReporterName");
         const tContact = document.getElementById("ticketReporterContact");
+        const tDept = document.getElementById("ticketReporterDept");
+
         if (bName) bName.value = user.name;
         if (bContact) bContact.value = user.email;
+        if (bDept && user.dept) bDept.value = user.dept;
+
         if (tName) tName.value = user.name;
         if (tContact) tContact.value = user.email;
+        if (tDept && user.dept) tDept.value = user.dept;
       }
+        const targetTab = getTargetTabFromUrl() || 'borrowTab';
+        switchTab(targetTab);
     }
 
     function handleSignOut() {
@@ -2256,7 +2608,7 @@
           roleBadge.innerText = "🛡️ Admin ไอที";
           roleBadge.className = "inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800 border border-blue-300";
         } else if (isUser) {
-          roleBadge.innerText = "พนักงาน (@thaichamber.or.th)";
+          roleBadge.innerText = "ผู้ใช้งานระบบ";
           roleBadge.className = "inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200";
         } else {
           roleBadge.innerText = "รอเข้าสู่ระบบ";
@@ -2290,43 +2642,114 @@
       renderAll();
     }
 
-    function initGoogleSignIn() {
-      if (typeof google !== "undefined" && google.accounts && google.accounts.id) {
-        try {
-          if (!currentGoogleClientId || currentGoogleClientId.includes("วาง_CLIENT_ID")) return;
-          google.accounts.id.initialize({
-            client_id: currentGoogleClientId,
-            callback: handleGoogleCredentialResponse,
-            auto_select: false
-          });
+    function openLoginModal() {
+      document.getElementById("loginModal").classList.remove("hidden");
+    }
+    function closeLoginModal() {
+      document.getElementById("loginModal").classList.add("hidden");
+    }
 
-          const targets = ["googleSignInButtonWrapper", "googleGateButtonWrapper"];
-          targets.forEach(tid => {
-            const el = document.getElementById(tid);
-            if (el) {
-              el.innerHTML = "";
-              google.accounts.id.renderButton(el, { theme: "outline", size: "large", text: "continue_with", shape: "pill", width: 250 });
-            }
-          });
+    /* TAB ROUTING & NAVIGATION WITH HASH (#) AND QUERY (?) */
+    const ALL_TAB_IDS = [
+      "borrowTab", "ticketCreateTab", "myBorrowsTab", "myTicketsTab", "kbTab",
+      "dashboardTab", "ticketAdminTab", "returnTab", "inventoryTab", "historyTab", "rolesTab"
+    ];
+
+    const TAB_ALIASES = {
+      "borrow": "borrowTab",
+      "borrows": "borrowTab",
+      "ticket": "ticketCreateTab",
+      "tickets": "ticketCreateTab",
+      "newticket": "ticketCreateTab",
+      "myborrows": "myBorrowsTab",
+      "my-borrows": "myBorrowsTab",
+      "mytickets": "myTicketsTab",
+      "my-tickets": "myTicketsTab",
+      "kb": "kbTab",
+      "faq": "kbTab",
+      "dashboard": "dashboardTab",
+      "stats": "dashboardTab",
+      "ticketadmin": "ticketAdminTab",
+      "ticket-admin": "ticketAdminTab",
+      "ticketsadmin": "ticketAdminTab",
+      "return": "returnTab",
+      "returns": "returnTab",
+      "inventory": "inventoryTab",
+      "items": "inventoryTab",
+      "history": "historyTab",
+      "roles": "rolesTab",
+      "users": "rolesTab",
+      "usermanagement": "rolesTab"
+    };
+
+    function getTargetTabFromUrl() {
+      let raw = "";
+      if (window.location.hash) {
+        raw = window.location.hash.replace(/^#/, "").trim();
+      }
+      if (!raw && window.location.search) {
+        try {
+          const params = new URLSearchParams(window.location.search);
+          raw = (params.get("tab") || params.get("page") || "").trim();
         } catch (e) {}
+      }
+      if (!raw) return null;
+
+      if (ALL_TAB_IDS.includes(raw)) return raw;
+
+      const lower = raw.toLowerCase().replace(/[-_]/g, "");
+      if (TAB_ALIASES[lower]) return TAB_ALIASES[lower];
+      const matched = ALL_TAB_IDS.find(t => t.toLowerCase() === lower || t.toLowerCase() === lower + "tab");
+      if (matched) return matched;
+
+      return null;
+    }
+
+    function isTabAuthorized(tabId) {
+      const user = state.currentUser;
+      const role = user ? user.role : null;
+      const isSuper = role === "superadmin";
+      const isAdmin = role === "admin" || isSuper;
+
+      if (tabId === "rolesTab") return isSuper || isAdmin;
+      const adminOnlyTabs = ["dashboardTab", "ticketAdminTab", "returnTab", "inventoryTab", "historyTab"];
+      if (adminOnlyTabs.includes(tabId)) return isAdmin;
+      return true;
+    }
+
+    function updateUrlHash(tabId) {
+      try {
+        const targetHash = '#' + tabId;
+        if (window.location.hash !== targetHash) {
+          if (window.history && window.history.replaceState) {
+            window.history.replaceState(null, '', targetHash);
+          } else {
+            window.location.hash = targetHash;
+          }
+        }
+      } catch (e) {
+        try { window.location.hash = '#' + tabId; } catch (err) {}
       }
     }
 
-    function openLoginModal() {
-      document.getElementById("loginModal").classList.remove("hidden");
-      setTimeout(() => initGoogleSignIn(), 100);
-    }
-    function closeLoginModal() { document.getElementById("loginModal").classList.add("hidden"); }
+    function switchTab(tabId, updateUrl = true) {
+      // Validate tab existence or fallback to url/default
+      if (!tabId || !ALL_TAB_IDS.includes(tabId)) {
+        tabId = getTargetTabFromUrl() || "borrowTab";
+      }
 
-    function loginDemoAccount(email) {
-      processUserLogin(email, null, null);
-    }
+      // Check role authorization for protected tabs
+      if (!isTabAuthorized(tabId)) {
+        tabId = "borrowTab";
+      }
 
-    /* NAVIGATION CONTROLLER (SIDEBAR & USER TABS) */
-    function switchTab(tabId) {
+      // Sync browser URL Hash for persistent reload and sharing
+      if (updateUrl) {
+        updateUrlHash(tabId);
+      }
+
       document.querySelectorAll(".tab-content").forEach(el => el.classList.add("hidden"));
 
-      // Update User Top Nav Button styling
       const userNavConfigs = {
         borrowTab: {
           active: ["bg-tcc-600", "text-white", "shadow-md", "ring-2", "ring-tcc-600/20"],
@@ -2362,7 +2785,6 @@
         }
       });
 
-      // Update badge contrast
       const badgeMyBorrows = document.getElementById("tabBadgeMyBorrows");
       if (badgeMyBorrows) {
         if (tabId === "myBorrowsTab") {
@@ -2380,7 +2802,6 @@
         }
       }
 
-      // Update Admin Sidebar Button styling
       document.querySelectorAll(".admin-sidebar-btn").forEach(el => {
         el.classList.remove("bg-tcc-600", "text-white", "shadow-sm", "font-bold");
         el.classList.add("text-slate-700", "hover:bg-slate-100");
@@ -2391,21 +2812,38 @@
         targetSidebarBtn.classList.remove("text-slate-700", "hover:bg-slate-100");
       }
 
-      // Show target tab
       const targetTab = document.getElementById("tabContent-" + tabId);
       if (targetTab) targetTab.classList.remove("hidden");
+
+      if (window.innerWidth < 1024) {
+        const adminSidebar = document.getElementById("adminSidebar");
+        if (adminSidebar && !adminSidebar.classList.contains("hidden")) {
+          adminSidebar.classList.add("hidden");
+        }
+      }
 
       if (tabId === "dashboardTab") renderMonthlyDashboard();
       if (tabId === "myTicketsTab") renderMyTicketsList();
       if (tabId === "ticketAdminTab") renderAdminTicketsView();
       if (tabId === "kbTab") renderKnowledgeBaseList();
+      if (tabId === "rolesTab") { renderDepartmentSelects(); renderRolesTable(); }
+      if (tabId === "myBorrowsTab") renderMyBorrowsTable();
+      if (tabId === "returnTab") renderReturnTable();
+      if (tabId === "inventoryTab") renderInventoryTable();
+      if (tabId === "historyTab") renderHistoryTable();
     }
+
+    // Hash change event listener for browser Back/Forward navigation
+    window.addEventListener("hashchange", () => {
+      const tab = getTargetTabFromUrl();
+      if (tab) {
+        switchTab(tab, false);
+      }
+    });
 
     function toggleAdminSidebarMobile() {
       const sidebar = document.getElementById("adminSidebar");
-      if (sidebar) {
-        sidebar.classList.toggle("hidden");
-      }
+      if (sidebar) sidebar.classList.toggle("hidden");
     }
 
     /* UNIFIED DASHBOARD ANALYTICS */
@@ -2427,11 +2865,9 @@
 
       const selectedYear = yearSelect ? parseInt(yearSelect.value, 10) : currentYear;
 
-      // KPI Calculations
       const activeTickets = state.tickets.filter(t => t.status === "Open" || t.status === "In Progress");
       document.getElementById("kpiActiveTickets").innerText = activeTickets.length;
 
-      // SLA Compliance
       const resolvedOrClosed = state.tickets.filter(t => t.status === "Resolved" || t.status === "Closed");
       let onTimeTicketCount = 0;
       let totalResolutionHours = 0;
@@ -2461,14 +2897,12 @@
       document.getElementById("kpiCsatAverage").innerText = csatAvg;
       document.getElementById("kpiCsatCount").innerText = `จาก ${ratedTicketsCount} การประเมิน`;
 
-      // Asset Stats
       const today = getOffsetDate(0);
       const overdueBorrows = state.activeBorrows.filter(b => b.expected_return && b.expected_return < today);
       document.getElementById("kpiCurrentActiveBorrows").innerText = state.activeBorrows.length;
       document.getElementById("kpiTotalItemsSub").innerText = `จากทั้งหมด ${state.items.length} ชิ้น`;
       document.getElementById("kpiOverdueCount").innerText = overdueBorrows.length;
 
-      // Monthly Chart Data
       const monthlyData = [];
       for (let m = 0; m < 12; m++) {
         monthlyData.push({ monthIndex: m, monthName: THAI_MONTHS[m], users: new Set(), borrows: 0 });
@@ -2509,7 +2943,6 @@
         }).join("");
       }
 
-      // Helpdesk Categories Breakdown
       const catCount = {};
       state.tickets.forEach(t => { catCount[t.category] = (catCount[t.category] || 0) + 1; });
       const catContainer = document.getElementById("categoryProgressContainer");
@@ -2532,7 +2965,6 @@
         }).join("");
       }
 
-      // Top 5 Departments
       const deptActivity = {};
       state.allLogs.forEach(l => {
         if (l.borrower_dept) {
@@ -2563,7 +2995,6 @@
         `).join("");
       }
 
-      // SLA Watchlist
       const nowTs = getLocalTimestamp();
       const openT = state.tickets.filter(t => t.status === "Open" || t.status === "In Progress");
       const watchlistContainer = document.getElementById("slaWatchlistContainer");
@@ -2595,7 +3026,7 @@
       }
     }
 
-    /* TICKETING & HELPDESK FULL LOGIC */
+    /* TICKETING & HELPDESK LOGIC */
     function calculateSlaTarget(priority) {
       let hours = 24;
       if (priority === "Critical") hours = 2;
@@ -2674,6 +3105,7 @@
       if (state.currentUser) {
         document.getElementById("ticketReporterName").value = state.currentUser.name;
         document.getElementById("ticketReporterContact").value = state.currentUser.email;
+        if (state.currentUser.dept) document.getElementById("ticketReporterDept").value = state.currentUser.dept;
       }
 
       renderAll();
@@ -2687,8 +3119,12 @@
 
       const user = state.currentUser;
       const filterStatus = document.getElementById("filterMyTicketStatus")?.value;
+      const uEmail = (user?.email || "").toLowerCase().trim();
+      const uName = (user?.name || "").trim();
       const myTickets = state.tickets.filter(t => {
-        const isMine = user && (t.reporter_contact.toLowerCase().includes(user.email.toLowerCase()) || t.reporter_name.includes(user.name));
+        const contact = String(t.reporter_contact || "").toLowerCase();
+        const repName = String(t.reporter_name || "");
+        const isMine = !!user && ((uEmail && contact.includes(uEmail)) || (uName && repName.includes(uName)));
         const matchStatus = !filterStatus || t.status === filterStatus;
         return isMine && matchStatus;
       });
@@ -2771,7 +3207,6 @@
       const badge = document.getElementById("tabBadgeAdminTickets") || document.getElementById("sidebarBadgeTickets");
       if (badge) badge.innerText = filtered.length;
 
-      // Render Kanban Columns
       const columns = ["Open", "InProgress", "PendingUser", "Resolved", "Closed"];
       const statusMap = { Open: "Open", InProgress: "In Progress", PendingUser: "Pending User", Resolved: "Resolved", Closed: "Closed" };
 
@@ -2809,7 +3244,6 @@
         }
       });
 
-      // Render Table View
       const tbody = document.getElementById("adminTicketTableBody");
       if (tbody) {
         tbody.innerHTML = filtered.map(t => `
@@ -3004,7 +3438,7 @@
       const openTickets = state.tickets.filter(t => t.status === "Open" && (!t.assigned_agent || t.assigned_agent === "ยังไม่มอบหมาย"));
       if (openTickets.length === 0) return showNotification("ไม่มีเคสใหม่ที่รอจ่ายงาน", "info");
 
-      const admins = state.userRoles.filter(r => r.role === "admin" || r.role === "superadmin");
+      const admins = state.userRoles.filter(r => (r.role === "admin" || r.role === "superadmin") && (r.status !== "disabled"));
       if (admins.length === 0) return;
 
       openTickets.forEach((t, idx) => {
@@ -3023,18 +3457,7 @@
       renderAll();
     }
 
-    /* KNOWLEDGE BASE FUNCTIONS (Req 4) */
-    function handleKbPresetSelect(val) {
-      const titleInput = document.getElementById("inputKbTitle");
-      if (!titleInput) return;
-      if (val === "__custom__") {
-        titleInput.value = "";
-        titleInput.focus();
-      } else if (val) {
-        titleInput.value = val;
-      }
-    }
-
+    /* KNOWLEDGE BASE FUNCTIONS (Req 5: Single Clean Title Input) */
     function handleKbFileSelect(e) {
       const file = e.target.files?.[0];
       if (!file) return;
@@ -3157,8 +3580,6 @@
       if (titleInput) titleInput.value = "";
       const contentInput = document.getElementById("inputKbContent");
       if (contentInput) contentInput.value = "";
-      const presetSel = document.getElementById("selectKbTitlePreset");
-      if (presetSel) presetSel.selectedIndex = 0;
 
       showNotification(`เพิ่มบทความ [${newArticle.title}] เรียบร้อย`, "success");
       renderKnowledgeBaseList();
@@ -3285,7 +3706,7 @@
       }).join("");
     }
 
-    /* DEPARTMENT & CATEGORY SELECT POPULATION (Req 2 & Req 8) */
+    /* DEPARTMENT & CATEGORY SELECT POPULATION */
     function renderDepartmentSelects() {
       const depts = state.departments || [];
       const optionsHtml = ['<option value="">-- กรุณาเลือกฝ่าย / แผนก --</option>']
@@ -3312,6 +3733,21 @@
         editHistDeptEl.innerHTML = optionsHtml;
         if (cur && depts.includes(cur)) editHistDeptEl.value = cur;
       }
+
+      const userRoleDeptEl = document.getElementById("inputRoleDept");
+      if (userRoleDeptEl) {
+        const cur = userRoleDeptEl.value;
+        userRoleDeptEl.innerHTML = '<option value="">-- ไม่ระบุฝ่าย --</option>' + depts.map(d => `<option value="${escapeQuotes(d)}">${d}</option>`).join("");
+        if (cur && depts.includes(cur)) userRoleDeptEl.value = cur;
+      }
+
+      const filterRoleDeptEl = document.getElementById("filterRoleDept");
+      if (filterRoleDeptEl) {
+        const cur = filterRoleDeptEl.value;
+        const allDepts = Array.from(new Set([...depts, ...(state.userRoles || []).map(u => u.dept).filter(Boolean)])).sort();
+        filterRoleDeptEl.innerHTML = '<option value="">🏢 ทุกฝ่าย / แผนก</option>' + allDepts.map(d => `<option value="${escapeQuotes(d)}">${d}</option>`).join("");
+        if (cur) filterRoleDeptEl.value = cur;
+      }
     }
 
     function renderTicketCategorySelects() {
@@ -3331,7 +3767,7 @@
       }
     }
 
-    /* TICKET CATEGORY MANAGEMENT (Req 8) */
+    /* TICKET CATEGORY MANAGEMENT */
     function openTicketCategoryManageModal() {
       renderTicketCategoryManagementList();
       document.getElementById("ticketCategoryManageModal").classList.remove("hidden");
@@ -3409,7 +3845,7 @@
       callAPI("deleteTicketCategory", { categoryName: current }, true);
     }
 
-    /* QUICK AVAILABLE LIST (Req 1) */
+    /* QUICK AVAILABLE LIST */
     function selectQuickAvailCategory(cat) {
       state.selectedQuickAvailCat = cat;
       renderQuickAvailableList();
@@ -3424,7 +3860,6 @@
       const countEl = document.getElementById("quickAvailableCount");
       if (countEl) countEl.innerText = `${avail.length} ชิ้น`;
 
-      // Render Category Filter Pills
       if (pillsContainer) {
         const uniqueCats = ["ทั้งหมด", ...Array.from(new Set(avail.map(i => i.category)))];
         pillsContainer.innerHTML = uniqueCats.map(cat => {
@@ -3473,6 +3908,7 @@
       }).join("");
     }
 
+    /* BORROW SUBMIT (Req 1: STRICT ITB-YYYY-MM-DD-XXXX SEQUENCE) */
     async function handleBorrowSubmit(e) {
       e.preventDefault();
       if (!state.currentUser) {
@@ -3489,12 +3925,14 @@
       const spinner = document.getElementById("btnBorrowSpinner");
       btn.disabled = true; spinner.classList.remove("hidden");
 
-      const batchPrefix = generateBorrowBatchId();
       const bDate = getOffsetDate(0);
       const rDate = document.getElementById("expectedReturnDate").value;
+      const createdTransIds = [];
 
       state.selectedBorrowItems.forEach((id, idx) => {
-        const transId = state.selectedBorrowItems.length > 1 ? `${batchPrefix}-${idx + 1}` : batchPrefix;
+        // Req 1: แต่ละรายการจะได้รับเลขรหัสธุรกรรม ITB-YYYY-MM-DD-XXXX เรียงลำดับ 4 หลักตามมาตรฐาน
+        const transId = generateNextBorrowTransId(idx);
+        createdTransIds.push(transId);
         const newBorrow = {
           trans_id: transId,
           item_id: id,
@@ -3515,10 +3953,11 @@
       });
 
       syncItemStatuses();
-      showNotification(`บันทึกการยืมสำเร็จ ${state.selectedBorrowItems.length} รายการ`, "success");
+      showNotification(`บันทึกการยืมสำเร็จ ${state.selectedBorrowItems.length} รายการ (รหัส: ${createdTransIds[0]}${createdTransIds.length > 1 ? ' ถึง ' + createdTransIds[createdTransIds.length - 1] : ''})`, "success");
 
       callAPI("borrowItem", {
         itemIds: [...state.selectedBorrowItems],
+        transIds: createdTransIds,
         borrowerName: document.getElementById("borrowerName").value.trim(),
         dept: deptVal,
         contact: document.getElementById("borrowerContact").value.trim(),
@@ -3543,9 +3982,15 @@
 
       const user = state.currentUser;
       const q = (document.getElementById("searchMyBorrowsInput")?.value || "").toLowerCase().trim();
+      const uEmail = (user?.email || "").toLowerCase().trim();
+      const uName = (user?.name || "").trim();
       const myBorrows = state.activeBorrows.filter(b => {
-        const isMine = user && (b.borrower_contact.toLowerCase().includes(user.email.toLowerCase()) || b.borrower_name.includes(user.name));
-        return isMine && (!q || b.trans_id.toLowerCase().includes(q) || b.item_id.toLowerCase().includes(q));
+        const contact = String(b.borrower_contact || "").toLowerCase();
+        const bName = String(b.borrower_name || "");
+        const isMine = !!user && ((uEmail && contact.includes(uEmail)) || (uName && bName.includes(uName)));
+        const tid = String(b.trans_id || "").toLowerCase();
+        const iid = String(b.item_id || "").toLowerCase();
+        return isMine && (!q || tid.includes(q) || iid.includes(q));
       });
 
       if (badge) badge.innerText = myBorrows.length;
@@ -3594,7 +4039,7 @@
             <td class="py-3 px-3 text-center">
               <input type="checkbox" onchange="toggleReturnSelection('${escapeQuotes(b.trans_id)}')" ${isSel ? 'checked' : ''} class="w-4 h-4 rounded text-tcc-600 cursor-pointer">
             </td>
-            <td class="py-3 px-4 font-mono text-xs">${b.trans_id}</td>
+            <td class="py-3 px-4 font-mono text-xs font-bold text-tcc-700">${b.trans_id}</td>
             <td class="py-3 px-4 font-bold text-slate-900">${item.item_name} <span class="font-mono text-xs text-slate-400 block">[${b.item_id}]</span></td>
             <td class="py-3 px-4">${b.borrower_name} <span class="text-xs text-slate-500 block">${b.borrower_dept}</span></td>
             <td class="py-3 px-4 text-xs">${b.borrow_date}</td>
@@ -3735,57 +4180,607 @@
       }).join("");
     }
 
-    function renderRolesTable() {
-      const tbody = document.getElementById("rolesTableBody");
-      if (!tbody) return;
-      const isSuper = state.currentUser && state.currentUser.role === "superadmin";
-      tbody.innerHTML = state.userRoles.map((r, idx) => `
-        <tr class="hover:bg-slate-50 transition">
-          <td class="py-3 px-4 font-mono font-bold text-xs text-slate-800">${r.email}</td>
-          <td class="py-3 px-4 text-xs">${r.name || '-'}</td>
-          <td class="py-3 px-4 text-center">
-            <span class="px-2 py-0.5 rounded-full text-xs font-bold ${r.role === 'superadmin' ? 'bg-amber-100 text-amber-800' : (r.role === 'admin' ? 'bg-blue-100 text-blue-800' : 'bg-emerald-100 text-emerald-800')}">${r.role}</span>
-          </td>
-          <td class="py-3 px-4 text-xs text-slate-500">${r.remark || '-'}</td>
-          <td class="py-3 px-4 text-center">
-            ${isSuper ? `<button onclick="openRoleModal(${idx})" class="px-2 py-1 text-xs text-tcc-700 hover:bg-tcc-50 rounded-lg">✏️ แก้ไข</button>` : '<span class="text-[10px] text-slate-400">ดูอย่างเดียว</span>'}
-          </td>
-        </tr>
-      `).join("");
+    /* USER & ROLE MANAGEMENT LOGIC (Req 1, 2, 3, 4, 5, 6, 7) */
+    let currentActionTargetEmail = null;
+    let currentActionTargetIndex = -1;
+    let pendingImportUsers = [];
+
+    function handleRoleSearchInput(val) {
+      const clearBtn = document.getElementById("btnClearRoleSearch");
+      if (clearBtn) {
+        if (val && val.trim() !== "") clearBtn.classList.remove("hidden");
+        else clearBtn.classList.add("hidden");
+      }
+      filterRolesTable();
     }
 
+    function clearRoleSearchInput() {
+      const input = document.getElementById("searchRoleInput");
+      const clearBtn = document.getElementById("btnClearRoleSearch");
+      if (input) input.value = "";
+      if (clearBtn) clearBtn.classList.add("hidden");
+      filterRolesTable();
+    }
+
+    function resetRoleFilters() {
+      clearRoleSearchInput();
+      const deptEl = document.getElementById("filterRoleDept");
+      const roleEl = document.getElementById("filterRoleLevel");
+      const statusEl = document.getElementById("filterRoleStatus");
+      if (deptEl) deptEl.value = "";
+      if (roleEl) roleEl.value = "";
+      if (statusEl) statusEl.value = "";
+      renderRolesTable(state.userRoles);
+    }
+
+    function filterRolesTable() {
+      const q = (document.getElementById("searchRoleInput")?.value || "").toLowerCase().trim();
+      const d = document.getElementById("filterRoleDept")?.value;
+      const r = document.getElementById("filterRoleLevel")?.value;
+      const s = document.getElementById("filterRoleStatus")?.value;
+
+      const filtered = state.userRoles.filter(u => {
+        const matchQ = !q ||
+          (u.email && u.email.toLowerCase().includes(q)) ||
+          (u.name && u.name.toLowerCase().includes(q)) ||
+          (u.dept && u.dept.toLowerCase().includes(q)) ||
+          (u.remark && u.remark.toLowerCase().includes(q));
+
+        const matchD = !d || (u.dept && u.dept === d);
+        const matchR = !r || u.role === r;
+        const matchS = !s || (u.status || "active") === s;
+
+        return matchQ && matchD && matchR && matchS;
+      });
+
+      renderRolesTable(filtered);
+    }
+
+    function renderRolesTable(filteredList = null) {
+      const list = filteredList !== null ? filteredList : state.userRoles;
+      const tbody = document.getElementById("rolesTableBody");
+      const countBadge = document.getElementById("roleCountBadge");
+      if (countBadge) {
+        countBadge.innerText = `แสดง ${list.length} จาก ${state.userRoles.length} คน`;
+      }
+      if (!tbody) return;
+
+      const isSuper = state.currentUser && state.currentUser.role === "superadmin";
+
+      if (list.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="py-8 text-center text-slate-400 text-xs">ไม่พบข้อมูลผู้ใช้งานที่ตรงกับเงื่อนไขการค้นหา</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = list.map((r, idx) => {
+        const isPrimary = r.email === "tatitop07@gmail.com" || r.email === "tatiphon.hi@thaichamber.or.th";
+        const isActive = (r.status || "active") !== "disabled";
+        const realIndex = state.userRoles.findIndex(u => u.email.toLowerCase() === r.email.toLowerCase());
+
+        let roleBadge = '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200 shadow-2xs"><svg class="w-3 h-3 text-slate-500 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><span>User</span></span>';
+        if (r.role === 'superadmin') {
+          roleBadge = '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-300 shadow-2xs"><svg class="w-3 h-3 text-amber-600 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/></svg><span>Super Admin</span></span>';
+        } else if (r.role === 'admin') {
+          roleBadge = '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-50 text-sky-800 border border-sky-300 shadow-2xs"><svg class="w-3 h-3 text-sky-600 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg><span>Admin</span></span>';
+        }
+
+        const statusBadge = isActive
+          ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span><span>เปิดใช้งาน</span></span>`
+          : `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-rose-50 text-rose-700 border border-rose-200 shadow-2xs"><span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span><span>ปิดใช้งาน</span></span>`;
+
+        return `
+          <tr class="hover:bg-slate-50/80 transition border-b border-slate-100 whitespace-nowrap group text-xs">
+            <td class="py-2.5 px-2 text-center text-slate-400 font-mono text-[11px] whitespace-nowrap">${idx + 1}</td>
+            <td class="py-2.5 px-3 font-mono font-semibold text-[11px] text-slate-800 whitespace-nowrap">
+              <div class="flex items-center gap-1">
+                <span>${r.email}</span>
+                ${isPrimary ? '<span class="text-amber-500 text-xs font-bold" title="บัญชีผู้ดูแลระบบหลัก">★</span>' : ''}
+              </div>
+            </td>
+            <td class="py-2.5 px-3 font-medium text-slate-800 text-xs whitespace-nowrap max-w-[130px] truncate" title="${escapeQuotes(r.name || '-')}">${r.name || '-'}</td>
+            <td class="py-2.5 px-3 text-slate-600 text-xs whitespace-nowrap">
+              <span class="inline-flex items-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[11px] font-medium max-w-[150px] truncate" title="${escapeQuotes(r.dept || '-')}">
+                ${r.dept || '-'}
+              </span>
+            </td>
+            <td class="py-2.5 px-2.5 text-center whitespace-nowrap">${roleBadge}</td>
+            <td class="py-2.5 px-2.5 text-center whitespace-nowrap">${statusBadge}</td>
+            <td class="py-2.5 px-2 text-center whitespace-nowrap">
+              ${isSuper ? `
+                <button type="button" 
+                        onclick="openRoleActionMenu(event, '${escapeQuotes(r.email)}', ${realIndex})" 
+                        class="w-7 h-7 rounded-lg bg-slate-50 hover:bg-slate-100 active:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200/90 inline-flex items-center justify-center transition shadow-2xs cursor-pointer" 
+                        title="จัดการผู้ใช้">
+                  <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                    <circle cx="12" cy="5" r="1.75"/>
+                    <circle cx="12" cy="12" r="1.75"/>
+                    <circle cx="12" cy="19" r="1.75"/>
+                  </svg>
+                </button>
+              ` : `
+                <span class="text-slate-300 text-xs">-</span>
+              `}
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    /* ACTION MENU LOGIC (Floating Dropdown) */
+    function openRoleActionMenu(e, email, idx) {
+      e.stopPropagation();
+      const menu = document.getElementById("roleActionFloatingMenu");
+      if (!menu) return;
+
+      if (!menu.classList.contains("hidden") && currentActionTargetEmail === email) {
+        closeRoleActionMenu();
+        return;
+      }
+
+      currentActionTargetEmail = email;
+      currentActionTargetIndex = idx;
+
+      const user = state.userRoles.find(u => u.email.toLowerCase() === email.toLowerCase()) || state.userRoles[idx];
+      if (!user) return;
+
+      const isPrimary = user.email === "tatitop07@gmail.com" || user.email === "tatiphon.hi@thaichamber.or.th";
+      const isActive = (user.status || "active") !== "disabled";
+
+      document.getElementById("actionMenuUserEmail").innerText = user.email;
+      document.getElementById("actionMenuUserName").innerText = user.name || user.dept || "-";
+
+      const statusText = document.getElementById("actionMenuToggleStatusText");
+      if (statusText) statusText.innerText = isActive ? "ปิดการใช้งาน (Disable)" : "เปิดใช้งาน (Active)";
+
+      const delBtn = document.getElementById("actionMenuDeleteBtn");
+      if (delBtn) {
+        if (isPrimary) delBtn.classList.add("hidden");
+        else delBtn.classList.remove("hidden");
+      }
+
+      const btn = e.currentTarget;
+      const rect = btn.getBoundingClientRect();
+      const menuWidth = 192; // w-48
+      const menuHeight = 175;
+
+      let left = rect.right - menuWidth;
+      if (left < 10) left = 10;
+      if (left + menuWidth > window.innerWidth - 10) left = window.innerWidth - menuWidth - 10;
+
+      let top = rect.bottom + 6;
+      if (top + menuHeight > window.innerHeight - 10) {
+        top = rect.top - menuHeight - 6;
+      }
+
+      menu.style.left = `${left}px`;
+      menu.style.top = `${top}px`;
+      menu.classList.remove("hidden");
+    }
+
+    function closeRoleActionMenu() {
+      const menu = document.getElementById("roleActionFloatingMenu");
+      if (menu) menu.classList.add("hidden");
+      currentActionTargetEmail = null;
+      currentActionTargetIndex = -1;
+    }
+
+    function executeRoleAction(action) {
+      const email = currentActionTargetEmail;
+      const idx = currentActionTargetIndex;
+      closeRoleActionMenu();
+      if (!email) return;
+
+      if (action === "edit") {
+        openRoleModal(idx);
+      } else if (action === "resetPass") {
+        openResetPasswordModal(email);
+      } else if (action === "toggleStatus") {
+        handleToggleUserStatus(email);
+      } else if (action === "delete") {
+        handleDeleteUserRole(email);
+      }
+    }
+
+    /* EXCEL ACTIONS DROPDOWN */
+    function toggleExcelDropdown(e) {
+      if (e) e.stopPropagation();
+      const menu = document.getElementById("excelDropdownMenu");
+      const chevron = document.getElementById("excelMenuChevron");
+      if (!menu) return;
+      const isHidden = menu.classList.contains("hidden");
+      if (isHidden) {
+        menu.classList.remove("hidden");
+        if (chevron) chevron.classList.add("rotate-180");
+      } else {
+        menu.classList.add("hidden");
+        if (chevron) chevron.classList.remove("rotate-180");
+      }
+    }
+
+    function closeExcelDropdown() {
+      const menu = document.getElementById("excelDropdownMenu");
+      const chevron = document.getElementById("excelMenuChevron");
+      if (menu && !menu.classList.contains("hidden")) {
+        menu.classList.add("hidden");
+        if (chevron) chevron.classList.remove("rotate-180");
+      }
+    }
+
+    function triggerExcelAction(action) {
+      closeExcelDropdown();
+      if (action === "import") {
+        openImportUserModal();
+      } else if (action === "export") {
+        exportUserRolesExcel();
+      } else if (action === "template") {
+        downloadUserRolesTemplate();
+      }
+    }
+
+    document.addEventListener("click", (e) => {
+      const menu = document.getElementById("roleActionFloatingMenu");
+      if (menu && !menu.classList.contains("hidden")) {
+        if (!menu.contains(e.target)) closeRoleActionMenu();
+      }
+      const excelDropdown = document.getElementById("excelDropdownContainer");
+      if (excelDropdown && !excelDropdown.contains(e.target)) {
+        closeExcelDropdown();
+      }
+    });
+    window.addEventListener("scroll", closeRoleActionMenu, true);
+    window.addEventListener("resize", () => { closeRoleActionMenu(); closeExcelDropdown(); });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        closeRoleActionMenu();
+        closeImportUserModal();
+        closeExcelDropdown();
+      }
+    });
+
+    /* TOGGLE STATUS & RESET PASSWORD */
+    function handleToggleUserStatus(email) {
+      if (email === "tatitop07@gmail.com" || email === "tatiphon.hi@thaichamber.or.th") {
+        return showNotification("ไม่สามารถปิดการใช้งานบัญชี Super Admin หลักได้", "warning");
+      }
+      const user = state.userRoles.find(u => u.email.toLowerCase() === email.toLowerCase());
+      if (!user) return;
+      const current = user.status || "active";
+      user.status = current === "active" ? "disabled" : "active";
+      localStorage.setItem(STORAGE_KEY_ROLES, JSON.stringify(state.userRoles));
+      renderRolesTable();
+      showNotification(`${user.status === 'active' ? 'เปิดใช้งาน' : 'ปิดการใช้งาน'} บัญชี [${user.email}] เรียบร้อย`, "success");
+      callAPI("saveUserRole", { roleData: user }, true);
+    }
+
+    function openResetPasswordModal(email) {
+      const user = state.userRoles.find(u => u.email.toLowerCase() === email.toLowerCase());
+      if (!user) return;
+      document.getElementById("resetPassTargetEmail").value = user.email;
+      document.getElementById("resetPassUserLabel").innerText = `${user.name || user.email} (${user.email})`;
+      document.getElementById("inputNewPassword").value = "Tcc@" + Math.floor(1000 + Math.random() * 9000);
+      document.getElementById("resetPasswordModal").classList.remove("hidden");
+    }
+
+    function closeResetPasswordModal() {
+      document.getElementById("resetPasswordModal").classList.add("hidden");
+    }
+
+    function generateRandomPassForReset() {
+      const chars = "abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789!@#$";
+      let pwd = "";
+      for (let i = 0; i < 8; i++) {
+        pwd += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      document.getElementById("inputNewPassword").value = pwd;
+    }
+
+    function submitResetPassword() {
+      const email = document.getElementById("resetPassTargetEmail").value;
+      const newPass = document.getElementById("inputNewPassword").value.trim();
+      if (!newPass) return showNotification("กรุณาระบุรหัสผ่านใหม่", "warning");
+      const user = state.userRoles.find(u => u.email.toLowerCase() === email.toLowerCase());
+      if (!user) return;
+      user.password = newPass;
+      localStorage.setItem(STORAGE_KEY_ROLES, JSON.stringify(state.userRoles));
+      closeResetPasswordModal();
+      renderRolesTable();
+      showNotification(`รีเซ็ตรหัสผ่านของ [${user.email}] เรียบร้อย`, "success");
+      callAPI("saveUserRole", { roleData: user }, true);
+    }
+
+    function handleDeleteUserRole(email) {
+      if (email === "tatitop07@gmail.com" || email === "tatiphon.hi@thaichamber.or.th") {
+        return showNotification("ไม่สามารถลบบัญชี Super Admin หลักของระบบได้", "warning");
+      }
+      if (!confirm(`คุณต้องการลบผู้ใช้งาน "${email}" ออกจากระบบใช่หรือไม่?`)) return;
+      const idx = state.userRoles.findIndex(u => u.email.toLowerCase() === email.toLowerCase());
+      if (idx !== -1) {
+        state.userRoles.splice(idx, 1);
+        localStorage.setItem(STORAGE_KEY_ROLES, JSON.stringify(state.userRoles));
+        renderRolesTable();
+        renderDepartmentSelects();
+        showNotification(`ลบผู้ใช้งาน [${email}] เรียบร้อย`, "info");
+        callAPI("deleteUserRole", { email: email }, true);
+      }
+    }
+
+    /* EXCEL EXPORT & TEMPLATE DOWNLOAD (Req 1) */
+    function downloadUserRolesTemplate() {
+      const headers = ["อีเมล (Username/Email)*", "ชื่อ-นามสกุล*", "ฝ่าย/แผนก", "ระดับสิทธิ์ (superadmin/admin/user)*", "รหัสผ่าน (Password)*", "สถานะ (active/disabled)*", "หมายเหตุ"];
+      const sampleRows = [
+        ["somchai.ja@thaichamber.or.th", "นายสมชาย ใจดี", "ฝ่ายเทคโนโลยีสารสนเทศ", "user", "Tcc@2026", "active", "ผู้ใช้งานทั่วไป"],
+        ["wattanachai.mi@thaichamber.or.th", "นายวัฒนชัย มั่นคง", "ฝ่ายเทคโนโลยีสารสนเทศ", "admin", "Admin@2026", "active", "เจ้าหน้าที่ไอที"],
+        ["supakon.su@thaichamber.or.th", "นายศุภกร สุขเจริญ", "ฝ่ายการเงินและบัญชี", "user", "User@2026", "active", "ประสานงานการเงิน"]
+      ];
+      const csvContent = "\uFEFF" + [
+        headers.join(","),
+        ...sampleRows.map(row => row.map(v => `"${String(v).replace(/"/g, '""')}"`).join(","))
+      ].join("\r\n");
+
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `tcc_user_template.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      showNotification("ดาวน์โหลดแบบฟอร์ม Template เรียบร้อย (เปิดกรอกใน Excel ได้ทันที)", "success");
+    }
+
+    function exportUserRolesExcel() {
+      if (!state.userRoles || state.userRoles.length === 0) {
+        return showNotification("ไม่มีข้อมูลผู้ใช้งานสำหรับส่งออก", "warning");
+      }
+      const headers = ["อีเมล (Username/Email)", "ชื่อ-นามสกุล", "ฝ่าย/แผนก", "ระดับสิทธิ์ (Role)", "รหัสผ่าน (Password)", "สถานะ (Status)", "หมายเหตุ"];
+      const rows = state.userRoles.map(u => [
+        u.email || "",
+        u.name || "",
+        u.dept || "",
+        u.role || "user",
+        u.password || "123456",
+        u.status || "active",
+        u.remark || ""
+      ].map(v => `"${String(v).replace(/"/g, '""')}"`).join(","));
+
+      const csvContent = "\uFEFF" + [headers.join(","), ...rows].join("\r\n");
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `tcc_user_accounts_${getOffsetDate(0)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      showNotification("ส่งออกไฟล์ Excel สำหรับจัดการผู้ใช้เรียบร้อย", "success");
+    }
+
+    /* CSV IMPORT MODAL & PARSER (Req 1) */
+    function openImportUserModal() {
+      pendingImportUsers = [];
+      const previewContainer = document.getElementById("importPreviewContainer");
+      const confirmBtn = document.getElementById("btnConfirmImportCsv");
+      const fileInput = document.getElementById("inputImportCsvFile");
+      if (previewContainer) previewContainer.classList.add("hidden");
+      if (confirmBtn) confirmBtn.disabled = true;
+      if (fileInput) fileInput.value = "";
+      document.getElementById("importUserModal")?.classList.remove("hidden");
+      initImportDropZone();
+    }
+
+    function closeImportUserModal() {
+      document.getElementById("importUserModal")?.classList.add("hidden");
+      pendingImportUsers = [];
+    }
+
+    function initImportDropZone() {
+      const dropZone = document.getElementById("importDropZone");
+      if (!dropZone || dropZone.dataset.initialized) return;
+      dropZone.dataset.initialized = "true";
+
+      ["dragenter", "dragover"].forEach(evt => {
+        dropZone.addEventListener(evt, (e) => {
+          e.preventDefault();
+          dropZone.classList.add("border-tcc-600", "bg-sky-50");
+        });
+      });
+
+      ["dragleave", "drop"].forEach(evt => {
+        dropZone.addEventListener(evt, (e) => {
+          e.preventDefault();
+          dropZone.classList.remove("border-tcc-600", "bg-sky-50");
+        });
+      });
+
+      dropZone.addEventListener("drop", (e) => {
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+          const fileInput = document.getElementById("inputImportCsvFile");
+          if (fileInput) {
+            fileInput.files = e.dataTransfer.files;
+            previewImportCsvFile({ target: fileInput });
+          }
+        }
+      });
+    }
+
+    function parseCsvLine(line, delimiter = ',') {
+      const result = [];
+      let current = '';
+      let inQuotes = false;
+      for (let i = 0; i < line.length; i++) {
+        const c = line[i];
+        if (c === '"') {
+          if (inQuotes && line[i + 1] === '"') {
+            current += '"';
+            i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (c === delimiter && !inQuotes) {
+          result.push(current.trim().replace(/^"|"$/g, '').trim());
+          current = '';
+        } else {
+          current += c;
+        }
+      }
+      result.push(current.trim().replace(/^"|"$/g, '').trim());
+      return result;
+    }
+
+    function previewImportCsvFile(e) {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        try {
+          const text = evt.target.result;
+          const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l !== "");
+          if (lines.length <= 1) {
+            showNotification("ไฟล์ที่เลือกไม่มีข้อมูลผู้ใช้", "warning");
+            return;
+          }
+
+          const headerLine = lines[0];
+          const delimiter = headerLine.includes(";") ? ";" : (headerLine.includes("\t") ? "\t" : ",");
+
+          pendingImportUsers = [];
+          const tbody = document.getElementById("importPreviewTbody");
+          if (tbody) tbody.innerHTML = "";
+
+          for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            if (i === 0 && (line.includes("อีเมล") || line.toLowerCase().includes("email") || line.toLowerCase().includes("username"))) {
+              continue;
+            }
+
+            const parts = parseCsvLine(line, delimiter);
+            if (parts.length >= 1 && parts[0] && parts[0].includes("@")) {
+              const email = parts[0].toLowerCase().trim();
+              const name = parts[1] || email.split("@")[0];
+              const dept = parts[2] || "";
+              const role = ["superadmin", "admin", "user"].includes((parts[3] || "").toLowerCase()) ? parts[3].toLowerCase() : "user";
+              const password = parts[4] || "123456";
+              const status = ["active", "disabled"].includes((parts[5] || "").toLowerCase()) ? parts[5].toLowerCase() : "active";
+              const remark = parts[6] || "";
+
+              pendingImportUsers.push({ email, name, dept, role, password, status, remark });
+            }
+          }
+
+          if (pendingImportUsers.length === 0) {
+            showNotification("ไม่พบบัญชีผู้ใช้ที่ถูกต้องในไฟล์ (ต้องมีอีเมลที่มีเครื่องหมาย @)", "error");
+            return;
+          }
+
+          const previewContainer = document.getElementById("importPreviewContainer");
+          const previewSummary = document.getElementById("importPreviewSummary");
+          const previewValidCount = document.getElementById("importPreviewValidCount");
+          const confirmBtn = document.getElementById("btnConfirmImportCsv");
+
+          if (previewContainer) previewContainer.classList.remove("hidden");
+          if (previewSummary) previewSummary.innerText = `ไฟล์: ${file.name}`;
+          if (previewValidCount) previewValidCount.innerText = `พร้อมนำเข้า ${pendingImportUsers.length} รายการ`;
+          if (confirmBtn) confirmBtn.disabled = false;
+
+          if (tbody) {
+            tbody.innerHTML = pendingImportUsers.slice(0, 50).map(u => `
+              <tr class="hover:bg-slate-50">
+                <td class="py-1.5 px-2.5 font-mono font-medium">${u.email}</td>
+                <td class="py-1.5 px-2.5">${u.name}</td>
+                <td class="py-1.5 px-2.5">${u.dept || '-'}</td>
+                <td class="py-1.5 px-2.5 font-semibold">${u.role}</td>
+                <td class="py-1.5 px-2.5">${u.status === 'active' ? 'Active' : 'Disabled'}</td>
+              </tr>
+            `).join("") + (pendingImportUsers.length > 50 ? `<tr><td colspan="5" class="py-1.5 px-2.5 text-center text-slate-400 italic">... และอีก ${pendingImportUsers.length - 50} รายการ</td></tr>` : "");
+          }
+        } catch(err) {
+          console.error(err);
+          showNotification("เกิดข้อผิดพลาดในการประมวลผลไฟล์ CSV", "error");
+        }
+      };
+      reader.readAsText(file, "UTF-8");
+    }
+
+    function executeImportCsv() {
+      if (!pendingImportUsers || pendingImportUsers.length === 0) {
+        return showNotification("ไม่มีข้อมูลที่พร้อมนำเข้า", "warning");
+      }
+
+      let count = 0;
+      pendingImportUsers.forEach(userObj => {
+        const existingIdx = state.userRoles.findIndex(u => u.email.toLowerCase() === userObj.email.toLowerCase());
+        if (existingIdx !== -1) {
+          state.userRoles[existingIdx] = { ...state.userRoles[existingIdx], ...userObj };
+        } else {
+          state.userRoles.push(userObj);
+        }
+        callAPI("saveUserRole", { roleData: userObj }, true);
+        count++;
+      });
+
+      localStorage.setItem(STORAGE_KEY_ROLES, JSON.stringify(state.userRoles));
+      closeImportUserModal();
+      renderDepartmentSelects();
+      renderRolesTable();
+      showNotification(`นำเข้าข้อมูลผู้ใช้งานเข้าสู่ระบบสำเร็จทั้งหมด ${count} รายการ`, "success");
+    }
     function openRoleModal(idx = -1) {
       document.getElementById("roleEditIndex").value = idx;
+      renderDepartmentSelects();
+      const deptEl = document.getElementById("inputRoleDept");
+      if (deptEl) {
+        deptEl.innerHTML = '<option value="">-- ไม่ระบุฝ่าย --</option>' + (state.departments || []).map(d => `<option value="${escapeQuotes(d)}">${d}</option>`).join("");
+      }
+
+      const titleEl = document.getElementById("roleModalTitle");
       if (idx >= 0 && state.userRoles[idx]) {
         const r = state.userRoles[idx];
+        if (titleEl) titleEl.innerText = "แก้ไขข้อมูลผู้ใช้งานระบบ";
         document.getElementById("inputRoleEmail").value = r.email;
         document.getElementById("inputRoleName").value = r.name || "";
-        document.getElementById("inputRoleLevel").value = r.role;
+        if (deptEl) deptEl.value = r.dept || "";
+        document.getElementById("inputRoleLevel").value = r.role || "user";
+        document.getElementById("inputRolePassword").value = r.password || "123456";
+        document.getElementById("inputRoleStatus").value = r.status || "active";
         document.getElementById("inputRoleRemark").value = r.remark || "";
       } else {
+        if (titleEl) titleEl.innerText = "เพิ่มผู้ใช้งานระบบใหม่";
         document.getElementById("roleForm").reset();
+        document.getElementById("inputRolePassword").value = "Tcc@" + Math.floor(1000 + Math.random() * 9000);
+        document.getElementById("inputRoleStatus").value = "active";
+        document.getElementById("inputRoleLevel").value = "user";
       }
       document.getElementById("roleModal").classList.remove("hidden");
     }
+
     function closeRoleModal() { document.getElementById("roleModal").classList.add("hidden"); }
 
     function handleSaveUserRole(e) {
       e.preventDefault();
       const idx = parseInt(document.getElementById("roleEditIndex").value, 10);
       const email = document.getElementById("inputRoleEmail").value.trim().toLowerCase();
+      const password = document.getElementById("inputRolePassword").value.trim() || "123456";
       const roleObj = {
         email: email,
         name: document.getElementById("inputRoleName").value.trim(),
+        dept: document.getElementById("inputRoleDept")?.value || "",
         role: document.getElementById("inputRoleLevel").value,
+        password: password,
+        status: document.getElementById("inputRoleStatus").value,
         remark: document.getElementById("inputRoleRemark").value.trim()
       };
       if (idx >= 0) state.userRoles[idx] = roleObj;
-      else state.userRoles.push(roleObj);
+      else {
+        const existing = state.userRoles.findIndex(u => u.email.toLowerCase() === email);
+        if (existing !== -1) state.userRoles[existing] = roleObj;
+        else state.userRoles.push(roleObj);
+      }
 
       localStorage.setItem(STORAGE_KEY_ROLES, JSON.stringify(state.userRoles));
       closeRoleModal();
-      showNotification(`บันทึกสิทธิ์สำหรับ ${email} เรียบร้อย`, "success");
+      showNotification(`บันทึกข้อมูลผู้ใช้ [${email}] เรียบร้อย`, "success");
       applyUserRoleUI();
+      renderDepartmentSelects();
+      renderRolesTable();
       callAPI("saveUserRole", { roleData: roleObj }, true);
     }
 
@@ -4010,6 +5005,7 @@
       }
     }
 
+    /* GOOGLE APPS SCRIPT BACKEND CODE (Req 1 & Req 2 UPDATED) */
     const SELF_HEALING_GAS_CODE = `/**
  * IT Asset & Helpdesk Service System - Google Apps Script (TCC Full Self-Healing Edition)
  * พัฒนาสำหรับ: ฝ่ายเทคโนโลยีสารสนเทศ หอการค้าไทย
@@ -4072,15 +5068,9 @@ function getOrCreateSheet(ss, sheetName, headers, defaultRows) {
   if (!sheet) {
     sheet = ss.insertSheet(sheetName);
     sheet.appendRow(headers);
-    sheet.getRange(1, 1, 1, headers.length).setFontWeight("bold").setBackground("#f1f5f9");
+    sheet.getRange(1, 1, 1, headers.length).setFontWeight("bold").setBackground("#005ba6").setFontColor("#ffffff");
     if (defaultRows && defaultRows.length > 0) {
-      defaultRows.forEach(function(r) { sheet.appendRow(r); });
-    }
-  } else if (sheet.getLastRow() === 0) {
-    sheet.appendRow(headers);
-    sheet.getRange(1, 1, 1, headers.length).setFontWeight("bold").setBackground("#f1f5f9");
-    if (defaultRows && defaultRows.length > 0) {
-      defaultRows.forEach(function(r) { sheet.appendRow(r); });
+      defaultRows.forEach(function(row) { sheet.appendRow(row); });
     }
   }
   return sheet;
@@ -4088,10 +5078,46 @@ function getOrCreateSheet(ss, sheetName, headers, defaultRows) {
 
 function handleGetInitialData() {
   var ss = getSpreadsheet();
-  var itemSheet = getOrCreateSheet(ss, "Items", ["item_id", "item_name", "category", "serial_number", "status"], []);
-  var logSheet = getOrCreateSheet(ss, "Logs", ["trans_id", "timestamp", "item_id", "borrower_name", "borrower_dept", "borrower_contact", "borrow_date", "expected_return", "actual_return", "trans_status", "notes"], []);
-  var catSheet = getOrCreateSheet(ss, "Categories", ["category_name"], [["Laptop"], ["Monitor"], ["Projector"], ["Adapter"], ["Audio"], ["Accessory"], ["Other"]]);
-  var defaultTktCats = [
+  
+  getOrCreateSheet(ss, "Items", ["Item ID", "Item Name", "Category", "Serial Number", "Status"], [
+    ["IT-001", "Dell Latitude 5430 (i7/16GB)", "Laptop", "DL-5430-891", "Available"],
+    ["IT-002", "MacBook Air M2 (16GB/512GB)", "Laptop", "MBA-M2-044", "Borrowed"],
+    ["IT-003", "Epson EB-X06 Projector 3600lm", "Projector", "EP-X06-203", "Available"],
+    ["IT-004", "Dell UltraSharp 27-inch 4K", "Monitor", "DELL-U27-91", "Available"],
+    ["IT-005", "Rode Wireless GO II Dual Mic", "Audio", "RODE-WGO-88", "Borrowed"],
+    ["IT-006", "USB-C Multiport Hub 8-in-1", "Adapter", "HUB-8IN1-12", "Available"]
+  ]);
+
+  getOrCreateSheet(ss, "Logs", ["Trans ID", "Timestamp", "Item ID", "Borrower Name", "Department", "Contact", "Borrow Date", "Expected Return", "Actual Return", "Status", "Notes"], [
+    ["ITB-2026-10-23-0001", "2026-10-23 09:30", "IT-002", "กิตติศักดิ์ พัฒนพงศ์", "ฝ่ายประชาสัมพันธ์และสื่อสารองค์กร", "kittisak@thaichamber.or.th", "2026-10-23", "2026-10-27", "", "Borrowed", "นำเสนอแผนงานประจำปี"],
+    ["ITB-2026-10-28-0002", "2026-10-28 14:15", "IT-005", "สุวิมล แสงทอง", "ฝ่ายสมาชิกสัมพันธ์และการบริการ", "suwimon@thaichamber.or.th", "2026-10-28", "2026-11-03", "", "Borrowed", "บันทึกเสียงสัมมนาผู้ประกอบการ"],
+    ["ITB-2026-10-15-0003", "2026-10-15 10:00", "IT-001", "วิชัย สมบูรณ์", "ฝ่ายเทคโนโลยีสารสนเทศ (IT)", "wichai@thaichamber.or.th", "2026-10-15", "2026-10-19", "2026-10-19 16:30", "Returned", "คืน: สภาพสมบูรณ์พร้อมสายชาร์จ"]
+  ]);
+
+  getOrCreateSheet(ss, "Categories", ["Category Name"], [
+    ["Laptop"], ["Monitor"], ["Projector"], ["Adapter"], ["Audio"], ["Tablet"], ["Accessory"], ["Other"]
+  ]);
+
+  getOrCreateSheet(ss, "Departments", ["Department Name"], [
+    ["ฝ่ายเทคโนโลยีสารสนเทศ (IT)"],
+    ["สำนักเลขาธิการและประสานงาน"],
+    ["ฝ่ายสมาชิกสัมพันธ์และการบริการ"],
+    ["ฝ่ายส่งเสริมการค้าและเศรษฐกิจระหว่างประเทศ"],
+    ["ฝ่ายพัฒนาธุรกิจและนวัตกรรม"],
+    ["ฝ่ายประชาสัมพันธ์และสื่อสารองค์กร"],
+    ["ฝ่ายการเงินและการบัญชี"],
+    ["ฝ่ายทรัพยากรบุคคล (HR)"]
+  ]);
+
+  getOrCreateSheet(ss, "UserRoles", ["Email", "Role", "Name", "Password", "Status", "Department", "Remark"], [
+    ["tatitop07@gmail.com", "superadmin", "Tatitop (Super Admin)", "admin1234", "active", "ฝ่ายเทคโนโลยีสารสนเทศ (IT)", "ผู้ดูแลระบบหลัก"],
+    ["tatiphon.hi@thaichamber.or.th", "superadmin", "Tatiphon (Super Admin)", "admin1234", "active", "ฝ่ายเทคโนโลยีสารสนเทศ (IT)", "ผู้ดูแลระบบหลัก หอการค้าไทย"],
+    ["wattanachai.mi@thaichamber.or.th", "admin", "Wattanachai (Admin)", "admin1234", "active", "ฝ่ายเทคโนโลยีสารสนเทศ (IT)", "เจ้าหน้าที่ฝ่ายไอที"],
+    ["supakon.su@thaichamber.or.th", "admin", "Supakon (Admin)", "admin1234", "active", "ฝ่ายเทคโนโลยีสารสนเทศ (IT)", "เจ้าหน้าที่ฝ่ายไอที"],
+    ["somchai.user@thaichamber.or.th", "user", "สมชาย ใจดี", "user1234", "active", "ฝ่ายการเงินและการบัญชี", "พนักงานทั่วไป"]
+  ]);
+
+  getOrCreateSheet(ss, "TicketCategories", ["Category Name"], [
     ["ฮาร์ดแวร์ / เครื่องคอมพิวเตอร์ / จอภาพ"],
     ["ซอฟต์แวร์ / MS Office / โปรแกรมทั่วไป"],
     ["ระบบเครือข่าย / อินเทอร์เน็ต / Wi-Fi / VPN"],
@@ -4099,109 +5125,142 @@ function handleGetInitialData() {
     ["เครื่องพิมพ์ / สแกนเนอร์"],
     ["ระบบสารสนเทศภายใน / เว็บไซต์"],
     ["งานบริการไอทีอื่นๆ"]
-  ];
-  var tktCatSheet = getOrCreateSheet(ss, "TicketCategories", ["category_name"], defaultTktCats);
-  var deptSheet = getOrCreateSheet(ss, "Departments", ["department_name"], []);
-  var roleSheet = getOrCreateSheet(ss, "UserRoles", ["email", "name", "role", "remark", "updated_at"], []);
-  var ticketSheet = getOrCreateSheet(ss, "Tickets", [
-    "ticket_id", "title", "category", "priority", "status",
-    "reporter_name", "reporter_dept", "reporter_contact", "description",
-    "created_at", "sla_target", "assigned_agent", "resolved_at",
-    "csat_score", "csat_feedback", "attachment_name", "comments_json"
-  ], []);
-  var kbSheet = getOrCreateSheet(ss, "KnowledgeBase", ["kb_id", "category", "title", "content", "tags", "created_at"], []);
+  ]);
 
-  var categories = catSheet.getDataRange().getValues().slice(1).map(function(r){ return String(r[0] || "").trim(); }).filter(Boolean);
-  var ticketCategories = tktCatSheet.getDataRange().getValues().slice(1).map(function(r){ return String(r[0] || "").trim(); }).filter(Boolean);
-  var departments = deptSheet.getDataRange().getValues().slice(1).map(function(r){ return String(r[0] || "").trim(); }).filter(Boolean);
-  var userRoles = roleSheet.getDataRange().getValues().slice(1).filter(function(r){ return r[0]; }).map(function(r){
-    return { email: String(r[0]).trim(), name: String(r[1] || ""), role: String(r[2] || "user"), remark: String(r[3] || "") };
-  });
+  getOrCreateSheet(ss, "Tickets", ["Ticket ID", "Title", "Category", "Priority", "Status", "Reporter Name", "Reporter Dept", "Reporter Contact", "Description", "Created At", "SLA Target", "Assigned Agent", "Resolved At", "CSAT Score", "CSAT Feedback", "Attachment Name", "Comments JSON"], [
+    ["ITC-2026-10-25-0001", "หน้าจอโน้ตบุ๊กกระพริบดับบางจังหวะ", "ฮาร์ดแวร์ / เครื่องคอมพิวเตอร์ / จอภาพ", "High", "In Progress", "สมชาย ใจดี", "ฝ่ายการเงินและการบัญชี", "somchai.user@thaichamber.or.th", "เวลาขยับบานพับหน้าจอ ภาพจะกระพริบ", "2026-10-25 10:00", "2026-10-25 14:00", "wattanachai.mi@thaichamber.or.th", "", 0, "", "error_screen.png", JSON.stringify([{ sender: "สมชาย ใจดี", message: "แจ้งเปิดเคสครับ", time: "2026-10-25 10:00", is_internal: false }])],
+    ["ITC-2026-10-27-0002", "ไม่สามารถเชื่อมต่อสัญญาณ Wi-Fi ได้", "ระบบเครือข่าย / อินเทอร์เน็ต / Wi-Fi / VPN", "Critical", "Open", "สุวิมล แสงทอง", "ฝ่ายสมาชิกสัมพันธ์และการบริการ", "suwimon@thaichamber.or.th", "แจ้งเตือน Can't connect to this network", "2026-10-27 11:30", "2026-10-27 13:30", "supakon.su@thaichamber.or.th", "", 0, "", "", JSON.stringify([{ sender: "สุวิมล แสงทอง", message: "รบกวนช่วยตรวจสอบหน่อยค่ะ", time: "2026-10-27 11:30", is_internal: false }])]
+  ]);
 
-  // Logs & Active Borrows
-  var logData = logSheet.getDataRange().getValues();
-  var activeBorrows = [];
-  var allLogs = [];
-  var currentlyBorrowedMap = {};
-  for (var j = 1; j < logData.length; j++) {
-    if (!logData[j][0]) continue;
-    var rawStatus = String(logData[j][9] || "").trim().toLowerCase();
-    var isBorrowActive = (rawStatus === "borrowed" || rawStatus === "ยังไม่คืน");
-    var bId = String(logData[j][2] || "").trim();
-    var logItem = {
-      trans_id: String(logData[j][0]),
-      timestamp: formatGASDate(logData[j][1], "yyyy-MM-dd HH:mm"),
-      item_id: bId,
-      borrower_name: String(logData[j][3] || ""),
-      borrower_dept: String(logData[j][4] || ""),
-      borrower_contact: String(logData[j][5] || ""),
-      borrow_date: formatGASDate(logData[j][6], "yyyy-MM-dd"),
-      expected_return: formatGASDate(logData[j][7], "yyyy-MM-dd"),
-      actual_return: formatGASDate(logData[j][8], "yyyy-MM-dd HH:mm"),
-      trans_status: isBorrowActive ? "Borrowed" : "Returned",
-      notes: String(logData[j][10] || "")
-    };
-    allLogs.unshift(logItem);
-    if (isBorrowActive && bId) {
-      currentlyBorrowedMap[bId.toLowerCase()] = true;
-      activeBorrows.push(logItem);
+  getOrCreateSheet(ss, "KnowledgeBase", ["KB ID", "Category", "Title", "Content", "Doc URL", "Attachment Name", "Attachment Base64"], [
+    ["KB-001", "ระบบเครือข่าย / อินเทอร์เน็ต / Wi-Fi / VPN", "วิธีเชื่อมต่อ VPN หอการค้าไทยจากภายนอกสำนักงาน", "1. เปิดโปรแกรม FortiClient VPN\\n2. ใส่ Remote Gateway: vpn.thaichamber.or.th\\n3. ใส่ Username และ Password อีเมลองค์กร\\n4. รอระบบยืนยันตัวตน OTP ทางโทรศัพท์", "", "", ""],
+    ["KB-002", "อีเมลองค์กร / บัญชีผู้ใช้งาน / รหัสผ่าน", "ขั้นตอนการเปลี่ยนรหัสผ่านอีเมล @thaichamber.or.th", "1. เข้าสู่ระบบ https://myaccount.google.com\\n2. ไปที่เมนู Security\\n3. เลือก Password กำหนดรหัสผ่านใหม่", "", "", ""],
+    ["KB-003", "ฮาร์ดแวร์ / เครื่องคอมพิวเตอร์ / จอภาพ", "วิธีแก้ปัญหาเครื่องปริ้นเตอร์ไม่ออกหรือเอกสารค้างคิว (Spooler)", "1. กดปุ่ม Windows + R พิมพ์ services.msc\\n2. หาบริการ Print Spooler แล้วคลิกขวา Restart", "", "", ""]
+  ]);
+
+  var itemData = ss.getSheetByName("Items").getDataRange().getValues();
+  var items = [];
+  for (var i = 1; i < itemData.length; i++) {
+    if (itemData[i][0]) {
+      items.push({ item_id: String(itemData[i][0]), item_name: String(itemData[i][1]), category: String(itemData[i][2]), serial_number: String(itemData[i][3]), status: String(itemData[i][4]) });
     }
   }
 
-  // Items
-  var itemData = itemSheet.getDataRange().getValues();
-  var items = [];
-  for (var i = 1; i < itemData.length; i++) {
-    if (!itemData[i][0]) continue;
-    var cid = String(itemData[i][0]).trim();
-    var cStat = currentlyBorrowedMap[cid.toLowerCase()] ? "Borrowed" : (String(itemData[i][4] || "Available").trim() === "Maintenance" ? "Maintenance" : "Available");
-    items.push({ item_id: cid, item_name: String(itemData[i][1]), category: String(itemData[i][2]), serial_number: String(itemData[i][3]), status: cStat });
+  var logData = ss.getSheetByName("Logs").getDataRange().getValues();
+  var allLogs = [];
+  var activeBorrows = [];
+  for (var j = 1; j < logData.length; j++) {
+    if (logData[j][0]) {
+      var transObj = {
+        trans_id: String(logData[j][0]),
+        timestamp: formatGASDate(logData[j][1], "yyyy-MM-dd HH:mm"),
+        item_id: String(logData[j][2]),
+        borrower_name: String(logData[j][3]),
+        borrower_dept: String(logData[j][4]),
+        borrower_contact: String(logData[j][5]),
+        borrow_date: formatGASDate(logData[j][6], "yyyy-MM-dd"),
+        expected_return: formatGASDate(logData[j][7], "yyyy-MM-dd"),
+        actual_return: formatGASDate(logData[j][8], "yyyy-MM-dd HH:mm"),
+        trans_status: String(logData[j][9]),
+        notes: String(logData[j][10] || "")
+      };
+      allLogs.push(transObj);
+      if (transObj.trans_status === "Borrowed") {
+        activeBorrows.push({
+          trans_id: transObj.trans_id,
+          item_id: transObj.item_id,
+          borrower_name: transObj.borrower_name,
+          borrower_dept: transObj.borrower_dept,
+          borrower_contact: transObj.borrower_contact,
+          borrow_date: transObj.borrow_date,
+          expected_return: transObj.expected_return
+        });
+      }
+    }
   }
 
-  // Tickets
-  var ticketData = ticketSheet.getDataRange().getValues();
+  var catData = ss.getSheetByName("Categories").getDataRange().getValues();
+  var categories = [];
+  for (var c = 1; c < catData.length; c++) {
+    if (catData[c][0]) categories.push(String(catData[c][0]));
+  }
+
+  var deptData = ss.getSheetByName("Departments").getDataRange().getValues();
+  var departments = [];
+  for (var d = 1; d < deptData.length; d++) {
+    if (deptData[d][0]) departments.push(String(deptData[d][0]));
+  }
+
+  var rolesSheet = ss.getSheetByName("UserRoles");
+  var userRoles = [];
+  if (rolesSheet) {
+    var rData = rolesSheet.getDataRange().getValues();
+    for (var r = 1; r < rData.length; r++) {
+      if (rData[r][0]) {
+        userRoles.push({
+          email: String(rData[r][0]).trim(),
+          role: String(rData[r][1] || "user").trim(),
+          name: String(rData[r][2] || "").trim(),
+          password: String(rData[r][3] || "123456").trim(),
+          status: String(rData[r][4] || "active").trim(),
+          dept: String(rData[r][5] || "").trim(),
+          remark: String(rData[r][6] || "").trim()
+        });
+      }
+    }
+  }
+
+  var tktCatSheet = ss.getSheetByName("TicketCategories");
+  var ticketCategories = [];
+  if (tktCatSheet) {
+    var tcData = tktCatSheet.getDataRange().getValues();
+    for (var tc = 1; tc < tcData.length; tc++) {
+      if (tcData[tc][0]) ticketCategories.push(String(tcData[tc][0]));
+    }
+  }
+
+  var ticketData = ss.getSheetByName("Tickets").getDataRange().getValues();
   var tickets = [];
   for (var t = 1; t < ticketData.length; t++) {
-    if (!ticketData[t][0]) continue;
-    var comments = [];
-    try {
-      if (ticketData[t][16]) comments = JSON.parse(ticketData[t][16]);
-    } catch(e) { comments = []; }
-
-    tickets.push({
-      ticket_id: String(ticketData[t][0]),
-      title: String(ticketData[t][1] || ""),
-      category: String(ticketData[t][2] || "Hardware"),
-      priority: String(ticketData[t][3] || "Medium"),
-      status: String(ticketData[t][4] || "Open"),
-      reporter_name: String(ticketData[t][5] || ""),
-      reporter_dept: String(ticketData[t][6] || ""),
-      reporter_contact: String(ticketData[t][7] || ""),
-      description: String(ticketData[t][8] || ""),
-      created_at: formatGASDate(ticketData[t][9], "yyyy-MM-dd HH:mm"),
-      sla_target: formatGASDate(ticketData[t][10], "yyyy-MM-dd HH:mm"),
-      assigned_agent: String(ticketData[t][11] || "ยังไม่มอบหมาย"),
-      resolved_at: formatGASDate(ticketData[t][12], "yyyy-MM-dd HH:mm"),
-      csat_score: Number(ticketData[t][13] || 0),
-      csat_feedback: String(ticketData[t][14] || ""),
-      attachment_name: String(ticketData[t][15] || ""),
-      comments: comments
-    });
+    if (ticketData[t][0]) {
+      var comms = [];
+      try { comms = JSON.parse(ticketData[t][16] || "[]"); } catch(e) {}
+      tickets.push({
+        ticket_id: String(ticketData[t][0]),
+        title: String(ticketData[t][1]),
+        category: String(ticketData[t][2]),
+        priority: String(ticketData[t][3]),
+        status: String(ticketData[t][4]),
+        reporter_name: String(ticketData[t][5]),
+        reporter_dept: String(ticketData[t][6]),
+        reporter_contact: String(ticketData[t][7]),
+        description: String(ticketData[t][8]),
+        created_at: formatGASDate(ticketData[t][9], "yyyy-MM-dd HH:mm"),
+        sla_target: formatGASDate(ticketData[t][10], "yyyy-MM-dd HH:mm"),
+        assigned_agent: String(ticketData[t][11]),
+        resolved_at: formatGASDate(ticketData[t][12], "yyyy-MM-dd HH:mm"),
+        csat_score: parseInt(ticketData[t][13], 10) || 0,
+        csat_feedback: String(ticketData[t][14] || ""),
+        attachment_name: String(ticketData[t][15] || ""),
+        comments: comms
+      });
+    }
   }
 
-  // KnowledgeBase
-  var kbData = kbSheet.getDataRange().getValues();
+  var kbData = ss.getSheetByName("KnowledgeBase").getDataRange().getValues();
   var knowledgeBase = [];
   for (var k = 1; k < kbData.length; k++) {
-    if (!kbData[k][0]) continue;
-    knowledgeBase.push({
-      kb_id: String(kbData[k][0]),
-      category: String(kbData[k][1] || ""),
-      title: String(kbData[k][2] || ""),
-      content: String(kbData[k][3] || ""),
-      tags: String(kbData[k][4] || ""),
-      created_at: formatGASDate(kbData[k][5], "yyyy-MM-dd")
-    });
+    if (kbData[k][0]) {
+      knowledgeBase.push({
+        kb_id: String(kbData[k][0]),
+        category: String(kbData[k][1]),
+        title: String(kbData[k][2]),
+        content: String(kbData[k][3]),
+        doc_url: String(kbData[k][4] || ""),
+        attachment_name: String(kbData[k][5] || ""),
+        attachment_base64: String(kbData[k][6] || "")
+      });
+    }
   }
 
   return jsonResponse({
@@ -4210,9 +5269,9 @@ function handleGetInitialData() {
     activeBorrows: activeBorrows,
     allLogs: allLogs,
     categories: categories,
-    ticketCategories: ticketCategories,
     departments: departments,
     userRoles: userRoles,
+    ticketCategories: ticketCategories,
     tickets: tickets,
     knowledgeBase: knowledgeBase
   });
@@ -4220,118 +5279,106 @@ function handleGetInitialData() {
 
 function handleCreateTicket(data) {
   var ss = getSpreadsheet();
-  var sheet = getOrCreateSheet(ss, "Tickets", [
-    "ticket_id", "title", "category", "priority", "status",
-    "reporter_name", "reporter_dept", "reporter_contact", "description",
-    "created_at", "sla_target", "assigned_agent", "resolved_at",
-    "csat_score", "csat_feedback", "attachment_name", "comments_json"
-  ]);
+  var sheet = ss.getSheetByName("Tickets");
   var t = data.ticketData;
-  if (!t || !t.ticket_id) return jsonResponse({ status: "error", message: "Missing ticketData" });
-
-  var commentsStr = (t.comments && typeof t.comments === "object") ? JSON.stringify(t.comments) : (t.comments || "[]");
   sheet.appendRow([
-    t.ticket_id,
-    t.title || "",
-    t.category || "Hardware",
-    t.priority || "Medium",
-    t.status || "Open",
-    t.reporter_name || "",
-    t.reporter_dept || "",
-    t.reporter_contact || "",
-    t.description || "",
-    t.created_at || formatGASDate(new Date(), "yyyy-MM-dd HH:mm"),
-    t.sla_target || "",
-    t.assigned_agent || "ยังไม่มอบหมาย",
-    t.resolved_at || "",
-    t.csat_score || 0,
-    t.csat_feedback || "",
-    t.attachment_name || "",
-    commentsStr
+    t.ticket_id, t.title, t.category, t.priority, t.status,
+    t.reporter_name, t.reporter_dept, t.reporter_contact, t.description,
+    t.created_at, t.sla_target, t.assigned_agent, t.resolved_at,
+    t.csat_score, t.csat_feedback, t.attachment_name, JSON.stringify(t.comments || [])
   ]);
   SpreadsheetApp.flush();
-  return jsonResponse({ status: "success", message: "บันทึกเคสแจ้งซ่อมเรียบร้อย", ticket_id: t.ticket_id });
+  return jsonResponse({ status: "success", message: "สร้างเคสเรียบร้อย" });
 }
 
 function handleUpdateTicket(data) {
   var ss = getSpreadsheet();
-  var sheet = getOrCreateSheet(ss, "Tickets", [
-    "ticket_id", "title", "category", "priority", "status",
-    "reporter_name", "reporter_dept", "reporter_contact", "description",
-    "created_at", "sla_target", "assigned_agent", "resolved_at",
-    "csat_score", "csat_feedback", "attachment_name", "comments_json"
-  ]);
-  var targetId = String(data.ticketId || (data.updates && data.updates.ticket_id) || "").trim().toLowerCase();
-  if (!targetId) return jsonResponse({ status: "error", message: "Missing ticketId" });
-
-  var vals = sheet.getDataRange().getValues();
-  var u = data.updates || {};
-  for (var i = 1; i < vals.length; i++) {
-    if (String(vals[i][0]).trim().toLowerCase() === targetId) {
-      var r = i + 1;
-      if (u.status !== undefined) sheet.getRange(r, 5).setValue(u.status);
-      if (u.assigned_agent !== undefined) sheet.getRange(r, 12).setValue(u.assigned_agent);
-      if (u.resolved_at !== undefined) sheet.getRange(r, 13).setValue(u.resolved_at);
-      if (u.csat_score !== undefined) sheet.getRange(r, 14).setValue(u.csat_score);
-      if (u.csat_feedback !== undefined) sheet.getRange(r, 15).setValue(u.csat_feedback);
-      if (u.comments !== undefined) {
-        var cStr = typeof u.comments === "object" ? JSON.stringify(u.comments) : String(u.comments);
-        sheet.getRange(r, 17).setValue(cStr);
-      }
-      SpreadsheetApp.flush();
-      return jsonResponse({ status: "success", message: "อัปเดตเคสเรียบร้อย", ticket_id: targetId });
+  var sheet = ss.getSheetByName("Tickets");
+  var tid = String(data.ticketId).trim().toLowerCase();
+  var values = sheet.getDataRange().getValues();
+  for (var i = 1; i < values.length; i++) {
+    if (String(values[i][0]).trim().toLowerCase() === tid) {
+      var row = i + 1;
+      var u = data.updates || {};
+      if (u.status !== undefined) sheet.getRange(row, 5).setValue(u.status);
+      if (u.assigned_agent !== undefined) sheet.getRange(row, 12).setValue(u.assigned_agent);
+      if (u.resolved_at !== undefined) sheet.getRange(row, 13).setValue(u.resolved_at);
+      if (u.csat_score !== undefined) sheet.getRange(row, 14).setValue(u.csat_score);
+      if (u.csat_feedback !== undefined) sheet.getRange(row, 15).setValue(u.csat_feedback);
+      if (u.comments !== undefined) sheet.getRange(row, 17).setValue(JSON.stringify(u.comments));
+      break;
     }
   }
-  return jsonResponse({ status: "error", message: "Ticket not found: " + targetId });
+  SpreadsheetApp.flush();
+  return jsonResponse({ status: "success", message: "อัปเดตเรียบร้อย" });
 }
 
 function handleSaveKbArticle(data) {
   var ss = getSpreadsheet();
-  var sheet = getOrCreateSheet(ss, "KnowledgeBase", ["kb_id", "category", "title", "content", "tags", "created_at"]);
-  var a = data.article;
-  if (!a || !a.kb_id) return jsonResponse({ status: "error", message: "Missing article" });
-  sheet.appendRow([a.kb_id, a.category || "", a.title || "", a.content || "", a.tags || "", a.created_at || formatGASDate(new Date(), "yyyy-MM-dd")]);
+  var sheet = ss.getSheetByName("KnowledgeBase");
+  var k = data.articleData;
+  sheet.appendRow([k.kb_id, k.category, k.title, k.content, k.doc_url || "", k.attachment_name || "", k.attachment_base64 || ""]);
   SpreadsheetApp.flush();
-  return jsonResponse({ status: "success", message: "บันทึกบทความ KB เรียบร้อย" });
+  return jsonResponse({ status: "success", message: "บันทึกเรียบร้อย" });
 }
 
 function handleDeleteKbArticle(data) {
   var ss = getSpreadsheet();
   var sheet = ss.getSheetByName("KnowledgeBase");
-  if (!sheet) return jsonResponse({ status: "success" });
-  var vals = sheet.getDataRange().getValues();
-  var targetId = String(data.kb_id || "").trim().toLowerCase();
-  for (var i = 1; i < vals.length; i++) {
-    if (String(vals[i][0]).trim().toLowerCase() === targetId) {
+  var kid = String(data.kbId).trim().toLowerCase();
+  var values = sheet.getDataRange().getValues();
+  for (var i = 1; i < values.length; i++) {
+    if (String(values[i][0]).trim().toLowerCase() === kid) {
       sheet.deleteRow(i + 1);
       break;
     }
   }
   SpreadsheetApp.flush();
-  return jsonResponse({ status: "success", message: "ลบบทความเรียบร้อย" });
+  return jsonResponse({ status: "success", message: "ลบเรียบร้อย" });
 }
 
+// Req 1: จัดการรหัสธุรกรรม ITB-YYYY-MM-DD-XXXX
 function handleBorrowItem(data) {
   var ss = getSpreadsheet();
   var itemSheet = ss.getSheetByName("Items");
   var logSheet = ss.getSheetByName("Logs");
   var itemIds = data.itemIds || (data.itemId ? [data.itemId] : []);
   var itemData = itemSheet.getDataRange().getValues();
-  var batchId = "TRX-" + new Date().getTime();
   var now = new Date();
+  var yyyy = now.getFullYear();
+  var mm = Utilities.formatDate(now, "GMT+7", "MM");
+  var dd = Utilities.formatDate(now, "GMT+7", "dd");
+  var datePart = yyyy + "-" + mm + "-" + dd;
+  var prefixYear = "ITB-" + yyyy + "-";
+
+  var maxSeq = 0;
+  if (!data.transIds || data.transIds.length === 0) {
+    var logData = logSheet.getDataRange().getValues();
+    for (var r = 1; r < logData.length; r++) {
+      var lid = String(logData[r][0] || "").trim();
+      if (lid.indexOf(prefixYear) === 0) {
+        var m = lid.match(/^ITB-\d{4}-\d{2}-\d{2}-(\d{4})/);
+        if (m) {
+          var seq = parseInt(m[1], 10);
+          if (!isNaN(seq) && seq > maxSeq) maxSeq = seq;
+        }
+      }
+    }
+  }
+
   for (var k = 0; k < itemIds.length; k++) {
     var tid = String(itemIds[k]).trim().toLowerCase();
     for (var i = 1; i < itemData.length; i++) {
       if (String(itemData[i][0]).trim().toLowerCase() === tid) {
         itemSheet.getRange(i + 1, 5).setValue("Borrowed");
-        var transId = itemIds.length > 1 ? (batchId + "-" + (k + 1)) : batchId;
+        var transId = (data.transIds && data.transIds[k]) ? data.transIds[k] : ("ITB-" + datePart + "-" + String(maxSeq + k + 1).padStart(4, "0"));
         logSheet.appendRow([transId, now, itemData[i][0], data.borrowerName, data.dept, data.contact, data.borrowDate, data.expectedReturn, "", "Borrowed", data.notes || ""]);
         break;
       }
     }
   }
   SpreadsheetApp.flush();
-  return jsonResponse({ status: "success", message: "บันทึกการยืมเรียบร้อย" });
+  return jsonResponse({ status: "success", message: "บันทึกเรียบร้อย" });
 }
 
 function handleReturnItem(data) {
@@ -4342,140 +5389,144 @@ function handleReturnItem(data) {
   var logData = logSheet.getDataRange().getValues();
   var itemData = itemSheet.getDataRange().getValues();
   var now = new Date();
-  var itemsToMakeAvailable = {};
-  for (var t = 0; t < targetTransList.length; t++) {
-    var searchId = String(targetTransList[t]).trim().toLowerCase();
-    for (var j = 1; j < logData.length; j++) {
-      if (String(logData[j][0]).trim().toLowerCase() === searchId) {
-        logSheet.getRange(j + 1, 9).setValue(now);
-        logSheet.getRange(j + 1, 10).setValue("Returned");
-        itemsToMakeAvailable[String(logData[j][2]).trim().toLowerCase()] = true;
+
+  targetTransList.forEach(function(tid) {
+    var tClean = String(tid).trim().toLowerCase();
+    for (var i = 1; i < logData.length; i++) {
+      if (String(logData[i][0]).trim().toLowerCase() === tClean) {
+        logSheet.getRange(i + 1, 9).setValue(now);
+        logSheet.getRange(i + 1, 10).setValue("Returned");
+        var matchedItemId = String(logData[i][2]).trim().toLowerCase();
+        for (var k = 1; k < itemData.length; k++) {
+          if (String(itemData[k][0]).trim().toLowerCase() === matchedItemId) {
+            itemSheet.getRange(k + 1, 5).setValue("Available");
+            break;
+          }
+        }
         break;
       }
     }
-  }
-  for (var i = 1; i < itemData.length; i++) {
-    if (itemsToMakeAvailable[String(itemData[i][0]).trim().toLowerCase()]) {
-      itemSheet.getRange(i + 1, 5).setValue("Available");
-    }
-  }
+  });
   SpreadsheetApp.flush();
-  return jsonResponse({ status: "success", message: "รับคืนอุปกรณ์เรียบร้อย" });
+  return jsonResponse({ status: "success", message: "รับคืนเรียบร้อย" });
 }
 
 function handleUpdateHistoryLog(data) {
   var ss = getSpreadsheet();
-  var logSheet = ss.getSheetByName("Logs");
-  var logData = logSheet.getDataRange().getValues();
-  var searchId = String(data.transId || "").trim().toLowerCase();
-  for (var j = 1; j < logData.length; j++) {
-    if (String(logData[j][0]).trim().toLowerCase() === searchId) {
-      var r = j + 1;
-      if (data.borrowerName !== undefined) logSheet.getRange(r, 4).setValue(data.borrowerName);
-      if (data.borrowerDept !== undefined) logSheet.getRange(r, 5).setValue(data.borrowerDept);
-      if (data.borrowerContact !== undefined) logSheet.getRange(r, 6).setValue(data.borrowerContact);
-      if (data.borrowDate !== undefined) logSheet.getRange(r, 7).setValue(data.borrowDate);
-      if (data.expectedReturn !== undefined) logSheet.getRange(r, 8).setValue(data.expectedReturn);
-      if (data.actualReturn !== undefined) logSheet.getRange(r, 9).setValue(data.actualReturn);
-      if (data.transStatus !== undefined) logSheet.getRange(r, 10).setValue(data.transStatus);
-      if (data.notes !== undefined) logSheet.getRange(r, 11).setValue(data.notes);
+  var sheet = ss.getSheetByName("Logs");
+  var tid = String(data.transId).trim().toLowerCase();
+  var values = sheet.getDataRange().getValues();
+  for (var i = 1; i < values.length; i++) {
+    if (String(values[i][0]).trim().toLowerCase() === tid) {
+      var row = i + 1;
+      var u = data.updates || {};
+      if (u.borrower_name !== undefined) sheet.getRange(row, 4).setValue(u.borrower_name);
+      if (u.borrower_dept !== undefined) sheet.getRange(row, 5).setValue(u.borrower_dept);
+      if (u.borrower_contact !== undefined) sheet.getRange(row, 6).setValue(u.borrower_contact);
+      if (u.borrow_date !== undefined) sheet.getRange(row, 7).setValue(u.borrow_date);
+      if (u.expected_return !== undefined) sheet.getRange(row, 8).setValue(u.expected_return);
+      if (u.actual_return !== undefined) sheet.getRange(row, 9).setValue(u.actual_return);
+      if (u.trans_status !== undefined) sheet.getRange(row, 10).setValue(u.trans_status);
+      if (u.notes !== undefined) sheet.getRange(row, 11).setValue(u.notes);
       break;
     }
   }
   SpreadsheetApp.flush();
-  return jsonResponse({ status: "success", message: "อัปเดตประวัติเรียบร้อย" });
+  return jsonResponse({ status: "success", message: "แก้ไขประวัติเรียบร้อย" });
 }
 
 function handleAddDepartment(data) {
   var ss = getSpreadsheet();
-  var sheet = getOrCreateSheet(ss, "Departments", ["department_name"], []);
-  if (data.deptName) sheet.appendRow([String(data.deptName).trim()]);
+  var sheet = ss.getSheetByName("Departments");
+  sheet.appendRow([data.deptName]);
   SpreadsheetApp.flush();
-  return jsonResponse({ status: "success", message: "เพิ่มฝ่ายเรียบร้อย" });
+  return jsonResponse({ status: "success", message: "เพิ่มแผนกเรียบร้อย" });
 }
 
 function handleUpdateDepartment(data) {
   var ss = getSpreadsheet();
-  var sheet = getOrCreateSheet(ss, "Departments", ["department_name"], []);
-  var vals = sheet.getDataRange().getValues();
-  for (var i = 1; i < vals.length; i++) {
-    if (String(vals[i][0]).trim().toLowerCase() === String(data.oldDeptName).trim().toLowerCase()) {
-      sheet.getRange(i + 1, 1).setValue(String(data.newDeptName).trim());
+  var sheet = ss.getSheetByName("Departments");
+  var values = sheet.getDataRange().getValues();
+  for (var i = 1; i < values.length; i++) {
+    if (String(values[i][0]).trim().toLowerCase() === String(data.oldName).trim().toLowerCase()) {
+      sheet.getRange(i + 1, 1).setValue(data.newName);
       break;
     }
   }
   SpreadsheetApp.flush();
-  return jsonResponse({ status: "success", message: "แก้ไขชื่อฝ่ายเรียบร้อย" });
+  return jsonResponse({ status: "success", message: "แก้ไขแผนกเรียบร้อย" });
 }
 
 function handleDeleteDepartment(data) {
   var ss = getSpreadsheet();
-  var sheet = getOrCreateSheet(ss, "Departments", ["department_name"], []);
-  var vals = sheet.getDataRange().getValues();
-  for (var i = 1; i < vals.length; i++) {
-    if (String(vals[i][0]).trim().toLowerCase() === String(data.deptName).trim().toLowerCase()) {
+  var sheet = ss.getSheetByName("Departments");
+  var values = sheet.getDataRange().getValues();
+  for (var i = 1; i < values.length; i++) {
+    if (String(values[i][0]).trim().toLowerCase() === String(data.deptName).trim().toLowerCase()) {
       sheet.deleteRow(i + 1);
       break;
     }
   }
   SpreadsheetApp.flush();
-  return jsonResponse({ status: "success", message: "ลบฝ่ายเรียบร้อย" });
+  return jsonResponse({ status: "success", message: "ลบแผนกเรียบร้อย" });
 }
 
 function handleAddTicketCategory(data) {
   var ss = getSpreadsheet();
-  var sheet = getOrCreateSheet(ss, "TicketCategories", ["category_name"], []);
-  if (data.categoryName) sheet.appendRow([String(data.categoryName).trim()]);
+  var sheet = ss.getSheetByName("TicketCategories");
+  sheet.appendRow([data.categoryName]);
   SpreadsheetApp.flush();
-  return jsonResponse({ status: "success", message: "เพิ่มหมวดหมู่ปัญหาเรียบร้อย" });
+  return jsonResponse({ status: "success", message: "เพิ่มหมวดหมู่เรียบร้อย" });
 }
 
 function handleUpdateTicketCategory(data) {
   var ss = getSpreadsheet();
-  var sheet = getOrCreateSheet(ss, "TicketCategories", ["category_name"], []);
-  var vals = sheet.getDataRange().getValues();
-  for (var i = 1; i < vals.length; i++) {
-    if (String(vals[i][0]).trim().toLowerCase() === String(data.oldName).trim().toLowerCase()) {
-      sheet.getRange(i + 1, 1).setValue(String(data.newName).trim());
+  var sheet = ss.getSheetByName("TicketCategories");
+  var values = sheet.getDataRange().getValues();
+  for (var i = 1; i < values.length; i++) {
+    if (String(values[i][0]).trim().toLowerCase() === String(data.oldName).trim().toLowerCase()) {
+      sheet.getRange(i + 1, 1).setValue(data.newName);
       break;
     }
   }
   SpreadsheetApp.flush();
-  return jsonResponse({ status: "success", message: "แก้ไขหมวดหมู่ปัญหาเรียบร้อย" });
+  return jsonResponse({ status: "success", message: "แก้ไขหมวดหมู่เรียบร้อย" });
 }
 
 function handleDeleteTicketCategory(data) {
   var ss = getSpreadsheet();
-  var sheet = getOrCreateSheet(ss, "TicketCategories", ["category_name"], []);
-  var vals = sheet.getDataRange().getValues();
-  for (var i = 1; i < vals.length; i++) {
-    if (String(vals[i][0]).trim().toLowerCase() === String(data.categoryName).trim().toLowerCase()) {
+  var sheet = ss.getSheetByName("TicketCategories");
+  var values = sheet.getDataRange().getValues();
+  for (var i = 1; i < values.length; i++) {
+    if (String(values[i][0]).trim().toLowerCase() === String(data.categoryName).trim().toLowerCase()) {
       sheet.deleteRow(i + 1);
       break;
     }
   }
   SpreadsheetApp.flush();
-  return jsonResponse({ status: "success", message: "ลบหมวดหมู่ปัญหาเรียบร้อย" });
+  return jsonResponse({ status: "success", message: "ลบหมวดหมู่เรียบร้อย" });
 }
 
 function handleAddItem(data) {
   var ss = getSpreadsheet();
-  var sheet = getOrCreateSheet(ss, "Items", ["item_id", "item_name", "category", "serial_number", "status"], []);
-  sheet.appendRow([data.itemId, data.itemName, data.category, data.serialNumber || "-", "Available"]);
+  var sheet = ss.getSheetByName("Items");
+  sheet.appendRow([data.itemId, data.itemName, data.category, data.serialNumber, "Available"]);
   SpreadsheetApp.flush();
   return jsonResponse({ status: "success", message: "เพิ่มอุปกรณ์เรียบร้อย" });
 }
 
 function handleUpdateItem(data) {
   var ss = getSpreadsheet();
-  var sheet = getOrCreateSheet(ss, "Items", ["item_id", "item_name", "category", "serial_number", "status"], []);
-  var vals = sheet.getDataRange().getValues();
-  for (var i = 1; i < vals.length; i++) {
-    if (String(vals[i][0]).trim().toLowerCase() === String(data.itemId).trim().toLowerCase()) {
-      if (data.itemName) sheet.getRange(i + 1, 2).setValue(data.itemName);
-      if (data.category) sheet.getRange(i + 1, 3).setValue(data.category);
-      if (data.serialNumber !== undefined) sheet.getRange(i + 1, 4).setValue(data.serialNumber);
-      if (data.status) sheet.getRange(i + 1, 5).setValue(data.status);
+  var sheet = ss.getSheetByName("Items");
+  var id = String(data.itemId).trim().toLowerCase();
+  var values = sheet.getDataRange().getValues();
+  for (var i = 1; i < values.length; i++) {
+    if (String(values[i][0]).trim().toLowerCase() === id) {
+      var row = i + 1;
+      if (data.itemName !== undefined) sheet.getRange(row, 2).setValue(data.itemName);
+      if (data.category !== undefined) sheet.getRange(row, 3).setValue(data.category);
+      if (data.serialNumber !== undefined) sheet.getRange(row, 4).setValue(data.serialNumber);
+      if (data.status !== undefined) sheet.getRange(row, 5).setValue(data.status);
       break;
     }
   }
@@ -4483,27 +5534,35 @@ function handleUpdateItem(data) {
   return jsonResponse({ status: "success", message: "อัปเดตอุปกรณ์เรียบร้อย" });
 }
 
+// Req 2: UserRoles บันทึกรหัสผ่าน สถานะ และแผนก
 function handleSaveUserRole(data) {
   var ss = getSpreadsheet();
-  var sheet = getOrCreateSheet(ss, "UserRoles", ["email", "name", "role", "remark", "updated_at"], []);
-  var r = data.roleData;
-  if (!r || !r.email) return jsonResponse({ status: "error", message: "Missing email" });
+  var sheet = ss.getSheetByName("UserRoles");
+  if (!sheet) return jsonResponse({ status: "error", message: "UserRoles sheet not found" });
+  var r = data.roleData || {};
+  var email = String(r.email || "").trim().toLowerCase();
+  if (!email) return jsonResponse({ status: "error", message: "No email provided" });
   var values = sheet.getDataRange().getValues();
-  var targetRow = -1;
+  var foundRow = -1;
   for (var i = 1; i < values.length; i++) {
-    if (String(values[i][0]).toLowerCase() === r.email.toLowerCase()) {
-      targetRow = i + 1;
+    if (String(values[i][0]).trim().toLowerCase() === email) {
+      foundRow = i + 1;
       break;
     }
   }
-  var now = new Date();
-  if (targetRow > 0) {
-    sheet.getRange(targetRow, 2).setValue(r.name || "");
-    sheet.getRange(targetRow, 3).setValue(r.role || "user");
-    sheet.getRange(targetRow, 4).setValue(r.remark || "");
-    sheet.getRange(targetRow, 5).setValue(now);
+  var rowData = [
+    email,
+    r.role || "user",
+    r.name || "",
+    r.password || "123456",
+    r.status || "active",
+    r.dept || "",
+    r.remark || ""
+  ];
+  if (foundRow !== -1) {
+    sheet.getRange(foundRow, 1, 1, 7).setValues([rowData]);
   } else {
-    sheet.appendRow([r.email, r.name || "", r.role || "user", r.remark || "", now]);
+    sheet.appendRow(rowData);
   }
   SpreadsheetApp.flush();
   return jsonResponse({ status: "success", message: "User role saved" });
@@ -4513,9 +5572,10 @@ function handleDeleteUserRole(data) {
   var ss = getSpreadsheet();
   var sheet = ss.getSheetByName("UserRoles");
   if (!sheet) return jsonResponse({ status: "success" });
+  var email = String(data.email || "").trim().toLowerCase();
   var values = sheet.getDataRange().getValues();
   for (var i = 1; i < values.length; i++) {
-    if (String(values[i][0]).toLowerCase() === String(data.email).toLowerCase()) {
+    if (String(values[i][0]).trim().toLowerCase() === email) {
       sheet.deleteRow(i + 1);
       break;
     }
@@ -4527,8 +5587,6 @@ function handleDeleteUserRole(data) {
     function openSetupModal() {
       const urlInput = document.getElementById("inputWebAppUrl");
       if (urlInput) urlInput.value = state.webAppUrl || "";
-      const clientIdInput = document.getElementById("inputGoogleClientId");
-      if (clientIdInput) clientIdInput.value = currentGoogleClientId || "";
       const codeBlock = document.getElementById("gasCodeBlock");
       if (codeBlock) codeBlock.textContent = SELF_HEALING_GAS_CODE;
       document.getElementById("setupModal")?.classList.remove("hidden");
@@ -4556,15 +5614,6 @@ function handleDeleteUserRole(data) {
       closeSetupModal();
       showNotification("สลับใช้งานโหมดจำลอง (Demo Mode) เรียบร้อย", "info");
       triggerManualReload();
-    }
-
-    function saveGoogleClientId() {
-      const val = document.getElementById("inputGoogleClientId")?.value.trim();
-      if (!val) return showNotification("กรุณาระบุ Client ID", "warning");
-      currentGoogleClientId = val;
-      localStorage.setItem(STORAGE_KEY_CLIENT_ID, val);
-      initGoogleSignIn();
-      showNotification("บันทึก Google Client ID เรียบร้อย", "success");
     }
 
     function copyGasCode() {
@@ -4672,6 +5721,10 @@ function handleDeleteUserRole(data) {
             }
             case "saveUserRole": {
               resolve({ status: "success", message: "บันทึกสิทธิ์ในระบบจำลองเรียบร้อย" });
+              break;
+            }
+            case "deleteUserRole": {
+              resolve({ status: "success", message: "ลบสิทธิ์ในระบบจำลองเรียบร้อย" });
               break;
             }
             case "addItem":
@@ -4809,6 +5862,7 @@ function handleDeleteUserRole(data) {
         if (state.currentUser) {
           document.getElementById("borrowerName").value = state.currentUser.name;
           document.getElementById("borrowerContact").value = state.currentUser.email;
+          if (state.currentUser.dept) document.getElementById("borrowerDept").value = state.currentUser.dept;
         }
       }, 10);
     }
@@ -4823,14 +5877,21 @@ function handleDeleteUserRole(data) {
       if (saved) {
         try {
           const user = JSON.parse(saved);
-          const chk = evaluateUserRole(user.email);
-          if (chk.allowed) { user.role = chk.role; state.currentUser = user; }
+          const u = state.userRoles.find(r => r.email.toLowerCase() === user.email.toLowerCase());
+          if (u && u.status !== "disabled") {
+            user.role = u.role;
+            user.status = u.status;
+            state.currentUser = user;
+          } else {
+            localStorage.removeItem(STORAGE_KEY_USER);
+            state.currentUser = null;
+          }
         } catch (e) {}
       }
 
       applyUserRoleUI();
-      switchTab('borrowTab');
-      setTimeout(() => initGoogleSignIn(), 300);
+      const initialTab = getTargetTabFromUrl() || 'borrowTab';
+      switchTab(initialTab);
       setTimeout(() => refreshData(false), 500);
     });
   </script>

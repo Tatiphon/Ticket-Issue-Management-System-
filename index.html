@@ -288,6 +288,10 @@
             <span id="tabBadgeAdminTickets" class="hidden">0</span>
             <span id="badgeActiveTicketsCat" class="hidden">0</span>
           </button>
+          <button type="button" onclick="switchTab('helpdeskReportTab')" id="sidebarBtn-helpdeskReportTab" class="admin-sidebar-btn w-full px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 text-slate-700 hover:bg-slate-100 transition">
+            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            <span>รายงานสรุปแจ้งซ่อม (Report)</span>
+          </button>
           <button type="button" onclick="switchTab('kbTab')" id="sidebarBtn-kbTab" class="admin-sidebar-btn w-full px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 text-slate-700 hover:bg-slate-100 transition">
             <svg class="w-4 h-4 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
             <span>คลังความรู้ไอที (KB)</span>
@@ -295,6 +299,10 @@
           <button type="button" onclick="openTicketCategoryManageModal()" class="admin-sidebar-btn w-full px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 text-slate-700 hover:bg-slate-100 transition">
             <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
             <span>จัดการหมวดหมู่ปัญหา</span>
+          </button>
+          <button type="button" onclick="openInternalSystemManageModal()" class="admin-sidebar-btn w-full px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 text-slate-700 hover:bg-slate-100 transition">
+            <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            <span>จัดการชื่อระบบสารสนเทศ</span>
           </button>
         </div>
 
@@ -785,14 +793,14 @@
                   <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                     หมวดหมู่ปัญหา (Category) <span class="text-rose-500">*</span>
                   </label>
-                  <select id="ticketCategory" required class="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-tcc-500 bg-white text-xs sm:text-sm">
+                  <select id="ticketCategory" onchange="handleTicketCategoryChange(this.value)" required class="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-tcc-500 bg-white text-xs sm:text-sm">
                     <option value="">-- เลือกหมวดหมู่งาน --</option>
-                    <option value="Hardware">ฮาร์ดแวร์ / เครื่องคอมพิวเตอร์ / ปริ้นเตอร์</option>
-                    <option value="Software">ซอฟต์แวร์ / MS Office / โปรแกรมทั่วไป</option>
-                    <option value="Network">ระบบเครือข่าย / อินเทอร์เน็ต / Wi-Fi / VPN</option>
-                    <option value="Internal System">ระบบสารสนเทศภายใน / เว็บไซต์</option>
-                    <option value="Email & Account">อีเมลองค์กร / รหัสผ่าน / สิทธิ์ผู้ใช้</option>
-                    <option value="Other">งานบริการด้านไอทีอื่นๆ</option>
+                    <option value="ฮาร์ดแวร์ / เครื่องคอมพิวเตอร์ / จอภาพ">ฮาร์ดแวร์ / เครื่องคอมพิวเตอร์ / จอภาพ</option>
+                    <option value="ซอฟต์แวร์ / MS Office / โปรแกรมทั่วไป">ซอฟต์แวร์ / MS Office / โปรแกรมทั่วไป</option>
+                    <option value="ระบบเครือข่าย / อินเทอร์เน็ต / Wi-Fi / VPN">ระบบเครือข่าย / อินเทอร์เน็ต / Wi-Fi / VPN</option>
+                    <option value="ระบบสารสนเทศภายใน / เว็บไซต์">ระบบสารสนเทศภายใน / เว็บไซต์</option>
+                    <option value="อีเมลองค์กร / บัญชีผู้ใช้งาน / รหัสผ่าน">อีเมลองค์กร / บัญชีผู้ใช้งาน / รหัสผ่าน</option>
+                    <option value="งานบริการไอทีอื่นๆ">งานบริการไอทีอื่นๆ</option>
                   </select>
                 </div>
 
@@ -801,12 +809,29 @@
                     ระดับความสำคัญ (Priority / SLA) <span class="text-rose-500">*</span>
                   </label>
                   <select id="ticketPriority" required class="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-tcc-500 bg-white text-xs sm:text-sm font-semibold">
-                    <option value="Medium" selected>ปานกลาง (Medium - SLA แก้ไขใน 24 ชม.)</option>
-                    <option value="Low">ต่ำ (Low - งานสอบถามทั่วไป SLA 48 ชม.)</option>
+                    <option value="Low" selected>ต่ำ (Low - งานสอบถามทั่วไป SLA 48 ชม.)</option>
+                    <option value="Medium">ปานกลาง (Medium - SLA แก้ไขใน 24 ชม.)</option>
                     <option value="High">สูง (High - กระทบงานหลัก SLA 4 ชม.)</option>
                     <option value="Critical">วิกฤต (Critical - ระบบหลักล่ม SLA 2 ชม.)</option>
                   </select>
                 </div>
+              </div>
+
+              <!-- Conditional Dropdown: เลือกระบบสารสนเทศภายใน / เว็บไซต์ (Req 2) -->
+              <div id="internalSystemSelectWrapper" class="hidden p-3.5 rounded-2xl bg-tcc-50/60 border border-tcc-200 space-y-1.5 transition-all">
+                <div class="flex items-center justify-between gap-2">
+                  <label for="ticketSystemName" class="block text-xs font-bold text-tcc-900 uppercase tracking-wider">
+                    ชื่อระบบสารสนเทศ / เว็บไซต์ที่พบปัญหา (System Name) <span class="text-rose-500">*</span>
+                  </label>
+                  <button type="button" onclick="openInternalSystemManageModal()" class="admin-only admin-hidden text-[11px] font-bold text-tcc-700 hover:text-tcc-900 hover:underline flex items-center gap-1 cursor-pointer">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    <span>จัดการรายชื่อระบบ (Admin)</span>
+                  </button>
+                </div>
+                <select id="ticketSystemName" class="w-full px-3 py-2.5 rounded-xl border border-tcc-300 focus:ring-2 focus:ring-tcc-500 bg-white text-xs sm:text-sm font-semibold text-slate-800">
+                  <option value="">-- กรุณาเลือกระบบสารสนเทศ / เว็บไซต์ --</option>
+                </select>
+                <p class="text-[11px] text-slate-500">กรุณาเลือกระบบสารสนเทศหรือเว็บไซต์ที่ต้องการแจ้งปัญหาเพื่อให้เจ้าหน้าที่ผู้รับผิดชอบตรวจสอบได้รวดเร็ว</p>
               </div>
 
               <div>
@@ -927,6 +952,9 @@
                 <button onclick="runAutoAssignRoundRobin()" class="px-3 py-1.5 bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition" title="จ่ายงานที่ค้างให้เจ้าหน้าที่ไอทีโดยอัตโนมัติ">
                   <span>⚡ จ่ายงานอัตโนมัติ (Round-robin)</span>
                 </button>
+                <button onclick="switchTab('helpdeskReportTab')" class="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition" title="เปิดหน้ารายงานสรุปผลการแจ้งซ่อมไอที">
+                  <span>📈 รายงานสรุป / ดึงรายงาน</span>
+                </button>
               </div>
             </div>
 
@@ -937,11 +965,11 @@
                 <option value="">หมวดหมู่ทั้งหมด</option>
               </select>
               <select id="adminTicketFilterPriority" onchange="renderAdminTicketsView()" class="px-3 py-2 rounded-xl border border-slate-300 bg-white">
-                <option value="">ทุกระดับความสำคัญ</option>
-                <option value="Critical">🔴 Critical (วิกฤต)</option>
-                <option value="High">🟠 High (สูง)</option>
-                <option value="Medium">🟡 Medium (ปานกลาง)</option>
-                <option value="Low">🟢 Low (ต่ำ)</option>
+                <option value="">ทุกระดับความสำคัญ (น้อย → สูง)</option>
+                <option value="Low">🟢 Low (ต่ำ - SLA 48 ชม.)</option>
+                <option value="Medium">🟡 Medium (ปานกลาง - SLA 24 ชม.)</option>
+                <option value="High">🟠 High (สูง - SLA 4 ชม.)</option>
+                <option value="Critical">🔴 Critical (วิกฤต - SLA 2 ชม.)</option>
               </select>
               <select id="adminTicketFilterAgent" onchange="renderAdminTicketsView()" class="px-3 py-2 rounded-xl border border-slate-300 bg-white">
                 <option value="">เจ้าหน้าที่ทั้งหมด</option>
@@ -1005,24 +1033,221 @@
             </div>
 
             <!-- Table View -->
-            <div id="adminTicketTableView" class="hidden overflow-x-auto">
-              <table class="w-full text-left text-xs">
-                <thead class="bg-slate-50 text-slate-600 uppercase border-y border-slate-100 font-semibold">
+            <div id="adminTicketTableView" class="hidden overflow-x-auto max-w-[888px] mx-auto rounded-xl border border-slate-200 bg-white shadow-2xs">
+              <table id="adminTicketTableEl" class="w-full text-left text-xs whitespace-nowrap divide-y divide-slate-100">
+                <thead class="bg-slate-50 text-slate-600 uppercase font-bold text-[11px] border-b border-slate-200 whitespace-nowrap">
                   <tr>
-                    <th class="py-3 px-3">รหัสเคส</th>
-                    <th class="py-3 px-3">หัวข้อปัญหา</th>
-                    <th class="py-3 px-3">ผู้แจ้ง / แผนก</th>
-                    <th class="py-3 px-3 text-center">ระดับความสำคัญ</th>
-                    <th class="py-3 px-3 text-center">สถานะ</th>
-                    <th class="py-3 px-3">เจ้าหน้าที่ (Agent)</th>
-                    <th class="py-3 px-3 text-center">SLA สถานะ</th>
-                    <th class="py-3 px-3 text-center">จัดการ</th>
+                    <th class="py-2.5 px-2 whitespace-nowrap">รหัสเคส</th>
+                    <th class="py-2.5 px-2 whitespace-nowrap">หัวข้อปัญหา</th>
+                    <th class="py-2.5 px-2 whitespace-nowrap">ผู้แจ้ง / แผนก</th>
+                    <th class="py-2.5 px-1.5 text-center whitespace-nowrap">ความสำคัญ</th>
+                    <th class="py-2.5 px-1.5 text-center whitespace-nowrap">สถานะ</th>
+                    <th class="py-2.5 px-2 whitespace-nowrap">ผู้รับผิดชอบ</th>
+                    <th class="py-2.5 px-1.5 text-center whitespace-nowrap">SLA</th>
+                    <th class="py-2.5 px-2 text-center whitespace-nowrap">จัดการ</th>
                   </tr>
                 </thead>
-                <tbody id="adminTicketTableBody" class="divide-y divide-slate-100"></tbody>
+                <tbody id="adminTicketTableBody" class="divide-y divide-slate-100 whitespace-nowrap"></tbody>
               </table>
             </div>
 
+          </div>
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- TAB: HELPDESK SUMMARY REPORT (ADMIN) -->
+        <!-- ============================================================== -->
+        <div id="tabContent-helpdeskReportTab" class="tab-content hidden">
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6 space-y-5">
+            <!-- Header & Action Buttons -->
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-4 border-b border-slate-100">
+              <div>
+                <h2 class="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
+                  รายงานสรุปงานบริการไอที (IT Helpdesk Summary &amp; Analytics Report)
+                </h2>
+                <p class="text-xs text-slate-500 mt-0.5">วิเคราะห์สถิติการแจ้งซ่อม ประสิทธิภาพ SLA ความพึงพอใจ แยกตามหมวดหมู่ ระบบสารสนเทศ แผนก และส่งออกรายงานสรุปผล</p>
+              </div>
+              <div class="flex flex-wrap items-center gap-2">
+                <button type="button" onclick="exportHelpdeskSummaryCsv()" class="px-3.5 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 rounded-xl text-xs font-bold flex items-center gap-1.5 transition shadow-sm">
+                  <span>📊 ส่งออกตารางสรุปผล (CSV/Excel)</span>
+                </button>
+                <button type="button" onclick="exportHelpdeskReportCsv()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition shadow-sm">
+                  <span>📥 ส่งออกข้อมูลเคสละเอียด (CSV/Excel)</span>
+                </button>
+                <button type="button" onclick="printHelpdeskSummaryReport()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition shadow-sm">
+                  <span>🖨️ พิมพ์ / บันทึก PDF รายงานสรุป</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Filter Bar -->
+            <div class="bg-slate-50/90 p-3.5 sm:p-4 rounded-2xl border border-slate-200/80 space-y-3">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <div class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                  <span>🔍 ตัวกรองเงื่อนไขการดึงรายงาน</span>
+                  <span id="hdReportFilterCountBadge" class="px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800 text-[11px] font-bold">0 รายการ</span>
+                </div>
+                <div class="flex flex-wrap items-center gap-1.5 text-[11px]">
+                  <span class="text-slate-500 font-medium mr-1">ช่วงเวลาด่วน:</span>
+                  <button type="button" onclick="setHelpdeskReportQuickRange('all')" class="px-2.5 py-1 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 font-semibold transition">ทั้งหมด</button>
+                  <button type="button" onclick="setHelpdeskReportQuickRange('today')" class="px-2.5 py-1 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 font-semibold transition">วันนี้</button>
+                  <button type="button" onclick="setHelpdeskReportQuickRange('7days')" class="px-2.5 py-1 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 font-semibold transition">7 วันล่าสุด</button>
+                  <button type="button" onclick="setHelpdeskReportQuickRange('thisMonth')" class="px-2.5 py-1 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 font-semibold transition">เดือนนี้</button>
+                  <button type="button" onclick="setHelpdeskReportQuickRange('thisYear')" class="px-2.5 py-1 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 font-semibold transition">ปีนี้</button>
+                  <button type="button" onclick="resetHelpdeskReportFilters()" class="px-2.5 py-1 rounded-lg border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold transition ml-1">🔄 ล้างตัวกรอง</button>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 text-xs">
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-500 mb-1">ตั้งแต่วันที่</label>
+                  <input type="date" id="hdReportStartDate" onchange="renderHelpdeskReport()" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-tcc-500 outline-none">
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-500 mb-1">ถึงวันที่</label>
+                  <input type="date" id="hdReportEndDate" onchange="renderHelpdeskReport()" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-tcc-500 outline-none">
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-500 mb-1">หมวดหมู่ปัญหา</label>
+                  <select id="hdReportCategory" onchange="renderHelpdeskReport()" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white">
+                    <option value="">ทุกหมวดหมู่ปัญหา</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-500 mb-1">ระบบสารสนเทศ / เว็บไซต์</label>
+                  <select id="hdReportSystemName" onchange="renderHelpdeskReport()" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white">
+                    <option value="">ทุกระบบสารสนเทศ / ทั้งหมด</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-500 mb-1">ระดับความสำคัญ (น้อย → สูง)</label>
+                  <select id="hdReportPriority" onchange="renderHelpdeskReport()" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white">
+                    <option value="">ทุกระดับความสำคัญ</option>
+                    <option value="Low">🟢 Low (ต่ำ - SLA 48 ชม.)</option>
+                    <option value="Medium">🟡 Medium (ปานกลาง - SLA 24 ชม.)</option>
+                    <option value="High">🟠 High (สูง - SLA 4 ชม.)</option>
+                    <option value="Critical">🔴 Critical (วิกฤต - SLA 2 ชม.)</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-500 mb-1">สถานะเคส</label>
+                  <select id="hdReportStatus" onchange="renderHelpdeskReport()" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white">
+                    <option value="">ทุกสถานะเคส</option>
+                    <option value="Open">รอรับเรื่อง (Open)</option>
+                    <option value="In Progress">กำลังดำเนินการ (In Progress)</option>
+                    <option value="Pending User">รอข้อมูลจากผู้ใช้ (Pending User)</option>
+                    <option value="Resolved">แก้ไขแล้ว (Resolved)</option>
+                    <option value="Closed">ปิดเคสสมบูรณ์ (Closed)</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-500 mb-1">ฝ่าย / แผนกผู้แจ้ง</label>
+                  <select id="hdReportDepartment" onchange="renderHelpdeskReport()" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white">
+                    <option value="">ทุกฝ่าย / แผนก</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-500 mb-1">เจ้าหน้าที่ผู้รับผิดชอบ</label>
+                  <select id="hdReportAgent" onchange="renderHelpdeskReport()" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white">
+                    <option value="">เจ้าหน้าที่ทั้งหมด</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+              <div class="bg-slate-50 rounded-2xl p-3.5 border border-slate-200/80">
+                <div class="text-[11px] font-semibold text-slate-500">เคสแจ้งซ่อมทั้งหมด</div>
+                <div id="hdKpiTotal" class="text-2xl font-extrabold text-slate-900 mt-1">0</div>
+                <div class="text-[10px] text-slate-400 mt-0.5">ตามเงื่อนไขที่เลือก</div>
+              </div>
+              <div class="bg-emerald-50/70 rounded-2xl p-3.5 border border-emerald-200/80">
+                <div class="text-[11px] font-semibold text-emerald-700">แก้ไขสำเร็จ (Resolved/Closed)</div>
+                <div id="hdKpiResolved" class="text-2xl font-extrabold text-emerald-800 mt-1">0</div>
+                <div id="hdKpiResolvedRate" class="text-[10px] font-semibold text-emerald-600 mt-0.5">อัตราสำเร็จ 0%</div>
+              </div>
+              <div class="bg-amber-50/70 rounded-2xl p-3.5 border border-amber-200/80">
+                <div class="text-[11px] font-semibold text-amber-800">กำลังดำเนินการ / รอดำเนินการ</div>
+                <div id="hdKpiActive" class="text-2xl font-extrabold text-amber-900 mt-1">0</div>
+                <div id="hdKpiOpenSub" class="text-[10px] text-amber-700 mt-0.5">รอรับเรื่อง 0 เคส</div>
+              </div>
+              <div class="bg-sky-50/70 rounded-2xl p-3.5 border border-sky-200/80">
+                <div class="text-[11px] font-semibold text-sky-800">ผ่านเกณฑ์เวลา SLA</div>
+                <div id="hdKpiSlaRate" class="text-2xl font-extrabold text-sky-900 mt-1">100%</div>
+                <div id="hdKpiSlaBreached" class="text-[10px] text-rose-600 font-semibold mt-0.5">เกินกำหนด SLA 0 เคส</div>
+              </div>
+              <div class="col-span-2 sm:col-span-1 bg-purple-50/70 rounded-2xl p-3.5 border border-purple-200/80">
+                <div class="text-[11px] font-semibold text-purple-800">ความพึงพอใจเฉลี่ย (CSAT)</div>
+                <div id="hdKpiCsat" class="text-2xl font-extrabold text-purple-900 mt-1">-</div>
+                <div id="hdKpiCsatCount" class="text-[10px] text-purple-700 mt-0.5">จากผู้ประเมิน 0 เคส</div>
+              </div>
+            </div>
+
+            <!-- Summary Breakdown Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <!-- Breakdown by Category & Internal System -->
+              <div class="border border-slate-200 rounded-2xl overflow-hidden flex flex-col">
+                <div class="bg-slate-50 px-4 py-2.5 border-b border-slate-200 flex items-center justify-between">
+                  <span class="text-xs font-bold text-slate-800">📂 สรุปแยกตามหมวดหมู่ปัญหา &amp; ระบบสารสนเทศ</span>
+                  <span class="text-[11px] text-slate-500">จำนวนเคส (%)</span>
+                </div>
+                <div id="hdSummaryByCategoryBody" class="p-3.5 space-y-2.5 text-xs max-h-72 overflow-y-auto"></div>
+              </div>
+
+              <!-- Breakdown by Priority (Low -> Critical) & Status -->
+              <div class="border border-slate-200 rounded-2xl overflow-hidden flex flex-col">
+                <div class="bg-slate-50 px-4 py-2.5 border-b border-slate-200 flex items-center justify-between">
+                  <span class="text-xs font-bold text-slate-800">⚡ สรุปตามระดับความสำคัญ (น้อย → สูง) &amp; SLA</span>
+                  <span class="text-[11px] text-slate-500">สำเร็จ / เกิน SLA</span>
+                </div>
+                <div id="hdSummaryByPriorityBody" class="p-3.5 space-y-2.5 text-xs max-h-72 overflow-y-auto"></div>
+              </div>
+
+              <!-- Breakdown by Department -->
+              <div class="border border-slate-200 rounded-2xl overflow-hidden flex flex-col">
+                <div class="bg-slate-50 px-4 py-2.5 border-b border-slate-200 flex items-center justify-between">
+                  <span class="text-xs font-bold text-slate-800">🏢 สรุปแยกตามฝ่าย / แผนกที่แจ้งปัญหาสูงสุด</span>
+                  <span class="text-[11px] text-slate-500">จำนวนเคส</span>
+                </div>
+                <div id="hdSummaryByDeptBody" class="p-3.5 space-y-2 text-xs max-h-64 overflow-y-auto"></div>
+              </div>
+
+              <!-- Breakdown by IT Agent Performance -->
+              <div class="border border-slate-200 rounded-2xl overflow-hidden flex flex-col">
+                <div class="bg-slate-50 px-4 py-2.5 border-b border-slate-200 flex items-center justify-between">
+                  <span class="text-xs font-bold text-slate-800">👨‍💻 สรุปผลงานเจ้าหน้าที่ผู้รับผิดชอบ (IT Agent)</span>
+                  <span class="text-[11px] text-slate-500">รับผิดชอบ / ปิดเคสแล้ว</span>
+                </div>
+                <div id="hdSummaryByAgentBody" class="p-3.5 space-y-2 text-xs max-h-64 overflow-y-auto"></div>
+              </div>
+            </div>
+
+            <!-- Filtered Ticket Details Table (Single-line cells, max 888px, zero wrap) -->
+            <div class="border border-slate-200 rounded-2xl overflow-hidden max-w-[888px] mx-auto bg-white shadow-2xs">
+              <div class="bg-slate-50 px-4 py-2.5 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2 whitespace-nowrap">
+                <span class="text-xs font-bold text-slate-800">📋 รายการเคสแจ้งซ่อมตามเงื่อนไขรายงาน</span>
+                <span class="text-[11px] text-slate-500">คลิกที่รหัสเคสเพื่อดูรายละเอียดหรือจัดการเคส</span>
+              </div>
+              <div class="overflow-x-auto max-h-96">
+                <table id="hdReportDetailTable" class="w-full text-left text-xs whitespace-nowrap divide-y divide-slate-100">
+                  <thead class="bg-slate-100/90 text-slate-600 uppercase border-b border-slate-200 font-bold text-[11px] sticky top-0 whitespace-nowrap z-10">
+                    <tr>
+                      <th class="py-2.5 px-2 whitespace-nowrap">รหัสเคส</th>
+                      <th class="py-2.5 px-2 whitespace-nowrap">หมวดหมู่ / ระบบ</th>
+                      <th class="py-2.5 px-2 whitespace-nowrap">หัวข้อปัญหา</th>
+                      <th class="py-2.5 px-2 whitespace-nowrap">ผู้แจ้ง / แผนก</th>
+                      <th class="py-2.5 px-1.5 text-center whitespace-nowrap">ความสำคัญ</th>
+                      <th class="py-2.5 px-1.5 text-center whitespace-nowrap">สถานะ</th>
+                      <th class="py-2.5 px-2 whitespace-nowrap">ผู้รับผิดชอบ</th>
+                      <th class="py-2.5 px-2 text-center whitespace-nowrap">SLA / คะแนน</th>
+                    </tr>
+                  </thead>
+                  <tbody id="hdReportTableBody" class="divide-y divide-slate-100 whitespace-nowrap"></tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -1676,8 +1901,55 @@
         <div id="ticketCategoryListContainer" class="divide-y divide-slate-100 max-h-60 overflow-y-auto"></div>
       </div>
 
-      <div class="pt-4 mt-4 border-t border-slate-100 flex justify-end">
+      <div class="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between">
+        <button type="button" onclick="closeTicketCategoryManageModal(); openInternalSystemManageModal();" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800 hover:underline">
+          🌐 จัดการรายชื่อระบบสารสนเทศ/เว็บไซต์ →
+        </button>
         <button type="button" onclick="closeTicketCategoryManageModal()" class="px-5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl">
+          ปิดหน้าต่าง
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: MANAGE INTERNAL SYSTEMS / WEBSITES -->
+  <div id="internalSystemManageModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 animate-fadeIn">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold">
+            🌐
+          </div>
+          <div>
+            <h3 class="font-bold text-slate-900 text-sm">จัดการรายชื่อระบบสารสนเทศภายใน / เว็บไซต์</h3>
+            <p class="text-[11px] text-slate-500">เพิ่ม ลบ หรือแก้ไขชื่อระบบใน Dropdown เมื่อผู้ใช้แจ้งปัญหาหมวดระบบสารสนเทศภายใน</p>
+          </div>
+        </div>
+        <button onclick="closeInternalSystemManageModal()" class="text-slate-400 hover:text-slate-600 font-bold p-1">✕</button>
+      </div>
+
+      <!-- Add New Internal System -->
+      <form onsubmit="handleAddNewInternalSystem(event)" class="flex gap-2 mb-4">
+        <input type="text" id="newInternalSystemInput" required placeholder="พิมพ์ชื่อระบบสารสนเทศ หรือเว็บไซต์ใหม่..." class="flex-1 px-3 py-2 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-tcc-500 outline-none">
+        <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-sm shrink-0">
+          + เพิ่มชื่อระบบ
+        </button>
+      </form>
+
+      <!-- Internal Systems List Container -->
+      <div class="border border-slate-200 rounded-2xl overflow-hidden">
+        <div class="bg-slate-50 px-3 py-2 text-[11px] font-bold text-slate-500 uppercase tracking-wider flex justify-between">
+          <span>ชื่อระบบสารสนเทศ / เว็บไซต์</span>
+          <span>การจัดการ</span>
+        </div>
+        <div id="internalSystemListContainer" class="divide-y divide-slate-100 max-h-60 overflow-y-auto"></div>
+      </div>
+
+      <div class="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between">
+        <button type="button" onclick="closeInternalSystemManageModal(); openTicketCategoryManageModal();" class="text-xs font-semibold text-purple-600 hover:text-purple-800 hover:underline">
+          ← จัดการหมวดหมู่ปัญหาหลัก
+        </button>
+        <button type="button" onclick="closeInternalSystemManageModal()" class="px-5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl">
           ปิดหน้าต่าง
         </button>
       </div>
@@ -2136,6 +2408,7 @@
     const STORAGE_KEY_URL = "it_asset_webapp_url";
     const STORAGE_KEY_USER = "it_asset_logged_user";
     const STORAGE_KEY_ROLES = "it_asset_custom_user_roles";
+    const STORAGE_KEY_INTERNAL_SYSTEMS = "it_asset_internal_systems";
     const DEFAULT_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxEj-79eHal39qVlnENM2GxRTn5C1TVXYjE8IxehEKXokpOHh5VtfHCbuc7_PSr4xO0/exec";
 
     let storedUrl = localStorage.getItem(STORAGE_KEY_URL);
@@ -2173,6 +2446,11 @@
       const hours = String(d.getHours()).padStart(2, "0");
       const mins = String(d.getMinutes()).padStart(2, "0");
       return `${year}-${month}-${day} ${hours}:${mins}`;
+    }
+
+    /* Null-safe lowercase: data from Google Sheets may have empty/undefined/numeric cells */
+    function safeLower(v) {
+      return (v === undefined || v === null) ? "" : String(v).toLowerCase();
     }
 
     function escapeQuotes(str) {
@@ -2248,6 +2526,29 @@
       "ระบบสารสนเทศภายใน / เว็บไซต์",
       "งานบริการไอทีอื่นๆ"
     ];
+
+    const INITIAL_DEMO_INTERNAL_SYSTEMS = [
+      "เว็บไซต์หลักหอการค้าไทย (thaichamber.org)",
+      "ระบบสมาชิกหอการค้าไทย (TCC Member Portal)",
+      "ระบบสารบรรณอิเล็กทรอนิกส์ (e-Document / e-Office)",
+      "ระบบทรัพยากรบุคคล / ลางานออนไลน์ (HRIS / ESS)",
+      "ระบบบัญชีการเงินและงบประมาณ (ERP / SAP)",
+      "ระบบออกหนังสือรับรองถิ่นกำเนิดสินค้า (CO Online)",
+      "ระบบจองห้องประชุมและยานพาหนะ",
+      "ระบบอินทราเน็ตภายใน (TCC Intranet)",
+      "ระบบอื่นๆ (ระบุในรายละเอียด)"
+    ];
+
+    function loadSavedInternalSystems() {
+      const saved = localStorage.getItem(STORAGE_KEY_INTERNAL_SYSTEMS);
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        } catch (e) {}
+      }
+      return [...INITIAL_DEMO_INTERNAL_SYSTEMS];
+    }
 
     const INITIAL_DEMO_DEPTS = [
       "ฝ่ายเทคโนโลยีสารสนเทศ (IT)",
@@ -2350,6 +2651,28 @@
         comments: [
           { sender: "Wattanachai (Admin)", message: "รีโมตลงโปรแกรมและตั้งค่าเมลเรียบร้อยแล้วครับ", time: getLocalTimestamp(-4), is_internal: false }
         ]
+      },
+      {
+        ticket_id: "ITC-2026-10-28-0004",
+        title: "ไม่สามารถอนุมัติเอกสารในระบบ e-Document ได้ (ขึ้น Error 500)",
+        category: "ระบบสารสนเทศภายใน / เว็บไซต์",
+        system_name: "ระบบสารบรรณอิเล็กทรอนิกส์ (e-Document / e-Office)",
+        priority: "Low",
+        status: "Resolved",
+        reporter_name: "สมชาย ใจดี",
+        reporter_dept: "ฝ่ายการเงินและการบัญชี",
+        reporter_contact: "somchai.user@thaichamber.or.th",
+        description: "กดปุ่มลงนามอนุมัติแล้วระบบค้างและแจ้ง Error 500",
+        created_at: getLocalTimestamp(-12),
+        sla_target: getLocalTimestamp(36),
+        assigned_agent: "supakon.su@thaichamber.or.th",
+        resolved_at: getLocalTimestamp(-6),
+        csat_score: 5,
+        csat_feedback: "แก้ไขได้ตรงจุด ขอบคุณมากครับ",
+        attachment_name: "",
+        comments: [
+          { sender: "Supakon (Admin)", message: "ทำการ Clear Cache Session และรีสตาร์ทบริการเรียบร้อยแล้วครับ", time: getLocalTimestamp(-6), is_internal: false }
+        ]
       }
     ];
 
@@ -2379,7 +2702,7 @@
       if (Array.isArray(customList)) {
         customList.forEach(custom => {
           if (!custom || !custom.email) return;
-          const idx = merged.findIndex(m => m.email.toLowerCase() === custom.email.toLowerCase());
+          const idx = merged.findIndex(m => safeLower(m.email) === safeLower(custom.email));
           if (idx !== -1) {
             const isPrimary = merged[idx].email === "tatitop07@gmail.com" || merged[idx].email === "tatiphon.hi@thaichamber.or.th";
             merged[idx] = {
@@ -2423,6 +2746,7 @@
       knowledgeBase: JSON.parse(JSON.stringify(INITIAL_DEMO_KB)),
       categories: [...INITIAL_DEMO_CATEGORIES],
       ticketCategories: [...INITIAL_DEMO_TICKET_CATEGORIES],
+      internalSystems: loadSavedInternalSystems(),
       departments: [...INITIAL_DEMO_DEPTS],
       selectedBorrowItems: [],
       selectedReturnTransIds: [],
@@ -2652,7 +2976,7 @@
     /* TAB ROUTING & NAVIGATION WITH HASH (#) AND QUERY (?) */
     const ALL_TAB_IDS = [
       "borrowTab", "ticketCreateTab", "myBorrowsTab", "myTicketsTab", "kbTab",
-      "dashboardTab", "ticketAdminTab", "returnTab", "inventoryTab", "historyTab", "rolesTab"
+      "dashboardTab", "ticketAdminTab", "helpdeskReportTab", "returnTab", "inventoryTab", "historyTab", "rolesTab"
     ];
 
     const TAB_ALIASES = {
@@ -2672,6 +2996,10 @@
       "ticketadmin": "ticketAdminTab",
       "ticket-admin": "ticketAdminTab",
       "ticketsadmin": "ticketAdminTab",
+      "helpdeskreport": "helpdeskReportTab",
+      "helpdesk-report": "helpdeskReportTab",
+      "ticketreport": "helpdeskReportTab",
+      "report": "helpdeskReportTab",
       "return": "returnTab",
       "returns": "returnTab",
       "inventory": "inventoryTab",
@@ -2712,7 +3040,7 @@
       const isAdmin = role === "admin" || isSuper;
 
       if (tabId === "rolesTab") return isSuper || isAdmin;
-      const adminOnlyTabs = ["dashboardTab", "ticketAdminTab", "returnTab", "inventoryTab", "historyTab"];
+      const adminOnlyTabs = ["dashboardTab", "ticketAdminTab", "helpdeskReportTab", "returnTab", "inventoryTab", "historyTab"];
       if (adminOnlyTabs.includes(tabId)) return isAdmin;
       return true;
     }
@@ -2825,6 +3153,7 @@
       if (tabId === "dashboardTab") renderMonthlyDashboard();
       if (tabId === "myTicketsTab") renderMyTicketsList();
       if (tabId === "ticketAdminTab") renderAdminTicketsView();
+      if (tabId === "helpdeskReportTab") renderHelpdeskReport();
       if (tabId === "kbTab") renderKnowledgeBaseList();
       if (tabId === "rolesTab") { renderDepartmentSelects(); renderRolesTable(); }
       if (tabId === "myBorrowsTab") renderMyBorrowsTable();
@@ -3055,12 +3384,41 @@
       document.getElementById("ticketFilePreviewContainer")?.classList.remove("flex");
     }
 
+    function isInternalSystemCategory(cat) {
+      const s = String(cat || "").trim();
+      return s.includes("ระบบสารสนเทศภายใน") || s.includes("เว็บไซต์");
+    }
+
+    function handleTicketCategoryChange(val) {
+      const wrapper = document.getElementById("internalSystemSelectWrapper");
+      const sel = document.getElementById("ticketSystemName");
+      if (!wrapper || !sel) return;
+      if (isInternalSystemCategory(val)) {
+        renderInternalSystemSelects();
+        wrapper.classList.remove("hidden");
+        sel.required = true;
+      } else {
+        wrapper.classList.add("hidden");
+        sel.required = false;
+        sel.value = "";
+      }
+    }
+
     async function handleCreateTicketSubmit(e) {
       e.preventDefault();
       if (!state.currentUser) {
         showNotification("กรุณาเข้าสู่ระบบก่อนเปิดเคสแจ้งซ่อม", "warning");
         openLoginModal();
         return;
+      }
+
+      const categoryVal = document.getElementById("ticketCategory").value;
+      const systemNameVal = isInternalSystemCategory(categoryVal)
+        ? (document.getElementById("ticketSystemName")?.value || "").trim()
+        : "";
+
+      if (isInternalSystemCategory(categoryVal) && !systemNameVal) {
+        return showNotification("กรุณาเลือกชื่อระบบสารสนเทศภายใน / เว็บไซต์ ที่พบปัญหา", "warning");
       }
 
       const btn = document.getElementById("btnSubmitTicket");
@@ -3073,7 +3431,8 @@
       const newTicket = {
         ticket_id: ticketNum,
         title: document.getElementById("ticketTitle").value.trim(),
-        category: document.getElementById("ticketCategory").value,
+        category: categoryVal,
+        system_name: systemNameVal,
         priority: priority,
         status: "Open",
         reporter_name: document.getElementById("ticketReporterName").value.trim(),
@@ -3097,6 +3456,7 @@
 
       showNotification(`เปิดเคส [${ticketNum}] เรียบร้อย บันทึกลงระบบแล้ว`, "success");
       document.getElementById("createTicketForm").reset();
+      handleTicketCategoryChange(document.getElementById("ticketCategory")?.value || "");
       clearTicketAttachment();
 
       if (btn) btn.disabled = false;
@@ -3142,13 +3502,18 @@
         if (t.status === "Resolved") statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">แก้ไขเสร็จแล้ว</span>`;
         if (t.status === "Closed") statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-200 text-slate-700">ปิดเคสแล้ว</span>`;
 
+        const sysBadge = t.system_name
+          ? `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">🌐 ${t.system_name}</span>`
+          : "";
+
         return `
           <div onclick="openTicketDetailModal('${t.ticket_id}')" class="p-4 rounded-2xl border border-slate-200 hover:border-tcc-400 bg-white hover:bg-slate-50 cursor-pointer transition flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
             <div class="space-y-1">
-              <div class="flex items-center gap-2">
+              <div class="flex flex-wrap items-center gap-2">
                 <span class="font-mono font-bold text-xs text-slate-500">${t.ticket_id}</span>
                 <span class="font-bold text-slate-900 text-sm">${t.title}</span>
                 <span class="px-2 py-0.2 rounded text-[10px] font-semibold bg-slate-100 text-slate-600">${t.category}</span>
+                ${sysBadge}
               </div>
               <p class="text-xs text-slate-500 line-clamp-1">${t.description}</p>
               <div class="text-[11px] text-slate-400 flex items-center gap-3">
@@ -3188,20 +3553,38 @@
     }
 
     function renderAdminTicketsView() {
+      const catFilterEl = document.getElementById("adminTicketFilterCategory");
+      if (catFilterEl) {
+        const curCat = catFilterEl.value;
+        const cats = state.ticketCategories || INITIAL_DEMO_TICKET_CATEGORIES;
+        catFilterEl.innerHTML = '<option value="">หมวดหมู่ทั้งหมด</option>' + cats.map(c => `<option value="${escapeQuotes(c)}">${c}</option>`).join("");
+        if (curCat && cats.includes(curCat)) catFilterEl.value = curCat;
+      }
+
+      const agentFilterEl = document.getElementById("adminTicketFilterAgent");
+      if (agentFilterEl) {
+        const curAgent = agentFilterEl.value;
+        const admins = (state.userRoles || []).filter(r => r.role === "admin" || r.role === "superadmin");
+        agentFilterEl.innerHTML = '<option value="">เจ้าหน้าที่ทั้งหมด</option>' + admins.map(a => `<option value="${escapeQuotes(a.email)}">${a.name} (${a.email})</option>`).join("") + '<option value="ยังไม่มอบหมาย">ยังไม่มอบหมาย</option>';
+        if (curAgent) agentFilterEl.value = curAgent;
+      }
+
       const q = (document.getElementById("adminTicketSearchInput")?.value || "").toLowerCase().trim();
+      const cat = document.getElementById("adminTicketFilterCategory")?.value;
       const p = document.getElementById("adminTicketFilterPriority")?.value;
       const a = document.getElementById("adminTicketFilterAgent")?.value;
       const s = document.getElementById("adminTicketFilterSla")?.value;
       const nowTs = getLocalTimestamp();
 
       const filtered = state.tickets.filter(t => {
-        const matchQ = !q || t.ticket_id.toLowerCase().includes(q) || t.title.toLowerCase().includes(q) || t.reporter_name.toLowerCase().includes(q) || t.reporter_dept.toLowerCase().includes(q);
+        const matchQ = !q || safeLower(t.ticket_id).includes(q) || safeLower(t.title).includes(q) || safeLower(t.reporter_name).includes(q) || safeLower(t.reporter_dept).includes(q) || safeLower(t.system_name).includes(q);
+        const matchCat = !cat || t.category === cat;
         const matchP = !p || t.priority === p;
-        const matchA = !a || t.assigned_agent.toLowerCase().includes(a.toLowerCase());
+        const matchA = !a || safeLower(t.assigned_agent).includes(a.toLowerCase());
         let matchS = true;
         if (s === "breached") matchS = t.sla_target < nowTs && t.status !== "Resolved" && t.status !== "Closed";
         if (s === "on_track") matchS = t.sla_target >= nowTs || t.status === "Resolved" || t.status === "Closed";
-        return matchQ && matchP && matchA && matchS;
+        return matchQ && matchCat && matchP && matchA && matchS;
       });
 
       const badge = document.getElementById("tabBadgeAdminTickets") || document.getElementById("sidebarBadgeTickets");
@@ -3233,6 +3616,7 @@
                     <span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${pColor}">${t.priority}</span>
                   </div>
                   <h4 class="font-bold text-slate-900 text-xs line-clamp-2">${t.title}</h4>
+                  ${t.system_name ? `<div class="text-[10px] font-semibold text-indigo-700 bg-indigo-50 border border-indigo-200 px-1.5 py-0.5 rounded truncate" title="${escapeQuotes(t.system_name)}">🌐 ${t.system_name}</div>` : ''}
                   <div class="text-[10px] text-slate-400 flex items-center justify-between pt-1 border-t border-slate-100">
                     <span class="truncate max-w-[100px]">${t.reporter_name}</span>
                     <button onclick="event.stopPropagation(); openTicketAdminActionModal('${t.ticket_id}')" class="text-tcc-600 hover:underline font-bold">จัดการ</button>
@@ -3246,20 +3630,30 @@
 
       const tbody = document.getElementById("adminTicketTableBody");
       if (tbody) {
-        tbody.innerHTML = filtered.map(t => `
-          <tr class="hover:bg-slate-50 transition">
-            <td class="py-2.5 px-3 font-mono font-bold text-slate-700">${t.ticket_id}</td>
-            <td class="py-2.5 px-3 font-medium text-slate-900 max-w-xs truncate">${t.title}</td>
-            <td class="py-2.5 px-3">${t.reporter_name} <span class="text-slate-400 block text-[10px]">${t.reporter_dept}</span></td>
-            <td class="py-2.5 px-3 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-bold">${t.priority}</span></td>
-            <td class="py-2.5 px-3 text-center font-bold text-xs">${t.status}</td>
-            <td class="py-2.5 px-3 text-xs text-slate-600">${t.assigned_agent}</td>
-            <td class="py-2.5 px-3 text-center text-[10px]">${t.sla_target < nowTs ? '⚠️ หลุดเวลา' : '✓ ปกติ'}</td>
-            <td class="py-2.5 px-3 text-center">
-              <button onclick="openTicketAdminActionModal('${t.ticket_id}')" class="px-2.5 py-1 bg-tcc-50 text-tcc-700 hover:bg-tcc-100 rounded-lg font-bold">แก้ไข/จ่ายงาน</button>
+        tbody.innerHTML = filtered.map(t => {
+          const agentShort = t.assigned_agent && t.assigned_agent.includes("@") ? t.assigned_agent.split("@")[0] : (t.assigned_agent || "-");
+          const catOrSys = t.system_name ? `🌐 ${t.system_name}` : (t.category || "-");
+          return `
+          <tr class="hover:bg-slate-50 transition whitespace-nowrap">
+            <td class="py-2 px-2 font-mono font-bold text-[11px] text-slate-700 whitespace-nowrap" title="วันที่แจ้ง: ${escapeQuotes(t.created_at || '-')}">${t.ticket_id}</td>
+            <td class="py-2 px-2 font-medium text-slate-900 whitespace-nowrap">
+              <div class="max-w-[140px] truncate" title="${escapeQuotes(t.title + ' (' + catOrSys + ')')}">${t.title}</div>
+            </td>
+            <td class="py-2 px-2 whitespace-nowrap">
+              <div class="max-w-[110px] truncate text-slate-700" title="${escapeQuotes((t.reporter_name || '-') + ' • ' + (t.reporter_dept || '-'))}">${t.reporter_name || '-'} <span class="text-slate-400 text-[10px]">(${t.reporter_dept || '-'})</span></div>
+            </td>
+            <td class="py-2 px-1.5 text-center whitespace-nowrap"><span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">${t.priority}</span></td>
+            <td class="py-2 px-1.5 text-center font-bold text-[11px] whitespace-nowrap">${t.status}</td>
+            <td class="py-2 px-2 text-[11px] text-slate-600 whitespace-nowrap">
+              <div class="max-w-[85px] truncate" title="${escapeQuotes(t.assigned_agent || '-')}">${agentShort}</div>
+            </td>
+            <td class="py-2 px-1.5 text-center text-[10px] whitespace-nowrap">${t.sla_target < nowTs ? '<span class="text-rose-600 font-bold">⚠️ หลุด</span>' : '<span class="text-emerald-700 font-semibold">✓ ปกติ</span>'}</td>
+            <td class="py-2 px-2 text-center whitespace-nowrap">
+              <button onclick="openTicketAdminActionModal('${t.ticket_id}')" class="px-2 py-0.5 bg-tcc-50 text-tcc-700 hover:bg-tcc-100 rounded-lg font-bold text-[11px]">จัดการ</button>
             </td>
           </tr>
-        `).join("");
+        `;
+        }).join("");
       }
     }
 
@@ -3270,7 +3664,8 @@
 
       document.getElementById("detailTicketNumber").innerText = ticket.ticket_id;
       document.getElementById("detailTicketTitle").innerText = ticket.title;
-      document.getElementById("detailTicketMeta").innerText = `ผู้แจ้ง: ${ticket.reporter_name} (${ticket.reporter_dept}) • สร้างเมื่อ: ${ticket.created_at}`;
+      const sysInfo = ticket.system_name ? ` • ระบบ: ${ticket.system_name}` : ` • หมวด: ${ticket.category || '-'}`;
+      document.getElementById("detailTicketMeta").innerText = `ผู้แจ้ง: ${ticket.reporter_name} (${ticket.reporter_dept})${sysInfo} • สร้างเมื่อ: ${ticket.created_at}`;
       document.getElementById("detailTicketDesc").innerText = ticket.description;
       document.getElementById("detailTicketPriorityBadge").innerText = ticket.priority;
       document.getElementById("detailTicketStatusBadge").innerText = ticket.status;
@@ -3312,6 +3707,7 @@
     function renderTicketComments(ticket) {
       const container = document.getElementById("ticketCommentsList");
       if (!container) return;
+      if (!Array.isArray(ticket.comments)) ticket.comments = [];
       container.innerHTML = ticket.comments.map(c => `
         <div class="p-2.5 rounded-xl text-xs ${c.is_internal ? 'bg-amber-50 border border-amber-200' : 'bg-slate-50 border border-slate-200'}">
           <div class="flex items-center justify-between mb-1">
@@ -3335,7 +3731,7 @@
       const isInternal = document.getElementById("replyIsInternal")?.checked || false;
       const senderName = state.currentUser ? state.currentUser.name : "ผู้ใช้งาน";
 
-      ticket.comments.push({
+      (ticket.comments = Array.isArray(ticket.comments) ? ticket.comments : []).push({
         sender: senderName,
         message: msg,
         time: getLocalTimestamp(0),
@@ -3387,7 +3783,7 @@
       const agentSel = document.getElementById("adminActionAgent");
       if (agentSel) {
         const admins = state.userRoles.filter(r => r.role === "admin" || r.role === "superadmin");
-        agentSel.innerHTML = admins.map(a => `<option value="${a.email}" ${ticket.assigned_agent.includes(a.email) ? 'selected' : ''}>${a.name} (${a.email})</option>`).join("");
+        agentSel.innerHTML = admins.map(a => `<option value="${a.email}" ${safeLower(ticket.assigned_agent).includes(safeLower(a.email)) ? 'selected' : ''}>${a.name} (${a.email})</option>`).join("");
       }
       document.getElementById("ticketAdminActionModal").classList.remove("hidden");
     }
@@ -3411,7 +3807,7 @@
       }
 
       if (note) {
-        ticket.comments.push({
+        (ticket.comments = Array.isArray(ticket.comments) ? ticket.comments : []).push({
           sender: state.currentUser ? state.currentUser.name : "Admin",
           message: `[อัปเดตสถานะเป็น ${ticket.status}] ${note}`,
           time: getLocalTimestamp(0),
@@ -3445,7 +3841,7 @@
         const agent = admins[idx % admins.length];
         t.assigned_agent = agent.name;
         t.status = "In Progress";
-        t.comments.push({
+        (t.comments = Array.isArray(t.comments) ? t.comments : []).push({
           sender: "ระบบจ่ายงานอัตโนมัติ",
           message: `มอบหมายงานให้ ${agent.name} เรียบร้อย`,
           time: getLocalTimestamp(0),
@@ -3513,7 +3909,7 @@
       const q = (document.getElementById("kbSearchInput")?.value || "").toLowerCase().trim();
       if (!container) return;
 
-      const filtered = state.knowledgeBase.filter(k => !q || k.title.toLowerCase().includes(q) || k.content.toLowerCase().includes(q) || k.category.toLowerCase().includes(q));
+      const filtered = state.knowledgeBase.filter(k => !q || safeLower(k.title).includes(q) || safeLower(k.content).includes(q) || safeLower(k.category).includes(q));
       if (filtered.length === 0) {
         container.innerHTML = '<p class="text-xs text-slate-400 py-8 text-center col-span-2">ไม่พบคู่มือที่ตรงกับคำค้นหา</p>';
         return;
@@ -3644,7 +4040,7 @@
       if (!container) return;
 
       const avail = state.items.filter(i => isItemAvailable(i) && !state.selectedBorrowItems.includes(i.item_id));
-      const filtered = avail.filter(i => !q || i.item_id.toLowerCase().includes(q) || i.item_name.toLowerCase().includes(q) || i.category.toLowerCase().includes(q));
+      const filtered = avail.filter(i => !q || safeLower(i.item_id).includes(q) || safeLower(i.item_name).includes(q) || safeLower(i.category).includes(q));
 
       if (filtered.length === 0) {
         container.innerHTML = `<div class="p-3 text-center text-xs text-slate-400">${avail.length === 0 ? "ไม่มีอุปกรณ์ว่างให้ยืม" : "ไม่พบอุปกรณ์"}</div>`;
@@ -3757,6 +4153,7 @@
         const cur = tktCat.value;
         tktCat.innerHTML = cats.map(c => `<option value="${escapeQuotes(c)}">${c}</option>`).join('');
         if (cur && cats.includes(cur)) tktCat.value = cur;
+        handleTicketCategoryChange(tktCat.value);
       }
 
       const kbCat = document.getElementById("inputKbCategory");
@@ -3765,6 +4162,609 @@
         kbCat.innerHTML = cats.map(c => `<option value="${escapeQuotes(c)}">${c}</option>`).join('');
         if (cur && cats.includes(cur)) kbCat.value = cur;
       }
+
+      renderInternalSystemSelects();
+    }
+
+    function renderInternalSystemSelects() {
+      const systems = state.internalSystems || INITIAL_DEMO_INTERNAL_SYSTEMS;
+      const sysEl = document.getElementById("ticketSystemName");
+      if (sysEl) {
+        const cur = sysEl.value;
+        sysEl.innerHTML = '<option value="">-- กรุณาเลือกชื่อระบบสารสนเทศ / เว็บไซต์ --</option>' +
+          systems.map(s => `<option value="${escapeQuotes(s)}">${s}</option>`).join('');
+        if (cur && systems.includes(cur)) sysEl.value = cur;
+      }
+
+      const hdSysEl = document.getElementById("hdReportSystemName");
+      if (hdSysEl) {
+        const cur = hdSysEl.value;
+        const allSys = Array.from(new Set([...systems, ...(state.tickets || []).map(t => t.system_name).filter(Boolean)]));
+        hdSysEl.innerHTML = '<option value="">ทุกระบบสารสนเทศ / ทั้งหมด</option>' +
+          allSys.map(s => `<option value="${escapeQuotes(s)}">${s}</option>`).join('');
+        if (cur) hdSysEl.value = cur;
+      }
+    }
+
+    /* INTERNAL SYSTEM / WEBSITE MANAGEMENT (Admin Configurable Dropdown) */
+    function saveInternalSystemsToStorage() {
+      try {
+        localStorage.setItem(STORAGE_KEY_INTERNAL_SYSTEMS, JSON.stringify(state.internalSystems || []));
+      } catch (e) {}
+    }
+
+    function openInternalSystemManageModal() {
+      renderInternalSystemManagementList();
+      document.getElementById("internalSystemManageModal")?.classList.remove("hidden");
+    }
+
+    function closeInternalSystemManageModal() {
+      document.getElementById("internalSystemManageModal")?.classList.add("hidden");
+    }
+
+    function renderInternalSystemManagementList() {
+      const container = document.getElementById("internalSystemListContainer");
+      if (!container) return;
+      const systems = state.internalSystems || [];
+      if (systems.length === 0) {
+        container.innerHTML = '<div class="p-4 text-center text-xs text-slate-400">ยังไม่มีรายชื่อระบบสารสนเทศภายใน</div>';
+        return;
+      }
+      container.innerHTML = systems.map((sys, idx) => `
+        <div class="flex items-center justify-between px-3 py-2.5 text-xs hover:bg-slate-50 transition">
+          <div class="flex items-center gap-2 min-w-0 pr-2">
+            <span class="w-2 h-2 rounded-full bg-indigo-500 shrink-0"></span>
+            <span class="font-semibold text-slate-800 truncate">${sys}</span>
+          </div>
+          <div class="flex items-center gap-1.5 shrink-0">
+            <button type="button" onclick="handleEditInternalSystem(${idx})" class="p-1.5 text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-indigo-50 transition" title="แก้ไขชื่อระบบ">
+              ✏️
+            </button>
+            <button type="button" onclick="handleDeleteInternalSystem(${idx})" class="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition" title="ลบชื่อระบบ">
+              🗑️
+            </button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function handleAddNewInternalSystem(e) {
+      if (e && e.preventDefault) e.preventDefault();
+      const input = document.getElementById("newInternalSystemInput");
+      if (!input) return;
+      const val = input.value.trim();
+      if (!val) return;
+      if (!state.internalSystems) state.internalSystems = [];
+      if (state.internalSystems.includes(val)) {
+        return showNotification(`ชื่อระบบ "${val}" มีอยู่ในรายการแล้ว`, "warning");
+      }
+      state.internalSystems.push(val);
+      input.value = "";
+      saveInternalSystemsToStorage();
+      renderInternalSystemSelects();
+      renderInternalSystemManagementList();
+      renderHelpdeskReport();
+      showNotification(`เพิ่มระบบ "${val}" เรียบร้อย`, "success");
+      callAPI("addInternalSystem", { systemName: val }, true);
+    }
+
+    function handleEditInternalSystem(idx) {
+      const current = state.internalSystems[idx];
+      if (!current) return;
+      const updated = prompt("แก้ไขชื่อระบบสารสนเทศภายใน / เว็บไซต์:", current);
+      if (updated && updated.trim() && updated.trim() !== current) {
+        const val = updated.trim();
+        if (state.internalSystems.includes(val)) {
+          return showNotification(`ชื่อระบบ "${val}" มีอยู่ในระบบแล้ว`, "warning");
+        }
+        state.internalSystems[idx] = val;
+        (state.tickets || []).forEach(t => {
+          if (t.system_name === current) t.system_name = val;
+        });
+        saveInternalSystemsToStorage();
+        renderInternalSystemSelects();
+        renderInternalSystemManagementList();
+        renderAll();
+        showNotification(`แก้ไขชื่อระบบเป็น "${val}" เรียบร้อย`, "success");
+        callAPI("updateInternalSystem", { oldName: current, newName: val }, true);
+      }
+    }
+
+    function handleDeleteInternalSystem(idx) {
+      const current = state.internalSystems[idx];
+      if (!current) return;
+      if (!confirm(`คุณต้องการลบชื่อระบบ "${current}" ออกจากรายการตัวเลือกใช่หรือไม่?`)) return;
+      state.internalSystems.splice(idx, 1);
+      saveInternalSystemsToStorage();
+      renderInternalSystemSelects();
+      renderInternalSystemManagementList();
+      renderHelpdeskReport();
+      showNotification(`ลบชื่อระบบ "${current}" เรียบร้อย`, "info");
+      callAPI("deleteInternalSystem", { systemName: current }, true);
+    }
+
+    /* HELPDESK SUMMARY REPORT & EXPORT FUNCTIONS */
+    function populateHelpdeskReportFilterOptions() {
+      const catEl = document.getElementById("hdReportCategory");
+      if (catEl) {
+        const cur = catEl.value;
+        const cats = Array.from(new Set([...(state.ticketCategories || []), ...(state.tickets || []).map(t => t.category).filter(Boolean)]));
+        catEl.innerHTML = '<option value="">ทุกหมวดหมู่ปัญหา</option>' + cats.map(c => `<option value="${escapeQuotes(c)}">${c}</option>`).join('');
+        if (cur) catEl.value = cur;
+      }
+
+      const sysEl = document.getElementById("hdReportSystemName");
+      if (sysEl) {
+        const cur = sysEl.value;
+        const systems = Array.from(new Set([...(state.internalSystems || []), ...(state.tickets || []).map(t => t.system_name).filter(Boolean)]));
+        sysEl.innerHTML = '<option value="">ทุกระบบสารสนเทศ / ทั้งหมด</option>' + systems.map(s => `<option value="${escapeQuotes(s)}">${s}</option>`).join('');
+        if (cur) sysEl.value = cur;
+      }
+
+      const deptEl = document.getElementById("hdReportDepartment");
+      if (deptEl) {
+        const cur = deptEl.value;
+        const depts = Array.from(new Set([...(state.departments || []), ...(state.tickets || []).map(t => t.reporter_dept).filter(Boolean)]));
+        deptEl.innerHTML = '<option value="">ทุกฝ่าย / แผนก</option>' + depts.map(d => `<option value="${escapeQuotes(d)}">${d}</option>`).join('');
+        if (cur) deptEl.value = cur;
+      }
+
+      const agentEl = document.getElementById("hdReportAgent");
+      if (agentEl) {
+        const cur = agentEl.value;
+        const admins = (state.userRoles || []).filter(r => r.role === "admin" || r.role === "superadmin");
+        const extraAgents = Array.from(new Set((state.tickets || []).map(t => t.assigned_agent).filter(Boolean)));
+        const agentOptions = [];
+        admins.forEach(a => agentOptions.push({ val: a.email, label: `${a.name} (${a.email})` }));
+        extraAgents.forEach(ag => {
+          if (!agentOptions.some(o => o.val === ag || o.label.includes(ag))) {
+            agentOptions.push({ val: ag, label: ag });
+          }
+        });
+        agentEl.innerHTML = '<option value="">เจ้าหน้าที่ทั้งหมด</option>' + agentOptions.map(o => `<option value="${escapeQuotes(o.val)}">${o.label}</option>`).join('');
+        if (cur) agentEl.value = cur;
+      }
+    }
+
+    function setHelpdeskReportQuickRange(mode) {
+      const startEl = document.getElementById("hdReportStartDate");
+      const endEl = document.getElementById("hdReportEndDate");
+      if (!startEl || !endEl) return;
+      const now = new Date();
+      const yyyy = now.getFullYear();
+      const mm = String(now.getMonth() + 1).padStart(2, "0");
+      const todayStr = getOffsetDate(0);
+
+      if (mode === "all") {
+        startEl.value = "";
+        endEl.value = "";
+      } else if (mode === "today") {
+        startEl.value = todayStr;
+        endEl.value = todayStr;
+      } else if (mode === "7days") {
+        startEl.value = getOffsetDate(-6);
+        endEl.value = todayStr;
+      } else if (mode === "thisMonth") {
+        startEl.value = `${yyyy}-${mm}-01`;
+        endEl.value = todayStr;
+      } else if (mode === "thisYear") {
+        startEl.value = `${yyyy}-01-01`;
+        endEl.value = todayStr;
+      }
+      renderHelpdeskReport();
+    }
+
+    function resetHelpdeskReportFilters() {
+      const ids = ["hdReportStartDate", "hdReportEndDate", "hdReportCategory", "hdReportSystemName", "hdReportPriority", "hdReportStatus", "hdReportDepartment", "hdReportAgent"];
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = "";
+      });
+      renderHelpdeskReport();
+    }
+
+    function getFilteredHelpdeskReportTickets() {
+      const startDate = document.getElementById("hdReportStartDate")?.value || "";
+      const endDate = document.getElementById("hdReportEndDate")?.value || "";
+      const cat = document.getElementById("hdReportCategory")?.value || "";
+      const sysName = document.getElementById("hdReportSystemName")?.value || "";
+      const prio = document.getElementById("hdReportPriority")?.value || "";
+      const status = document.getElementById("hdReportStatus")?.value || "";
+      const dept = document.getElementById("hdReportDepartment")?.value || "";
+      const agent = document.getElementById("hdReportAgent")?.value || "";
+
+      return (state.tickets || []).filter(t => {
+        const createdDate = String(t.created_at || "").slice(0, 10);
+        if (startDate && createdDate && createdDate < startDate) return false;
+        if (endDate && createdDate && createdDate > endDate) return false;
+        if (cat && t.category !== cat) return false;
+        if (sysName && (t.system_name || "") !== sysName) return false;
+        if (prio && t.priority !== prio) return false;
+        if (status && t.status !== status) return false;
+        if (dept && t.reporter_dept !== dept) return false;
+        if (agent && !safeLower(t.assigned_agent).includes(safeLower(agent))) return false;
+        return true;
+      });
+    }
+
+    function isTicketSlaBreached(t, nowTs) {
+      if (!t || !t.sla_target) return false;
+      const compareTs = (t.status === "Resolved" || t.status === "Closed") && t.resolved_at ? t.resolved_at : nowTs;
+      return compareTs > t.sla_target;
+    }
+
+    function renderHelpdeskReport() {
+      populateHelpdeskReportFilterOptions();
+      const filtered = getFilteredHelpdeskReportTickets();
+      const nowTs = getLocalTimestamp(0);
+
+      const countBadge = document.getElementById("hdReportFilterCountBadge");
+      if (countBadge) countBadge.innerText = `${filtered.length} เคส`;
+
+      const total = filtered.length;
+      const resolvedList = filtered.filter(t => t.status === "Resolved" || t.status === "Closed");
+      const openList = filtered.filter(t => t.status === "Open");
+      const activeList = filtered.filter(t => t.status !== "Resolved" && t.status !== "Closed");
+      const breachedList = filtered.filter(t => isTicketSlaBreached(t, nowTs));
+      const csatList = filtered.filter(t => Number(t.csat_score) > 0);
+
+      const resolvedRate = total > 0 ? Math.round((resolvedList.length / total) * 100) : 0;
+      const slaCompliantRate = total > 0 ? Math.round(((total - breachedList.length) / total) * 100) : 100;
+      const avgCsat = csatList.length > 0
+        ? (csatList.reduce((acc, t) => acc + Number(t.csat_score || 0), 0) / csatList.length).toFixed(1)
+        : "-";
+
+      const elTotal = document.getElementById("hdKpiTotal");
+      const elResolved = document.getElementById("hdKpiResolved");
+      const elResolvedRate = document.getElementById("hdKpiResolvedRate");
+      const elActive = document.getElementById("hdKpiActive");
+      const elOpenSub = document.getElementById("hdKpiOpenSub");
+      const elSlaRate = document.getElementById("hdKpiSlaRate");
+      const elSlaBreached = document.getElementById("hdKpiSlaBreached");
+      const elCsat = document.getElementById("hdKpiCsat");
+      const elCsatCount = document.getElementById("hdKpiCsatCount");
+
+      if (elTotal) elTotal.innerText = total;
+      if (elResolved) elResolved.innerText = resolvedList.length;
+      if (elResolvedRate) elResolvedRate.innerText = `อัตราสำเร็จ ${resolvedRate}%`;
+      if (elActive) elActive.innerText = activeList.length;
+      if (elOpenSub) elOpenSub.innerText = `รอรับเรื่อง ${openList.length} เคส`;
+      if (elSlaRate) elSlaRate.innerText = `${slaCompliantRate}%`;
+      if (elSlaBreached) elSlaBreached.innerText = `เกินกำหนด SLA ${breachedList.length} เคส`;
+      if (elCsat) elCsat.innerText = avgCsat === "-" ? "-" : `${avgCsat} ⭐`;
+      if (elCsatCount) elCsatCount.innerText = `จากผู้ประเมิน ${csatList.length} เคส`;
+
+      // 1. Breakdown by Category & System Name
+      const catBody = document.getElementById("hdSummaryByCategoryBody");
+      if (catBody) {
+        if (total === 0) {
+          catBody.innerHTML = '<p class="text-center text-slate-400 py-6">ไม่มีข้อมูลในเงื่อนไขที่เลือก</p>';
+        } else {
+          const catMap = {};
+          filtered.forEach(t => {
+            const c = t.category || "ไม่ระบุหมวดหมู่";
+            if (!catMap[c]) catMap[c] = { count: 0, resolved: 0, systems: {} };
+            catMap[c].count++;
+            if (t.status === "Resolved" || t.status === "Closed") catMap[c].resolved++;
+            if (t.system_name) {
+              catMap[c].systems[t.system_name] = (catMap[c].systems[t.system_name] || 0) + 1;
+            }
+          });
+          const sortedCats = Object.entries(catMap).sort((a, b) => b[1].count - a[1].count);
+          catBody.innerHTML = sortedCats.map(([cName, info]) => {
+            const pct = Math.round((info.count / total) * 100);
+            const sysEntries = Object.entries(info.systems).sort((a, b) => b[1] - a[1]);
+            const sysSubHtml = sysEntries.length > 0
+              ? `<div class="mt-1.5 pl-3 border-l-2 border-indigo-200 space-y-1">${sysEntries.map(([sName, sCnt]) => `<div class="flex items-center justify-between text-[11px] text-indigo-800 bg-indigo-50/70 px-2 py-0.5 rounded"><span>🌐 ${sName}</span><span class="font-bold">${sCnt} เคส</span></div>`).join("")}</div>`
+              : "";
+            return `
+              <div class="p-2.5 rounded-xl bg-slate-50/80 border border-slate-100">
+                <div class="flex items-center justify-between font-semibold text-slate-800">
+                  <span class="truncate pr-2">${cName}</span>
+                  <span class="shrink-0 font-bold text-slate-900">${info.count} เคส (${pct}%)</span>
+                </div>
+                <div class="w-full bg-slate-200 h-1.5 rounded-full mt-1.5 overflow-hidden">
+                  <div class="bg-indigo-600 h-1.5 rounded-full" style="width: ${pct}%"></div>
+                </div>
+                ${sysSubHtml}
+              </div>
+            `;
+          }).join("");
+        }
+      }
+
+      // 2. Breakdown by Priority (Low -> Medium -> High -> Critical)
+      const prioBody = document.getElementById("hdSummaryByPriorityBody");
+      if (prioBody) {
+        const prioOrder = [
+          { key: "Low", label: "🟢 Low (ต่ำ - SLA 48 ชม.)", badge: "bg-emerald-100 text-emerald-800" },
+          { key: "Medium", label: "🟡 Medium (ปานกลาง - SLA 24 ชม.)", badge: "bg-amber-100 text-amber-800" },
+          { key: "High", label: "🟠 High (สูง - SLA 4 ชม.)", badge: "bg-orange-100 text-orange-800" },
+          { key: "Critical", label: "🔴 Critical (วิกฤต - SLA 2 ชม.)", badge: "bg-rose-100 text-rose-800" }
+        ];
+        prioBody.innerHTML = prioOrder.map(p => {
+          const list = filtered.filter(t => t.priority === p.key);
+          const resCnt = list.filter(t => t.status === "Resolved" || t.status === "Closed").length;
+          const breachCnt = list.filter(t => isTicketSlaBreached(t, nowTs)).length;
+          return `
+            <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50/80 border border-slate-100">
+              <div>
+                <span class="px-2 py-0.5 rounded text-[11px] font-bold ${p.badge}">${p.label}</span>
+                <div class="text-[11px] text-slate-500 mt-1">ทั้งหมด <b>${list.length}</b> เคส</div>
+              </div>
+              <div class="text-right text-[11px]">
+                <div class="text-emerald-700 font-bold">✓ สำเร็จ ${resCnt} เคส</div>
+                <div class="${breachCnt > 0 ? 'text-rose-600 font-bold' : 'text-slate-400'}">⚠️ เกิน SLA ${breachCnt} เคส</div>
+              </div>
+            </div>
+          `;
+        }).join("");
+      }
+
+      // 3. Breakdown by Department
+      const deptBody = document.getElementById("hdSummaryByDeptBody");
+      if (deptBody) {
+        if (total === 0) {
+          deptBody.innerHTML = '<p class="text-center text-slate-400 py-6">ไม่มีข้อมูลในเงื่อนไขที่เลือก</p>';
+        } else {
+          const deptMap = {};
+          filtered.forEach(t => {
+            const d = t.reporter_dept || "ไม่ระบุฝ่าย/แผนก";
+            deptMap[d] = (deptMap[d] || 0) + 1;
+          });
+          const sortedDepts = Object.entries(deptMap).sort((a, b) => b[1] - a[1]);
+          deptBody.innerHTML = sortedDepts.map(([dName, cnt]) => {
+            const pct = Math.round((cnt / total) * 100);
+            return `
+              <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-50/80 border border-slate-100">
+                <span class="font-medium text-slate-800 truncate pr-2">${dName}</span>
+                <span class="shrink-0 font-bold text-tcc-700 bg-tcc-50 px-2.5 py-0.5 rounded-full text-[11px]">${cnt} เคส (${pct}%)</span>
+              </div>
+            `;
+          }).join("");
+        }
+      }
+
+      // 4. Breakdown by IT Agent
+      const agentBody = document.getElementById("hdSummaryByAgentBody");
+      if (agentBody) {
+        if (total === 0) {
+          agentBody.innerHTML = '<p class="text-center text-slate-400 py-6">ไม่มีข้อมูลในเงื่อนไขที่เลือก</p>';
+        } else {
+          const agMap = {};
+          filtered.forEach(t => {
+            const ag = t.assigned_agent || "ยังไม่มอบหมาย";
+            if (!agMap[ag]) agMap[ag] = { total: 0, resolved: 0, csatSum: 0, csatCnt: 0 };
+            agMap[ag].total++;
+            if (t.status === "Resolved" || t.status === "Closed") agMap[ag].resolved++;
+            if (Number(t.csat_score) > 0) {
+              agMap[ag].csatSum += Number(t.csat_score);
+              agMap[ag].csatCnt++;
+            }
+          });
+          const sortedAgents = Object.entries(agMap).sort((a, b) => b[1].total - a[1].total);
+          agentBody.innerHTML = sortedAgents.map(([agName, st]) => {
+            const avg = st.csatCnt > 0 ? (st.csatSum / st.csatCnt).toFixed(1) + " ⭐" : "-";
+            return `
+              <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-50/80 border border-slate-100">
+                <div class="min-w-0 pr-2">
+                  <div class="font-semibold text-slate-800 truncate">${agName}</div>
+                  <div class="text-[10px] text-slate-400">คะแนนประเมินเฉลี่ย: ${avg}</div>
+                </div>
+                <div class="text-right shrink-0 text-[11px]">
+                  <span class="font-bold text-slate-900">${st.total} เคส</span>
+                  <span class="text-emerald-700 font-semibold block">ปิดแล้ว ${st.resolved} เคส</span>
+                </div>
+              </div>
+            `;
+          }).join("");
+        }
+      }
+
+      // 5. Detailed Filtered Table (Single-line cells, no text wrapping, fits <= 888px)
+      const tbody = document.getElementById("hdReportTableBody");
+      if (tbody) {
+        if (filtered.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="8" class="py-8 text-center text-slate-400 text-xs whitespace-nowrap">ไม่พบรายการแจ้งซ่อมที่ตรงกับเงื่อนไขการดึงรายงาน</td></tr>';
+        } else {
+          tbody.innerHTML = filtered.map(t => {
+            const breached = isTicketSlaBreached(t, nowTs);
+            let prioBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 whitespace-nowrap">Low</span>`;
+            if (t.priority === "Medium") prioBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 whitespace-nowrap">Medium</span>`;
+            if (t.priority === "High") prioBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-orange-100 text-orange-800 whitespace-nowrap">High</span>`;
+            if (t.priority === "Critical") prioBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800 whitespace-nowrap">Critical</span>`;
+
+            const catDisplay = t.system_name
+              ? `<span class="text-indigo-700 font-semibold">🌐 ${t.system_name}</span>`
+              : `<span class="text-slate-700">${t.category || '-'}</span>`;
+            const catTooltip = t.system_name
+              ? `${t.category || '-'} • ${t.system_name}`
+              : (t.category || '-');
+            const agentShort = t.assigned_agent && t.assigned_agent.includes("@")
+              ? t.assigned_agent.split("@")[0]
+              : (t.assigned_agent || "-");
+            const reporterTooltip = `${t.reporter_name || '-'} (${t.reporter_dept || '-'})`;
+
+            return `
+              <tr class="hover:bg-slate-50/90 transition whitespace-nowrap text-xs">
+                <td class="py-2.5 px-2 whitespace-nowrap">
+                  <button type="button" onclick="openTicketDetailModal('${escapeQuotes(t.ticket_id)}')" class="font-mono font-bold text-[11px] text-tcc-700 hover:underline whitespace-nowrap" title="วันที่แจ้ง: ${escapeQuotes(t.created_at || '-')}">${t.ticket_id}</button>
+                </td>
+                <td class="py-2.5 px-2 whitespace-nowrap">
+                  <div class="max-w-[110px] truncate text-[11px]" title="${escapeQuotes(catTooltip)}">${catDisplay}</div>
+                </td>
+                <td class="py-2.5 px-2 whitespace-nowrap">
+                  <div class="max-w-[130px] truncate font-medium text-slate-900" title="${escapeQuotes(t.title)}">${t.title}</div>
+                </td>
+                <td class="py-2.5 px-2 whitespace-nowrap">
+                  <div class="max-w-[100px] truncate text-[11px] font-medium text-slate-800" title="${escapeQuotes(reporterTooltip)}">${t.reporter_name || '-'} <span class="text-slate-400 font-normal">(${t.reporter_dept || '-'})</span></div>
+                </td>
+                <td class="py-2.5 px-1.5 text-center whitespace-nowrap">${prioBadge}</td>
+                <td class="py-2.5 px-1.5 text-center font-bold text-[11px] text-slate-700 whitespace-nowrap">${t.status}</td>
+                <td class="py-2.5 px-2 whitespace-nowrap">
+                  <div class="max-w-[78px] truncate text-[11px] text-slate-600 font-mono" title="${escapeQuotes(t.assigned_agent || '-')}">${agentShort}</div>
+                </td>
+                <td class="py-2.5 px-2 text-center text-[11px] whitespace-nowrap">
+                  <span class="whitespace-nowrap">${breached ? '<span class="text-rose-600 font-bold">⚠️ เกิน SLA</span>' : '<span class="text-emerald-700 font-semibold">✓ ปกติ</span>'}${Number(t.csat_score) > 0 ? ` <span class="text-amber-600 font-bold text-[10px]">(${t.csat_score}★)</span>` : ''}</span>
+                </td>
+              </tr>
+            `;
+          }).join("");
+        }
+      }
+    }
+
+    function exportHelpdeskReportCsv() {
+      const list = getFilteredHelpdeskReportTickets();
+      if (list.length === 0) {
+        return showNotification("ไม่มีข้อมูลเคสแจ้งซ่อมตามเงื่อนไขที่เลือกสำหรับส่งออก", "warning");
+      }
+      const nowTs = getLocalTimestamp(0);
+      const headers = [
+        "รหัสเคส (Ticket ID)",
+        "วันที่แจ้ง (Created At)",
+        "หมวดหมู่ปัญหา (Category)",
+        "ชื่อระบบสารสนเทศ/เว็บไซต์ (System Name)",
+        "หัวข้อปัญหา (Title)",
+        "รายละเอียด (Description)",
+        "ระดับความสำคัญ (Priority)",
+        "สถานะ (Status)",
+        "ผู้แจ้ง (Reporter)",
+        "ฝ่าย/แผนก (Department)",
+        "ช่องทางติดต่อ (Contact)",
+        "ผู้รับผิดชอบ (Assigned Agent)",
+        "กำหนดเวลา SLA (SLA Target)",
+        "วันที่แก้ไขเสร็จ (Resolved At)",
+        "ผลประเมิน SLA",
+        "คะแนนความพึงพอใจ (CSAT)",
+        "ข้อเสนอแนะ (CSAT Feedback)"
+      ];
+
+      const rows = list.map(t => {
+        const slaResult = isTicketSlaBreached(t, nowTs) ? "เกินกำหนด SLA" : "ผ่านเกณฑ์ SLA";
+        return [
+          t.ticket_id || "",
+          t.created_at || "",
+          t.category || "",
+          t.system_name || "-",
+          t.title || "",
+          t.description || "",
+          t.priority || "",
+          t.status || "",
+          t.reporter_name || "",
+          t.reporter_dept || "",
+          t.reporter_contact || "",
+          t.assigned_agent || "",
+          t.sla_target || "",
+          t.resolved_at || "-",
+          slaResult,
+          t.csat_score > 0 ? t.csat_score : "-",
+          t.csat_feedback || "-"
+        ].map(v => `"${String(v).replace(/"/g, '""')}"`).join(",");
+      });
+
+      const csvContent = "\uFEFF" + [headers.join(","), ...rows].join("\r\n");
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `tcc_helpdesk_tickets_report_${getOffsetDate(0)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      showNotification(`ส่งออกรายงานข้อมูลเคสละเอียด (${list.length} เคส) เรียบร้อย`, "success");
+    }
+
+    function exportHelpdeskSummaryCsv() {
+      const list = getFilteredHelpdeskReportTickets();
+      if (list.length === 0) {
+        return showNotification("ไม่มีข้อมูลสำหรับสรุปผลตามเงื่อนไขที่เลือก", "warning");
+      }
+      const nowTs = getLocalTimestamp(0);
+      const total = list.length;
+      const resolved = list.filter(t => t.status === "Resolved" || t.status === "Closed").length;
+      const active = total - resolved;
+      const breached = list.filter(t => isTicketSlaBreached(t, nowTs)).length;
+      const slaRate = total > 0 ? Math.round(((total - breached) / total) * 100) : 100;
+      const csatTickets = list.filter(t => Number(t.csat_score) > 0);
+      const avgCsat = csatTickets.length > 0
+        ? (csatTickets.reduce((s, t) => s + Number(t.csat_score), 0) / csatTickets.length).toFixed(2)
+        : "-";
+
+      const lines = [];
+      const row = arr => arr.map(v => `"${String(v ?? "").replace(/"/g, '""')}"`).join(",");
+
+      lines.push(row(["รายงานสรุปผลการดำเนินงานบริการไอที (IT Helpdesk Executive Summary)", `วันที่ออกรายงาน: ${getLocalTimestamp(0)}`]));
+      lines.push("");
+      lines.push(row(["1. ภาพรวมตัวชี้วัดหลัก (KPI Summary)", "ค่าสถิติ"]));
+      lines.push(row(["จำนวนเคสแจ้งซ่อมทั้งหมด", `${total} เคส`]));
+      lines.push(row(["แก้ไขเสร็จสิ้น (Resolved / Closed)", `${resolved} เคส (${total ? Math.round((resolved / total) * 100) : 0}%)`]));
+      lines.push(row(["กำลังดำเนินการ / รอดำเนินการ", `${active} เคส`]));
+      lines.push(row(["อัตราผ่านเกณฑ์ SLA", `${slaRate}% (เกิน SLA ${breached} เคส)`]));
+      lines.push(row(["คะแนนความพึงพอใจเฉลี่ย (CSAT)", `${avgCsat} / 5.00 (จาก ${csatTickets.length} เคส)`]));
+      lines.push("");
+
+      lines.push(row(["2. สรุปแยกตามระดับความสำคัญ (น้อย -> สูง)", "จำนวนทั้งหมด", "แก้ไขสำเร็จ", "เกินกำหนด SLA"]));
+      ["Low", "Medium", "High", "Critical"].forEach(p => {
+        const sub = list.filter(t => t.priority === p);
+        const subRes = sub.filter(t => t.status === "Resolved" || t.status === "Closed").length;
+        const subBreach = sub.filter(t => isTicketSlaBreached(t, nowTs)).length;
+        lines.push(row([p, sub.length, subRes, subBreach]));
+      });
+      lines.push("");
+
+      lines.push(row(["3. สรุปแยกตามหมวดหมู่ปัญหา", "จำนวนเคส", "สัดส่วน (%)", "แก้ไขสำเร็จ"]));
+      const catMap = {};
+      list.forEach(t => {
+        const c = t.category || "ไม่ระบุ";
+        if (!catMap[c]) catMap[c] = { total: 0, res: 0 };
+        catMap[c].total++;
+        if (t.status === "Resolved" || t.status === "Closed") catMap[c].res++;
+      });
+      Object.entries(catMap).sort((a, b) => b[1].total - a[1].total).forEach(([c, st]) => {
+        lines.push(row([c, st.total, `${Math.round((st.total / total) * 100)}%`, st.res]));
+      });
+      lines.push("");
+
+      lines.push(row(["4. สรุปแยกตามชื่อระบบสารสนเทศภายใน / เว็บไซต์", "จำนวนเคส", "แก้ไขสำเร็จ"]));
+      const sysMap = {};
+      list.filter(t => t.system_name).forEach(t => {
+        const s = t.system_name;
+        if (!sysMap[s]) sysMap[s] = { total: 0, res: 0 };
+        sysMap[s].total++;
+        if (t.status === "Resolved" || t.status === "Closed") sysMap[s].res++;
+      });
+      if (Object.keys(sysMap).length === 0) {
+        lines.push(row(["ไม่มีเคสหมวดระบบสารสนเทศภายในในช่วงเวลานี้", 0, 0]));
+      } else {
+        Object.entries(sysMap).sort((a, b) => b[1].total - a[1].total).forEach(([s, st]) => {
+          lines.push(row([s, st.total, st.res]));
+        });
+      }
+      lines.push("");
+
+      lines.push(row(["5. สรุปแยกตามฝ่าย / แผนกผู้แจ้ง", "จำนวนเคส"]));
+      const deptMap = {};
+      list.forEach(t => {
+        const d = t.reporter_dept || "ไม่ระบุ";
+        deptMap[d] = (deptMap[d] || 0) + 1;
+      });
+      Object.entries(deptMap).sort((a, b) => b[1] - a[1]).forEach(([d, cnt]) => {
+        lines.push(row([d, cnt]));
+      });
+
+      const csvContent = "\uFEFF" + lines.join("\r\n");
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `tcc_helpdesk_executive_summary_${getOffsetDate(0)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      showNotification("ส่งออกตารางสรุปผลงานบริการไอที (CSV/Excel) เรียบร้อย", "success");
+    }
+
+    function printHelpdeskSummaryReport() {
+      window.print();
     }
 
     /* TICKET CATEGORY MANAGEMENT */
@@ -3876,7 +4876,7 @@
       if (!container) return;
 
       const filtered = avail.filter(i => {
-        const matchSearch = !q || i.item_name.toLowerCase().includes(q) || i.item_id.toLowerCase().includes(q) || (i.serial_number && i.serial_number.toLowerCase().includes(q));
+        const matchSearch = !q || safeLower(i.item_name).includes(q) || safeLower(i.item_id).includes(q) || safeLower(i.serial_number).includes(q);
         const matchCat = (!state.selectedQuickAvailCat || state.selectedQuickAvailCat === "ทั้งหมด") || i.category === state.selectedQuickAvailCat;
         return matchSearch && matchCat;
       });
@@ -4221,7 +5221,7 @@
 
       const filtered = state.userRoles.filter(u => {
         const matchQ = !q ||
-          (u.email && u.email.toLowerCase().includes(q)) ||
+          (u.email && safeLower(u.email).includes(q)) ||
           (u.name && u.name.toLowerCase().includes(q)) ||
           (u.dept && u.dept.toLowerCase().includes(q)) ||
           (u.remark && u.remark.toLowerCase().includes(q));
@@ -4255,7 +5255,7 @@
       tbody.innerHTML = list.map((r, idx) => {
         const isPrimary = r.email === "tatitop07@gmail.com" || r.email === "tatiphon.hi@thaichamber.or.th";
         const isActive = (r.status || "active") !== "disabled";
-        const realIndex = state.userRoles.findIndex(u => u.email.toLowerCase() === r.email.toLowerCase());
+        const realIndex = state.userRoles.findIndex(u => safeLower(u.email) === safeLower(r.email));
 
         let roleBadge = '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200 shadow-2xs"><svg class="w-3 h-3 text-slate-500 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><span>User</span></span>';
         if (r.role === 'superadmin') {
@@ -4320,7 +5320,7 @@
       currentActionTargetEmail = email;
       currentActionTargetIndex = idx;
 
-      const user = state.userRoles.find(u => u.email.toLowerCase() === email.toLowerCase()) || state.userRoles[idx];
+      const user = state.userRoles.find(u => safeLower(u.email) === email.toLowerCase()) || state.userRoles[idx];
       if (!user) return;
 
       const isPrimary = user.email === "tatitop07@gmail.com" || user.email === "tatiphon.hi@thaichamber.or.th";
@@ -4442,7 +5442,7 @@
       if (email === "tatitop07@gmail.com" || email === "tatiphon.hi@thaichamber.or.th") {
         return showNotification("ไม่สามารถปิดการใช้งานบัญชี Super Admin หลักได้", "warning");
       }
-      const user = state.userRoles.find(u => u.email.toLowerCase() === email.toLowerCase());
+      const user = state.userRoles.find(u => safeLower(u.email) === email.toLowerCase());
       if (!user) return;
       const current = user.status || "active";
       user.status = current === "active" ? "disabled" : "active";
@@ -4453,7 +5453,7 @@
     }
 
     function openResetPasswordModal(email) {
-      const user = state.userRoles.find(u => u.email.toLowerCase() === email.toLowerCase());
+      const user = state.userRoles.find(u => safeLower(u.email) === email.toLowerCase());
       if (!user) return;
       document.getElementById("resetPassTargetEmail").value = user.email;
       document.getElementById("resetPassUserLabel").innerText = `${user.name || user.email} (${user.email})`;
@@ -4478,7 +5478,7 @@
       const email = document.getElementById("resetPassTargetEmail").value;
       const newPass = document.getElementById("inputNewPassword").value.trim();
       if (!newPass) return showNotification("กรุณาระบุรหัสผ่านใหม่", "warning");
-      const user = state.userRoles.find(u => u.email.toLowerCase() === email.toLowerCase());
+      const user = state.userRoles.find(u => safeLower(u.email) === email.toLowerCase());
       if (!user) return;
       user.password = newPass;
       localStorage.setItem(STORAGE_KEY_ROLES, JSON.stringify(state.userRoles));
@@ -4493,7 +5493,7 @@
         return showNotification("ไม่สามารถลบบัญชี Super Admin หลักของระบบได้", "warning");
       }
       if (!confirm(`คุณต้องการลบผู้ใช้งาน "${email}" ออกจากระบบใช่หรือไม่?`)) return;
-      const idx = state.userRoles.findIndex(u => u.email.toLowerCase() === email.toLowerCase());
+      const idx = state.userRoles.findIndex(u => safeLower(u.email) === email.toLowerCase());
       if (idx !== -1) {
         state.userRoles.splice(idx, 1);
         localStorage.setItem(STORAGE_KEY_ROLES, JSON.stringify(state.userRoles));
@@ -4707,7 +5707,7 @@
 
       let count = 0;
       pendingImportUsers.forEach(userObj => {
-        const existingIdx = state.userRoles.findIndex(u => u.email.toLowerCase() === userObj.email.toLowerCase());
+        const existingIdx = state.userRoles.findIndex(u => safeLower(u.email) === userObj.email.toLowerCase());
         if (existingIdx !== -1) {
           state.userRoles[existingIdx] = { ...state.userRoles[existingIdx], ...userObj };
         } else {
@@ -4768,9 +5768,14 @@
         status: document.getElementById("inputRoleStatus").value,
         remark: document.getElementById("inputRoleRemark").value.trim()
       };
-      if (idx >= 0) state.userRoles[idx] = roleObj;
-      else {
-        const existing = state.userRoles.findIndex(u => u.email.toLowerCase() === email);
+      if (idx >= 0) {
+        const dup = state.userRoles.findIndex((u, i) => i !== idx && safeLower(u.email) === email);
+        if (dup !== -1) {
+          return showNotification(`อีเมล "${email}" ซ้ำกับผู้ใช้งานอื่นในระบบ`, "warning");
+        }
+        state.userRoles[idx] = roleObj;
+      } else {
+        const existing = state.userRoles.findIndex(u => safeLower(u.email) === email);
         if (existing !== -1) state.userRoles[existing] = roleObj;
         else state.userRoles.push(roleObj);
       }
@@ -4829,9 +5834,32 @@
       log.trans_status = document.getElementById("editHistoryStatus").value;
       log.notes = document.getElementById("editHistoryNotes").value.trim();
 
+      if (log.trans_status === "Returned") {
+        if (!log.actual_return) log.actual_return = getLocalTimestamp(0);
+        const bIdx = state.activeBorrows.findIndex(b => b.trans_id === tid);
+        if (bIdx !== -1) state.activeBorrows.splice(bIdx, 1);
+        const item = state.items.find(i => i.item_id === log.item_id);
+        if (item && item.status !== "Maintenance") item.status = "Available";
+      } else if (log.trans_status === "Borrowed") {
+        const exists = state.activeBorrows.some(b => b.trans_id === tid);
+        if (!exists) {
+          state.activeBorrows.push({
+            trans_id: log.trans_id,
+            item_id: log.item_id,
+            borrower_name: log.borrower_name,
+            borrower_dept: log.borrower_dept,
+            borrower_contact: log.borrower_contact,
+            borrow_date: log.borrow_date,
+            expected_return: log.expected_return
+          });
+        }
+      }
+      syncItemStatuses();
+
       closeEditHistoryModal();
       showNotification(`แก้ไขข้อมูล [${tid}] เรียบร้อย`, "success");
       renderAll();
+      callAPI("updateHistoryLog", { logData: log }, true);
     }
 
     function openDeptManagementModal() {
@@ -4900,6 +5928,10 @@
         serial_number: document.getElementById("newItemSerial").value.trim() || "-",
         status: "Available"
       };
+
+      if (state.items.some(i => safeLower(i.item_id) === safeLower(newItem.item_id))) {
+        return showNotification(`รหัสอุปกรณ์ "${newItem.item_id}" มีอยู่ในระบบแล้ว กรุณาใช้รหัสอื่น`, "warning");
+      }
 
       if (!state.categories.includes(finalCat)) state.categories.push(finalCat);
       state.items.push(newItem);
@@ -4983,6 +6015,9 @@
       renderRolesTable();
       renderMonthlyDashboard();
       renderKnowledgeBaseList();
+      renderMyTicketsList();
+      renderAdminTicketsView();
+      renderHelpdeskReport();
 
       const aiSel = document.getElementById("aiBorrowSelect");
       if (aiSel) {
@@ -5696,6 +6731,7 @@ function handleDeleteUserRole(data) {
                 allLogs: [...state.allLogs],
                 categories: [...state.categories],
                 ticketCategories: [...state.ticketCategories],
+                internalSystems: [...(state.internalSystems || [])],
                 departments: [...state.departments],
                 userRoles: [...state.userRoles],
                 tickets: [...state.tickets],
@@ -5765,6 +6801,10 @@ function handleDeleteUserRole(data) {
           if (Array.isArray(res.knowledgeBase) && res.knowledgeBase.length > 0) state.knowledgeBase = res.knowledgeBase;
           if (Array.isArray(res.categories) && res.categories.length > 0) state.categories = res.categories;
           if (Array.isArray(res.ticketCategories) && res.ticketCategories.length > 0) state.ticketCategories = res.ticketCategories;
+          if (Array.isArray(res.internalSystems) && res.internalSystems.length > 0) {
+            state.internalSystems = res.internalSystems;
+            saveInternalSystemsToStorage();
+          }
           if (Array.isArray(res.departments) && res.departments.length > 0) state.departments = res.departments;
           if (Array.isArray(res.userRoles) && res.userRoles.length > 0) {
             state.userRoles = mergeWithBuiltinRoles(res.userRoles);
@@ -5786,7 +6826,7 @@ function handleDeleteUserRole(data) {
 
     function filterActiveBorrows() {
       const q = (document.getElementById("searchReturnInput")?.value || "").toLowerCase().trim();
-      const filtered = state.activeBorrows.filter(b => !q || b.trans_id.toLowerCase().includes(q) || b.borrower_name.toLowerCase().includes(q) || b.item_id.toLowerCase().includes(q));
+      const filtered = state.activeBorrows.filter(b => !q || safeLower(b.trans_id).includes(q) || safeLower(b.borrower_name).includes(q) || safeLower(b.item_id).includes(q));
       renderReturnTable(filtered);
     }
 
@@ -5797,7 +6837,7 @@ function handleDeleteUserRole(data) {
       const filtered = state.items.filter(i => {
         const matchS = !s || (s === "Available" && isItemAvailable(i)) || (s === "Borrowed" && isItemBorrowed(i)) || (s === "Maintenance" && i.status === "Maintenance");
         const matchC = !c || i.category === c;
-        const matchQ = !q || i.item_name.toLowerCase().includes(q) || i.item_id.toLowerCase().includes(q);
+        const matchQ = !q || safeLower(i.item_name).includes(q) || safeLower(i.item_id).includes(q) || safeLower(i.serial_number).includes(q);
         return matchS && matchC && matchQ;
       });
       renderInventoryTable(filtered);
@@ -5808,7 +6848,7 @@ function handleDeleteUserRole(data) {
       const q = (document.getElementById("searchHistoryInput")?.value || "").toLowerCase().trim();
       const filtered = state.allLogs.filter(l => {
         const matchS = !s || l.trans_status === s;
-        const matchQ = !q || l.trans_id.toLowerCase().includes(q) || l.borrower_name.toLowerCase().includes(q) || l.item_id.toLowerCase().includes(q);
+        const matchQ = !q || safeLower(l.trans_id).includes(q) || safeLower(l.borrower_name).includes(q) || safeLower(l.item_id).includes(q);
         return matchS && matchQ;
       });
       renderHistoryTable(filtered);

@@ -2548,7 +2548,10 @@
     /* BUILT-IN ACCOUNTS WITH PASSWORDS (Req 2 & Req 4) */
     const BUILTIN_ROLES = [
       { email: "tatitop07@gmail.com", role: "superadmin", first_name: "Tatitop", last_name: "(Super Admin)", name: "Tatitop (Super Admin)", dept: "ฝ่ายเทคโนโลยีสารสนเทศ (IT)", password: "admin1234", status: "active", remark: "ผู้ดูแลระบบหลัก" },
-      { email: "tatiphon.hi@thaichamber.or.th", role: "superadmin", first_name: "Tatiphon", last_name: "(Super Admin)", name: "Tatiphon (Super Admin)", dept: "ฝ่ายเทคโนโลยีสารสนเทศ (IT)", password: "admin1234", status: "active", remark: "ผู้ดูแลระบบหลัก หอการค้าไทย" },
+      { email: "tatiphon.hi@thaichamber.or.th", role: "superadmin", first_name: "Tatiphon", last_name: "(Super Admin)", name: "Tatiphon (Super Admin)", dept: "ฝ่ายเทคโนโลยีสารสนเทศ (IT)", password: "admin1234", status: "active", remark: "ผู้ดูแลระบบหลัก หอการค้าไทย" }
+    ];
+
+    const INITIAL_DEMO_ROLES = [
       { email: "wattanachai.mi@thaichamber.or.th", role: "admin", first_name: "Wattanachai", last_name: "(Admin)", name: "Wattanachai (Admin)", dept: "ฝ่ายเทคโนโลยีสารสนเทศ (IT)", password: "admin1234", status: "active", remark: "เจ้าหน้าที่ฝ่ายไอที" },
       { email: "supakon.su@thaichamber.or.th", role: "admin", first_name: "Supakon", last_name: "(Admin)", name: "Supakon (Admin)", dept: "ฝ่ายเทคโนโลยีสารสนเทศ (IT)", password: "admin1234", status: "active", remark: "เจ้าหน้าที่ฝ่ายไอที" },
       { email: "somchai.user@thaichamber.or.th", role: "user", first_name: "สมชาย", last_name: "ใจดี", name: "สมชาย ใจดี", dept: "ฝ่ายการเงินและการบัญชี", password: "user1234", status: "active", remark: "พนักงานทั่วไป" }
@@ -2888,7 +2891,7 @@
       if (saved) {
         try { return mergeWithBuiltinRoles(JSON.parse(saved)); } catch (e) {}
       }
-      return mergeWithBuiltinRoles([]);
+      return mergeWithBuiltinRoles(INITIAL_DEMO_ROLES);
     }
 
     const state = {
@@ -6113,7 +6116,7 @@
       const current = user.status || "active";
       user.status = current === "active" ? "disabled" : "active";
       localStorage.setItem(STORAGE_KEY_ROLES, JSON.stringify(state.userRoles));
-      renderRolesTable();
+      filterRolesTable();
       showNotification(`${user.status === 'active' ? 'เปิดใช้งาน' : 'ปิดการใช้งาน'} บัญชี [${user.email}] เรียบร้อย`, "success");
       callAPI("saveUserRole", { roleData: user }, true);
     }
@@ -6149,12 +6152,12 @@
       user.password = newPass;
       localStorage.setItem(STORAGE_KEY_ROLES, JSON.stringify(state.userRoles));
       closeResetPasswordModal();
-      renderRolesTable();
+      filterRolesTable();
       showNotification(`รีเซ็ตรหัสผ่านของ [${user.email}] เรียบร้อย`, "success");
       callAPI("saveUserRole", { roleData: user }, true);
     }
 
-    function handleDeleteUserRole(email) {
+    async function handleDeleteUserRole(email) {
       if (email === "tatitop07@gmail.com" || email === "tatiphon.hi@thaichamber.or.th") {
         return showNotification("ไม่สามารถลบบัญชี Super Admin หลักของระบบได้", "warning");
       }
@@ -6163,10 +6166,10 @@
       if (idx !== -1) {
         state.userRoles.splice(idx, 1);
         localStorage.setItem(STORAGE_KEY_ROLES, JSON.stringify(state.userRoles));
-        renderRolesTable();
+        filterRolesTable();
         renderDepartmentSelects();
         showNotification(`ลบผู้ใช้งาน [${email}] เรียบร้อย`, "info");
-        callAPI("deleteUserRole", { email: email }, true);
+        await callAPI("deleteUserRole", { email: email }, true);
       }
     }
 
@@ -6879,7 +6882,7 @@
       showNotification(`บันทึกข้อมูลผู้ใช้ [${email}] เรียบร้อย`, "success");
       applyUserRoleUI();
       renderDepartmentSelects();
-      renderRolesTable();
+      filterRolesTable();
       callAPI("saveUserRole", { roleData: roleObj }, true);
     }
 
@@ -7106,7 +7109,7 @@
       renderReturnTable();
       renderInventoryTable();
       renderHistoryTable();
-      renderRolesTable();
+      filterRolesTable();
       renderMonthlyDashboard();
       renderKnowledgeBaseList();
       renderMyTicketsList();
@@ -8006,10 +8009,9 @@ function handleDeleteUserRole(data) {
   var values = sheet.getDataRange().getValues();
   if (values.length <= 1) return jsonResponse({ status: "success" });
   var colMap = getUserRolesColumnMap(values[0]);
-  for (var i = 1; i < values.length; i++) {
+  for (var i = values.length - 1; i >= 1; i--) {
     if (String(values[i][colMap.email] || "").trim().toLowerCase() === email) {
       sheet.deleteRow(i + 1);
-      break;
     }
   }
   SpreadsheetApp.flush();
@@ -8265,18 +8267,30 @@ function handleDeleteUserRole(data) {
             saveInternalSystemsToStorage();
           }
           if (Array.isArray(res.departments) && res.departments.length > 0) state.departments = res.departments;
-          if (Array.isArray(res.userRoles) && res.userRoles.length > 0) {
-            const remoteMerged = mergeWithBuiltinRoles(res.userRoles);
-            const currentLocal = state.userRoles || [];
-            currentLocal.forEach(loc => {
-              if (!loc || !loc.email) return;
-              const exists = remoteMerged.find(r => safeLower(r.email) === safeLower(loc.email));
-              if (!exists) {
-                remoteMerged.push(loc);
-              }
-            });
-            state.userRoles = remoteMerged;
+          if (Array.isArray(res.userRoles)) {
+            state.userRoles = mergeWithBuiltinRoles(res.userRoles);
             localStorage.setItem(STORAGE_KEY_ROLES, JSON.stringify(state.userRoles));
+
+            if (state.currentUser) {
+              const updatedMe = state.userRoles.find(r => safeLower(r.email) === safeLower(state.currentUser.email));
+              if (!updatedMe || updatedMe.status === "disabled") {
+                state.currentUser = null;
+                localStorage.removeItem(STORAGE_KEY_USER);
+                applyUserRoleUI();
+                switchTab('borrowTab');
+                showNotification("บัญชีผู้ใช้งานของคุณถูกลบหรือถูกระงับการใช้งาน ระบบจึงออกจากระบบอัตโนมัติ", "warning");
+              } else {
+                state.currentUser = {
+                  ...state.currentUser,
+                  name: updatedMe.name || state.currentUser.name,
+                  dept: updatedMe.dept || "",
+                  role: updatedMe.role || "user",
+                  status: updatedMe.status || "active"
+                };
+                localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(state.currentUser));
+                applyUserRoleUI();
+              }
+            }
           }
 
           syncItemStatuses();

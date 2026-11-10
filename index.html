@@ -1632,18 +1632,19 @@
               </div>
             </div>
 
-            <!-- Table of Users (Fits comfortably in 838px with zero wrap and all 7 columns fully visible) -->
+            <!-- Table of Users (Fits comfortably in 838px with zero wrap and all 8 columns fully visible) -->
             <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-2xs">
               <table class="w-full text-left text-xs whitespace-nowrap divide-y divide-slate-100">
                 <thead class="bg-slate-50 text-slate-600 uppercase font-bold text-[11px] border-b border-slate-200 whitespace-nowrap">
                   <tr>
-                    <th class="py-2.5 px-2 text-center w-10 whitespace-nowrap">ลำดับ</th>
-                    <th class="py-2.5 px-3 font-semibold whitespace-nowrap">บัญชีผู้ใช้ / อีเมล</th>
-                    <th class="py-2.5 px-3 font-semibold whitespace-nowrap">ชื่อ-นามสกุล</th>
-                    <th class="py-2.5 px-3 font-semibold whitespace-nowrap">ฝ่าย / แผนก</th>
-                    <th class="py-2.5 px-2.5 font-semibold text-center whitespace-nowrap">สิทธิ์การใช้งาน</th>
-                    <th class="py-2.5 px-2.5 font-semibold text-center whitespace-nowrap">สถานะ</th>
-                    <th class="py-2.5 px-2 text-center w-12 whitespace-nowrap">จัดการ</th>
+                    <th class="py-2.5 px-1.5 text-center w-9 whitespace-nowrap">ลำดับ</th>
+                    <th class="py-2.5 px-2.5 font-semibold whitespace-nowrap">บัญชีผู้ใช้ / อีเมล</th>
+                    <th class="py-2.5 px-2 font-semibold whitespace-nowrap">ชื่อ</th>
+                    <th class="py-2.5 px-2 font-semibold whitespace-nowrap">นามสกุล</th>
+                    <th class="py-2.5 px-2 font-semibold whitespace-nowrap">ฝ่าย / แผนก</th>
+                    <th class="py-2.5 px-2 font-semibold text-center whitespace-nowrap">สิทธิ์การใช้งาน</th>
+                    <th class="py-2.5 px-2 font-semibold text-center whitespace-nowrap">สถานะ</th>
+                    <th class="py-2.5 px-1.5 text-center w-10 whitespace-nowrap">จัดการ</th>
                   </tr>
                 </thead>
                 <tbody id="rolesTableBody" class="divide-y divide-slate-100 bg-white whitespace-nowrap"></tbody>
@@ -2068,13 +2069,19 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label class="block font-semibold text-slate-700 mb-1">ชื่อ-นามสกุล:</label>
-            <input type="text" id="inputRoleName" placeholder="เช่น นายสมชาย ใจดี" class="w-full px-3 py-2 rounded-xl border border-slate-300 outline-none focus:ring-2 focus:ring-tcc-500">
+            <label class="block font-semibold text-slate-700 mb-1">ชื่อ (First Name): <span class="text-rose-500">*</span></label>
+            <input type="text" id="inputRoleFirstName" oninput="syncRoleFullNameInput()" placeholder="เช่น สมชาย" class="w-full px-3 py-2 rounded-xl border border-slate-300 outline-none focus:ring-2 focus:ring-tcc-500">
           </div>
           <div>
-            <label class="block font-semibold text-slate-700 mb-1">ฝ่าย / แผนก:</label>
-            <select id="inputRoleDept" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white outline-none focus:ring-2 focus:ring-tcc-500"></select>
+            <label class="block font-semibold text-slate-700 mb-1">นามสกุล (Last Name):</label>
+            <input type="text" id="inputRoleLastName" oninput="syncRoleFullNameInput()" placeholder="เช่น ใจดี" class="w-full px-3 py-2 rounded-xl border border-slate-300 outline-none focus:ring-2 focus:ring-tcc-500">
           </div>
+        </div>
+        <input type="hidden" id="inputRoleName">
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">ฝ่าย / แผนก:</label>
+          <select id="inputRoleDept" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white outline-none focus:ring-2 focus:ring-tcc-500"></select>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -2210,7 +2217,8 @@
               <thead class="bg-slate-100 text-slate-600 border-b border-slate-200 sticky top-0 font-semibold">
                 <tr>
                   <th class="py-1.5 px-2.5">อีเมล (บัญชี)</th>
-                  <th class="py-1.5 px-2.5">ชื่อ-นามสกุล</th>
+                  <th class="py-1.5 px-2.5">ชื่อ</th>
+                  <th class="py-1.5 px-2.5">นามสกุล</th>
                   <th class="py-1.5 px-2.5">ฝ่าย/แผนก</th>
                   <th class="py-1.5 px-2.5">สิทธิ์</th>
                   <th class="py-1.5 px-2.5">สถานะ</th>
@@ -2539,12 +2547,47 @@
 
     /* BUILT-IN ACCOUNTS WITH PASSWORDS (Req 2 & Req 4) */
     const BUILTIN_ROLES = [
-      { email: "tatitop07@gmail.com", role: "superadmin", name: "Tatitop (Super Admin)", dept: "ฝ่ายเทคโนโลยีสารสนเทศ (IT)", password: "admin1234", status: "active", remark: "ผู้ดูแลระบบหลัก" },
-      { email: "tatiphon.hi@thaichamber.or.th", role: "superadmin", name: "Tatiphon (Super Admin)", dept: "ฝ่ายเทคโนโลยีสารสนเทศ (IT)", password: "admin1234", status: "active", remark: "ผู้ดูแลระบบหลัก หอการค้าไทย" },
-      { email: "wattanachai.mi@thaichamber.or.th", role: "admin", name: "Wattanachai (Admin)", dept: "ฝ่ายเทคโนโลยีสารสนเทศ (IT)", password: "admin1234", status: "active", remark: "เจ้าหน้าที่ฝ่ายไอที" },
-      { email: "supakon.su@thaichamber.or.th", role: "admin", name: "Supakon (Admin)", dept: "ฝ่ายเทคโนโลยีสารสนเทศ (IT)", password: "admin1234", status: "active", remark: "เจ้าหน้าที่ฝ่ายไอที" },
-      { email: "somchai.user@thaichamber.or.th", role: "user", name: "สมชาย ใจดี", dept: "ฝ่ายการเงินและการบัญชี", password: "user1234", status: "active", remark: "พนักงานทั่วไป" }
+      { email: "tatitop07@gmail.com", role: "superadmin", first_name: "Tatitop", last_name: "(Super Admin)", name: "Tatitop (Super Admin)", dept: "ฝ่ายเทคโนโลยีสารสนเทศ (IT)", password: "admin1234", status: "active", remark: "ผู้ดูแลระบบหลัก" },
+      { email: "tatiphon.hi@thaichamber.or.th", role: "superadmin", first_name: "Tatiphon", last_name: "(Super Admin)", name: "Tatiphon (Super Admin)", dept: "ฝ่ายเทคโนโลยีสารสนเทศ (IT)", password: "admin1234", status: "active", remark: "ผู้ดูแลระบบหลัก หอการค้าไทย" },
+      { email: "wattanachai.mi@thaichamber.or.th", role: "admin", first_name: "Wattanachai", last_name: "(Admin)", name: "Wattanachai (Admin)", dept: "ฝ่ายเทคโนโลยีสารสนเทศ (IT)", password: "admin1234", status: "active", remark: "เจ้าหน้าที่ฝ่ายไอที" },
+      { email: "supakon.su@thaichamber.or.th", role: "admin", first_name: "Supakon", last_name: "(Admin)", name: "Supakon (Admin)", dept: "ฝ่ายเทคโนโลยีสารสนเทศ (IT)", password: "admin1234", status: "active", remark: "เจ้าหน้าที่ฝ่ายไอที" },
+      { email: "somchai.user@thaichamber.or.th", role: "user", first_name: "สมชาย", last_name: "ใจดี", name: "สมชาย ใจดี", dept: "ฝ่ายการเงินและการบัญชี", password: "user1234", status: "active", remark: "พนักงานทั่วไป" }
     ];
+
+    function splitFullName(fullName = "", firstName = "", lastName = "") {
+      let fn = String(firstName || "").trim();
+      let ln = String(lastName || "").trim();
+      const full = String(fullName || "").trim();
+      if (!fn && !ln && full) {
+        const parts = full.split(/\s+/);
+        fn = parts[0] || "";
+        ln = parts.slice(1).join(" ") || "";
+      }
+      const combined = [fn, ln].filter(Boolean).join(" ") || full;
+      return {
+        first_name: fn || combined,
+        last_name: ln,
+        name: combined
+      };
+    }
+
+    function normalizeUserRole(u = {}) {
+      const email = String(u.email || "").trim();
+      const rawFull = u.name || [u.first_name, u.last_name].filter(Boolean).join(" ") || (email ? email.split("@")[0] : "");
+      const parsed = splitFullName(rawFull, u.first_name, u.last_name);
+      return {
+        ...u,
+        email: email,
+        first_name: parsed.first_name,
+        last_name: parsed.last_name,
+        name: parsed.name,
+        dept: String(u.dept !== undefined ? u.dept : (u.department || "")).trim(),
+        role: String(u.role || "user").trim(),
+        password: String(u.password || "123456").trim(),
+        status: String(u.status || "active").trim(),
+        remark: String(u.remark || "").trim()
+      };
+    }
 
     function getOffsetDate(daysOffset = 0, hoursOffset = 0) {
       const d = new Date();
@@ -2817,30 +2860,23 @@
     ];
 
     function mergeWithBuiltinRoles(customList) {
-      const merged = [...BUILTIN_ROLES.map(r => ({ ...r }))];
+      const merged = [...BUILTIN_ROLES.map(r => normalizeUserRole({ ...r }))];
       if (Array.isArray(customList)) {
         customList.forEach(custom => {
           if (!custom || !custom.email) return;
-          const idx = merged.findIndex(m => safeLower(m.email) === safeLower(custom.email));
+          const normCustom = normalizeUserRole(custom);
+          const idx = merged.findIndex(m => safeLower(m.email) === safeLower(normCustom.email));
           if (idx !== -1) {
             const isPrimary = merged[idx].email === "tatitop07@gmail.com" || merged[idx].email === "tatiphon.hi@thaichamber.or.th";
-            merged[idx] = {
+            merged[idx] = normalizeUserRole({
               ...merged[idx],
-              ...custom,
-              role: isPrimary ? "superadmin" : (custom.role || merged[idx].role),
-              password: custom.password || merged[idx].password || "admin1234",
-              status: custom.status || merged[idx].status || "active"
-            };
-          } else {
-            merged.push({
-              email: custom.email,
-              name: custom.name || custom.email.split('@')[0],
-              dept: custom.dept || "",
-              role: custom.role || "user",
-              password: custom.password || "123456",
-              status: custom.status || "active",
-              remark: custom.remark || ""
+              ...normCustom,
+              role: isPrimary ? "superadmin" : (normCustom.role || merged[idx].role),
+              password: normCustom.password || merged[idx].password || "admin1234",
+              status: normCustom.status || merged[idx].status || "active"
             });
+          } else {
+            merged.push(normCustom);
           }
         });
       }
@@ -5841,9 +5877,12 @@
       const s = document.getElementById("filterRoleStatus")?.value;
 
       const filtered = state.userRoles.filter(u => {
+        const parsed = splitFullName(u.name, u.first_name, u.last_name);
         const matchQ = !q ||
           (u.email && safeLower(u.email).includes(q)) ||
-          (u.name && u.name.toLowerCase().includes(q)) ||
+          (parsed.first_name && parsed.first_name.toLowerCase().includes(q)) ||
+          (parsed.last_name && parsed.last_name.toLowerCase().includes(q)) ||
+          (parsed.name && parsed.name.toLowerCase().includes(q)) ||
           (u.dept && u.dept.toLowerCase().includes(q)) ||
           (u.remark && u.remark.toLowerCase().includes(q));
 
@@ -5869,7 +5908,7 @@
       const isSuper = state.currentUser && state.currentUser.role === "superadmin";
 
       if (list.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" class="py-8 text-center text-slate-400 text-xs">ไม่พบข้อมูลผู้ใช้งานที่ตรงกับเงื่อนไขการค้นหา</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" class="py-8 text-center text-slate-400 text-xs">ไม่พบข้อมูลผู้ใช้งานที่ตรงกับเงื่อนไขการค้นหา</td></tr>';
         return;
       }
 
@@ -5877,6 +5916,9 @@
         const isPrimary = r.email === "tatitop07@gmail.com" || r.email === "tatiphon.hi@thaichamber.or.th";
         const isActive = (r.status || "active") !== "disabled";
         const realIndex = state.userRoles.findIndex(u => safeLower(u.email) === safeLower(r.email));
+        const parsedName = splitFullName(r.name, r.first_name, r.last_name);
+        const firstNameText = parsedName.first_name || '-';
+        const lastNameText = parsedName.last_name || '-';
 
         let roleBadge = '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200 shadow-2xs"><svg class="w-3 h-3 text-slate-500 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><span>User</span></span>';
         if (r.role === 'superadmin') {
@@ -5891,22 +5933,23 @@
 
         return `
           <tr class="hover:bg-slate-50/80 transition border-b border-slate-100 whitespace-nowrap group text-xs">
-            <td class="py-2.5 px-2 text-center text-slate-400 font-mono text-[11px] whitespace-nowrap">${idx + 1}</td>
-            <td class="py-2.5 px-3 font-mono font-semibold text-[11px] text-slate-800 whitespace-nowrap">
-              <div class="flex items-center gap-1">
-                <span>${r.email}</span>
-                ${isPrimary ? '<span class="text-amber-500 text-xs font-bold" title="บัญชีผู้ดูแลระบบหลัก">★</span>' : ''}
+            <td class="py-2.5 px-1.5 text-center text-slate-400 font-mono text-[11px] whitespace-nowrap">${idx + 1}</td>
+            <td class="py-2.5 px-2.5 font-mono font-semibold text-[11px] text-slate-800 whitespace-nowrap max-w-[185px] truncate" title="${escapeQuotes(r.email)}">
+              <div class="flex items-center gap-1 truncate">
+                <span class="truncate">${r.email}</span>
+                ${isPrimary ? '<span class="text-amber-500 text-xs font-bold shrink-0" title="บัญชีผู้ดูแลระบบหลัก">★</span>' : ''}
               </div>
             </td>
-            <td class="py-2.5 px-3 font-medium text-slate-800 text-xs whitespace-nowrap max-w-[130px] truncate" title="${escapeQuotes(r.name || '-')}">${r.name || '-'}</td>
-            <td class="py-2.5 px-3 text-slate-600 text-xs whitespace-nowrap">
-              <span class="inline-flex items-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[11px] font-medium max-w-[150px] truncate" title="${escapeQuotes(r.dept || '-')}">
+            <td class="py-2.5 px-2 font-medium text-slate-800 text-xs whitespace-nowrap max-w-[100px] truncate" title="${escapeQuotes(firstNameText)}">${firstNameText}</td>
+            <td class="py-2.5 px-2 font-medium text-slate-800 text-xs whitespace-nowrap max-w-[110px] truncate" title="${escapeQuotes(lastNameText)}">${lastNameText}</td>
+            <td class="py-2.5 px-2 text-slate-600 text-xs whitespace-nowrap">
+              <span class="inline-flex items-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[11px] font-medium max-w-[135px] truncate" title="${escapeQuotes(r.dept || '-')}">
                 ${r.dept || '-'}
               </span>
             </td>
-            <td class="py-2.5 px-2.5 text-center whitespace-nowrap">${roleBadge}</td>
-            <td class="py-2.5 px-2.5 text-center whitespace-nowrap">${statusBadge}</td>
-            <td class="py-2.5 px-2 text-center whitespace-nowrap">
+            <td class="py-2.5 px-2 text-center whitespace-nowrap">${roleBadge}</td>
+            <td class="py-2.5 px-2 text-center whitespace-nowrap">${statusBadge}</td>
+            <td class="py-2.5 px-1.5 text-center whitespace-nowrap">
               ${isSuper ? `
                 <button type="button" 
                         onclick="openRoleActionMenu(event, '${escapeQuotes(r.email)}', ${realIndex})" 
@@ -6129,11 +6172,11 @@
 
     /* EXCEL EXPORT & TEMPLATE DOWNLOAD (Req 1) */
     function downloadUserRolesTemplate() {
-      const headers = ["อีเมล (Username/Email)*", "ชื่อ-นามสกุล*", "ฝ่าย/แผนก", "ระดับสิทธิ์ (superadmin/admin/user)*", "รหัสผ่าน (Password)*", "สถานะ (active/disabled)*", "หมายเหตุ"];
+      const headers = ["อีเมล (Username/Email)*", "ชื่อ (First Name)*", "นามสกุล (Last Name)*", "ฝ่าย/แผนก (Department)", "ระดับสิทธิ์ (superadmin/admin/user)*", "รหัสผ่าน (Password)*", "สถานะ (active/disabled)*", "หมายเหตุ"];
       const sampleRows = [
-        ["somchai.ja@thaichamber.or.th", "นายสมชาย ใจดี", "ฝ่ายเทคโนโลยีสารสนเทศ", "user", "Tcc@2026", "active", "ผู้ใช้งานทั่วไป"],
-        ["wattanachai.mi@thaichamber.or.th", "นายวัฒนชัย มั่นคง", "ฝ่ายเทคโนโลยีสารสนเทศ", "admin", "Admin@2026", "active", "เจ้าหน้าที่ไอที"],
-        ["supakon.su@thaichamber.or.th", "นายศุภกร สุขเจริญ", "ฝ่ายการเงินและบัญชี", "user", "User@2026", "active", "ประสานงานการเงิน"]
+        ["somchai.ja@thaichamber.or.th", "สมชาย", "ใจดี", "ฝ่ายเทคโนโลยีสารสนเทศ", "user", "Tcc@2026", "active", "ผู้ใช้งานทั่วไป"],
+        ["wattanachai.mi@thaichamber.or.th", "วัฒนชัย", "มั่นคง", "ฝ่ายเทคโนโลยีสารสนเทศ", "admin", "Admin@2026", "active", "เจ้าหน้าที่ไอที"],
+        ["supakon.su@thaichamber.or.th", "ศุภกร", "สุขเจริญ", "ฝ่ายการเงินและบัญชี", "user", "User@2026", "active", "ประสานงานการเงิน"]
       ];
 
       if (window.XLSX) {
@@ -6142,7 +6185,8 @@
           const ws = XLSX.utils.aoa_to_sheet([headers, ...sampleRows]);
           ws["!cols"] = [
             { wch: 32 },
-            { wch: 22 },
+            { wch: 18 },
+            { wch: 20 },
             { wch: 26 },
             { wch: 34 },
             { wch: 22 },
@@ -6177,23 +6221,27 @@
       if (!state.userRoles || state.userRoles.length === 0) {
         return showNotification("ไม่มีข้อมูลผู้ใช้งานสำหรับส่งออก", "warning");
       }
-      const headers = ["อีเมล (Username/Email)", "ชื่อ-นามสกุล", "ฝ่าย/แผนก", "ระดับสิทธิ์ (Role)", "รหัสผ่าน (Password)", "สถานะ (Status)", "หมายเหตุ"];
-      const rows = state.userRoles.map(u => [
-        u.email || "",
-        u.name || "",
-        u.dept || "",
-        u.role || "user",
-        u.password || "123456",
-        u.status || "active",
-        u.remark || ""
-      ]);
+      const headers = ["อีเมล (Username/Email)", "ชื่อ (First Name)", "นามสกุล (Last Name)", "ฝ่าย/แผนก (Department)", "ระดับสิทธิ์ (Role)", "รหัสผ่าน (Password)", "สถานะ (Status)", "หมายเหตุ"];
+      const rows = state.userRoles.map(u => {
+        const parsed = splitFullName(u.name, u.first_name, u.last_name);
+        return [
+          u.email || "",
+          parsed.first_name || "",
+          parsed.last_name || "",
+          u.dept || "",
+          u.role || "user",
+          u.password || "123456",
+          u.status || "active",
+          u.remark || ""
+        ];
+      });
 
       if (window.XLSX) {
         try {
           const wb = XLSX.utils.book_new();
           const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
           ws["!cols"] = [
-            { wch: 32 }, { wch: 24 }, { wch: 26 }, { wch: 20 }, { wch: 20 }, { wch: 20 }, { wch: 26 }
+            { wch: 32 }, { wch: 18 }, { wch: 20 }, { wch: 26 }, { wch: 20 }, { wch: 20 }, { wch: 20 }, { wch: 26 }
           ];
           XLSX.utils.book_append_sheet(wb, ws, "UserRoles");
           XLSX.writeFile(wb, `tcc_user_accounts_${getOffsetDate(0)}.xlsx`);
@@ -6397,9 +6445,9 @@
         return;
       }
 
-      // หาแถว Header และแมปคอลัมน์
+      // หาแถว Header และแมปคอลัมน์ (รองรับทั้งไฟล์ที่แยก ชื่อ/นามสกุล และไฟล์ที่รวม ชื่อ-นามสกุล)
       let headerIndex = -1;
-      let colMap = { email: 0, name: 1, dept: 2, role: 3, password: 4, status: 5, remark: 6 };
+      let colMap = { email: 0, first_name: -1, last_name: -1, name: 1, dept: 2, role: 3, password: 4, status: 5, remark: 6 };
 
       for (let r = 0; r < Math.min(rawRows.length, 5); r++) {
         const row = (rawRows[r] || []).map(c => String(c || "").trim().toLowerCase());
@@ -6408,8 +6456,13 @@
           headerIndex = r;
           row.forEach((colName, idx) => {
             if (colName.includes("อีเมล") || colName.includes("email") || colName.includes("username") || colName.includes("บัญชี")) colMap.email = idx;
-            else if (colName.includes("ชื่อ") || colName.includes("name")) colMap.name = idx;
-            else if (colName.includes("แผนก") || colName.includes("ฝ่าย") || colName.includes("dept")) colMap.dept = idx;
+            else if (colName.includes("ชื่อ-นามสกุล") || colName.includes("ชื่อสกุล") || colName.includes("fullname") || colName.includes("full name") || colName.includes("full_name")) colMap.name = idx;
+            else if (colName.includes("นามสกุล") || colName.includes("last") || colName.includes("surname") || colName.includes("lname")) colMap.last_name = idx;
+            else if (colName.includes("ชื่อ") || colName.includes("first") || colName.includes("fname") || colName.includes("name")) {
+              colMap.first_name = idx;
+              colMap.name = idx;
+            }
+            else if (colName.includes("แผนก") || colName.includes("ฝ่าย") || colName.includes("ส่วนงาน") || colName.includes("สำนัก") || colName.includes("dept") || colName.includes("department")) colMap.dept = idx;
             else if (colName.includes("สิทธิ์") || colName.includes("role") || colName.includes("level")) colMap.role = idx;
             else if (colName.includes("รหัส") || colName.includes("pass") || colName.includes("pwd")) colMap.password = idx;
             else if (colName.includes("สถานะ") || colName.includes("status")) colMap.status = idx;
@@ -6441,23 +6494,35 @@
           continue;
         }
 
-        const name = String(row[colMap.name] !== undefined ? row[colMap.name] : (row[1] || "")).trim() || email.split("@")[0];
-        const dept = String(row[colMap.dept] !== undefined ? row[colMap.dept] : (row[2] || "")).trim();
+        let parsedName;
+        if (colMap.last_name !== -1) {
+          const rawFn = String(row[colMap.first_name !== -1 ? colMap.first_name : 1] || "").trim();
+          const rawLn = String(row[colMap.last_name] || "").trim();
+          parsedName = splitFullName("", rawFn, rawLn);
+        } else {
+          const rawFull = String(row[colMap.name !== -1 ? colMap.name : 1] || "").trim() || email.split("@")[0];
+          parsedName = splitFullName(rawFull, "", "");
+        }
+        const first_name = parsedName.first_name || email.split("@")[0];
+        const last_name = parsedName.last_name || "";
+        const name = parsedName.name || first_name;
 
-        let rawRole = String(row[colMap.role] !== undefined ? row[colMap.role] : (row[3] || "")).trim().toLowerCase();
+        const dept = String(row[colMap.dept] !== undefined ? row[colMap.dept] : "").trim();
+
+        let rawRole = String(row[colMap.role] !== undefined ? row[colMap.role] : "").trim().toLowerCase();
         let role = "user";
         if (rawRole.includes("super")) role = "superadmin";
         else if (rawRole.includes("admin")) role = "admin";
         else role = "user";
 
-        const password = String(row[colMap.password] !== undefined ? row[colMap.password] : (row[4] || "")).trim() || "123456";
+        const password = String(row[colMap.password] !== undefined ? row[colMap.password] : "").trim() || "123456";
 
-        let rawStatus = String(row[colMap.status] !== undefined ? row[colMap.status] : (row[5] || "")).trim().toLowerCase();
+        let rawStatus = String(row[colMap.status] !== undefined ? row[colMap.status] : "").trim().toLowerCase();
         let status = (rawStatus.includes("disable") || rawStatus.includes("ปิด") || rawStatus.includes("ระงับ")) ? "disabled" : "active";
 
-        const remark = String(row[colMap.remark] !== undefined ? row[colMap.remark] : (row[6] || "")).trim();
+        const remark = String(row[colMap.remark] !== undefined ? row[colMap.remark] : "").trim();
 
-        pendingImportUsers.push({ email, name, dept, role, password, status, remark });
+        pendingImportUsers.push({ email, first_name, last_name, name, dept, role, password, status, remark });
       }
 
       if (pendingImportUsers.length === 0) {
@@ -6480,12 +6545,13 @@
         tbody.innerHTML = pendingImportUsers.slice(0, 50).map(u => `
           <tr class="hover:bg-slate-50">
             <td class="py-1.5 px-2.5 font-mono font-medium">${u.email}</td>
-            <td class="py-1.5 px-2.5">${u.name}</td>
+            <td class="py-1.5 px-2.5">${u.first_name || '-'}</td>
+            <td class="py-1.5 px-2.5">${u.last_name || '-'}</td>
             <td class="py-1.5 px-2.5">${u.dept || '-'}</td>
             <td class="py-1.5 px-2.5 font-semibold">${u.role}</td>
             <td class="py-1.5 px-2.5">${u.status === 'active' ? 'Active' : 'Disabled'}</td>
           </tr>
-        `).join("") + (pendingImportUsers.length > 50 ? `<tr><td colspan="5" class="py-1.5 px-2.5 text-center text-slate-400 italic">... และอีก ${pendingImportUsers.length - 50} รายการ</td></tr>` : "");
+        `).join("") + (pendingImportUsers.length > 50 ? `<tr><td colspan="6" class="py-1.5 px-2.5 text-center text-slate-400 italic">... และอีก ${pendingImportUsers.length - 50} รายการ</td></tr>` : "");
       }
     }
 
@@ -6569,19 +6635,12 @@
       // Ensure all users in usersList are present/updated in state.userRoles & storage
       usersList.forEach(u => {
         if (!u || !u.email) return;
-        const idx = state.userRoles.findIndex(x => safeLower(x.email) === safeLower(u.email));
+        const norm = normalizeUserRole(u);
+        const idx = state.userRoles.findIndex(x => safeLower(x.email) === safeLower(norm.email));
         if (idx !== -1) {
-          state.userRoles[idx] = { ...state.userRoles[idx], ...u };
+          state.userRoles[idx] = normalizeUserRole({ ...state.userRoles[idx], ...norm });
         } else {
-          state.userRoles.push({
-            email: u.email,
-            name: u.name || u.email.split('@')[0],
-            dept: u.dept || "",
-            role: u.role || "user",
-            password: u.password || "123456",
-            status: u.status || "active",
-            remark: u.remark || ""
-          });
+          state.userRoles.push(norm);
         }
       });
       localStorage.setItem(STORAGE_KEY_ROLES, JSON.stringify(state.userRoles));
@@ -6703,12 +6762,12 @@
         return showNotification("ไม่มีข้อมูลที่พร้อมนำเข้า", "warning");
       }
 
-      const usersToImport = [...pendingImportUsers];
+      const usersToImport = pendingImportUsers.map(u => normalizeUserRole(u));
       let count = 0;
       usersToImport.forEach(userObj => {
         const existingIdx = state.userRoles.findIndex(u => safeLower(u.email) === userObj.email.toLowerCase());
         if (existingIdx !== -1) {
-          state.userRoles[existingIdx] = { ...state.userRoles[existingIdx], ...userObj };
+          state.userRoles[existingIdx] = normalizeUserRole({ ...state.userRoles[existingIdx], ...userObj });
         } else {
           state.userRoles.push(userObj);
         }
@@ -6724,6 +6783,16 @@
       // Start resilient sync to Google Sheets
       syncUserRolesToGoogleSheets(usersToImport);
     }
+
+    function syncRoleFullNameInput() {
+      const fn = document.getElementById("inputRoleFirstName")?.value.trim() || "";
+      const ln = document.getElementById("inputRoleLastName")?.value.trim() || "";
+      const nameEl = document.getElementById("inputRoleName");
+      if (nameEl) {
+        nameEl.value = [fn, ln].filter(Boolean).join(" ").trim();
+      }
+    }
+
     function openRoleModal(idx = -1) {
       document.getElementById("roleEditIndex").value = idx;
       renderDepartmentSelects();
@@ -6733,12 +6802,26 @@
       }
 
       const titleEl = document.getElementById("roleModalTitle");
+      const firstNameEl = document.getElementById("inputRoleFirstName");
+      const lastNameEl = document.getElementById("inputRoleLastName");
+      const fullNameEl = document.getElementById("inputRoleName");
+
       if (idx >= 0 && state.userRoles[idx]) {
-        const r = state.userRoles[idx];
+        const r = normalizeUserRole(state.userRoles[idx]);
         if (titleEl) titleEl.innerText = "แก้ไขข้อมูลผู้ใช้งานระบบ";
         document.getElementById("inputRoleEmail").value = r.email;
-        document.getElementById("inputRoleName").value = r.name || "";
-        if (deptEl) deptEl.value = r.dept || "";
+        if (firstNameEl) firstNameEl.value = r.first_name || "";
+        if (lastNameEl) lastNameEl.value = r.last_name || "";
+        if (fullNameEl) fullNameEl.value = r.name || "";
+        if (deptEl) {
+          if (r.dept && !Array.from(deptEl.options).some(o => o.value === r.dept)) {
+            const opt = document.createElement("option");
+            opt.value = r.dept;
+            opt.textContent = r.dept;
+            deptEl.appendChild(opt);
+          }
+          deptEl.value = r.dept || "";
+        }
         document.getElementById("inputRoleLevel").value = r.role || "user";
         document.getElementById("inputRolePassword").value = r.password || "123456";
         document.getElementById("inputRoleStatus").value = r.status || "active";
@@ -6746,6 +6829,9 @@
       } else {
         if (titleEl) titleEl.innerText = "เพิ่มผู้ใช้งานระบบใหม่";
         document.getElementById("roleForm").reset();
+        if (firstNameEl) firstNameEl.value = "";
+        if (lastNameEl) lastNameEl.value = "";
+        if (fullNameEl) fullNameEl.value = "";
         document.getElementById("inputRolePassword").value = "Tcc@" + Math.floor(1000 + Math.random() * 9000);
         document.getElementById("inputRoleStatus").value = "active";
         document.getElementById("inputRoleLevel").value = "user";
@@ -6760,15 +6846,22 @@
       const idx = parseInt(document.getElementById("roleEditIndex").value, 10);
       const email = document.getElementById("inputRoleEmail").value.trim().toLowerCase();
       const password = document.getElementById("inputRolePassword").value.trim() || "123456";
-      const roleObj = {
+      const fnInput = document.getElementById("inputRoleFirstName")?.value.trim() || "";
+      const lnInput = document.getElementById("inputRoleLastName")?.value.trim() || "";
+      const legacyNameInput = document.getElementById("inputRoleName")?.value.trim() || "";
+      const parsedName = splitFullName(legacyNameInput || email.split("@")[0], fnInput, lnInput);
+
+      const roleObj = normalizeUserRole({
         email: email,
-        name: document.getElementById("inputRoleName").value.trim(),
+        first_name: parsedName.first_name,
+        last_name: parsedName.last_name,
+        name: parsedName.name,
         dept: document.getElementById("inputRoleDept")?.value || "",
         role: document.getElementById("inputRoleLevel").value,
         password: password,
         status: document.getElementById("inputRoleStatus").value,
         remark: document.getElementById("inputRoleRemark").value.trim()
-      };
+      });
       if (idx >= 0) {
         const dup = state.userRoles.findIndex((u, i) => i !== idx && safeLower(u.email) === email);
         if (dup !== -1) {
@@ -7151,13 +7244,14 @@ function handleGetInitialData() {
     ["ฝ่ายทรัพยากรบุคคล (HR)"]
   ]);
 
-  getOrCreateSheet(ss, "UserRoles", ["Email", "Role", "Name", "Password", "Status", "Department", "Remark"], [
-    ["tatitop07@gmail.com", "superadmin", "Tatitop (Super Admin)", "admin1234", "active", "ฝ่ายเทคโนโลยีสารสนเทศ (IT)", "ผู้ดูแลระบบหลัก"],
-    ["tatiphon.hi@thaichamber.or.th", "superadmin", "Tatiphon (Super Admin)", "admin1234", "active", "ฝ่ายเทคโนโลยีสารสนเทศ (IT)", "ผู้ดูแลระบบหลัก หอการค้าไทย"],
-    ["wattanachai.mi@thaichamber.or.th", "admin", "Wattanachai (Admin)", "admin1234", "active", "ฝ่ายเทคโนโลยีสารสนเทศ (IT)", "เจ้าหน้าที่ฝ่ายไอที"],
-    ["supakon.su@thaichamber.or.th", "admin", "Supakon (Admin)", "admin1234", "active", "ฝ่ายเทคโนโลยีสารสนเทศ (IT)", "เจ้าหน้าที่ฝ่ายไอที"],
-    ["somchai.user@thaichamber.or.th", "user", "สมชาย ใจดี", "user1234", "active", "ฝ่ายการเงินและการบัญชี", "พนักงานทั่วไป"]
+  var rolesSheet = getOrCreateSheet(ss, "UserRoles", ["email", "first_name", "last_name", "dept", "role", "password", "status", "remark", "updated_at"], [
+    ["tatitop07@gmail.com", "Tatitop", "(Super Admin)", "ฝ่ายเทคโนโลยีสารสนเทศ (IT)", "superadmin", "admin1234", "active", "ผู้ดูแลระบบหลัก", ""],
+    ["tatiphon.hi@thaichamber.or.th", "Tatiphon", "(Super Admin)", "ฝ่ายเทคโนโลยีสารสนเทศ (IT)", "superadmin", "admin1234", "active", "ผู้ดูแลระบบหลัก หอการค้าไทย", ""],
+    ["wattanachai.mi@thaichamber.or.th", "Wattanachai", "(Admin)", "ฝ่ายเทคโนโลยีสารสนเทศ (IT)", "admin", "admin1234", "active", "เจ้าหน้าที่ฝ่ายไอที", ""],
+    ["supakon.su@thaichamber.or.th", "Supakon", "(Admin)", "ฝ่ายเทคโนโลยีสารสนเทศ (IT)", "admin", "admin1234", "active", "เจ้าหน้าที่ฝ่ายไอที", ""],
+    ["somchai.user@thaichamber.or.th", "สมชาย", "ใจดี", "ฝ่ายการเงินและการบัญชี", "user", "user1234", "active", "พนักงานทั่วไป", ""]
   ]);
+  ensureUserRolesSchema(rolesSheet);
 
   getOrCreateSheet(ss, "TicketCategories", ["Category Name"], [
     ["ฮาร์ดแวร์ / เครื่องคอมพิวเตอร์ / จอภาพ"],
@@ -7233,7 +7327,6 @@ function handleGetInitialData() {
     if (deptData[d][0]) departments.push(String(deptData[d][0]));
   }
 
-  var rolesSheet = ss.getSheetByName("UserRoles");
   var userRoles = [];
   if (rolesSheet) {
     var rData = rolesSheet.getDataRange().getValues();
@@ -7243,7 +7336,10 @@ function handleGetInitialData() {
         var row = rData[r];
         if (row[colMap.email]) {
           var em = String(row[colMap.email]).trim();
+          var fn = colMap.first_name !== -1 ? String(row[colMap.first_name] || "").trim() : "";
+          var ln = colMap.last_name !== -1 ? String(row[colMap.last_name] || "").trim() : "";
           var nm = colMap.name !== -1 ? String(row[colMap.name] || "").trim() : "";
+          var sp = splitGASName(nm || em.split("@")[0], fn, ln);
           var rl = colMap.role !== -1 ? String(row[colMap.role] || "user").trim() : "user";
           var dp = colMap.dept !== -1 ? String(row[colMap.dept] || "").trim() : "";
           var pw = colMap.password !== -1 ? String(row[colMap.password] || "123456").trim() : "123456";
@@ -7251,11 +7347,13 @@ function handleGetInitialData() {
           var rm = colMap.remark !== -1 ? String(row[colMap.remark] || "").trim() : "";
           userRoles.push({
             email: em,
+            first_name: sp.first_name,
+            last_name: sp.last_name,
+            name: sp.name || em.split("@")[0],
+            dept: dp || "",
             role: rl || "user",
-            name: nm || em.split("@")[0],
             password: pw || "123456",
             status: st || "active",
-            dept: dp || "",
             remark: rm || ""
           });
         }
@@ -7688,15 +7786,30 @@ function handleUpdateItem(data) {
   return jsonResponse({ status: "success", message: "อัปเดตอุปกรณ์เรียบร้อย" });
 }
 
+function splitGASName(fullName, firstName, lastName) {
+  var fn = String(firstName || "").trim();
+  var ln = String(lastName || "").trim();
+  if (fn || ln) {
+    return { first_name: fn, last_name: ln, name: [fn, ln].filter(Boolean).join(" ").trim() };
+  }
+  var raw = String(fullName || "").trim();
+  if (!raw) return { first_name: "", last_name: "", name: "" };
+  var parts = raw.split(/\s+/);
+  if (parts.length === 1) return { first_name: parts[0], last_name: "", name: parts[0] };
+  return { first_name: parts[0], last_name: parts.slice(1).join(" "), name: raw };
+}
+
 function getUserRolesColumnMap(headerRow) {
-  var map = { email: -1, name: -1, role: -1, dept: -1, password: -1, status: -1, remark: -1, updated_at: -1 };
+  var map = { email: -1, first_name: -1, last_name: -1, name: -1, role: -1, dept: -1, password: -1, status: -1, remark: -1, updated_at: -1 };
   if (!headerRow || headerRow.length === 0) return map;
   for (var c = 0; c < headerRow.length; c++) {
     var h = String(headerRow[c] || "").trim().toLowerCase();
     if (map.email === -1 && (h.indexOf("email") !== -1 || h.indexOf("อีเมล") !== -1 || h.indexOf("username") !== -1 || h.indexOf("บัญชี") !== -1)) map.email = c;
-    else if (map.name === -1 && (h.indexOf("name") !== -1 || h.indexOf("ชื่อ") !== -1)) map.name = c;
-    else if (map.role === -1 && (h.indexOf("role") !== -1 || h.indexOf("สิทธิ์") !== -1 || h.indexOf("ระดับ") !== -1)) map.role = c;
+    else if (map.first_name === -1 && (h === "first_name" || h === "firstname" || h.indexOf("first name") !== -1 || (h.indexOf("ชื่อ") !== -1 && h.indexOf("นามสกุล") === -1))) map.first_name = c;
+    else if (map.last_name === -1 && (h === "last_name" || h === "lastname" || h.indexOf("last name") !== -1 || (h.indexOf("นามสกุล") !== -1 && h.indexOf("ชื่อ") === -1))) map.last_name = c;
+    else if (map.name === -1 && (h === "name" || h.indexOf("full") !== -1 || h.indexOf("ชื่อ") !== -1)) map.name = c;
     else if (map.dept === -1 && (h.indexOf("dept") !== -1 || h.indexOf("department") !== -1 || h.indexOf("ฝ่าย") !== -1 || h.indexOf("แผนก") !== -1)) map.dept = c;
+    else if (map.role === -1 && (h.indexOf("role") !== -1 || h.indexOf("สิทธิ์") !== -1 || h.indexOf("ระดับ") !== -1)) map.role = c;
     else if (map.password === -1 && (h.indexOf("pass") !== -1 || h.indexOf("pwd") !== -1 || h.indexOf("รหัส") !== -1)) map.password = c;
     else if (map.status === -1 && (h.indexOf("status") !== -1 || h.indexOf("สถานะ") !== -1)) map.status = c;
     else if (map.remark === -1 && (h.indexOf("remark") !== -1 || h.indexOf("note") !== -1 || h.indexOf("หมายเหตุ") !== -1)) map.remark = c;
@@ -7706,23 +7819,59 @@ function getUserRolesColumnMap(headerRow) {
   return map;
 }
 
-// UserRoles: บันทึกเดี่ยว (Single Save) รองรับหัวตารางอัตโนมัติ
+// ตรวจสอบและอัปเกรดโครงสร้างตาราง UserRoles อัตโนมัติ (แยก first_name, last_name และเพิ่มคอลัมน์ dept ที่ขาด)
+function ensureUserRolesSchema(sheet) {
+  if (!sheet) return;
+  var values = sheet.getDataRange().getValues();
+  var targetHeaders = ["email", "first_name", "last_name", "dept", "role", "password", "status", "remark", "updated_at"];
+  if (values.length === 0) {
+    sheet.appendRow(targetHeaders);
+    sheet.getRange(1, 1, 1, targetHeaders.length).setFontWeight("bold").setBackground("#005ba6").setFontColor("#ffffff");
+    return;
+  }
+  var colMap = getUserRolesColumnMap(values[0]);
+  // หากตารางเดิมยังไม่มีคอลัมน์ first_name, last_name หรือ dept ให้ทำการแปลงและย้ายข้อมูลเดิมเข้าคอลัมน์ใหม่ทันที
+  if (colMap.first_name === -1 || colMap.last_name === -1 || colMap.dept === -1) {
+    var migratedRows = [targetHeaders];
+    var nowStr = Utilities.formatDate(new Date(), Session.getScriptTimeZone() || "GMT+7", "dd/MM/yyyy, HH:mm:ss");
+    for (var i = 1; i < values.length; i++) {
+      var row = values[i];
+      var em = colMap.email !== -1 ? String(row[colMap.email] || "").trim() : "";
+      if (!em) continue;
+      var fn = colMap.first_name !== -1 ? String(row[colMap.first_name] || "").trim() : "";
+      var ln = colMap.last_name !== -1 ? String(row[colMap.last_name] || "").trim() : "";
+      var nm = colMap.name !== -1 ? String(row[colMap.name] || "").trim() : "";
+      var sp = splitGASName(nm || em.split("@")[0], fn, ln);
+      var dp = colMap.dept !== -1 ? String(row[colMap.dept] || "").trim() : "";
+      var rl = colMap.role !== -1 ? String(row[colMap.role] || "user").trim() : "user";
+      var pw = colMap.password !== -1 ? String(row[colMap.password] || "123456").trim() : "123456";
+      var st = colMap.status !== -1 ? String(row[colMap.status] || "active").trim() : "active";
+      var rm = colMap.remark !== -1 ? String(row[colMap.remark] || "").trim() : "";
+      var up = colMap.updated_at !== -1 ? (row[colMap.updated_at] || nowStr) : nowStr;
+      migratedRows.push([em, sp.first_name, sp.last_name, dp, rl || "user", pw || "123456", st || "active", rm, up]);
+    }
+    sheet.clearContents();
+    sheet.getRange(1, 1, migratedRows.length, targetHeaders.length).setValues(migratedRows);
+    sheet.getRange(1, 1, 1, targetHeaders.length).setFontWeight("bold").setBackground("#005ba6").setFontColor("#ffffff");
+    SpreadsheetApp.flush();
+  }
+}
+
+// UserRoles: บันทึกเดี่ยว (Single Save) รองรับหัวตารางอัตโนมัติ (แยกชื่อ-นามสกุล และฝ่าย/แผนก)
 function handleSaveUserRole(data) {
   var ss = getSpreadsheet();
   var sheet = ss.getSheetByName("UserRoles");
   if (!sheet) {
     sheet = ss.insertSheet("UserRoles");
-    sheet.appendRow(["email", "name", "role", "remark", "updated_at", "dept", "password", "status"]);
+    sheet.appendRow(["email", "first_name", "last_name", "dept", "role", "password", "status", "remark", "updated_at"]);
   }
+  ensureUserRolesSchema(sheet);
   var r = data.roleData || {};
   var email = String(r.email || "").trim().toLowerCase();
   if (!email) return jsonResponse({ status: "error", message: "No email provided" });
 
+  var sp = splitGASName(r.name || email.split("@")[0], r.first_name, r.last_name);
   var values = sheet.getDataRange().getValues();
-  if (values.length === 0) {
-    values = [["email", "name", "role", "remark", "updated_at", "dept", "password", "status"]];
-    sheet.appendRow(values[0]);
-  }
   var colMap = getUserRolesColumnMap(values[0]);
   var numCols = values[0].length;
   var timestamp = Utilities.formatDate(new Date(), Session.getScriptTimeZone() || "GMT+7", "dd/MM/yyyy, HH:mm:ss");
@@ -7737,9 +7886,11 @@ function handleSaveUserRole(data) {
 
   if (foundRow !== -1) {
     var targetRow = values[foundRow - 1];
-    if (colMap.name !== -1 && r.name !== undefined) targetRow[colMap.name] = r.name;
-    if (colMap.role !== -1 && r.role !== undefined) targetRow[colMap.role] = r.role;
+    if (colMap.first_name !== -1) targetRow[colMap.first_name] = sp.first_name;
+    if (colMap.last_name !== -1) targetRow[colMap.last_name] = sp.last_name;
+    if (colMap.name !== -1) targetRow[colMap.name] = sp.name;
     if (colMap.dept !== -1 && r.dept !== undefined) targetRow[colMap.dept] = r.dept;
+    if (colMap.role !== -1 && r.role !== undefined) targetRow[colMap.role] = r.role;
     if (colMap.password !== -1 && r.password !== undefined) targetRow[colMap.password] = r.password;
     if (colMap.status !== -1 && r.status !== undefined) targetRow[colMap.status] = r.status;
     if (colMap.remark !== -1 && r.remark !== undefined) targetRow[colMap.remark] = r.remark;
@@ -7749,9 +7900,11 @@ function handleSaveUserRole(data) {
     var newRow = new Array(numCols);
     for (var k = 0; k < numCols; k++) newRow[k] = "";
     newRow[colMap.email] = email;
-    if (colMap.name !== -1) newRow[colMap.name] = r.name || "";
-    if (colMap.role !== -1) newRow[colMap.role] = r.role || "user";
+    if (colMap.first_name !== -1) newRow[colMap.first_name] = sp.first_name;
+    if (colMap.last_name !== -1) newRow[colMap.last_name] = sp.last_name;
+    if (colMap.name !== -1) newRow[colMap.name] = sp.name;
     if (colMap.dept !== -1) newRow[colMap.dept] = r.dept || "";
+    if (colMap.role !== -1) newRow[colMap.role] = r.role || "user";
     if (colMap.password !== -1) newRow[colMap.password] = r.password || "123456";
     if (colMap.status !== -1) newRow[colMap.status] = r.status || "active";
     if (colMap.remark !== -1) newRow[colMap.remark] = r.remark || "";
@@ -7768,18 +7921,15 @@ function handleSaveUserRolesBatch(data) {
   var sheet = ss.getSheetByName("UserRoles");
   if (!sheet) {
     sheet = ss.insertSheet("UserRoles");
-    sheet.appendRow(["email", "name", "role", "remark", "updated_at", "dept", "password", "status"]);
+    sheet.appendRow(["email", "first_name", "last_name", "dept", "role", "password", "status", "remark", "updated_at"]);
   }
+  ensureUserRolesSchema(sheet);
   var list = data.rolesList || [];
   if (!Array.isArray(list) || list.length === 0) {
     return jsonResponse({ status: "success", count: 0, message: "No data to save" });
   }
 
   var values = sheet.getDataRange().getValues();
-  if (values.length === 0) {
-    values = [["email", "name", "role", "remark", "updated_at", "dept", "password", "status"]];
-    sheet.appendRow(values[0]);
-  }
   var colMap = getUserRolesColumnMap(values[0]);
   var numCols = values[0].length;
   var timestamp = Utilities.formatDate(new Date(), Session.getScriptTimeZone() || "GMT+7", "dd/MM/yyyy, HH:mm:ss");
@@ -7800,12 +7950,15 @@ function handleSaveUserRolesBatch(data) {
     if (!u) return;
     var em = String(u.email || "").trim().toLowerCase();
     if (!em) return;
+    var sp = splitGASName(u.name || em.split("@")[0], u.first_name, u.last_name);
 
     if (emailRowMap.hasOwnProperty(em)) {
       var rIdx = emailRowMap[em];
-      if (colMap.name !== -1 && u.name !== undefined) values[rIdx][colMap.name] = u.name;
-      if (colMap.role !== -1 && u.role !== undefined) values[rIdx][colMap.role] = u.role;
+      if (colMap.first_name !== -1) values[rIdx][colMap.first_name] = sp.first_name;
+      if (colMap.last_name !== -1) values[rIdx][colMap.last_name] = sp.last_name;
+      if (colMap.name !== -1) values[rIdx][colMap.name] = sp.name;
       if (colMap.dept !== -1 && u.dept !== undefined) values[rIdx][colMap.dept] = u.dept;
+      if (colMap.role !== -1 && u.role !== undefined) values[rIdx][colMap.role] = u.role;
       if (colMap.password !== -1 && u.password !== undefined) values[rIdx][colMap.password] = u.password;
       if (colMap.status !== -1 && u.status !== undefined) values[rIdx][colMap.status] = u.status;
       if (colMap.remark !== -1 && u.remark !== undefined) values[rIdx][colMap.remark] = u.remark;
@@ -7815,9 +7968,11 @@ function handleSaveUserRolesBatch(data) {
       var newRow = new Array(numCols);
       for (var k = 0; k < numCols; k++) newRow[k] = "";
       newRow[colMap.email] = em;
-      if (colMap.name !== -1) newRow[colMap.name] = u.name || "";
-      if (colMap.role !== -1) newRow[colMap.role] = u.role || "user";
+      if (colMap.first_name !== -1) newRow[colMap.first_name] = sp.first_name;
+      if (colMap.last_name !== -1) newRow[colMap.last_name] = sp.last_name;
+      if (colMap.name !== -1) newRow[colMap.name] = sp.name;
       if (colMap.dept !== -1) newRow[colMap.dept] = u.dept || "";
+      if (colMap.role !== -1) newRow[colMap.role] = u.role || "user";
       if (colMap.password !== -1) newRow[colMap.password] = u.password || "123456";
       if (colMap.status !== -1) newRow[colMap.status] = u.status || "active";
       if (colMap.remark !== -1) newRow[colMap.remark] = u.remark || "";
@@ -8008,20 +8163,13 @@ function handleDeleteUserRole(data) {
               let added = 0, updated = 0;
               list.forEach(u => {
                 if (!u || !u.email) return;
-                const idx = state.userRoles.findIndex(x => safeLower(x.email) === safeLower(u.email));
+                const norm = normalizeUserRole(u);
+                const idx = state.userRoles.findIndex(x => safeLower(x.email) === safeLower(norm.email));
                 if (idx !== -1) {
-                  state.userRoles[idx] = { ...state.userRoles[idx], ...u };
+                  state.userRoles[idx] = normalizeUserRole({ ...state.userRoles[idx], ...norm });
                   updated++;
                 } else {
-                  state.userRoles.push({
-                    email: u.email,
-                    name: u.name || u.email.split("@")[0],
-                    dept: u.dept || "",
-                    role: u.role || "user",
-                    password: u.password || "123456",
-                    status: u.status || "active",
-                    remark: u.remark || ""
-                  });
+                  state.userRoles.push(norm);
                   added++;
                 }
               });

@@ -1085,23 +1085,24 @@
         <div id="tabContent-helpdeskReportTab" class="tab-content hidden">
           <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6 space-y-5">
             <!-- Header & Action Buttons -->
-            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-4 border-b border-slate-100">
-              <div>
-                <h2 class="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
-                  <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
-                  รายงานสรุปงานบริการไอที (IT Helpdesk Summary &amp; Analytics Report)
-                </h2>
-                <p class="text-xs text-slate-500 mt-0.5">วิเคราะห์สถิติการแจ้งซ่อม ประสิทธิภาพ SLA ความพึงพอใจ แยกตามหมวดหมู่ ระบบสารสนเทศ แผนก และส่งออกรายงานสรุปผล</p>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 shrink-0"></span>
+                  <h2 class="text-sm sm:text-base md:text-lg font-bold text-slate-900 tracking-tight truncate">
+                    รายงานสรุปงานบริการไอที <span class="text-slate-500 font-semibold text-xs sm:text-sm font-sans">(IT Helpdesk Summary &amp; Analytics)</span>
+                  </h2>
+                </div>
+                <p class="text-xs text-slate-500 mt-0.5 truncate">วิเคราะห์สถิติการแจ้งซ่อม ประสิทธิภาพ SLA ความพึงพอใจ แยกตามหมวดหมู่ ระบบสารสนเทศ และแผนก</p>
               </div>
-              <div class="flex flex-wrap items-center gap-2">
-                <button type="button" onclick="exportHelpdeskSummaryCsv()" class="px-3.5 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 rounded-xl text-xs font-bold flex items-center gap-1.5 transition shadow-sm">
-                  <span>📊 ส่งออกตารางสรุปผล (CSV/Excel)</span>
+              <div class="flex items-center gap-2 shrink-0">
+                <button type="button" onclick="exportHelpdeskSummaryCsv()" class="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition shadow-2xs whitespace-nowrap cursor-pointer">
+                  <svg class="w-3.5 h-3.5 text-indigo-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                  <span>ส่งออกตารางสรุปผล (CSV/Excel)</span>
                 </button>
-                <button type="button" onclick="exportHelpdeskReportCsv()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition shadow-sm">
-                  <span>📥 ส่งออกข้อมูลเคสละเอียด (CSV/Excel)</span>
-                </button>
-                <button type="button" onclick="printHelpdeskSummaryReport()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition shadow-sm">
-                  <span>🖨️ พิมพ์ / บันทึก PDF รายงานสรุป</span>
+                <button type="button" onclick="exportHelpdeskReportCsv()" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition shadow-sm whitespace-nowrap cursor-pointer">
+                  <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                  <span>ส่งออกข้อมูลเคสละเอียด (CSV/Excel)</span>
                 </button>
               </div>
             </div>
@@ -1303,51 +1304,51 @@
         <!-- TAB: RETURN CENTER (Admin Only) -->
         <!-- ============================================================== -->
         <div id="tabContent-returnTab" class="tab-content hidden admin-only-view">
-          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 mb-4">
-              <div>
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-5 space-y-3.5 max-w-[890px] mx-auto w-full">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3.5 border-b border-slate-100">
+              <div class="min-w-0 flex-1">
                 <div class="flex items-center gap-2">
-                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">ฝ่ายเทคโนโลยีสารสนเทศ</span>
-                  <h2 class="text-base sm:text-lg font-bold text-slate-900">รายการอุปกรณ์ที่กำลังถูกยืม (รอรับคืน)</h2>
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300 shrink-0">ฝ่ายเทคโนโลยีสารสนเทศ</span>
+                  <h2 class="text-sm sm:text-base md:text-lg font-bold text-slate-900 tracking-tight truncate">รายการอุปกรณ์ที่กำลังถูกยืม (รอรับคืน)</h2>
                 </div>
-                <p class="text-xs text-slate-500 mt-0.5">ตรวจรับคืนอุปกรณ์เข้าคลังสต็อก (รองรับการเลือกรับคืนพร้อมกันหลายรายการ)</p>
+                <p class="text-xs text-slate-500 mt-0.5 truncate">ตรวจรับคืนอุปกรณ์เข้าคลังสต็อก (รองรับการเลือกรับคืนพร้อมกันหลายรายการ)</p>
               </div>
-              <div class="flex items-center gap-2">
-                <input type="text" id="searchReturnInput" onkeyup="filterActiveBorrows()" placeholder="ค้นหารหัส, ชื่อผู้ยืม..." class="px-3 py-1.5 text-xs rounded-xl border border-slate-300 focus:ring-2 focus:ring-tcc-500 outline-none">
+              <div class="flex items-center gap-2 shrink-0">
+                <input type="text" id="searchReturnInput" onkeyup="filterActiveBorrows()" placeholder="ค้นหารหัส, อุปกรณ์, ชื่อผู้ยืม..." class="px-3 py-1.5 text-xs rounded-xl border border-slate-300 w-48 sm:w-56 focus:ring-2 focus:ring-tcc-500 outline-none">
               </div>
             </div>
 
             <!-- Bulk Return Bar -->
-            <div id="bulkReturnBar" class="hidden mb-4 p-3 bg-emerald-50 border border-emerald-200 rounded-xl flex flex-wrap items-center justify-between gap-3">
+            <div id="bulkReturnBar" class="hidden p-3 bg-emerald-50 border border-emerald-200 rounded-xl flex flex-wrap items-center justify-between gap-3">
               <div class="flex items-center gap-2 text-xs">
                 <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
                 <span id="bulkReturnCountText" class="font-bold text-emerald-900">เลือกแล้ว 0 รายการ</span>
               </div>
               <div class="flex items-center gap-2">
-                <button type="button" onclick="clearReturnSelections()" class="px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-white rounded-lg">ยกเลิก</button>
-                <button type="button" onclick="requestBulkReturn()" class="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow-sm">
+                <button type="button" onclick="clearReturnSelections()" class="px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-white rounded-lg cursor-pointer">ยกเลิก</button>
+                <button type="button" onclick="requestBulkReturn()" class="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow-sm cursor-pointer">
                   <span id="bulkReturnBtnLabel">รับคืนอุปกรณ์ที่เลือก</span>
                 </button>
               </div>
             </div>
 
-            <div class="overflow-x-auto">
-              <table class="w-full text-left text-xs sm:text-sm">
-                <thead class="bg-slate-50 text-slate-600 uppercase border-y border-slate-100 text-xs">
+            <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-2xs max-w-[890px]">
+              <table class="w-full text-left text-xs whitespace-nowrap divide-y divide-slate-100">
+                <thead class="bg-slate-50 text-slate-600 uppercase font-bold text-[11px] border-b border-slate-200 whitespace-nowrap">
                   <tr>
-                    <th class="py-3 px-3 w-10 text-center">
-                      <input type="checkbox" id="selectAllReturns" onchange="toggleSelectAllReturns(this.checked)" class="w-4 h-4 rounded text-tcc-600 focus:ring-tcc-500 cursor-pointer">
+                    <th class="py-2.5 px-2.5 w-9 text-center whitespace-nowrap">
+                      <input type="checkbox" id="selectAllReturns" onchange="toggleSelectAllReturns(this.checked)" class="w-4 h-4 rounded text-tcc-600 focus:ring-tcc-500 cursor-pointer align-middle">
                     </th>
-                    <th class="py-3 px-4 font-semibold">รหัสธุรกรรม</th>
-                    <th class="py-3 px-4 font-semibold">อุปกรณ์</th>
-                    <th class="py-3 px-4 font-semibold">ผู้ยืม / แผนก</th>
-                    <th class="py-3 px-4 font-semibold">วันที่ยืม</th>
-                    <th class="py-3 px-4 font-semibold">กำหนดคืน</th>
-                    <th class="py-3 px-4 font-semibold text-center">สถานะ</th>
-                    <th class="py-3 px-4 font-semibold text-right">ดำเนินการ</th>
+                    <th class="py-2.5 px-2 font-semibold whitespace-nowrap">รหัสธุรกรรม</th>
+                    <th class="py-2.5 px-2 font-semibold whitespace-nowrap">อุปกรณ์</th>
+                    <th class="py-2.5 px-2 font-semibold whitespace-nowrap">ผู้ยืม / แผนก</th>
+                    <th class="py-2.5 px-2 font-semibold whitespace-nowrap">วันที่ยืม</th>
+                    <th class="py-2.5 px-2 font-semibold whitespace-nowrap">กำหนดคืน</th>
+                    <th class="py-2.5 px-2 font-semibold text-center whitespace-nowrap">สถานะ</th>
+                    <th class="py-2.5 px-2.5 font-semibold text-right whitespace-nowrap">ดำเนินการ</th>
                   </tr>
                 </thead>
-                <tbody id="returnTableBody" class="divide-y divide-slate-100"></tbody>
+                <tbody id="returnTableBody" class="divide-y divide-slate-100 bg-white whitespace-nowrap"></tbody>
               </table>
             </div>
           </div>
@@ -1402,41 +1403,63 @@
         <!-- TAB: HISTORY (Admin Only) -->
         <!-- ============================================================== -->
         <div id="tabContent-historyTab" class="tab-content hidden admin-only-view">
-          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 mb-4">
-              <div>
-                <h2 class="text-base sm:text-lg font-bold text-slate-900">ประวัติบันทึกการยืม-คืน & จัดการหลังบ้าน</h2>
-                <p class="text-xs text-slate-500">ตรวจสอบย้อนหลัง ส่งออก CSV และแก้ไขข้อมูลย้อนหลังได้โดยตรง</p>
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-5 space-y-3.5 max-w-[890px] mx-auto w-full">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3.5 border-b border-slate-100">
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-tcc-600 shrink-0"></span>
+                  <h2 class="text-sm sm:text-base md:text-lg font-bold text-slate-900 tracking-tight truncate">ประวัติบันทึกการยืม-คืน &amp; จัดการหลังบ้าน</h2>
+                </div>
+                <p class="text-xs text-slate-500 mt-0.5 truncate">ตรวจสอบย้อนหลัง คลิกที่หัวตารางเพื่อเรียงลำดับข้อมูล ส่งออก CSV และแก้ไขข้อมูลย้อนหลังได้โดยตรง</p>
               </div>
-              <div class="flex flex-wrap items-center gap-2">
-                <select id="filterHistoryStatus" onchange="filterHistory()" class="px-3 py-1.5 text-xs rounded-xl border border-slate-300 bg-white">
+              <div class="flex flex-wrap items-center gap-2 shrink-0">
+                <select id="filterHistoryStatus" onchange="filterHistory()" class="px-2.5 py-1.5 text-xs rounded-xl border border-slate-300 bg-white font-medium text-slate-700 outline-none focus:ring-2 focus:ring-tcc-500">
                   <option value="">สถานะทั้งหมด</option>
                   <option value="Borrowed">กำลังยืม (ยังไม่คืน)</option>
                   <option value="Returned">คืนแล้วเรียบร้อย</option>
                 </select>
-                <input type="text" id="searchHistoryInput" onkeyup="filterHistory()" placeholder="ค้นหารหัส, ผู้ยืม..." class="px-3 py-1.5 text-xs rounded-xl border border-slate-300">
-                <button onclick="exportHistoryCsv()" class="px-3 py-1.5 text-xs font-semibold rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center gap-1.5">
+                <input type="text" id="searchHistoryInput" onkeyup="filterHistory()" placeholder="ค้นหารหัส, อุปกรณ์, ผู้ยืม..." class="px-3 py-1.5 text-xs rounded-xl border border-slate-300 w-44 sm:w-48 outline-none focus:ring-2 focus:ring-tcc-500">
+                <button onclick="exportHistoryCsv()" class="px-3 py-1.5 text-xs font-semibold rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 flex items-center gap-1.5 transition cursor-pointer whitespace-nowrap">
+                  <svg class="w-3.5 h-3.5 text-slate-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                   <span>ส่งออก CSV</span>
                 </button>
               </div>
             </div>
 
-            <div class="overflow-x-auto">
-              <table class="w-full text-left text-xs sm:text-sm">
-                <thead class="bg-slate-50 text-slate-700 uppercase border-y border-slate-200 text-xs">
+            <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-2xs max-w-[890px]">
+              <table class="w-full text-left text-xs whitespace-nowrap divide-y divide-slate-100">
+                <thead class="bg-slate-50 text-slate-600 uppercase font-bold text-[11px] border-b border-slate-200 whitespace-nowrap select-none">
                   <tr>
-                    <th class="py-3.5 px-4 font-bold">เลขธุรกรรมยืม (ITB)</th>
-                    <th class="py-3.5 px-4 font-bold">อุปกรณ์ที่ยืม</th>
-                    <th class="py-3.5 px-4 font-bold">ผู้ยืม / ฝ่ายงาน</th>
-                    <th class="py-3.5 px-4 font-bold">วันที่ยืม</th>
-                    <th class="py-3.5 px-4 font-bold">กำหนดส่งคืน</th>
-                    <th class="py-3.5 px-4 font-bold">วันที่ส่งคืนจริง</th>
-                    <th class="py-3.5 px-4 font-bold text-center">สถานะการคืน</th>
-                    <th class="py-3.5 px-4 font-bold">วัตถุประสงค์ / หมายเหตุ</th>
-                    <th class="py-3.5 px-4 font-bold text-center">การจัดการหลังบ้าน</th>
+                    <th onclick="sortHistoryBy('trans_id')" class="py-2.5 px-2 font-semibold whitespace-nowrap cursor-pointer hover:bg-slate-100 hover:text-tcc-700 transition" title="คลิกเพื่อเรียงลำดับตามเลขธุรกรรม">
+                      <div class="inline-flex items-center gap-1"><span>รหัสยืม (ITB)</span><span id="histSortIcon-trans_id" class="text-[10px] text-slate-400">↕</span></div>
+                    </th>
+                    <th onclick="sortHistoryBy('item')" class="py-2.5 px-2 font-semibold whitespace-nowrap cursor-pointer hover:bg-slate-100 hover:text-tcc-700 transition" title="คลิกเพื่อเรียงลำดับตามอุปกรณ์">
+                      <div class="inline-flex items-center gap-1"><span>อุปกรณ์ที่ยืม</span><span id="histSortIcon-item" class="text-[10px] text-slate-400">↕</span></div>
+                    </th>
+                    <th onclick="sortHistoryBy('borrower')" class="py-2.5 px-2 font-semibold whitespace-nowrap cursor-pointer hover:bg-slate-100 hover:text-tcc-700 transition" title="คลิกเพื่อเรียงลำดับตามผู้ยืม/ฝ่าย">
+                      <div class="inline-flex items-center gap-1"><span>ผู้ยืม / ฝ่ายงาน</span><span id="histSortIcon-borrower" class="text-[10px] text-slate-400">↕</span></div>
+                    </th>
+                    <th onclick="sortHistoryBy('borrow_date')" class="py-2.5 px-1.5 font-semibold whitespace-nowrap cursor-pointer hover:bg-slate-100 hover:text-tcc-700 transition" title="คลิกเพื่อเรียงลำดับตามวันที่ยืม">
+                      <div class="inline-flex items-center gap-1"><span>วันที่ยืม</span><span id="histSortIcon-borrow_date" class="text-[10px] text-slate-400">↕</span></div>
+                    </th>
+                    <th onclick="sortHistoryBy('expected_return')" class="py-2.5 px-1.5 font-semibold whitespace-nowrap cursor-pointer hover:bg-slate-100 hover:text-tcc-700 transition" title="คลิกเพื่อเรียงลำดับตามกำหนดคืน">
+                      <div class="inline-flex items-center gap-1"><span>กำหนดคืน</span><span id="histSortIcon-expected_return" class="text-[10px] text-slate-400">↕</span></div>
+                    </th>
+                    <th onclick="sortHistoryBy('actual_return')" class="py-2.5 px-1.5 font-semibold whitespace-nowrap cursor-pointer hover:bg-slate-100 hover:text-tcc-700 transition" title="คลิกเพื่อเรียงลำดับตามวันส่งคืนจริง">
+                      <div class="inline-flex items-center gap-1"><span>ส่งคืนจริง</span><span id="histSortIcon-actual_return" class="text-[10px] text-slate-400">↕</span></div>
+                    </th>
+                    <th onclick="sortHistoryBy('trans_status')" class="py-2.5 px-1.5 font-semibold text-center whitespace-nowrap cursor-pointer hover:bg-slate-100 hover:text-tcc-700 transition" title="คลิกเพื่อเรียงลำดับตามสถานะ">
+                      <div class="inline-flex items-center justify-center gap-1"><span>สถานะ</span><span id="histSortIcon-trans_status" class="text-[10px] text-slate-400">↕</span></div>
+                    </th>
+                    <th onclick="sortHistoryBy('notes')" class="py-2.5 px-2 font-semibold whitespace-nowrap cursor-pointer hover:bg-slate-100 hover:text-tcc-700 transition" title="คลิกเพื่อเรียงลำดับตามหมายเหตุ">
+                      <div class="inline-flex items-center gap-1"><span>หมายเหตุ</span><span id="histSortIcon-notes" class="text-[10px] text-slate-400">↕</span></div>
+                    </th>
+                    <th onclick="sortHistoryBy('manage')" class="py-2.5 px-1.5 font-semibold text-center whitespace-nowrap cursor-pointer hover:bg-slate-100 hover:text-tcc-700 transition" title="คลิกเพื่อเรียงลำดับรายการ">
+                      <div class="inline-flex items-center justify-center gap-1"><span>จัดการ</span><span id="histSortIcon-manage" class="text-[10px] text-slate-400">↕</span></div>
+                    </th>
                   </tr>
                 </thead>
-                <tbody id="historyTableBody" class="divide-y divide-slate-100"></tbody>
+                <tbody id="historyTableBody" class="divide-y divide-slate-100 bg-white whitespace-nowrap"></tbody>
               </table>
             </div>
           </div>
@@ -1462,16 +1485,6 @@
 
               <!-- Action Buttons: Clean single line layout that never wraps -->
               <div class="flex items-center gap-2 shrink-0">
-                <!-- Direct Sync to Google Sheets Button -->
-                <button type="button" 
-                        id="btnSyncAllRolesToSheet" 
-                        onclick="triggerSyncAllRolesToSheet()" 
-                        class="px-3 py-1.5 bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition shadow-2xs cursor-pointer select-none shrink-0" 
-                        title="ซิงค์รายชื่อผู้ใช้ทั้งหมดขึ้นฐานข้อมูล Google Sheets ทันที">
-                  <svg class="w-3.5 h-3.5 text-sky-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
-                  <span>ซิงค์ขึ้น Sheet</span>
-                </button>
-
                 <!-- Dropdown Menu for Excel / Batch Data Operations -->
                 <div class="relative inline-block text-left" id="excelDropdownContainer">
                   <button type="button" 
@@ -5679,7 +5692,7 @@
     }
 
     function renderReturnTable(filteredList = null) {
-      const list = filteredList || state.activeBorrows;
+      const list = filteredList !== null ? filteredList : state.activeBorrows;
       const tbody = document.getElementById("returnTableBody");
       const today = getOffsetDate(0);
       if (!tbody) return;
@@ -5695,18 +5708,32 @@
         const isSel = state.selectedReturnTransIds.includes(b.trans_id);
 
         return `
-          <tr class="hover:bg-slate-50 transition ${isSel ? 'bg-emerald-50/50' : ''}">
-            <td class="py-3 px-3 text-center">
-              <input type="checkbox" onchange="toggleReturnSelection('${escapeQuotes(b.trans_id)}')" ${isSel ? 'checked' : ''} class="w-4 h-4 rounded text-tcc-600 cursor-pointer">
+          <tr class="hover:bg-slate-50/80 transition border-b border-slate-100 whitespace-nowrap text-xs ${isSel ? 'bg-emerald-50/50' : ''}">
+            <td class="py-2.5 px-2.5 text-center whitespace-nowrap">
+              <input type="checkbox" onchange="toggleReturnSelection('${escapeQuotes(b.trans_id)}')" ${isSel ? 'checked' : ''} class="w-4 h-4 rounded text-tcc-600 cursor-pointer align-middle">
             </td>
-            <td class="py-3 px-4 font-mono text-xs font-bold text-tcc-700">${b.trans_id}</td>
-            <td class="py-3 px-4 font-bold text-slate-900">${item.item_name} <span class="font-mono text-xs text-slate-400 block">[${b.item_id}]</span></td>
-            <td class="py-3 px-4">${b.borrower_name} <span class="text-xs text-slate-500 block">${b.borrower_dept}</span></td>
-            <td class="py-3 px-4 text-xs">${b.borrow_date}</td>
-            <td class="py-3 px-4 text-xs font-semibold ${isOverdue ? 'text-rose-600' : ''}">${b.expected_return}</td>
-            <td class="py-3 px-4 text-center">${isOverdue ? '<span class="px-2 py-0.5 rounded-full text-[10px] bg-rose-100 text-rose-700 font-bold">เกินกำหนด</span>' : '<span class="px-2 py-0.5 rounded-full text-[10px] bg-amber-100 text-amber-800 font-bold">กำลังยืม</span>'}</td>
-            <td class="py-3 px-4 text-right">
-              <button onclick="requestReturnItem('${escapeQuotes(b.trans_id)}', '${escapeQuotes(item.item_name)}')" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm">รับคืน</button>
+            <td class="py-2.5 px-2 font-mono text-[11px] font-bold text-tcc-700 whitespace-nowrap" title="${escapeQuotes(b.trans_id)}">${b.trans_id}</td>
+            <td class="py-2.5 px-2 whitespace-nowrap max-w-[165px] truncate" title="[${escapeQuotes(b.item_id)}] ${escapeQuotes(item.item_name)}">
+              <div class="truncate">
+                <span class="font-semibold text-slate-800">${item.item_name}</span>
+                <span class="font-mono text-[10px] text-slate-400 ml-0.5">(${b.item_id})</span>
+              </div>
+            </td>
+            <td class="py-2.5 px-2 whitespace-nowrap max-w-[165px] truncate" title="${escapeQuotes(b.borrower_name)} (${escapeQuotes(b.borrower_dept || '-')})">
+              <div class="truncate">
+                <span class="font-medium text-slate-800">${b.borrower_name}</span>
+                ${b.borrower_dept ? `<span class="text-[10px] text-slate-400 ml-0.5">(${b.borrower_dept})</span>` : ''}
+              </div>
+            </td>
+            <td class="py-2.5 px-2 text-[11px] font-mono text-slate-600 whitespace-nowrap">${b.borrow_date || '-'}</td>
+            <td class="py-2.5 px-2 text-[11px] font-mono font-semibold whitespace-nowrap ${isOverdue ? 'text-rose-600' : 'text-slate-700'}">${b.expected_return || '-'}</td>
+            <td class="py-2.5 px-2 text-center whitespace-nowrap">
+              ${isOverdue 
+                ? '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-rose-50 text-rose-700 border border-rose-200/70 font-bold whitespace-nowrap"><span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>เกินกำหนด</span>' 
+                : '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-amber-50 text-amber-800 border border-amber-200/70 font-bold whitespace-nowrap"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>กำลังยืม</span>'}
+            </td>
+            <td class="py-2.5 px-2.5 text-right whitespace-nowrap">
+              <button onclick="requestReturnItem('${escapeQuotes(b.trans_id)}', '${escapeQuotes(item.item_name)}')" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] shadow-2xs transition whitespace-nowrap cursor-pointer">รับคืน</button>
             </td>
           </tr>
         `;
@@ -5799,8 +5826,74 @@
       `).join("");
     }
 
+    let historySortField = null;
+    let historySortDir = 'asc';
+
+    function getHistorySortValue(l, field) {
+      const item = state.items.find(i => i.item_id === l.item_id) || { item_name: l.item_id || "" };
+      switch (field) {
+        case 'trans_id':
+        case 'manage':
+          return String(l.trans_id || "");
+        case 'item':
+          return `${item.item_name || ""} ${l.item_id || ""}`.trim();
+        case 'borrower':
+          return `${l.borrower_name || ""} ${l.borrower_dept || ""}`.trim();
+        case 'borrow_date':
+          return String(l.borrow_date || "");
+        case 'expected_return':
+          return String(l.expected_return || "");
+        case 'actual_return':
+          return l.trans_status === "Returned" ? String(l.actual_return || "") : "";
+        case 'trans_status':
+          return l.trans_status === "Returned" ? "คืนแล้ว" : "กำลังยืม";
+        case 'notes':
+          return String(l.notes || "");
+        default:
+          return String(l.trans_id || "");
+      }
+    }
+
+    function updateHistorySortIndicators() {
+      const cols = ['trans_id', 'item', 'borrower', 'borrow_date', 'expected_return', 'actual_return', 'trans_status', 'notes', 'manage'];
+      cols.forEach(col => {
+        const el = document.getElementById(`histSortIcon-${col}`);
+        if (!el) return;
+        if (historySortField === col) {
+          el.innerText = historySortDir === 'asc' ? '↑' : '↓';
+          el.className = 'text-[10px] text-tcc-600 font-extrabold';
+        } else {
+          el.innerText = '↕';
+          el.className = 'text-[10px] text-slate-400';
+        }
+      });
+    }
+
+    function sortHistoryBy(field) {
+      if (historySortField === field) {
+        historySortDir = historySortDir === 'asc' ? 'desc' : 'asc';
+      } else {
+        historySortField = field;
+        historySortDir = 'asc';
+      }
+      filterHistory();
+    }
+
     function renderHistoryTable(filteredList = null) {
-      const list = filteredList || state.allLogs;
+      const rawList = filteredList !== null ? filteredList : state.allLogs;
+      const list = [...rawList];
+      if (historySortField) {
+        const dir = historySortDir === 'asc' ? 1 : -1;
+        list.sort((a, b) => {
+          const valA = getHistorySortValue(a, historySortField);
+          const valB = getHistorySortValue(b, historySortField);
+          if (!valA && valB) return 1;
+          if (valA && !valB) return -1;
+          return valA.localeCompare(valB, 'th', { numeric: true, sensitivity: 'base' }) * dir;
+        });
+      }
+      updateHistorySortIndicators();
+
       const tbody = document.getElementById("historyTableBody");
       if (!tbody) return;
       if (list.length === 0) {
@@ -5810,29 +5903,35 @@
       tbody.innerHTML = list.map(l => {
         const item = state.items.find(i => i.item_id === l.item_id) || { item_name: l.item_id };
         const isRet = l.trans_status === "Returned";
+        const actualReturnFull = isRet ? (l.actual_return || '-') : '-';
+        const actualReturnShort = isRet && l.actual_return ? String(l.actual_return).split(' ')[0] : '-';
         return `
-          <tr class="hover:bg-slate-50 transition border-b border-slate-100">
-            <td class="py-3 px-4 font-mono text-xs font-bold text-tcc-700">${l.trans_id}</td>
-            <td class="py-3 px-4">
-              <span class="font-bold text-slate-900 block text-xs sm:text-sm">${item.item_name}</span>
-              <span class="font-mono text-[10px] text-slate-400 block">${l.item_id}</span>
+          <tr class="hover:bg-slate-50/80 transition border-b border-slate-100 whitespace-nowrap text-xs">
+            <td class="py-2.5 px-2 font-mono text-[11px] font-bold text-tcc-700 whitespace-nowrap" title="${escapeQuotes(l.trans_id)}">${l.trans_id}</td>
+            <td class="py-2.5 px-2 whitespace-nowrap max-w-[135px] truncate" title="[${escapeQuotes(l.item_id)}] ${escapeQuotes(item.item_name)}">
+              <div class="truncate">
+                <span class="font-semibold text-slate-800">${item.item_name}</span>
+                <span class="font-mono text-[10px] text-slate-400 ml-0.5">(${l.item_id})</span>
+              </div>
             </td>
-            <td class="py-3 px-4">
-              <span class="font-medium text-slate-800 block text-xs">${l.borrower_name}</span>
-              <span class="text-[11px] text-slate-500 block">${l.borrower_dept}</span>
+            <td class="py-2.5 px-2 whitespace-nowrap max-w-[135px] truncate" title="${escapeQuotes(l.borrower_name)} (${escapeQuotes(l.borrower_dept || '-')})">
+              <div class="truncate">
+                <span class="font-medium text-slate-800">${l.borrower_name}</span>
+                ${l.borrower_dept ? `<span class="text-[10px] text-slate-400 ml-0.5">(${l.borrower_dept})</span>` : ''}
+              </div>
             </td>
-            <td class="py-3 px-4 text-xs font-mono text-slate-600">${l.borrow_date || '-'}</td>
-            <td class="py-3 px-4 text-xs font-mono text-slate-600">${l.expected_return || '-'}</td>
-            <td class="py-3 px-4 text-xs font-mono text-emerald-700">${isRet ? (l.actual_return || '-') : '-'}</td>
-            <td class="py-3 px-4 text-center">
+            <td class="py-2.5 px-1.5 text-[11px] font-mono text-slate-600 whitespace-nowrap">${l.borrow_date || '-'}</td>
+            <td class="py-2.5 px-1.5 text-[11px] font-mono text-slate-600 whitespace-nowrap">${l.expected_return || '-'}</td>
+            <td class="py-2.5 px-1.5 text-[11px] font-mono text-emerald-700 whitespace-nowrap" title="${escapeQuotes(actualReturnFull)}">${actualReturnShort}</td>
+            <td class="py-2.5 px-1.5 text-center whitespace-nowrap">
               ${isRet 
-                ? '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/60"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>คืนเรียบร้อย</span>' 
-                : '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200/60"><span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>กำลังถูกยืม</span>'}
+                ? '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/70 whitespace-nowrap"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>คืนแล้ว</span>' 
+                : '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200/70 whitespace-nowrap"><span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>กำลังยืม</span>'}
             </td>
-            <td class="py-3 px-4 text-xs max-w-xs truncate text-slate-600">${l.notes || '-'}</td>
-            <td class="py-3 px-4 text-center">
-              <button type="button" onclick="openEditHistoryModal('${escapeQuotes(l.trans_id)}')" class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-tcc-700 bg-tcc-50 hover:bg-tcc-100 rounded-lg transition border border-tcc-200/70 shadow-2xs">
-                <span>✏️</span> <span>แก้ไขข้อมูล</span>
+            <td class="py-2.5 px-2 text-[11px] max-w-[90px] truncate text-slate-600 whitespace-nowrap" title="${escapeQuotes(l.notes || '-')}">${l.notes || '-'}</td>
+            <td class="py-2.5 px-1.5 text-center whitespace-nowrap">
+              <button type="button" onclick="openEditHistoryModal('${escapeQuotes(l.trans_id)}')" class="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-semibold text-tcc-700 bg-tcc-50 hover:bg-tcc-100 rounded-lg transition border border-tcc-200/70 shadow-2xs whitespace-nowrap cursor-pointer">
+                <span>✏️</span><span>แก้ไข</span>
               </button>
             </td>
           </tr>
@@ -7108,7 +7207,7 @@
       renderMyBorrowsTable();
       renderReturnTable();
       renderInventoryTable();
-      renderHistoryTable();
+      filterHistory();
       filterRolesTable();
       renderMonthlyDashboard();
       renderKnowledgeBaseList();
@@ -8308,7 +8407,10 @@ function handleDeleteUserRole(data) {
 
     function filterActiveBorrows() {
       const q = (document.getElementById("searchReturnInput")?.value || "").toLowerCase().trim();
-      const filtered = state.activeBorrows.filter(b => !q || safeLower(b.trans_id).includes(q) || safeLower(b.borrower_name).includes(q) || safeLower(b.item_id).includes(q));
+      const filtered = state.activeBorrows.filter(b => {
+        const item = state.items.find(i => i.item_id === b.item_id);
+        return !q || safeLower(b.trans_id).includes(q) || safeLower(b.borrower_name).includes(q) || safeLower(b.borrower_dept).includes(q) || safeLower(b.item_id).includes(q) || safeLower(item?.item_name).includes(q);
+      });
       renderReturnTable(filtered);
     }
 
@@ -8329,8 +8431,9 @@ function handleDeleteUserRole(data) {
       const s = document.getElementById("filterHistoryStatus")?.value;
       const q = (document.getElementById("searchHistoryInput")?.value || "").toLowerCase().trim();
       const filtered = state.allLogs.filter(l => {
+        const item = state.items.find(i => i.item_id === l.item_id);
         const matchS = !s || l.trans_status === s;
-        const matchQ = !q || safeLower(l.trans_id).includes(q) || safeLower(l.borrower_name).includes(q) || safeLower(l.item_id).includes(q);
+        const matchQ = !q || safeLower(l.trans_id).includes(q) || safeLower(l.borrower_name).includes(q) || safeLower(l.borrower_dept).includes(q) || safeLower(l.item_id).includes(q) || safeLower(item?.item_name).includes(q) || safeLower(l.notes).includes(q);
         return matchS && matchQ;
       });
       renderHistoryTable(filtered);

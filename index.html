@@ -1460,15 +1460,25 @@
                 <p class="text-xs text-slate-500 mt-0.5 truncate">บริหารจัดการบัญชีผู้ใช้ กำหนดสิทธิ์ และนำเข้า-ส่งออกไฟล์ข้อมูล Excel</p>
               </div>
 
-              <!-- Action Buttons: Clean 2-button group on single line -->
+              <!-- Action Buttons: Clean single line layout that never wraps -->
               <div class="flex items-center gap-2 shrink-0">
+                <!-- Direct Sync to Google Sheets Button -->
+                <button type="button" 
+                        id="btnSyncAllRolesToSheet" 
+                        onclick="triggerSyncAllRolesToSheet()" 
+                        class="px-3 py-1.5 bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition shadow-2xs cursor-pointer select-none shrink-0" 
+                        title="ซิงค์รายชื่อผู้ใช้ทั้งหมดขึ้นฐานข้อมูล Google Sheets ทันที">
+                  <svg class="w-3.5 h-3.5 text-sky-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+                  <span>ซิงค์ขึ้น Sheet</span>
+                </button>
+
                 <!-- Dropdown Menu for Excel / Batch Data Operations -->
                 <div class="relative inline-block text-left" id="excelDropdownContainer">
                   <button type="button" 
                           id="btnExcelMenuToggle" 
                           onclick="toggleExcelDropdown(event)" 
                           class="px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition shadow-2xs cursor-pointer select-none"
-                          title="จัดการข้อมูล Excel (นำเข้า, ส่งออก, แบบฟอร์ม Template)">
+                          title="จัดการข้อมูล Excel (นำเข้า, ส่งออก, แบบฟอร์ม Template, ซิงค์ข้อมูล)">
                     <svg class="w-3.5 h-3.5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                     </svg>
@@ -1504,6 +1514,19 @@
                         <div class="min-w-0">
                           <div class="font-bold text-slate-800 group-hover:text-emerald-900">ส่งออก Excel (Export)</div>
                           <div class="text-[11px] text-slate-400 group-hover:text-emerald-700">ดาวน์โหลดรายชื่อผู้ใช้ทั้งหมดเป็นไฟล์ Excel</div>
+                        </div>
+                      </button>
+
+                      <!-- Sync to Google Sheets -->
+                      <button type="button" 
+                              onclick="triggerExcelAction('syncSheet')" 
+                              class="w-full text-left px-2.5 py-2 rounded-lg hover:bg-indigo-50 text-slate-700 hover:text-indigo-900 flex items-center gap-2.5 transition cursor-pointer group">
+                        <div class="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0 group-hover:bg-indigo-200 transition">
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+                        </div>
+                        <div class="min-w-0">
+                          <div class="font-bold text-slate-800 group-hover:text-indigo-900">ซิงค์ขึ้น Google Sheets</div>
+                          <div class="text-[11px] text-slate-400 group-hover:text-indigo-700">ส่งข้อมูลผู้ใช้งานทั้งหมดขึ้นฐานข้อมูล Google Sheets</div>
                         </div>
                       </button>
                     </div>
@@ -1588,6 +1611,24 @@
                 <div class="flex items-center gap-2">
                   <span id="roleCountBadge" class="px-2.5 py-1 bg-slate-200 text-slate-700 font-bold rounded-lg text-[11px] shrink-0">แสดง 0 จาก 0 คน</span>
                 </div>
+              </div>
+            </div>
+
+            <!-- Real-time Sync Progress Banner for User Roles -->
+            <div id="roleSyncProgressBanner" class="hidden rounded-2xl border border-sky-200 bg-sky-50/70 p-3.5 text-xs transition-all duration-300">
+              <div class="flex items-center justify-between gap-2 mb-1.5">
+                <div class="flex items-center gap-2 min-w-0">
+                  <span id="roleSyncIcon" class="inline-block text-base animate-spin">🔄</span>
+                  <span id="roleSyncTitle" class="font-bold text-slate-800 truncate">กำลังบันทึกข้อมูลลง Google Sheets...</span>
+                </div>
+                <span id="roleSyncPercent" class="font-mono font-bold text-sky-700 bg-white px-2 py-0.5 rounded-full border border-sky-200 shrink-0">0%</span>
+              </div>
+              <div class="w-full bg-slate-200/80 rounded-full h-2 overflow-hidden">
+                <div id="roleSyncProgressBar" class="bg-sky-600 h-2 rounded-full transition-all duration-200" style="width: 0%"></div>
+              </div>
+              <div class="flex items-center justify-between mt-1 text-[11px] text-slate-500">
+                <span id="roleSyncSubtext" class="truncate">กรุณาอย่าเพิ่งปิดหน้าต่าง กำลังทยอยบันทึกข้อมูล...</span>
+                <span id="roleSyncCountText" class="font-mono font-medium shrink-0">0 / 0</span>
               </div>
             </div>
 
@@ -5994,6 +6035,8 @@
         exportUserRolesExcel();
       } else if (action === "template") {
         downloadUserRolesTemplate();
+      } else if (action === "syncSheet") {
+        triggerSyncAllRolesToSheet();
       }
     }
 
@@ -6485,20 +6528,190 @@
       }
     }
 
+    let isSyncingRoles = false;
+
+    async function syncUserRolesToGoogleSheets(usersList) {
+      if (isSyncingRoles) {
+        showNotification("กำลังดำเนินการบันทึกข้อมูลผู้ใช้ลง Google Sheets อยู่แล้ว กรุณารอสักครู่", "info");
+        return;
+      }
+      if (!Array.isArray(usersList) || usersList.length === 0) {
+        showNotification("ไม่มีรายชื่อผู้ใช้งานที่ต้องซิงค์", "warning");
+        return;
+      }
+
+      isSyncingRoles = true;
+      const banner = document.getElementById("roleSyncProgressBanner");
+      const icon = document.getElementById("roleSyncIcon");
+      const title = document.getElementById("roleSyncTitle");
+      const percent = document.getElementById("roleSyncPercent");
+      const bar = document.getElementById("roleSyncProgressBar");
+      const subtext = document.getElementById("roleSyncSubtext");
+      const countText = document.getElementById("roleSyncCountText");
+      const syncBtn = document.getElementById("btnSyncAllRolesToSheet");
+
+      if (syncBtn) {
+        syncBtn.disabled = true;
+        syncBtn.classList.add("opacity-60", "cursor-not-allowed");
+      }
+
+      if (banner) {
+        banner.className = "rounded-2xl border border-sky-200 bg-sky-50/70 p-3.5 text-xs transition-all duration-300";
+        if (icon) { icon.innerText = "🔄"; icon.className = "inline-block text-base animate-spin"; }
+        if (title) title.innerText = "กำลังบันทึกข้อมูลลง Google Sheets...";
+        if (percent) percent.innerText = "0%";
+        if (bar) { bar.className = "bg-sky-600 h-2 rounded-full transition-all duration-200"; bar.style.width = "0%"; }
+        if (subtext) subtext.innerText = "กำลังเชื่อมต่อกับฐานข้อมูล Google Sheets...";
+        if (countText) countText.innerText = `0 / ${usersList.length}`;
+        banner.classList.remove("hidden");
+      }
+
+      // Ensure all users in usersList are present/updated in state.userRoles & storage
+      usersList.forEach(u => {
+        if (!u || !u.email) return;
+        const idx = state.userRoles.findIndex(x => safeLower(x.email) === safeLower(u.email));
+        if (idx !== -1) {
+          state.userRoles[idx] = { ...state.userRoles[idx], ...u };
+        } else {
+          state.userRoles.push({
+            email: u.email,
+            name: u.name || u.email.split('@')[0],
+            dept: u.dept || "",
+            role: u.role || "user",
+            password: u.password || "123456",
+            status: u.status || "active",
+            remark: u.remark || ""
+          });
+        }
+      });
+      localStorage.setItem(STORAGE_KEY_ROLES, JSON.stringify(state.userRoles));
+      renderRolesTable();
+
+      // Check if configured with live URL
+      if (!state.webAppUrl || state.webAppUrl.trim() === "") {
+        if (banner) {
+          banner.className = "rounded-2xl border border-amber-200 bg-amber-50 p-3 text-xs";
+          if (icon) { icon.innerText = "ℹ️"; icon.className = "text-base"; }
+          if (title) title.innerText = "โหมดจำลอง (Demo Mode)";
+          if (subtext) subtext.innerText = "บันทึกในหน่วยความจำและ Local Storage เรียบร้อยแล้ว (ยังไม่ได้เชื่อมต่อ Google Apps Script URL)";
+          setTimeout(() => banner.classList.add("hidden"), 4000);
+        }
+        if (syncBtn) {
+          syncBtn.disabled = false;
+          syncBtn.classList.remove("opacity-60", "cursor-not-allowed");
+        }
+        isSyncingRoles = false;
+        return;
+      }
+
+      // 1. Try Batch Sync API first (Fast: 1 single execution for all users)
+      let batchSuccess = false;
+      try {
+        if (bar) bar.style.width = "25%";
+        if (percent) percent.innerText = "25%";
+        if (subtext) subtext.innerText = `กำลังส่งข้อมูลแบบชุด (Batch) ${usersList.length} รายการลง Google Sheets...`;
+
+        const batchRes = await callAPI("saveUserRolesBatch", { rolesList: usersList }, true);
+        if (batchRes && batchRes.status === "success") {
+          batchSuccess = true;
+          if (bar) bar.style.width = "100%";
+          if (percent) percent.innerText = "100%";
+          if (countText) countText.innerText = `${usersList.length} / ${usersList.length}`;
+          if (icon) { icon.innerText = "✅"; icon.className = "text-base"; }
+          if (title) title.innerText = "บันทึกข้อมูลลง Google Sheets สำเร็จครบถ้วน!";
+          if (subtext) subtext.innerText = `บันทึกข้อมูลสำเร็จครบทั้ง ${usersList.length} รายการ (Batch Write)`;
+          if (banner) banner.className = "rounded-2xl border border-emerald-200 bg-emerald-50 p-3.5 text-xs transition-all duration-300";
+          showNotification(`บันทึกข้อมูลผู้ใช้งานลง Google Sheets ครบทั้ง ${usersList.length} รายการเรียบร้อยแล้ว`, "success");
+          setTimeout(() => { if (banner) banner.classList.add("hidden"); }, 5000);
+        }
+      } catch (err) {
+        console.warn("saveUserRolesBatch failed or not supported by deployed GAS, falling back to sequential:", err);
+      }
+
+      // 2. Sequential Throttled Queue Fallback if batch was not supported or failed
+      if (!batchSuccess) {
+        if (subtext) subtext.innerText = "ระบบกำลังทยอยบันทึกทีละรายการอย่างปลอดภัย (Safe Sequential Queue)...";
+        let savedCount = 0;
+        let failedCount = 0;
+
+        for (let i = 0; i < usersList.length; i++) {
+          const user = usersList[i];
+          const currentNum = i + 1;
+          const pct = Math.round((currentNum / usersList.length) * 100);
+
+          if (bar) bar.style.width = `${pct}%`;
+          if (percent) percent.innerText = `${pct}%`;
+          if (countText) countText.innerText = `${currentNum} / ${usersList.length}`;
+          if (subtext) subtext.innerText = `กำลังบันทึก: ${user.email} (${currentNum} จาก ${usersList.length}) - กรุณาอย่าเพิ่งปิดหน้าต่าง...`;
+
+          let ok = false;
+          for (let attempt = 0; attempt < 3; attempt++) {
+            try {
+              const res = await callAPI("saveUserRole", { roleData: user }, true);
+              if (res && res.status === "success") {
+                ok = true;
+                break;
+              }
+            } catch (e) {
+              console.warn(`Retry ${attempt + 1} for ${user.email}:`, e);
+            }
+            await new Promise(r => setTimeout(r, 250 * (attempt + 1)));
+          }
+
+          if (ok) savedCount++;
+          else failedCount++;
+
+          // Pause between calls to respect Google Apps Script concurrent execution limits & lock acquisition
+          await new Promise(r => setTimeout(r, 120));
+        }
+
+        if (banner) {
+          if (failedCount === 0) {
+            banner.className = "rounded-2xl border border-emerald-200 bg-emerald-50 p-3.5 text-xs transition-all duration-300";
+            if (icon) { icon.innerText = "✅"; icon.className = "text-base"; }
+            if (title) title.innerText = "บันทึกข้อมูลลง Google Sheets สำเร็จครบถ้วน!";
+            if (subtext) subtext.innerText = `บันทึกข้อมูลสำเร็จครบทั้ง ${savedCount} รายการ`;
+            showNotification(`บันทึกข้อมูลผู้ใช้งานลง Google Sheets ครบทั้ง ${savedCount} รายการเรียบร้อยแล้ว`, "success");
+          } else {
+            banner.className = "rounded-2xl border border-amber-200 bg-amber-50 p-3.5 text-xs transition-all duration-300";
+            if (icon) { icon.innerText = "⚠️"; icon.className = "text-base"; }
+            if (title) title.innerText = "บันทึกข้อมูลบางส่วนเรียบร้อย";
+            if (subtext) subtext.innerText = `บันทึกสำเร็จ ${savedCount} รายการ, ติดขัด ${failedCount} รายการ (กดปุ่ม "ซิงค์ขึ้น Sheet" เพื่อบันทึกซ้ำได้)`;
+            showNotification(`บันทึกสำเร็จ ${savedCount} รายการ (ไม่สำเร็จ ${failedCount} รายการ)`, "warning");
+          }
+          setTimeout(() => { if (banner) banner.classList.add("hidden"); }, 7000);
+        }
+      }
+
+      if (syncBtn) {
+        syncBtn.disabled = false;
+        syncBtn.classList.remove("opacity-60", "cursor-not-allowed");
+      }
+      isSyncingRoles = false;
+    }
+
+    function triggerSyncAllRolesToSheet() {
+      if (!state.userRoles || state.userRoles.length === 0) {
+        return showNotification("ไม่มีรายชื่อผู้ใช้งานในระบบสำหรับซิงค์", "warning");
+      }
+      showNotification(`เริ่มทำการซิงค์รายชื่อผู้ใช้ทั้งหมด ${state.userRoles.length} รายการขึ้น Google Sheets...`, "info");
+      syncUserRolesToGoogleSheets(state.userRoles);
+    }
+
     function executeImportCsv() {
       if (!pendingImportUsers || pendingImportUsers.length === 0) {
         return showNotification("ไม่มีข้อมูลที่พร้อมนำเข้า", "warning");
       }
 
+      const usersToImport = [...pendingImportUsers];
       let count = 0;
-      pendingImportUsers.forEach(userObj => {
+      usersToImport.forEach(userObj => {
         const existingIdx = state.userRoles.findIndex(u => safeLower(u.email) === userObj.email.toLowerCase());
         if (existingIdx !== -1) {
           state.userRoles[existingIdx] = { ...state.userRoles[existingIdx], ...userObj };
         } else {
           state.userRoles.push(userObj);
         }
-        callAPI("saveUserRole", { roleData: userObj }, true);
         count++;
       });
 
@@ -6506,7 +6719,10 @@
       closeImportUserModal();
       renderDepartmentSelects();
       renderRolesTable();
-      showNotification(`นำเข้าข้อมูลผู้ใช้งานเข้าสู่ระบบสำเร็จทั้งหมด ${count} รายการ`, "success");
+      showNotification(`นำเข้าข้อมูลผู้ใช้งาน ${count} รายการ กำลังเริ่มบันทึกลง Google Sheets...`, "info");
+
+      // Start resilient sync to Google Sheets
+      syncUserRolesToGoogleSheets(usersToImport);
     }
     function openRoleModal(idx = -1) {
       document.getElementById("roleEditIndex").value = idx;
@@ -6834,7 +7050,11 @@
  */
 function doPost(e) {
   var lock = LockService.getScriptLock();
-  lock.tryLock(15000);
+  try {
+    lock.waitLock(30000);
+  } catch (lockErr) {
+    return jsonResponse({ status: "error", message: "ระบบกำลังทำงานอื่นอยู่ กรุณาลองใหม่อีกครั้ง (Lock timeout)" });
+  }
   try {
     var data = JSON.parse(e.postData ? e.postData.contents : "{}");
     var action = data.action;
@@ -6852,6 +7072,7 @@ function doPost(e) {
       case "updateTicketCategory": return handleUpdateTicketCategory(data);
       case "deleteTicketCategory": return handleDeleteTicketCategory(data);
       case "saveUserRole": return handleSaveUserRole(data);
+      case "saveUserRolesBatch": return handleSaveUserRolesBatch(data);
       case "deleteUserRole": return handleDeleteUserRole(data);
       case "createTicket": return handleCreateTicket(data);
       case "updateTicket": return handleUpdateTicket(data);
@@ -7016,17 +7237,28 @@ function handleGetInitialData() {
   var userRoles = [];
   if (rolesSheet) {
     var rData = rolesSheet.getDataRange().getValues();
-    for (var r = 1; r < rData.length; r++) {
-      if (rData[r][0]) {
-        userRoles.push({
-          email: String(rData[r][0]).trim(),
-          role: String(rData[r][1] || "user").trim(),
-          name: String(rData[r][2] || "").trim(),
-          password: String(rData[r][3] || "123456").trim(),
-          status: String(rData[r][4] || "active").trim(),
-          dept: String(rData[r][5] || "").trim(),
-          remark: String(rData[r][6] || "").trim()
-        });
+    if (rData.length > 1) {
+      var colMap = getUserRolesColumnMap(rData[0]);
+      for (var r = 1; r < rData.length; r++) {
+        var row = rData[r];
+        if (row[colMap.email]) {
+          var em = String(row[colMap.email]).trim();
+          var nm = colMap.name !== -1 ? String(row[colMap.name] || "").trim() : "";
+          var rl = colMap.role !== -1 ? String(row[colMap.role] || "user").trim() : "user";
+          var dp = colMap.dept !== -1 ? String(row[colMap.dept] || "").trim() : "";
+          var pw = colMap.password !== -1 ? String(row[colMap.password] || "123456").trim() : "123456";
+          var st = colMap.status !== -1 ? String(row[colMap.status] || "active").trim() : "active";
+          var rm = colMap.remark !== -1 ? String(row[colMap.remark] || "").trim() : "";
+          userRoles.push({
+            email: em,
+            role: rl || "user",
+            name: nm || em.split("@")[0],
+            password: pw || "123456",
+            status: st || "active",
+            dept: dp || "",
+            remark: rm || ""
+          });
+        }
       }
     }
   }
@@ -7456,38 +7688,159 @@ function handleUpdateItem(data) {
   return jsonResponse({ status: "success", message: "อัปเดตอุปกรณ์เรียบร้อย" });
 }
 
-// Req 2: UserRoles บันทึกรหัสผ่าน สถานะ และแผนก
+function getUserRolesColumnMap(headerRow) {
+  var map = { email: -1, name: -1, role: -1, dept: -1, password: -1, status: -1, remark: -1, updated_at: -1 };
+  if (!headerRow || headerRow.length === 0) return map;
+  for (var c = 0; c < headerRow.length; c++) {
+    var h = String(headerRow[c] || "").trim().toLowerCase();
+    if (map.email === -1 && (h.indexOf("email") !== -1 || h.indexOf("อีเมล") !== -1 || h.indexOf("username") !== -1 || h.indexOf("บัญชี") !== -1)) map.email = c;
+    else if (map.name === -1 && (h.indexOf("name") !== -1 || h.indexOf("ชื่อ") !== -1)) map.name = c;
+    else if (map.role === -1 && (h.indexOf("role") !== -1 || h.indexOf("สิทธิ์") !== -1 || h.indexOf("ระดับ") !== -1)) map.role = c;
+    else if (map.dept === -1 && (h.indexOf("dept") !== -1 || h.indexOf("department") !== -1 || h.indexOf("ฝ่าย") !== -1 || h.indexOf("แผนก") !== -1)) map.dept = c;
+    else if (map.password === -1 && (h.indexOf("pass") !== -1 || h.indexOf("pwd") !== -1 || h.indexOf("รหัส") !== -1)) map.password = c;
+    else if (map.status === -1 && (h.indexOf("status") !== -1 || h.indexOf("สถานะ") !== -1)) map.status = c;
+    else if (map.remark === -1 && (h.indexOf("remark") !== -1 || h.indexOf("note") !== -1 || h.indexOf("หมายเหตุ") !== -1)) map.remark = c;
+    else if (map.updated_at === -1 && (h.indexOf("updated") !== -1 || h.indexOf("date") !== -1 || h.indexOf("เวลา") !== -1 || h.indexOf("timestamp") !== -1)) map.updated_at = c;
+  }
+  if (map.email === -1) map.email = 0;
+  return map;
+}
+
+// UserRoles: บันทึกเดี่ยว (Single Save) รองรับหัวตารางอัตโนมัติ
 function handleSaveUserRole(data) {
   var ss = getSpreadsheet();
   var sheet = ss.getSheetByName("UserRoles");
-  if (!sheet) return jsonResponse({ status: "error", message: "UserRoles sheet not found" });
+  if (!sheet) {
+    sheet = ss.insertSheet("UserRoles");
+    sheet.appendRow(["email", "name", "role", "remark", "updated_at", "dept", "password", "status"]);
+  }
   var r = data.roleData || {};
   var email = String(r.email || "").trim().toLowerCase();
   if (!email) return jsonResponse({ status: "error", message: "No email provided" });
+
   var values = sheet.getDataRange().getValues();
+  if (values.length === 0) {
+    values = [["email", "name", "role", "remark", "updated_at", "dept", "password", "status"]];
+    sheet.appendRow(values[0]);
+  }
+  var colMap = getUserRolesColumnMap(values[0]);
+  var numCols = values[0].length;
+  var timestamp = Utilities.formatDate(new Date(), Session.getScriptTimeZone() || "GMT+7", "dd/MM/yyyy, HH:mm:ss");
+
   var foundRow = -1;
   for (var i = 1; i < values.length; i++) {
-    if (String(values[i][0]).trim().toLowerCase() === email) {
+    if (String(values[i][colMap.email] || "").trim().toLowerCase() === email) {
       foundRow = i + 1;
       break;
     }
   }
-  var rowData = [
-    email,
-    r.role || "user",
-    r.name || "",
-    r.password || "123456",
-    r.status || "active",
-    r.dept || "",
-    r.remark || ""
-  ];
+
   if (foundRow !== -1) {
-    sheet.getRange(foundRow, 1, 1, 7).setValues([rowData]);
+    var targetRow = values[foundRow - 1];
+    if (colMap.name !== -1 && r.name !== undefined) targetRow[colMap.name] = r.name;
+    if (colMap.role !== -1 && r.role !== undefined) targetRow[colMap.role] = r.role;
+    if (colMap.dept !== -1 && r.dept !== undefined) targetRow[colMap.dept] = r.dept;
+    if (colMap.password !== -1 && r.password !== undefined) targetRow[colMap.password] = r.password;
+    if (colMap.status !== -1 && r.status !== undefined) targetRow[colMap.status] = r.status;
+    if (colMap.remark !== -1 && r.remark !== undefined) targetRow[colMap.remark] = r.remark;
+    if (colMap.updated_at !== -1) targetRow[colMap.updated_at] = timestamp;
+    sheet.getRange(foundRow, 1, 1, numCols).setValues([targetRow]);
   } else {
-    sheet.appendRow(rowData);
+    var newRow = new Array(numCols);
+    for (var k = 0; k < numCols; k++) newRow[k] = "";
+    newRow[colMap.email] = email;
+    if (colMap.name !== -1) newRow[colMap.name] = r.name || "";
+    if (colMap.role !== -1) newRow[colMap.role] = r.role || "user";
+    if (colMap.dept !== -1) newRow[colMap.dept] = r.dept || "";
+    if (colMap.password !== -1) newRow[colMap.password] = r.password || "123456";
+    if (colMap.status !== -1) newRow[colMap.status] = r.status || "active";
+    if (colMap.remark !== -1) newRow[colMap.remark] = r.remark || "";
+    if (colMap.updated_at !== -1) newRow[colMap.updated_at] = timestamp;
+    sheet.appendRow(newRow);
   }
   SpreadsheetApp.flush();
   return jsonResponse({ status: "success", message: "User role saved" });
+}
+
+// UserRoles: บันทึกแบบชุดความเร็วสูง (Batch Save) บันทึก 170+ รายการในคำขอเดียว ไม่ติด Lock/Concurrency Limit
+function handleSaveUserRolesBatch(data) {
+  var ss = getSpreadsheet();
+  var sheet = ss.getSheetByName("UserRoles");
+  if (!sheet) {
+    sheet = ss.insertSheet("UserRoles");
+    sheet.appendRow(["email", "name", "role", "remark", "updated_at", "dept", "password", "status"]);
+  }
+  var list = data.rolesList || [];
+  if (!Array.isArray(list) || list.length === 0) {
+    return jsonResponse({ status: "success", count: 0, message: "No data to save" });
+  }
+
+  var values = sheet.getDataRange().getValues();
+  if (values.length === 0) {
+    values = [["email", "name", "role", "remark", "updated_at", "dept", "password", "status"]];
+    sheet.appendRow(values[0]);
+  }
+  var colMap = getUserRolesColumnMap(values[0]);
+  var numCols = values[0].length;
+  var timestamp = Utilities.formatDate(new Date(), Session.getScriptTimeZone() || "GMT+7", "dd/MM/yyyy, HH:mm:ss");
+
+  // Lookup existing row indices in memory by email
+  var emailRowMap = {};
+  for (var r = 1; r < values.length; r++) {
+    var em = String(values[r][colMap.email] || "").trim().toLowerCase();
+    if (em) {
+      emailRowMap[em] = r;
+    }
+  }
+
+  var updatedCount = 0;
+  var addedCount = 0;
+
+  list.forEach(function(u) {
+    if (!u) return;
+    var em = String(u.email || "").trim().toLowerCase();
+    if (!em) return;
+
+    if (emailRowMap.hasOwnProperty(em)) {
+      var rIdx = emailRowMap[em];
+      if (colMap.name !== -1 && u.name !== undefined) values[rIdx][colMap.name] = u.name;
+      if (colMap.role !== -1 && u.role !== undefined) values[rIdx][colMap.role] = u.role;
+      if (colMap.dept !== -1 && u.dept !== undefined) values[rIdx][colMap.dept] = u.dept;
+      if (colMap.password !== -1 && u.password !== undefined) values[rIdx][colMap.password] = u.password;
+      if (colMap.status !== -1 && u.status !== undefined) values[rIdx][colMap.status] = u.status;
+      if (colMap.remark !== -1 && u.remark !== undefined) values[rIdx][colMap.remark] = u.remark;
+      if (colMap.updated_at !== -1) values[rIdx][colMap.updated_at] = timestamp;
+      updatedCount++;
+    } else {
+      var newRow = new Array(numCols);
+      for (var k = 0; k < numCols; k++) newRow[k] = "";
+      newRow[colMap.email] = em;
+      if (colMap.name !== -1) newRow[colMap.name] = u.name || "";
+      if (colMap.role !== -1) newRow[colMap.role] = u.role || "user";
+      if (colMap.dept !== -1) newRow[colMap.dept] = u.dept || "";
+      if (colMap.password !== -1) newRow[colMap.password] = u.password || "123456";
+      if (colMap.status !== -1) newRow[colMap.status] = u.status || "active";
+      if (colMap.remark !== -1) newRow[colMap.remark] = u.remark || "";
+      if (colMap.updated_at !== -1) newRow[colMap.updated_at] = timestamp;
+      emailRowMap[em] = values.length;
+      values.push(newRow);
+      addedCount++;
+    }
+  });
+
+  if (values.length > 1) {
+    sheet.getRange(1, 1, values.length, numCols).setValues(values);
+  }
+  SpreadsheetApp.flush();
+
+  return jsonResponse({
+    status: "success",
+    count: list.length,
+    added: addedCount,
+    updated: updatedCount,
+    totalInSheet: values.length - 1,
+    message: "บันทึกข้อมูลผู้ใช้งานจำนวน " + list.length + " รายการลง Google Sheets เรียบร้อยแล้ว (เพิ่ม " + addedCount + ", อัปเดต " + updatedCount + ")"
+  });
 }
 
 function handleDeleteUserRole(data) {
@@ -7496,8 +7849,10 @@ function handleDeleteUserRole(data) {
   if (!sheet) return jsonResponse({ status: "success" });
   var email = String(data.email || "").trim().toLowerCase();
   var values = sheet.getDataRange().getValues();
+  if (values.length <= 1) return jsonResponse({ status: "success" });
+  var colMap = getUserRolesColumnMap(values[0]);
   for (var i = 1; i < values.length; i++) {
-    if (String(values[i][0]).trim().toLowerCase() === email) {
+    if (String(values[i][colMap.email] || "").trim().toLowerCase() === email) {
       sheet.deleteRow(i + 1);
       break;
     }
@@ -7648,6 +8003,38 @@ function handleDeleteUserRole(data) {
               resolve({ status: "success", message: "บันทึกสิทธิ์ในระบบจำลองเรียบร้อย" });
               break;
             }
+            case "saveUserRolesBatch": {
+              const list = data.rolesList || [];
+              let added = 0, updated = 0;
+              list.forEach(u => {
+                if (!u || !u.email) return;
+                const idx = state.userRoles.findIndex(x => safeLower(x.email) === safeLower(u.email));
+                if (idx !== -1) {
+                  state.userRoles[idx] = { ...state.userRoles[idx], ...u };
+                  updated++;
+                } else {
+                  state.userRoles.push({
+                    email: u.email,
+                    name: u.name || u.email.split("@")[0],
+                    dept: u.dept || "",
+                    role: u.role || "user",
+                    password: u.password || "123456",
+                    status: u.status || "active",
+                    remark: u.remark || ""
+                  });
+                  added++;
+                }
+              });
+              localStorage.setItem(STORAGE_KEY_ROLES, JSON.stringify(state.userRoles));
+              resolve({
+                status: "success",
+                count: list.length,
+                added: added,
+                updated: updated,
+                message: "บันทึกข้อมูลผู้ใช้งานจำนวน " + list.length + " รายการเรียบร้อย (จำลอง)"
+              });
+              break;
+            }
             case "deleteUserRole": {
               resolve({ status: "success", message: "ลบสิทธิ์ในระบบจำลองเรียบร้อย" });
               break;
@@ -7731,7 +8118,16 @@ function handleDeleteUserRole(data) {
           }
           if (Array.isArray(res.departments) && res.departments.length > 0) state.departments = res.departments;
           if (Array.isArray(res.userRoles) && res.userRoles.length > 0) {
-            state.userRoles = mergeWithBuiltinRoles(res.userRoles);
+            const remoteMerged = mergeWithBuiltinRoles(res.userRoles);
+            const currentLocal = state.userRoles || [];
+            currentLocal.forEach(loc => {
+              if (!loc || !loc.email) return;
+              const exists = remoteMerged.find(r => safeLower(r.email) === safeLower(loc.email));
+              if (!exists) {
+                remoteMerged.push(loc);
+              }
+            });
+            state.userRoles = remoteMerged;
             localStorage.setItem(STORAGE_KEY_ROLES, JSON.stringify(state.userRoles));
           }
 

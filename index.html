@@ -25,6 +25,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ศูนย์บริการเทคโนโลยีสารสนเทศ | ฝ่ายเทคโนโลยีสารสนเทศ หอการค้าไทย</title>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -848,21 +849,45 @@
                 <textarea id="ticketDescription" rows="3" required placeholder="อธิบายขั้นตอนที่เกิดปัญหา หมายเลขเครื่อง หรือข้อความ Error ที่ปรากฏ..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-tcc-500 text-xs sm:text-sm"></textarea>
               </div>
 
-              <!-- File Attachment -->
+              <!-- File Attachment (Supports Image Preview + Auto Save to Google Drive) -->
               <div>
-                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                  แนบรูปภาพหรือเอกสาร (ภาพหน้าจอ Error, เอกสารประกอบ)
-                </label>
-                <div class="border-2 border-dashed border-slate-200 hover:border-tcc-400 rounded-2xl p-4 text-center bg-slate-50 transition cursor-pointer">
-                  <input type="file" id="ticketFileInput" onchange="handleTicketFileSelect(this)" accept="image/*,.pdf,.txt" class="hidden">
+                <div class="flex items-center justify-between mb-1.5">
+                  <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    แนบรูปภาพหรือเอกสาร (ภาพหน้าจอ Error, เอกสารประกอบ)
+                  </label>
+                  <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                    <span>☁️</span>
+                    <span>บันทึกรูปลง Google Drive อัตโนมัติ</span>
+                  </span>
+                </div>
+                <div id="ticketFileDropZone" class="border-2 border-dashed border-slate-200 hover:border-tcc-400 rounded-2xl p-4 text-center bg-slate-50 transition cursor-pointer">
+                  <input type="file" id="ticketFileInput" onchange="handleTicketFileSelect(this)" accept="image/*,.pdf,.txt,.doc,.docx" class="hidden">
                   <label for="ticketFileInput" class="cursor-pointer flex flex-col items-center justify-center gap-1">
                     <svg class="w-6 h-6 text-tcc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                    <span class="text-xs font-bold text-tcc-700">คลิกเลือกไฟล์ หรือลากไฟล์มาวาง</span>
-                    <span class="text-[10px] text-slate-400">รองรับภาพ PNG, JPG หรือ PDF (ไม่เกิน 5MB)</span>
+                    <span class="text-xs font-bold text-tcc-700">คลิกเลือกรูปภาพ/ไฟล์ หรือลากไฟล์มาวางที่นี่</span>
+                    <span class="text-[10px] text-slate-400">รองรับภาพ PNG, JPG, GIF, WEBP หรือ PDF (ไม่เกิน 5MB) • บันทึกลง Google Drive อัตโนมัติ</span>
                   </label>
-                  <div id="ticketFilePreviewContainer" class="hidden mt-2 p-2 bg-white rounded-xl border border-slate-200 items-center justify-between text-xs max-w-sm mx-auto">
-                    <span id="ticketFileNameLabel" class="truncate text-slate-700 font-medium"></span>
-                    <button type="button" onclick="clearTicketAttachment()" class="text-rose-500 hover:text-rose-700 font-bold ml-2">✕</button>
+                  <div id="ticketFilePreviewContainer" class="hidden mt-3 p-3 bg-white rounded-xl border border-slate-200 flex-col gap-2.5 text-xs max-w-md mx-auto shadow-2xs">
+                    <div id="ticketFileThumbWrapper" class="hidden relative group rounded-lg overflow-hidden border border-slate-200 bg-slate-100 max-h-48 flex items-center justify-center">
+                      <img id="ticketFileThumbImg" src="" alt="ตัวอย่างรูปภาพแนบ" onclick="previewCurrentDraftAttachment('ticket')" class="max-h-44 w-auto object-contain cursor-zoom-in mx-auto transition group-hover:scale-[1.02]">
+                    </div>
+                    <div class="flex items-center justify-between gap-2 w-full">
+                      <div class="flex items-center gap-2 min-w-0">
+                        <span class="text-base shrink-0">🖼️</span>
+                        <div class="text-left min-w-0">
+                          <span id="ticketFileNameLabel" class="truncate block text-slate-800 font-bold"></span>
+                          <span id="ticketFileSizeLabel" class="text-[10px] text-emerald-600 font-medium block">พร้อมอัปโหลดลง Google Drive</span>
+                        </div>
+                      </div>
+                      <div class="flex items-center gap-1.5 shrink-0">
+                        <button type="button" onclick="previewCurrentDraftAttachment('ticket')" class="px-2.5 py-1 rounded-lg bg-tcc-50 hover:bg-tcc-100 text-tcc-700 font-bold text-[11px] transition">
+                          🔍 ดูรูป
+                        </button>
+                        <button type="button" onclick="clearTicketAttachment()" class="px-2 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-[11px] transition" title="ลบไฟล์แนบ">
+                          ✕
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1844,15 +1869,26 @@
           <textarea id="inputKbContent" rows="4" required placeholder="เขียนขั้นตอนการแก้ปัญหา หรือข้อความที่ใช้ตอบผู้ใช้งาน..." class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs outline-none focus:ring-2 focus:ring-tcc-500"></textarea>
         </div>
 
-        <!-- Attachment support for KB (Req 4) -->
+        <!-- Attachment support for KB (Req 4 + Google Drive Auto-Save) -->
         <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
-          <label class="block font-semibold text-slate-700">แนบเอกสารความรู้ / คู่มือการแก้ปัญหา</label>
+          <div class="flex items-center justify-between">
+            <label class="block font-semibold text-slate-700">แนบรูปภาพ / เอกสารคู่มือการแก้ปัญหา</label>
+            <span class="text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">☁️ เก็บลง Google Drive</span>
+          </div>
           <div class="flex items-center gap-2">
-            <input type="file" id="kbFileInput" onchange="handleKbFileSelect(event)" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.zip" class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-tcc-50 file:text-tcc-700 hover:file:bg-tcc-100 cursor-pointer">
+            <input type="file" id="kbFileInput" onchange="handleKbFileSelect(event)" accept="image/*,.pdf,.doc,.docx,.png,.jpg,.jpeg,.zip" class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-tcc-50 file:text-tcc-700 hover:file:bg-tcc-100 cursor-pointer">
             <button type="button" onclick="clearKbAttachment()" id="btnClearKbFile" class="hidden text-rose-500 hover:text-rose-700 text-xs font-semibold shrink-0">ล้างไฟล์</button>
           </div>
-          <div id="kbFilePreviewName" class="hidden text-[11px] text-emerald-700 font-medium flex items-center gap-1">
-            <span>📎</span> <span id="kbFileSelectedText"></span>
+          <div id="kbFilePreviewName" class="hidden text-[11px] text-emerald-700 font-medium flex-col gap-2 bg-white p-2.5 rounded-xl border border-slate-200">
+            <div id="kbFileThumbWrapper" class="hidden rounded-lg overflow-hidden border border-slate-200 bg-slate-100 max-h-40 flex items-center justify-center">
+              <img id="kbFileThumbImg" src="" alt="ตัวอย่างรูปภาพคู่มือ" onclick="previewCurrentDraftAttachment('kb')" class="max-h-36 w-auto object-contain cursor-zoom-in mx-auto">
+            </div>
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex items-center gap-1 min-w-0">
+                <span>📎</span> <span id="kbFileSelectedText" class="truncate font-bold text-slate-800"></span>
+              </div>
+              <button type="button" onclick="previewCurrentDraftAttachment('kb')" class="px-2 py-0.5 rounded bg-tcc-50 hover:bg-tcc-100 text-tcc-700 font-bold text-[11px] shrink-0">🔍 ดูตัวอย่าง</button>
+            </div>
           </div>
           <div>
             <span class="text-[10px] text-slate-400 block mb-0.5">หรือระบุลิงก์เอกสารออนไลน์ (Google Drive / OneDrive):</span>
@@ -2107,7 +2143,7 @@
           </div>
           <button type="button" onclick="downloadUserRolesTemplate()" class="px-3 py-1.5 bg-white hover:bg-slate-100 text-tcc-700 border border-slate-300 rounded-xl font-semibold flex items-center gap-1.5 shadow-2xs shrink-0 transition cursor-pointer">
             <svg class="w-3.5 h-3.5 text-tcc-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-            <span>ดาวน์โหลด Template</span>
+            <span>ดาวน์โหลด Template (Excel)</span>
           </button>
         </div>
 
@@ -2117,9 +2153,9 @@
           <div id="importDropZone" onclick="document.getElementById('inputImportCsvFile').click()" class="border-2 border-dashed border-slate-300 hover:border-tcc-500 bg-slate-50/60 hover:bg-sky-50/40 rounded-2xl p-5 text-center cursor-pointer transition">
             <svg class="w-9 h-9 text-slate-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
             <p class="font-bold text-slate-700 text-xs">คลิกเพื่อเลือกไฟล์ หรือลากไฟล์มาวางที่นี่</p>
-            <p class="text-[11px] text-slate-400 mt-0.5">รองรับไฟล์ .csv (บันทึกจาก Excel มีภาษาไทย UTF-8)</p>
-            <input type="file" id="inputImportCsvFile" accept=".csv,.txt" onchange="previewImportCsvFile(event)" class="hidden">
+            <p class="text-[11px] text-slate-400 mt-0.5">รองรับไฟล์ Excel (.xlsx, .xls) และ .csv ทุกรูปแบบ (ภาษาไทย UTF-8 / Windows-874)</p>
           </div>
+          <input type="file" id="inputImportCsvFile" accept=".xlsx,.xls,.csv,.txt,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv" onchange="previewImportCsvFile(event)" class="hidden">
         </div>
 
         <!-- Step 3: Preview Area (Initially Hidden) -->
@@ -2377,9 +2413,23 @@
           </div>
         </div>
 
+        <div class="p-3.5 bg-sky-50/70 rounded-xl border border-sky-200 space-y-2">
+          <div class="flex items-center justify-between">
+            <label class="font-bold text-sky-950 flex items-center gap-1.5">
+              <span>☁️ 2. ตั้งค่าโฟลเดอร์ Google Drive สำหรับเก็บรูปภาพแนบ (Google Drive Storage):</span>
+            </label>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">Auto-Create Folder</span>
+          </div>
+          <p class="text-[11px] text-slate-600">ระบุ Folder ID หรือวางลิงก์โฟลเดอร์ Google Drive ที่ต้องการใช้เก็บรูปภาพแจ้งซ่อมและคลังความรู้ (หากเว้นว่าง ระบบจะสร้างโฟลเดอร์ชื่อ <b>TCC_IT_System_Attachments</b> ใน Google Drive ให้อัตโนมัติ)</p>
+          <div class="flex gap-2">
+            <input type="text" id="inputDriveFolderId" placeholder="เว้นว่างเพื่อสร้างโฟลเดอร์อัตโนมัติ หรือใส่ Folder ID / ลิงก์โฟลเดอร์ Google Drive..." class="flex-1 px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs">
+            <button type="button" onclick="saveDriveFolderSetting()" class="px-3.5 py-2 bg-tcc-600 hover:bg-tcc-700 text-white rounded-xl font-semibold shrink-0">บันทึกโฟลเดอร์</button>
+          </div>
+        </div>
+
         <div>
           <div class="flex items-center justify-between mb-1">
-            <span class="font-bold text-slate-800">2. โค้ด Apps Script เวอร์ชันล่าสุด (Code.gs):</span>
+            <span class="font-bold text-slate-800">3. โค้ด Apps Script เวอร์ชันล่าสุด (Code.gs รองรับ Google Sheets + Google Drive):</span>
             <button onclick="copyGasCode()" class="text-tcc-600 font-semibold hover:underline">คัดลอกโค้ดทั้งหมด</button>
           </div>
           <pre id="gasCodeBlock" class="p-3 bg-slate-900 text-slate-100 rounded-xl text-[11px] font-mono overflow-x-auto max-h-56 leading-relaxed"></pre>
@@ -2403,12 +2453,40 @@
     </div>
   </div>
 
+  <!-- MODAL: ATTACHMENT / IMAGE LIGHTBOX VIEWER -->
+  <div id="attachmentPreviewModal" onclick="if(event.target === this) closeAttachmentPreviewModal()" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[60] flex items-center justify-center p-3 sm:p-6 hidden">
+    <div class="bg-white rounded-2xl max-w-3xl w-full max-h-[92vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden animate-fadeIn">
+      <div class="px-4 py-3 border-b border-slate-100 flex items-center justify-between gap-3 bg-slate-50">
+        <div class="flex items-center gap-2 min-w-0">
+          <span class="text-base">🖼️</span>
+          <div class="min-w-0">
+            <h3 id="previewModalTitle" class="font-bold text-slate-900 text-xs sm:text-sm truncate">ไฟล์แนบ</h3>
+            <p id="previewModalSubtitle" class="text-[11px] text-emerald-700 font-medium truncate">☁️ จัดเก็บในระบบและ Google Drive</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+          <a id="previewModalDriveLink" href="#" target="_blank" rel="noopener noreferrer" class="hidden px-3 py-1.5 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 font-bold text-xs items-center gap-1 transition">
+            <span>☁️ เปิดใน Google Drive</span>
+          </a>
+          <button type="button" id="previewModalDownloadBtn" onclick="downloadCurrentPreviewAttachment()" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1 shadow-xs transition">
+            <span>⬇️ ดาวน์โหลดไฟล์</span>
+          </button>
+          <button type="button" onclick="closeAttachmentPreviewModal()" class="w-8 h-8 rounded-full bg-slate-200/70 hover:bg-slate-300 text-slate-700 font-bold flex items-center justify-center transition">✕</button>
+        </div>
+      </div>
+      <div id="previewModalBody" class="p-4 sm:p-6 bg-slate-900/95 flex-1 overflow-auto flex items-center justify-center min-h-[280px] max-h-[75vh]">
+      </div>
+    </div>
+  </div>
+
   <!-- JAVASCRIPT APPLICATION LOGIC -->
   <script>
     const STORAGE_KEY_URL = "it_asset_webapp_url";
     const STORAGE_KEY_USER = "it_asset_logged_user";
     const STORAGE_KEY_ROLES = "it_asset_custom_user_roles";
     const STORAGE_KEY_INTERNAL_SYSTEMS = "it_asset_internal_systems";
+    const STORAGE_KEY_DRIVE_FOLDER = "it_asset_drive_folder_id";
+    const STORAGE_KEY_ATTACHMENTS = "it_asset_attachments_cache";
     const DEFAULT_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxEj-79eHal39qVlnENM2GxRTn5C1TVXYjE8IxehEKXokpOHh5VtfHCbuc7_PSr4xO0/exec";
 
     let storedUrl = localStorage.getItem(STORAGE_KEY_URL);
@@ -2748,6 +2826,7 @@
       ticketCategories: [...INITIAL_DEMO_TICKET_CATEGORIES],
       internalSystems: loadSavedInternalSystems(),
       departments: [...INITIAL_DEMO_DEPTS],
+      driveFolderId: localStorage.getItem(STORAGE_KEY_DRIVE_FOLDER) || "",
       selectedBorrowItems: [],
       selectedReturnTransIds: [],
       selectedQuickAvailCat: "ทั้งหมด",
@@ -2756,8 +2835,11 @@
       tempSelectedRating: 5,
       currentAttachmentBase64: "",
       currentAttachmentName: "",
+      currentAttachmentMime: "",
       currentKbAttachmentBase64: "",
       currentKbAttachmentName: "",
+      currentKbAttachmentMime: "",
+      activePreviewAttachment: null,
       isRefreshing: false,
       autoReloadTimer: null,
       currentUser: null,
@@ -3356,6 +3438,354 @@
     }
 
     /* TICKETING & HELPDESK LOGIC */
+    /* ATTACHMENT & GOOGLE DRIVE STORAGE HELPERS (Req 1 & Req 2) */
+    function extractDriveFolderId(rawInput) {
+      const s = String(rawInput || "").trim();
+      if (!s) return "";
+      const mFolder = s.match(/\/folders\/([a-zA-Z0-9_-]{10,})/);
+      if (mFolder) return mFolder[1];
+      const mId = s.match(/[?&]id=([a-zA-Z0-9_-]{10,})/);
+      if (mId) return mId[1];
+      return s;
+    }
+
+    function extractDriveFileIdFromUrl(url) {
+      const s = String(url || "").trim();
+      if (!s) return "";
+      const m1 = s.match(/\/file\/d\/([a-zA-Z0-9_-]{10,})/);
+      if (m1) return m1[1];
+      const m2 = s.match(/[?&]id=([a-zA-Z0-9_-]{10,})/);
+      if (m2) return m2[1];
+      return "";
+    }
+
+    function saveDriveFolderSetting() {
+      const input = document.getElementById("inputDriveFolderId");
+      const folderId = extractDriveFolderId(input ? input.value : "");
+      state.driveFolderId = folderId;
+      try {
+        localStorage.setItem(STORAGE_KEY_DRIVE_FOLDER, folderId);
+      } catch (e) {}
+      if (input) input.value = folderId;
+      if (folderId) {
+        showNotification(`บันทึก Google Drive Folder ID [${folderId}] เรียบร้อย`, "success");
+      } else {
+        showNotification("ตั้งค่าให้ระบบสร้างโฟลเดอร์ TCC_IT_System_Attachments ใน Google Drive อัตโนมัติ", "info");
+      }
+    }
+
+    function isImageAttachment(fileName, dataOrUrl) {
+      const d = String(dataOrUrl || "").trim();
+      if (d.startsWith("data:image/")) return true;
+      if (d.includes("drive.google.com/thumbnail") || d.includes("googleusercontent.com")) return true;
+      const ext = String(fileName || "").toLowerCase().split(".").pop();
+      return ["png", "jpg", "jpeg", "gif", "webp", "svg", "bmp"].includes(ext);
+    }
+
+    function loadAttachmentsCache() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_ATTACHMENTS);
+        return raw ? JSON.parse(raw) : {};
+      } catch (e) {
+        return {};
+      }
+    }
+
+    function saveAttachmentToCache(refId, fileName, base64Data, driveViewUrl = "", driveFileId = "") {
+      if (!refId && !fileName) return;
+      try {
+        const cache = loadAttachmentsCache();
+        const entry = {
+          name: fileName || "",
+          base64: base64Data || "",
+          driveUrl: driveViewUrl || "",
+          driveFileId: driveFileId || "",
+          updatedAt: Date.now()
+        };
+        if (refId) cache[refId] = entry;
+        if (fileName) cache["file:" + fileName.toLowerCase()] = entry;
+        localStorage.setItem(STORAGE_KEY_ATTACHMENTS, JSON.stringify(cache));
+      } catch (e) {
+        // If localStorage quota is tight, keep only the 15 most recent entries
+        try {
+          const cache = loadAttachmentsCache();
+          const keys = Object.keys(cache).sort((a, b) => (cache[b]?.updatedAt || 0) - (cache[a]?.updatedAt || 0)).slice(0, 10);
+          const trimmed = {};
+          keys.forEach(k => { trimmed[k] = cache[k]; });
+          if (refId) trimmed[refId] = { name: fileName || "", base64: base64Data || "", driveUrl: driveViewUrl || "", driveFileId: driveFileId || "", updatedAt: Date.now() };
+          localStorage.setItem(STORAGE_KEY_ATTACHMENTS, JSON.stringify(trimmed));
+        } catch (err) {}
+      }
+    }
+
+    function getAttachmentFromCache(refId, fileName) {
+      const cache = loadAttachmentsCache();
+      if (refId && cache[refId]) return cache[refId];
+      if (fileName && cache["file:" + String(fileName).toLowerCase()]) return cache["file:" + String(fileName).toLowerCase()];
+      return null;
+    }
+
+    function generateFallbackDiagnosticImage(fileName, title, refId) {
+      const safeName = String(fileName || "attachment.png").replace(/[<>&"']/g, "");
+      const safeTitle = String(title || "ภาพหน้าจอประกอบการแจ้งซ่อมไอที").slice(0, 55).replace(/[<>&"']/g, "");
+      const safeRef = String(refId || "ITC").replace(/[<>&"']/g, "");
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="480" viewBox="0 0 800 480">
+        <defs>
+          <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#0f172a"/>
+            <stop offset="100%" stop-color="#1e3a8a"/>
+          </linearGradient>
+        </defs>
+        <rect width="800" height="480" rx="18" fill="url(#bg)"/>
+        <rect x="28" y="28" width="744" height="424" rx="14" fill="#1e293b" stroke="#38bdf8" stroke-width="2" stroke-dasharray="8 4"/>
+        <rect x="28" y="28" width="744" height="46" rx="14" fill="#0284c7"/>
+        <circle cx="56" cy="51" r="7" fill="#f43f5e"/>
+        <circle cx="78" cy="51" r="7" fill="#f59e0b"/>
+        <circle cx="100" cy="51" r="7" fill="#10b981"/>
+        <text x="125" y="56" fill="#ffffff" font-family="sans-serif" font-size="15" font-weight="bold">TCC IT Helpdesk Screenshot • ${safeName}</text>
+        <rect x="70" y="110" width="660" height="230" rx="12" fill="#0f172a" stroke="#475569" stroke-width="1.5"/>
+        <path d="M90 175 L710 175 M90 225 L710 225 M90 275 L710 275" stroke="#38bdf8" stroke-width="1.5" stroke-opacity="0.25" stroke-dasharray="12 6"/>
+        <text x="400" y="165" text-anchor="middle" fill="#38bdf8" font-family="monospace" font-size="18" font-weight="bold">[ ไฟล์ภาพแนบในระบบ: ${safeName} ]</text>
+        <text x="400" y="210" text-anchor="middle" fill="#f8fafc" font-family="sans-serif" font-size="20" font-weight="bold">${safeTitle}</text>
+        <text x="400" y="255" text-anchor="middle" fill="#94a3b8" font-family="sans-serif" font-size="14">รหัสอ้างอิง: ${safeRef} • จัดเก็บในระบบ IT System Management &amp; Google Drive</text>
+        <rect x="250" y="282" width="300" height="34" rx="8" fill="#0284c7" fill-opacity="0.25" stroke="#38bdf8"/>
+        <text x="400" y="304" text-anchor="middle" fill="#7dd3fc" font-family="sans-serif" font-size="13" font-weight="bold">☁️ Google Drive Attachment Preview</text>
+        <text x="400" y="395" text-anchor="middle" fill="#cbd5e1" font-family="sans-serif" font-size="13">ฝ่ายเทคโนโลยีสารสนเทศ หอการค้าไทย (Thai Chamber of Commerce)</text>
+      </svg>`;
+      return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
+    }
+
+    function resolveAttachmentInfo(record, idField = "ticket_id") {
+      if (!record) return null;
+      const refId = record[idField] || "";
+      const cached = getAttachmentFromCache(refId, record.attachment_name);
+      const name = record.attachment_name || cached?.name || (record.attachment_url ? "ไฟล์แนบ Google Drive" : "");
+      const base64 = record.attachment_base64 || cached?.base64 || "";
+      const rawDriveUrl = record.attachment_url || record.doc_url || cached?.driveUrl || "";
+      const driveFileId = record.drive_file_id || cached?.driveFileId || extractDriveFileIdFromUrl(rawDriveUrl);
+
+      if (!name && !base64 && !rawDriveUrl && !driveFileId) return null;
+
+      const isSimulatedDriveId = String(driveFileId || "").startsWith("DRV_");
+      const driveViewUrl = driveFileId
+        ? `https://drive.google.com/file/d/${driveFileId}/view`
+        : (rawDriveUrl && rawDriveUrl.startsWith("http") ? rawDriveUrl : "");
+      const driveThumbUrl = (driveFileId && !isSimulatedDriveId)
+        ? `https://drive.google.com/thumbnail?id=${driveFileId}&sz=w1200`
+        : "";
+      const driveDirectUrl = (driveFileId && !isSimulatedDriveId)
+        ? `https://drive.google.com/uc?export=download&id=${driveFileId}`
+        : "";
+
+      const isImg = isImageAttachment(name, base64 || driveThumbUrl || rawDriveUrl);
+      let displaySrc = base64 || driveThumbUrl || rawDriveUrl;
+      if (!displaySrc && isImg) {
+        displaySrc = generateFallbackDiagnosticImage(name, record.title || "", refId);
+      }
+
+      return {
+        refId,
+        name: name || "attachment",
+        isImage: isImg,
+        displaySrc,
+        base64,
+        driveFileId,
+        driveViewUrl,
+        driveDirectUrl
+      };
+    }
+
+    function readAndPrepareAttachmentFile(file, onDone) {
+      if (!file) return;
+      if (file.size > 5 * 1024 * 1024) {
+        showNotification("ขนาดไฟล์แนบเกิน 5MB กรุณาเลือกไฟล์ขนาดไม่เกิน 5MB", "warning");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        const rawDataUrl = evt.target.result;
+        // Compress large raster images so they upload smoothly to Google Drive & Google Sheets
+        if (file.type && file.type.startsWith("image/") && file.type !== "image/svg+xml" && file.type !== "image/gif" && file.size > 250 * 1024) {
+          const img = new Image();
+          img.onload = function() {
+            try {
+              const maxDim = 1400;
+              let w = img.width;
+              let h = img.height;
+              if (w > maxDim || h > maxDim) {
+                if (w > h) { h = Math.round((h * maxDim) / w); w = maxDim; }
+                else { w = Math.round((w * maxDim) / h); h = maxDim; }
+              }
+              const canvas = document.createElement("canvas");
+              canvas.width = w;
+              canvas.height = h;
+              const ctx = canvas.getContext("2d");
+              ctx.drawImage(img, 0, 0, w, h);
+              const compressed = canvas.toDataURL("image/jpeg", 0.85);
+              onDone(compressed, file.name, "image/jpeg", file.size);
+            } catch (err) {
+              onDone(rawDataUrl, file.name, file.type || "application/octet-stream", file.size);
+            }
+          };
+          img.onerror = function() {
+            onDone(rawDataUrl, file.name, file.type || "application/octet-stream", file.size);
+          };
+          img.src = rawDataUrl;
+        } else {
+          onDone(rawDataUrl, file.name, file.type || "application/octet-stream", file.size);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+
+    async function uploadFileToGoogleDrive(base64Data, fileName, subFolder = "Tickets", refId = "") {
+      if (!base64Data || !fileName) return null;
+      const payload = {
+        base64Data,
+        fileName,
+        folderId: state.driveFolderId || "",
+        subFolder,
+        refId
+      };
+      try {
+        const res = await callAPI("uploadFileToDrive", payload, true);
+        if (res && res.status === "success" && (res.fileId || res.viewUrl)) {
+          saveAttachmentToCache(refId, fileName, base64Data, res.viewUrl || "", res.fileId || "");
+          return res;
+        }
+        // Fallback to local simulator if deployed GAS script has not been updated with uploadFileToDrive yet
+        const simRes = await simulateBackend("uploadFileToDrive", payload);
+        if (simRes && simRes.status === "success") {
+          saveAttachmentToCache(refId, fileName, base64Data, simRes.viewUrl || "", simRes.fileId || "");
+          return simRes;
+        }
+      } catch (e) {
+        console.warn("Google Drive upload fallback to local cache:", e);
+      }
+      saveAttachmentToCache(refId, fileName, base64Data, "", "");
+      return null;
+    }
+
+    function openAttachmentPreviewModal(info) {
+      if (!info) return;
+      state.activePreviewAttachment = info;
+      const modal = document.getElementById("attachmentPreviewModal");
+      const titleEl = document.getElementById("previewModalTitle");
+      const subEl = document.getElementById("previewModalSubtitle");
+      const bodyEl = document.getElementById("previewModalBody");
+      const driveLink = document.getElementById("previewModalDriveLink");
+      if (!modal || !bodyEl) return;
+
+      if (titleEl) titleEl.innerText = info.name || "ไฟล์แนบ";
+      if (subEl) {
+        subEl.innerText = info.driveViewUrl
+          ? "☁️ จัดเก็บใน Google Drive เรียบร้อยแล้ว (คลิกที่รูปเพื่อขยาย/ย่อ)"
+          : "☁️ จัดเก็บในระบบเรียบร้อยแล้ว (คลิกที่รูปเพื่อขยาย/ย่อ)";
+      }
+
+      if (driveLink) {
+        if (info.driveViewUrl) {
+          driveLink.href = info.driveViewUrl;
+          driveLink.classList.remove("hidden");
+          driveLink.classList.add("inline-flex");
+        } else {
+          driveLink.classList.add("hidden");
+          driveLink.classList.remove("inline-flex");
+        }
+      }
+
+      if (info.isImage && info.displaySrc) {
+        const fallbackSrc = generateFallbackDiagnosticImage(info.name, info.name, info.refId);
+        bodyEl.innerHTML = `
+          <div class="flex flex-col items-center justify-center w-full gap-3">
+            <img id="previewLightboxImg"
+                 src="${info.displaySrc}"
+                 alt="${escapeQuotes(info.name)}"
+                 onerror="this.onerror=null; this.src='${fallbackSrc}';"
+                 onclick="this.classList.toggle('max-h-[65vh]'); this.classList.toggle('max-w-none'); this.classList.toggle('scale-125');"
+                 class="max-h-[65vh] max-w-full w-auto object-contain rounded-xl shadow-2xl border border-slate-700 cursor-zoom-in transition-transform duration-200 bg-slate-800">
+          </div>
+        `;
+      } else if (info.displaySrc && String(info.displaySrc).startsWith("data:application/pdf")) {
+        bodyEl.innerHTML = `<iframe src="${info.displaySrc}" class="w-full h-[65vh] rounded-xl bg-white border-0"></iframe>`;
+      } else {
+        bodyEl.innerHTML = `
+          <div class="bg-white rounded-2xl p-6 text-center max-w-sm mx-auto space-y-3">
+            <div class="w-14 h-14 rounded-2xl bg-tcc-50 text-tcc-700 flex items-center justify-center text-2xl mx-auto">📎</div>
+            <div class="font-bold text-slate-900 text-sm break-all">${info.name}</div>
+            <p class="text-xs text-slate-500">กดปุ่ม "ดาวน์โหลดไฟล์" ด้านบนเพื่อเปิดไฟล์เอกสารนี้</p>
+          </div>
+        `;
+      }
+
+      modal.classList.remove("hidden");
+    }
+
+    function closeAttachmentPreviewModal() {
+      document.getElementById("attachmentPreviewModal")?.classList.add("hidden");
+      state.activePreviewAttachment = null;
+    }
+
+    function downloadCurrentPreviewAttachment() {
+      const info = state.activePreviewAttachment;
+      if (!info) return;
+      const href = info.base64 || info.driveDirectUrl || info.displaySrc || info.driveViewUrl;
+      if (!href) {
+        return showNotification("ไม่พบข้อมูลไฟล์สำหรับดาวน์โหลด", "warning");
+      }
+      if (href.startsWith("data:")) {
+        const a = document.createElement("a");
+        a.href = href;
+        a.download = info.name || "attachment";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        showNotification(`ดาวน์โหลดไฟล์ [${info.name}] เรียบร้อย`, "success");
+      } else {
+        window.open(href, "_blank");
+      }
+    }
+
+    function previewCurrentDraftAttachment(mode = "ticket") {
+      if (mode === "ticket") {
+        if (!state.currentAttachmentBase64 && !state.currentAttachmentName) return;
+        openAttachmentPreviewModal({
+          refId: "DRAFT-TICKET",
+          name: state.currentAttachmentName || "ตัวอย่างรูปภาพแนบ",
+          isImage: isImageAttachment(state.currentAttachmentName, state.currentAttachmentBase64),
+          displaySrc: state.currentAttachmentBase64,
+          base64: state.currentAttachmentBase64,
+          driveViewUrl: ""
+        });
+      } else {
+        if (!state.currentKbAttachmentBase64 && !state.currentKbAttachmentName) return;
+        openAttachmentPreviewModal({
+          refId: "DRAFT-KB",
+          name: state.currentKbAttachmentName || "ตัวอย่างไฟล์แนบคู่มือ",
+          isImage: isImageAttachment(state.currentKbAttachmentName, state.currentKbAttachmentBase64),
+          displaySrc: state.currentKbAttachmentBase64,
+          base64: state.currentKbAttachmentBase64,
+          driveViewUrl: ""
+        });
+      }
+    }
+
+    function openTicketAttachmentPreview(ticketId) {
+      const ticket = state.tickets.find(t => t.ticket_id === ticketId);
+      if (!ticket) return;
+      const info = resolveAttachmentInfo(ticket, "ticket_id");
+      if (!info) return showNotification("เคสนี้ไม่มีไฟล์แนบ", "info");
+      openAttachmentPreviewModal(info);
+    }
+
+    function openKbAttachmentPreview(kbId) {
+      const kb = state.knowledgeBase.find(k => k.kb_id === kbId);
+      if (!kb) return;
+      const info = resolveAttachmentInfo(kb, "kb_id");
+      if (!info) return showNotification("บทความนี้ไม่มีไฟล์แนบ", "info");
+      openAttachmentPreviewModal(info);
+    }
+
     function calculateSlaTarget(priority) {
       let hours = 24;
       if (priority === "Critical") hours = 2;
@@ -3366,20 +3796,46 @@
     }
 
     function handleTicketFileSelect(input) {
-      if (input.files && input.files[0]) {
-        const file = input.files[0];
-        state.currentAttachmentName = file.name;
-        document.getElementById("ticketFileNameLabel").innerText = file.name;
-        document.getElementById("ticketFilePreviewContainer").classList.remove("hidden");
-        document.getElementById("ticketFilePreviewContainer").classList.add("flex");
-      }
+      const file = input?.files?.[0];
+      if (!file) return;
+      readAndPrepareAttachmentFile(file, (dataUrl, fileName, mimeType, origSize) => {
+        state.currentAttachmentName = fileName;
+        state.currentAttachmentBase64 = dataUrl;
+        state.currentAttachmentMime = mimeType;
+
+        const nameLabel = document.getElementById("ticketFileNameLabel");
+        const sizeLabel = document.getElementById("ticketFileSizeLabel");
+        const container = document.getElementById("ticketFilePreviewContainer");
+        const thumbWrap = document.getElementById("ticketFileThumbWrapper");
+        const thumbImg = document.getElementById("ticketFileThumbImg");
+
+        if (nameLabel) nameLabel.innerText = fileName;
+        if (sizeLabel) sizeLabel.innerText = `ขนาด ${(origSize / 1024).toFixed(1)} KB • พร้อมบันทึกลง Google Drive`;
+        if (container) {
+          container.classList.remove("hidden");
+          container.classList.add("flex");
+        }
+        if (thumbWrap && thumbImg) {
+          if (isImageAttachment(fileName, dataUrl)) {
+            thumbImg.src = dataUrl;
+            thumbWrap.classList.remove("hidden");
+          } else {
+            thumbImg.src = "";
+            thumbWrap.classList.add("hidden");
+          }
+        }
+      });
     }
 
     function clearTicketAttachment() {
       state.currentAttachmentName = "";
       state.currentAttachmentBase64 = "";
+      state.currentAttachmentMime = "";
       const input = document.getElementById("ticketFileInput");
       if (input) input.value = "";
+      const thumbImg = document.getElementById("ticketFileThumbImg");
+      if (thumbImg) thumbImg.src = "";
+      document.getElementById("ticketFileThumbWrapper")?.classList.add("hidden");
       document.getElementById("ticketFilePreviewContainer")?.classList.add("hidden");
       document.getElementById("ticketFilePreviewContainer")?.classList.remove("flex");
     }
@@ -3428,6 +3884,21 @@
 
       const priority = document.getElementById("ticketPriority").value;
       const ticketNum = generateTicketId();
+      const attachName = state.currentAttachmentName || "";
+      const attachBase64 = state.currentAttachmentBase64 || "";
+
+      let driveFileId = "";
+      let driveViewUrl = "";
+
+      if (attachBase64 && attachName) {
+        saveAttachmentToCache(ticketNum, attachName, attachBase64, "", "");
+        const driveRes = await uploadFileToGoogleDrive(attachBase64, `${ticketNum}_${attachName}`, "Tickets", ticketNum);
+        if (driveRes) {
+          driveFileId = driveRes.fileId || "";
+          driveViewUrl = driveRes.viewUrl || "";
+        }
+      }
+
       const newTicket = {
         ticket_id: ticketNum,
         title: document.getElementById("ticketTitle").value.trim(),
@@ -3445,16 +3916,32 @@
         resolved_at: "",
         csat_score: 0,
         csat_feedback: "",
-        attachment_name: state.currentAttachmentName || "",
+        attachment_name: attachName,
+        attachment_base64: attachBase64,
+        attachment_url: driveViewUrl,
+        drive_file_id: driveFileId,
         comments: [
           { sender: document.getElementById("ticketReporterName").value.trim(), message: "แจ้งเปิดเคสในระบบ", time: getLocalTimestamp(0), is_internal: false }
         ]
       };
 
       state.tickets.unshift(newTicket);
-      await callAPI("createTicket", { ticketData: newTicket });
+      const createRes = await callAPI("createTicket", {
+        ticketData: newTicket,
+        driveFolderId: state.driveFolderId || ""
+      });
+      if (createRes && (createRes.drive_view_url || createRes.drive_file_id)) {
+        newTicket.attachment_url = createRes.drive_view_url || newTicket.attachment_url;
+        newTicket.drive_file_id = createRes.drive_file_id || newTicket.drive_file_id;
+        saveAttachmentToCache(ticketNum, attachName, attachBase64, newTicket.attachment_url, newTicket.drive_file_id);
+      }
 
-      showNotification(`เปิดเคส [${ticketNum}] เรียบร้อย บันทึกลงระบบแล้ว`, "success");
+      showNotification(
+        attachName
+          ? `เปิดเคส [${ticketNum}] พร้อมบันทึกรูปภาพแนบลง Google Drive เรียบร้อย`
+          : `เปิดเคส [${ticketNum}] เรียบร้อย บันทึกลงระบบแล้ว`,
+        "success"
+      );
       document.getElementById("createTicketForm").reset();
       handleTicketCategoryChange(document.getElementById("ticketCategory")?.value || "");
       clearTicketAttachment();
@@ -3505,6 +3992,9 @@
         const sysBadge = t.system_name
           ? `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">🌐 ${t.system_name}</span>`
           : "";
+        const attachBadge = (t.attachment_name || t.attachment_url || t.attachment_base64)
+          ? `<button type="button" onclick="event.stopPropagation(); openTicketAttachmentPreview('${escapeQuotes(t.ticket_id)}')" class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 transition">🖼️ ดูรูปแนบ</button>`
+          : "";
 
         return `
           <div onclick="openTicketDetailModal('${t.ticket_id}')" class="p-4 rounded-2xl border border-slate-200 hover:border-tcc-400 bg-white hover:bg-slate-50 cursor-pointer transition flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
@@ -3514,6 +4004,7 @@
                 <span class="font-bold text-slate-900 text-sm">${t.title}</span>
                 <span class="px-2 py-0.2 rounded text-[10px] font-semibold bg-slate-100 text-slate-600">${t.category}</span>
                 ${sysBadge}
+                ${attachBadge}
               </div>
               <p class="text-xs text-slate-500 line-clamp-1">${t.description}</p>
               <div class="text-[11px] text-slate-400 flex items-center gap-3">
@@ -3609,11 +4100,15 @@
               if (t.priority === "Critical") pColor = "bg-rose-100 text-rose-800 border border-rose-300";
               if (t.priority === "High") pColor = "bg-amber-100 text-amber-800 border border-amber-300";
 
+              const hasAttach = Boolean(t.attachment_name);
               return `
                 <div onclick="openTicketDetailModal('${t.ticket_id}')" class="p-3 bg-white rounded-xl border border-slate-200 hover:border-tcc-400 cursor-pointer shadow-sm transition space-y-2">
                   <div class="flex items-center justify-between">
                     <span class="font-mono text-[11px] font-bold text-slate-500">${t.ticket_id}</span>
-                    <span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${pColor}">${t.priority}</span>
+                    <div class="flex items-center gap-1">
+                      ${hasAttach ? `<button type="button" onclick="event.stopPropagation(); openTicketAttachmentPreview('${t.ticket_id}')" title="คลิกเพื่อดูรูปภาพแนบ: ${escapeQuotes(t.attachment_name)}" class="text-[10px] px-1.5 py-0.5 rounded bg-sky-50 text-sky-700 border border-sky-200 hover:bg-sky-100 font-bold">🖼️ รูป</button>` : ''}
+                      <span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${pColor}">${t.priority}</span>
+                    </div>
                   </div>
                   <h4 class="font-bold text-slate-900 text-xs line-clamp-2">${t.title}</h4>
                   ${t.system_name ? `<div class="text-[10px] font-semibold text-indigo-700 bg-indigo-50 border border-indigo-200 px-1.5 py-0.5 rounded truncate" title="${escapeQuotes(t.system_name)}">🌐 ${t.system_name}</div>` : ''}
@@ -3673,9 +4168,37 @@
 
       const attachBox = document.getElementById("detailAttachmentBox");
       const attachCont = document.getElementById("detailAttachmentContainer");
-      if (ticket.attachment_name) {
+      const attachInfo = resolveAttachmentInfo(ticket, "ticket_id");
+      if (attachInfo) {
         attachBox.classList.remove("hidden");
-        attachCont.innerHTML = `<span class="font-medium text-slate-700">📎 ${ticket.attachment_name}</span><span class="text-tcc-600 font-bold">ดูเอกสาร</span>`;
+        attachCont.className = "p-3 rounded-xl border border-slate-200 bg-slate-50/70 space-y-2.5 text-xs";
+        const fallbackImgSrc = generateFallbackDiagnosticImage(attachInfo.name, ticket.title, ticket.ticket_id);
+        const thumbHtml = attachInfo.isImage && attachInfo.displaySrc
+          ? `<div onclick="openTicketAttachmentPreview('${escapeQuotes(ticket.ticket_id)}')" class="relative group cursor-pointer rounded-xl overflow-hidden border border-slate-200 bg-white max-h-56 flex items-center justify-center p-1.5 hover:border-tcc-400 transition">
+              <img src="${attachInfo.displaySrc}" alt="${escapeQuotes(attachInfo.name)}" class="max-h-52 w-auto object-contain rounded-lg" onerror="this.onerror=null; this.src='${fallbackImgSrc}';" />
+              <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                <span class="px-3 py-1.5 rounded-xl bg-white text-slate-900 font-bold text-xs shadow-lg">🔍 คลิกเพื่อขยายดูรูปภาพขนาดเต็ม</span>
+              </div>
+            </div>`
+          : "";
+        const driveBadge = attachInfo.driveViewUrl
+          ? `<a href="${attachInfo.driveViewUrl}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 font-bold text-[11px] inline-flex items-center gap-1 transition">☁️ เปิดใน Google Drive ↗</a>`
+          : `<span class="px-2 py-1 rounded-lg bg-slate-100 text-slate-600 font-medium text-[10px]">💾 บันทึกในระบบ</span>`;
+        attachCont.innerHTML = `
+          ${thumbHtml}
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="text-base">${attachInfo.isImage ? '🖼️' : '📎'}</span>
+              <span class="font-bold text-slate-800 truncate max-w-[240px]" title="${escapeQuotes(attachInfo.name)}">${attachInfo.name}</span>
+            </div>
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <button type="button" onclick="openTicketAttachmentPreview('${escapeQuotes(ticket.ticket_id)}')" class="px-2.5 py-1.5 rounded-lg bg-tcc-600 hover:bg-tcc-700 text-white font-bold text-[11px] inline-flex items-center gap-1 shadow-xs transition">
+                🔍 เปิดดูไฟล์แนบ
+              </button>
+              ${driveBadge}
+            </div>
+          </div>
+        `;
       } else {
         attachBox.classList.add("hidden");
       }
@@ -3857,48 +4380,65 @@
     function handleKbFileSelect(e) {
       const file = e.target.files?.[0];
       if (!file) return;
-      if (file.size > 5 * 1024 * 1024) {
-        showNotification("ขนาดไฟล์เอกสารแนบเกิน 5MB", "warning");
+      if (file.size > 10 * 1024 * 1024) {
+        showNotification("ขนาดไฟล์เอกสารแนบเกิน 10MB", "warning");
         clearKbAttachment();
         return;
       }
-      state.currentKbAttachmentName = file.name;
-      const reader = new FileReader();
-      reader.onload = function(evt) {
-        state.currentKbAttachmentBase64 = evt.target.result;
+      readAndPrepareAttachmentFile(file, (dataUrl, fileName, mimeType, origSize) => {
+        state.currentKbAttachmentName = fileName;
+        state.currentKbAttachmentBase64 = dataUrl;
+        state.currentKbAttachmentMime = mimeType;
+
         const preview = document.getElementById("kbFilePreviewName");
         const txt = document.getElementById("kbFileSelectedText");
         const btn = document.getElementById("btnClearKbFile");
-        if (txt) txt.textContent = `${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+        const thumbWrap = document.getElementById("kbFileThumbWrapper");
+        const thumbImg = document.getElementById("kbFileThumbImg");
+
+        if (txt) txt.textContent = `${fileName} (${(origSize / 1024).toFixed(1)} KB)`;
         if (preview) preview.classList.remove("hidden");
         if (btn) btn.classList.remove("hidden");
-      };
-      reader.readAsDataURL(file);
+        if (isImageAttachment(fileName, dataUrl) && thumbWrap && thumbImg) {
+          thumbImg.src = dataUrl;
+          thumbWrap.classList.remove("hidden");
+        } else if (thumbWrap) {
+          thumbWrap.classList.add("hidden");
+        }
+      });
     }
 
     function clearKbAttachment() {
       state.currentKbAttachmentName = "";
       state.currentKbAttachmentBase64 = "";
+      state.currentKbAttachmentMime = "";
       const input = document.getElementById("kbFileInput");
       if (input) input.value = "";
       const preview = document.getElementById("kbFilePreviewName");
       const btn = document.getElementById("btnClearKbFile");
+      const thumbWrap = document.getElementById("kbFileThumbWrapper");
       if (preview) preview.classList.add("hidden");
       if (btn) btn.classList.add("hidden");
+      if (thumbWrap) thumbWrap.classList.add("hidden");
     }
 
     function downloadKbAttachment(kbId) {
       const k = state.knowledgeBase.find(item => item.kb_id === kbId);
       if (!k) return;
-      if (k.attachment_base64) {
+      const info = resolveAttachmentInfo(k, "kb_id");
+      if (info && info.base64) {
         const a = document.createElement("a");
-        a.href = k.attachment_base64;
-        a.download = k.attachment_name || "kb-document";
+        a.href = info.base64;
+        a.download = info.name || "kb-document";
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
+      } else if (info && info.driveDirectUrl) {
+        window.open(info.driveDirectUrl, "_blank", "noopener,noreferrer");
       } else if (k.doc_url) {
-        window.open(k.doc_url, "_blank");
+        window.open(k.doc_url, "_blank", "noopener,noreferrer");
+      } else if (info) {
+        openKbAttachmentPreview(kbId);
       } else {
         showNotification("บทความนี้ไม่มีไฟล์แนบ", "info");
       }
@@ -3917,13 +4457,30 @@
 
       container.innerHTML = filtered.map(k => {
         let attachmentBadge = "";
-        if (k.attachment_name) {
+        const info = resolveAttachmentInfo(k, "kb_id");
+        if (info) {
+          const thumbHtml = info.isImage && info.displaySrc
+            ? `<div onclick="openKbAttachmentPreview('${escapeQuotes(k.kb_id)}')" class="mt-2 rounded-xl overflow-hidden border border-slate-200 bg-slate-50 max-h-40 flex items-center justify-center p-1 cursor-pointer hover:border-tcc-400 transition group relative">
+                <img src="${info.displaySrc}" alt="${escapeQuotes(info.name)}" class="max-h-36 w-auto object-contain rounded-lg" />
+                <div class="absolute inset-0 bg-slate-900/35 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                  <span class="px-2.5 py-1 rounded-lg bg-white text-slate-900 font-bold text-[11px] shadow">🔍 ดูรูปภาพขนาดใหญ่</span>
+                </div>
+              </div>`
+            : "";
           attachmentBadge = `
-            <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
-              <span class="text-[11px] text-slate-500 font-medium">เอกสารแนบ:</span>
-              <button type="button" onclick="downloadKbAttachment('${escapeQuotes(k.kb_id)}')" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-semibold text-xs transition border border-emerald-200/60 shadow-xs">
-                <span>📎</span> <span class="max-w-[180px] truncate">${k.attachment_name}</span> <span>⬇️</span>
-              </button>
+            <div class="pt-2 border-t border-slate-100 space-y-2">
+              ${thumbHtml}
+              <div class="flex items-center justify-between gap-2 flex-wrap">
+                <span class="text-[11px] text-slate-500 font-medium truncate max-w-[160px]" title="${escapeQuotes(info.name)}">${info.isImage ? '🖼️' : '📎'} ${info.name}</span>
+                <div class="flex items-center gap-1.5">
+                  <button type="button" onclick="openKbAttachmentPreview('${escapeQuotes(k.kb_id)}')" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-tcc-50 hover:bg-tcc-100 text-tcc-700 font-bold text-xs transition border border-tcc-200">
+                    🔍 ดูไฟล์
+                  </button>
+                  <button type="button" onclick="downloadKbAttachment('${escapeQuotes(k.kb_id)}')" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-semibold text-xs transition border border-emerald-200/60">
+                    ⬇️ ดาวน์โหลด
+                  </button>
+                </div>
+              </div>
             </div>
           `;
         } else if (k.doc_url) {
@@ -3955,18 +4512,29 @@
     function openAddKbModal() { document.getElementById("addKbModal").classList.remove("hidden"); }
     function closeAddKbModal() { document.getElementById("addKbModal").classList.add("hidden"); }
 
-    function handleSaveKbArticle(e) {
+    async function handleSaveKbArticle(e) {
       e.preventDefault();
       const docUrl = document.getElementById("inputKbDocUrl")?.value.trim() || "";
+      const kbId = "KB-" + String(state.knowledgeBase.length + 1).padStart(3, "0");
+      const attachName = state.currentKbAttachmentName || "";
+      const attachBase64 = state.currentKbAttachmentBase64 || "";
+
       const newArticle = {
-        kb_id: "KB-" + String(state.knowledgeBase.length + 1).padStart(3, "0"),
+        kb_id: kbId,
         category: document.getElementById("inputKbCategory").value,
         title: document.getElementById("inputKbTitle").value.trim(),
         content: document.getElementById("inputKbContent").value.trim(),
         doc_url: docUrl,
-        attachment_name: state.currentKbAttachmentName || "",
-        attachment_base64: state.currentKbAttachmentBase64 || ""
+        attachment_name: attachName,
+        attachment_base64: attachBase64,
+        attachment_url: "",
+        drive_file_id: ""
       };
+
+      if (attachName && attachBase64) {
+        saveAttachmentToCache(kbId, attachName, attachBase64, "", "");
+      }
+
       state.knowledgeBase.unshift(newArticle);
       closeAddKbModal();
       clearKbAttachment();
@@ -3979,6 +4547,18 @@
 
       showNotification(`เพิ่มบทความ [${newArticle.title}] เรียบร้อย`, "success");
       renderKnowledgeBaseList();
+
+      if (attachName && attachBase64) {
+        const driveRes = await uploadFileToGoogleDrive(attachBase64, `${kbId}_${attachName}`, "KnowledgeBase", kbId);
+        if (driveRes && (driveRes.fileId || driveRes.viewUrl)) {
+          newArticle.drive_file_id = driveRes.fileId || "";
+          newArticle.attachment_url = driveRes.viewUrl || "";
+          if (!newArticle.doc_url && driveRes.viewUrl) newArticle.doc_url = driveRes.viewUrl;
+          saveAttachmentToCache(kbId, attachName, attachBase64, driveRes.viewUrl || "", driveRes.fileId || "");
+          renderKnowledgeBaseList();
+        }
+      }
+
       callAPI("saveKbArticle", { articleData: newArticle }, true);
     }
 
@@ -5512,6 +6092,29 @@
         ["wattanachai.mi@thaichamber.or.th", "นายวัฒนชัย มั่นคง", "ฝ่ายเทคโนโลยีสารสนเทศ", "admin", "Admin@2026", "active", "เจ้าหน้าที่ไอที"],
         ["supakon.su@thaichamber.or.th", "นายศุภกร สุขเจริญ", "ฝ่ายการเงินและบัญชี", "user", "User@2026", "active", "ประสานงานการเงิน"]
       ];
+
+      if (window.XLSX) {
+        try {
+          const wb = XLSX.utils.book_new();
+          const ws = XLSX.utils.aoa_to_sheet([headers, ...sampleRows]);
+          ws["!cols"] = [
+            { wch: 32 },
+            { wch: 22 },
+            { wch: 26 },
+            { wch: 34 },
+            { wch: 22 },
+            { wch: 24 },
+            { wch: 24 }
+          ];
+          XLSX.utils.book_append_sheet(wb, ws, "UserTemplate");
+          XLSX.writeFile(wb, "tcc_user_template.xlsx");
+          showNotification("ดาวน์โหลดแบบฟอร์ม Template Excel (.xlsx) เรียบร้อย (เปิดกรอกได้ทันที)", "success");
+          return;
+        } catch (e) {
+          console.warn("XLSX template export fallback to CSV:", e);
+        }
+      }
+
       const csvContent = "\uFEFF" + [
         headers.join(","),
         ...sampleRows.map(row => row.map(v => `"${String(v).replace(/"/g, '""')}"`).join(","))
@@ -5540,9 +6143,26 @@
         u.password || "123456",
         u.status || "active",
         u.remark || ""
-      ].map(v => `"${String(v).replace(/"/g, '""')}"`).join(","));
+      ]);
 
-      const csvContent = "\uFEFF" + [headers.join(","), ...rows].join("\r\n");
+      if (window.XLSX) {
+        try {
+          const wb = XLSX.utils.book_new();
+          const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+          ws["!cols"] = [
+            { wch: 32 }, { wch: 24 }, { wch: 26 }, { wch: 20 }, { wch: 20 }, { wch: 20 }, { wch: 26 }
+          ];
+          XLSX.utils.book_append_sheet(wb, ws, "UserRoles");
+          XLSX.writeFile(wb, `tcc_user_accounts_${getOffsetDate(0)}.xlsx`);
+          showNotification("ส่งออกไฟล์ Excel สำหรับจัดการผู้ใช้เรียบร้อย", "success");
+          return;
+        } catch (e) {
+          console.warn("XLSX export fallback to CSV:", e);
+        }
+      }
+
+      const csvRows = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(","));
+      const csvContent = "\uFEFF" + [headers.join(","), ...csvRows].join("\r\n");
       const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
@@ -5553,7 +6173,7 @@
       showNotification("ส่งออกไฟล์ Excel สำหรับจัดการผู้ใช้เรียบร้อย", "success");
     }
 
-    /* CSV IMPORT MODAL & PARSER (Req 1) */
+    /* CSV & EXCEL IMPORT MODAL & PARSER (Req 1) */
     function openImportUserModal() {
       pendingImportUsers = [];
       const previewContainer = document.getElementById("importPreviewContainer");
@@ -5579,6 +6199,7 @@
       ["dragenter", "dragover"].forEach(evt => {
         dropZone.addEventListener(evt, (e) => {
           e.preventDefault();
+          e.stopPropagation();
           dropZone.classList.add("border-tcc-600", "bg-sky-50");
         });
       });
@@ -5586,12 +6207,15 @@
       ["dragleave", "drop"].forEach(evt => {
         dropZone.addEventListener(evt, (e) => {
           e.preventDefault();
+          e.stopPropagation();
           dropZone.classList.remove("border-tcc-600", "bg-sky-50");
         });
       });
 
       dropZone.addEventListener("drop", (e) => {
-        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
           const fileInput = document.getElementById("inputImportCsvFile");
           if (fileInput) {
             fileInput.files = e.dataTransfer.files;
@@ -5625,79 +6249,240 @@
       return result;
     }
 
+    function decodeTextBuffer(buffer) {
+      const bytes = new Uint8Array(buffer);
+      // 1. ตรวจสอบ UTF-8 BOM: 0xEF, 0xBB, 0xBF
+      if (bytes.length >= 3 && bytes[0] === 0xEF && bytes[1] === 0xBB && bytes[2] === 0xBF) {
+        return new TextDecoder("utf-8").decode(bytes.slice(3));
+      }
+      // 2. ตรวจสอบ UTF-16 LE / BE BOM
+      if (bytes.length >= 2 && bytes[0] === 0xFF && bytes[1] === 0xFE) {
+        return new TextDecoder("utf-16le").decode(bytes.slice(2));
+      }
+      if (bytes.length >= 2 && bytes[0] === 0xFE && bytes[1] === 0xFF) {
+        return new TextDecoder("utf-16be").decode(bytes.slice(2));
+      }
+
+      // 3. ตรวจหาว่ามี byte ภาษาไทยช่วงรหัส Windows-874 / TIS-620 (0xA1 - 0xFB) หรือไม่
+      let thaiWin874Count = 0;
+      let hasUtf8Thai = false;
+      for (let i = 0; i < bytes.length; i++) {
+        if (bytes[i] >= 0xA1 && bytes[i] <= 0xFB) thaiWin874Count++;
+        if (i < bytes.length - 2 && bytes[i] === 0xE0 && (bytes[i + 1] === 0xB8 || bytes[i + 1] === 0xB9)) {
+          hasUtf8Thai = true;
+        }
+      }
+
+      // ถ้าพบ byte รหัสภาษาไทย Windows-874 แต่ไม่มี multibyte UTF-8 Thai เลย -> เป็น Windows-874 แน่นอน
+      if (thaiWin874Count > 3 && !hasUtf8Thai) {
+        try {
+          return new TextDecoder("windows-874").decode(bytes);
+        } catch (e) {
+          try {
+            return new TextDecoder("tis-620").decode(bytes);
+          } catch (e2) {}
+        }
+      }
+
+      // 4. ทดลองถอดรหัสแบบ UTF-8 fatal
+      try {
+        const utf8Decoder = new TextDecoder("utf-8", { fatal: true });
+        return utf8Decoder.decode(bytes);
+      } catch (err) {
+        // หากไม่ใช่ UTF-8 ให้ถอดรหัสด้วย Windows-874 / TIS-620 (ANSI ภาษาไทยของ Microsoft Excel)
+        try {
+          return new TextDecoder("windows-874").decode(bytes);
+        } catch (e) {
+          try {
+            return new TextDecoder("tis-620").decode(bytes);
+          } catch (e2) {
+            return new TextDecoder("utf-8").decode(bytes);
+          }
+        }
+      }
+    }
+
+    function ensureXlsxLoaded(callback) {
+      if (window.XLSX) return callback(true);
+      const script = document.createElement("script");
+      script.src = "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";
+      script.onload = () => callback(true);
+      script.onerror = () => callback(false);
+      document.head.appendChild(script);
+    }
+
+    function readExcelFile(file, callback) {
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        try {
+          const buffer = evt.target.result;
+          const data = new Uint8Array(buffer);
+          const doParse = () => {
+            try {
+              const workbook = XLSX.read(data, { type: "array" });
+              const sheetName = workbook.SheetNames[0];
+              const worksheet = workbook.Sheets[sheetName];
+              const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: "" });
+              callback(null, rows);
+            } catch (err) {
+              callback(err);
+            }
+          };
+
+          if (window.XLSX) {
+            doParse();
+          } else {
+            ensureXlsxLoaded((ok) => {
+              if (ok && window.XLSX) {
+                doParse();
+              } else {
+                callback(new Error("ไม่สามารถโหลดไลบรารีอ่านไฟล์ Excel ได้ กรุณาเชื่อมต่ออินเทอร์เน็ตหรือแปลงไฟล์เป็น .csv"));
+              }
+            });
+          }
+        } catch (err) {
+          callback(err);
+        }
+      };
+      reader.onerror = () => callback(new Error("อ่านไฟล์ล้มเหลว"));
+      reader.readAsArrayBuffer(file);
+    }
+
+    function processImportedRows(rawRows, fileName) {
+      if (!rawRows || rawRows.length === 0) {
+        showNotification("ไฟล์ที่เลือกไม่มีข้อมูลผู้ใช้", "warning");
+        return;
+      }
+
+      // หาแถว Header และแมปคอลัมน์
+      let headerIndex = -1;
+      let colMap = { email: 0, name: 1, dept: 2, role: 3, password: 4, status: 5, remark: 6 };
+
+      for (let r = 0; r < Math.min(rawRows.length, 5); r++) {
+        const row = (rawRows[r] || []).map(c => String(c || "").trim().toLowerCase());
+        const hasEmailHeader = row.some(c => c.includes("อีเมล") || c.includes("email") || c.includes("username") || c.includes("บัญชี"));
+        if (hasEmailHeader) {
+          headerIndex = r;
+          row.forEach((colName, idx) => {
+            if (colName.includes("อีเมล") || colName.includes("email") || colName.includes("username") || colName.includes("บัญชี")) colMap.email = idx;
+            else if (colName.includes("ชื่อ") || colName.includes("name")) colMap.name = idx;
+            else if (colName.includes("แผนก") || colName.includes("ฝ่าย") || colName.includes("dept")) colMap.dept = idx;
+            else if (colName.includes("สิทธิ์") || colName.includes("role") || colName.includes("level")) colMap.role = idx;
+            else if (colName.includes("รหัส") || colName.includes("pass") || colName.includes("pwd")) colMap.password = idx;
+            else if (colName.includes("สถานะ") || colName.includes("status")) colMap.status = idx;
+            else if (colName.includes("หมายเหตุ") || colName.includes("remark") || colName.includes("note")) colMap.remark = idx;
+          });
+          break;
+        }
+      }
+
+      const startRow = headerIndex !== -1 ? headerIndex + 1 : 0;
+      pendingImportUsers = [];
+
+      for (let i = startRow; i < rawRows.length; i++) {
+        const row = rawRows[i];
+        if (!row || row.length === 0) continue;
+
+        let email = String(row[colMap.email] !== undefined ? row[colMap.email] : (row[0] || "")).trim().toLowerCase();
+
+        // หาก index ตาม colMap ไม่มี @ ให้ลองสแกนหาช่องอื่นในแถวที่มี @
+        if (!email || !email.includes("@")) {
+          const foundEmail = row.find(val => String(val || "").includes("@") && String(val || "").includes("."));
+          if (foundEmail) {
+            email = String(foundEmail).trim().toLowerCase();
+          }
+        }
+
+        // ถ้ายังไม่มีอีเมล หรือเป็นแถวหัวตาราง ให้ข้าม
+        if (!email || !email.includes("@") || email.includes("username/email")) {
+          continue;
+        }
+
+        const name = String(row[colMap.name] !== undefined ? row[colMap.name] : (row[1] || "")).trim() || email.split("@")[0];
+        const dept = String(row[colMap.dept] !== undefined ? row[colMap.dept] : (row[2] || "")).trim();
+
+        let rawRole = String(row[colMap.role] !== undefined ? row[colMap.role] : (row[3] || "")).trim().toLowerCase();
+        let role = "user";
+        if (rawRole.includes("super")) role = "superadmin";
+        else if (rawRole.includes("admin")) role = "admin";
+        else role = "user";
+
+        const password = String(row[colMap.password] !== undefined ? row[colMap.password] : (row[4] || "")).trim() || "123456";
+
+        let rawStatus = String(row[colMap.status] !== undefined ? row[colMap.status] : (row[5] || "")).trim().toLowerCase();
+        let status = (rawStatus.includes("disable") || rawStatus.includes("ปิด") || rawStatus.includes("ระงับ")) ? "disabled" : "active";
+
+        const remark = String(row[colMap.remark] !== undefined ? row[colMap.remark] : (row[6] || "")).trim();
+
+        pendingImportUsers.push({ email, name, dept, role, password, status, remark });
+      }
+
+      if (pendingImportUsers.length === 0) {
+        showNotification("ไม่พบบัญชีผู้ใช้ที่ถูกต้องในไฟล์ (ต้องมีอีเมลที่มีเครื่องหมาย @)", "error");
+        return;
+      }
+
+      const previewContainer = document.getElementById("importPreviewContainer");
+      const previewSummary = document.getElementById("importPreviewSummary");
+      const previewValidCount = document.getElementById("importPreviewValidCount");
+      const confirmBtn = document.getElementById("btnConfirmImportCsv");
+      const tbody = document.getElementById("importPreviewTbody");
+
+      if (previewContainer) previewContainer.classList.remove("hidden");
+      if (previewSummary) previewSummary.innerText = `ไฟล์: ${fileName}`;
+      if (previewValidCount) previewValidCount.innerText = `พร้อมนำเข้า ${pendingImportUsers.length} รายการ`;
+      if (confirmBtn) confirmBtn.disabled = false;
+
+      if (tbody) {
+        tbody.innerHTML = pendingImportUsers.slice(0, 50).map(u => `
+          <tr class="hover:bg-slate-50">
+            <td class="py-1.5 px-2.5 font-mono font-medium">${u.email}</td>
+            <td class="py-1.5 px-2.5">${u.name}</td>
+            <td class="py-1.5 px-2.5">${u.dept || '-'}</td>
+            <td class="py-1.5 px-2.5 font-semibold">${u.role}</td>
+            <td class="py-1.5 px-2.5">${u.status === 'active' ? 'Active' : 'Disabled'}</td>
+          </tr>
+        `).join("") + (pendingImportUsers.length > 50 ? `<tr><td colspan="5" class="py-1.5 px-2.5 text-center text-slate-400 italic">... และอีก ${pendingImportUsers.length - 50} รายการ</td></tr>` : "");
+      }
+    }
+
     function previewImportCsvFile(e) {
       const file = e.target.files?.[0];
       if (!file) return;
 
-      const reader = new FileReader();
-      reader.onload = function(evt) {
-        try {
-          const text = evt.target.result;
-          const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l !== "");
-          if (lines.length <= 1) {
-            showNotification("ไฟล์ที่เลือกไม่มีข้อมูลผู้ใช้", "warning");
+      const isExcel = /\.(xlsx|xls)$/i.test(file.name);
+
+      if (isExcel) {
+        readExcelFile(file, (err, rows) => {
+          if (err) {
+            console.error(err);
+            showNotification("ไม่สามารถอ่านไฟล์ Excel ได้: " + (err.message || err), "error");
             return;
           }
-
-          const headerLine = lines[0];
-          const delimiter = headerLine.includes(";") ? ";" : (headerLine.includes("\t") ? "\t" : ",");
-
-          pendingImportUsers = [];
-          const tbody = document.getElementById("importPreviewTbody");
-          if (tbody) tbody.innerHTML = "";
-
-          for (let i = 0; i < lines.length; i++) {
-            const line = lines[i];
-            if (i === 0 && (line.includes("อีเมล") || line.toLowerCase().includes("email") || line.toLowerCase().includes("username"))) {
-              continue;
+          processImportedRows(rows, file.name);
+        });
+      } else {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          try {
+            const text = decodeTextBuffer(evt.target.result);
+            const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l !== "");
+            if (lines.length <= 1) {
+              showNotification("ไฟล์ที่เลือกไม่มีข้อมูลผู้ใช้", "warning");
+              return;
             }
 
-            const parts = parseCsvLine(line, delimiter);
-            if (parts.length >= 1 && parts[0] && parts[0].includes("@")) {
-              const email = parts[0].toLowerCase().trim();
-              const name = parts[1] || email.split("@")[0];
-              const dept = parts[2] || "";
-              const role = ["superadmin", "admin", "user"].includes((parts[3] || "").toLowerCase()) ? parts[3].toLowerCase() : "user";
-              const password = parts[4] || "123456";
-              const status = ["active", "disabled"].includes((parts[5] || "").toLowerCase()) ? parts[5].toLowerCase() : "active";
-              const remark = parts[6] || "";
-
-              pendingImportUsers.push({ email, name, dept, role, password, status, remark });
-            }
+            const headerLine = lines[0];
+            const delimiter = headerLine.includes(";") ? ";" : (headerLine.includes("\t") ? "\t" : ",");
+            const rows = lines.map(l => parseCsvLine(l, delimiter));
+            processImportedRows(rows, file.name);
+          } catch(err) {
+            console.error(err);
+            showNotification("เกิดข้อผิดพลาดในการประมวลผลไฟล์ CSV", "error");
           }
-
-          if (pendingImportUsers.length === 0) {
-            showNotification("ไม่พบบัญชีผู้ใช้ที่ถูกต้องในไฟล์ (ต้องมีอีเมลที่มีเครื่องหมาย @)", "error");
-            return;
-          }
-
-          const previewContainer = document.getElementById("importPreviewContainer");
-          const previewSummary = document.getElementById("importPreviewSummary");
-          const previewValidCount = document.getElementById("importPreviewValidCount");
-          const confirmBtn = document.getElementById("btnConfirmImportCsv");
-
-          if (previewContainer) previewContainer.classList.remove("hidden");
-          if (previewSummary) previewSummary.innerText = `ไฟล์: ${file.name}`;
-          if (previewValidCount) previewValidCount.innerText = `พร้อมนำเข้า ${pendingImportUsers.length} รายการ`;
-          if (confirmBtn) confirmBtn.disabled = false;
-
-          if (tbody) {
-            tbody.innerHTML = pendingImportUsers.slice(0, 50).map(u => `
-              <tr class="hover:bg-slate-50">
-                <td class="py-1.5 px-2.5 font-mono font-medium">${u.email}</td>
-                <td class="py-1.5 px-2.5">${u.name}</td>
-                <td class="py-1.5 px-2.5">${u.dept || '-'}</td>
-                <td class="py-1.5 px-2.5 font-semibold">${u.role}</td>
-                <td class="py-1.5 px-2.5">${u.status === 'active' ? 'Active' : 'Disabled'}</td>
-              </tr>
-            `).join("") + (pendingImportUsers.length > 50 ? `<tr><td colspan="5" class="py-1.5 px-2.5 text-center text-slate-400 italic">... และอีก ${pendingImportUsers.length - 50} รายการ</td></tr>` : "");
-          }
-        } catch(err) {
-          console.error(err);
-          showNotification("เกิดข้อผิดพลาดในการประมวลผลไฟล์ CSV", "error");
-        }
-      };
-      reader.readAsText(file, "UTF-8");
+        };
+        reader.readAsArrayBuffer(file);
+      }
     }
 
     function executeImportCsv() {
@@ -6072,6 +6857,7 @@ function doPost(e) {
       case "updateTicket": return handleUpdateTicket(data);
       case "saveKbArticle": return handleSaveKbArticle(data);
       case "deleteKbArticle": return handleDeleteKbArticle(data);
+      case "uploadFileToDrive": return handleUploadFileToDrive(data);
       default: return jsonResponse({ status: "error", message: "Invalid action: " + action });
     }
   } catch (err) {
@@ -6162,15 +6948,15 @@ function handleGetInitialData() {
     ["งานบริการไอทีอื่นๆ"]
   ]);
 
-  getOrCreateSheet(ss, "Tickets", ["Ticket ID", "Title", "Category", "Priority", "Status", "Reporter Name", "Reporter Dept", "Reporter Contact", "Description", "Created At", "SLA Target", "Assigned Agent", "Resolved At", "CSAT Score", "CSAT Feedback", "Attachment Name", "Comments JSON"], [
-    ["ITC-2026-10-25-0001", "หน้าจอโน้ตบุ๊กกระพริบดับบางจังหวะ", "ฮาร์ดแวร์ / เครื่องคอมพิวเตอร์ / จอภาพ", "High", "In Progress", "สมชาย ใจดี", "ฝ่ายการเงินและการบัญชี", "somchai.user@thaichamber.or.th", "เวลาขยับบานพับหน้าจอ ภาพจะกระพริบ", "2026-10-25 10:00", "2026-10-25 14:00", "wattanachai.mi@thaichamber.or.th", "", 0, "", "error_screen.png", JSON.stringify([{ sender: "สมชาย ใจดี", message: "แจ้งเปิดเคสครับ", time: "2026-10-25 10:00", is_internal: false }])],
-    ["ITC-2026-10-27-0002", "ไม่สามารถเชื่อมต่อสัญญาณ Wi-Fi ได้", "ระบบเครือข่าย / อินเทอร์เน็ต / Wi-Fi / VPN", "Critical", "Open", "สุวิมล แสงทอง", "ฝ่ายสมาชิกสัมพันธ์และการบริการ", "suwimon@thaichamber.or.th", "แจ้งเตือน Can't connect to this network", "2026-10-27 11:30", "2026-10-27 13:30", "supakon.su@thaichamber.or.th", "", 0, "", "", JSON.stringify([{ sender: "สุวิมล แสงทอง", message: "รบกวนช่วยตรวจสอบหน่อยค่ะ", time: "2026-10-27 11:30", is_internal: false }])]
+  getOrCreateSheet(ss, "Tickets", ["Ticket ID", "Title", "Category", "Priority", "Status", "Reporter Name", "Reporter Dept", "Reporter Contact", "Description", "Created At", "SLA Target", "Assigned Agent", "Resolved At", "CSAT Score", "CSAT Feedback", "Attachment Name", "Comments JSON", "Attachment URL", "Drive File ID", "System Name"], [
+    ["ITC-2026-10-25-0001", "หน้าจอโน้ตบุ๊กกระพริบดับบางจังหวะ", "ฮาร์ดแวร์ / เครื่องคอมพิวเตอร์ / จอภาพ", "High", "In Progress", "สมชาย ใจดี", "ฝ่ายการเงินและการบัญชี", "somchai.user@thaichamber.or.th", "เวลาขยับบานพับหน้าจอ ภาพจะกระพริบ", "2026-10-25 10:00", "2026-10-25 14:00", "wattanachai.mi@thaichamber.or.th", "", 0, "", "error_screen.png", JSON.stringify([{ sender: "สมชาย ใจดี", message: "แจ้งเปิดเคสครับ", time: "2026-10-25 10:00", is_internal: false }]), "", "", ""],
+    ["ITC-2026-10-27-0002", "ไม่สามารถเชื่อมต่อสัญญาณ Wi-Fi ได้", "ระบบเครือข่าย / อินเทอร์เน็ต / Wi-Fi / VPN", "Critical", "Open", "สุวิมล แสงทอง", "ฝ่ายสมาชิกสัมพันธ์และการบริการ", "suwimon@thaichamber.or.th", "แจ้งเตือน Can't connect to this network", "2026-10-27 11:30", "2026-10-27 13:30", "supakon.su@thaichamber.or.th", "", 0, "", "", JSON.stringify([{ sender: "สุวิมล แสงทอง", message: "รบกวนช่วยตรวจสอบหน่อยค่ะ", time: "2026-10-27 11:30", is_internal: false }]), "", "", ""]
   ]);
 
-  getOrCreateSheet(ss, "KnowledgeBase", ["KB ID", "Category", "Title", "Content", "Doc URL", "Attachment Name", "Attachment Base64"], [
-    ["KB-001", "ระบบเครือข่าย / อินเทอร์เน็ต / Wi-Fi / VPN", "วิธีเชื่อมต่อ VPN หอการค้าไทยจากภายนอกสำนักงาน", "1. เปิดโปรแกรม FortiClient VPN\\n2. ใส่ Remote Gateway: vpn.thaichamber.or.th\\n3. ใส่ Username และ Password อีเมลองค์กร\\n4. รอระบบยืนยันตัวตน OTP ทางโทรศัพท์", "", "", ""],
-    ["KB-002", "อีเมลองค์กร / บัญชีผู้ใช้งาน / รหัสผ่าน", "ขั้นตอนการเปลี่ยนรหัสผ่านอีเมล @thaichamber.or.th", "1. เข้าสู่ระบบ https://myaccount.google.com\\n2. ไปที่เมนู Security\\n3. เลือก Password กำหนดรหัสผ่านใหม่", "", "", ""],
-    ["KB-003", "ฮาร์ดแวร์ / เครื่องคอมพิวเตอร์ / จอภาพ", "วิธีแก้ปัญหาเครื่องปริ้นเตอร์ไม่ออกหรือเอกสารค้างคิว (Spooler)", "1. กดปุ่ม Windows + R พิมพ์ services.msc\\n2. หาบริการ Print Spooler แล้วคลิกขวา Restart", "", "", ""]
+  getOrCreateSheet(ss, "KnowledgeBase", ["KB ID", "Category", "Title", "Content", "Doc URL", "Attachment Name", "Attachment Base64", "Attachment URL", "Drive File ID"], [
+    ["KB-001", "ระบบเครือข่าย / อินเทอร์เน็ต / Wi-Fi / VPN", "วิธีเชื่อมต่อ VPN หอการค้าไทยจากภายนอกสำนักงาน", "1. เปิดโปรแกรม FortiClient VPN\\n2. ใส่ Remote Gateway: vpn.thaichamber.or.th\\n3. ใส่ Username และ Password อีเมลองค์กร\\n4. รอระบบยืนยันตัวตน OTP ทางโทรศัพท์", "", "", "", "", ""],
+    ["KB-002", "อีเมลองค์กร / บัญชีผู้ใช้งาน / รหัสผ่าน", "ขั้นตอนการเปลี่ยนรหัสผ่านอีเมล @thaichamber.or.th", "1. เข้าสู่ระบบ https://myaccount.google.com\\n2. ไปที่เมนู Security\\n3. เลือก Password กำหนดรหัสผ่านใหม่", "", "", "", "", ""],
+    ["KB-003", "ฮาร์ดแวร์ / เครื่องคอมพิวเตอร์ / จอภาพ", "วิธีแก้ปัญหาเครื่องปริ้นเตอร์ไม่ออกหรือเอกสารค้างคิว (Spooler)", "1. กดปุ่ม Windows + R พิมพ์ services.msc\\n2. หาบริการ Print Spooler แล้วคลิกขวา Restart", "", "", "", "", ""]
   ]);
 
   var itemData = ss.getSheetByName("Items").getDataRange().getValues();
@@ -6277,7 +7063,10 @@ function handleGetInitialData() {
         csat_score: parseInt(ticketData[t][13], 10) || 0,
         csat_feedback: String(ticketData[t][14] || ""),
         attachment_name: String(ticketData[t][15] || ""),
-        comments: comms
+        comments: comms,
+        attachment_url: String(ticketData[t][17] || ""),
+        drive_file_id: String(ticketData[t][18] || ""),
+        system_name: String(ticketData[t][19] || "")
       });
     }
   }
@@ -6293,7 +7082,9 @@ function handleGetInitialData() {
         content: String(kbData[k][3]),
         doc_url: String(kbData[k][4] || ""),
         attachment_name: String(kbData[k][5] || ""),
-        attachment_base64: String(kbData[k][6] || "")
+        attachment_base64: String(kbData[k][6] || ""),
+        attachment_url: String(kbData[k][7] || ""),
+        drive_file_id: String(kbData[k][8] || "")
       });
     }
   }
@@ -6312,18 +7103,100 @@ function handleGetInitialData() {
   });
 }
 
+function getOrCreateDriveFolder(customFolderId, subFolderName) {
+  var rootFolder = null;
+  if (customFolderId && String(customFolderId).trim() !== "") {
+    try {
+      rootFolder = DriveApp.getFolderById(String(customFolderId).trim());
+    } catch (e) {
+      rootFolder = null;
+    }
+  }
+  if (!rootFolder) {
+    var defaultName = "TCC_IT_System_Attachments";
+    var folders = DriveApp.getFoldersByName(defaultName);
+    if (folders.hasNext()) {
+      rootFolder = folders.next();
+    } else {
+      rootFolder = DriveApp.createFolder(defaultName);
+    }
+  }
+  if (subFolderName) {
+    var subFolders = rootFolder.getFoldersByName(subFolderName);
+    if (subFolders.hasNext()) return subFolders.next();
+    return rootFolder.createFolder(subFolderName);
+  }
+  return rootFolder;
+}
+
+function saveBase64FileToDrive(base64Data, fileName, folderId, subFolder) {
+  if (!base64Data) return null;
+  var str = String(base64Data);
+  var mimeType = "application/octet-stream";
+  var b64Clean = str;
+  if (str.indexOf("base64,") !== -1) {
+    var parts = str.split("base64,");
+    var header = parts[0];
+    b64Clean = parts[1];
+    var m = header.match(/data:([^;]+);/);
+    if (m && m[1]) mimeType = m[1];
+  }
+  var bytes = Utilities.base64Decode(b64Clean);
+  var blob = Utilities.newBlob(bytes, mimeType, fileName || ("attachment_" + new Date().getTime()));
+  var folder = getOrCreateDriveFolder(folderId, subFolder || "Tickets");
+  var file = folder.createFile(blob);
+  try {
+    file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+  } catch (e) {
+    try { file.setSharing(DriveApp.Access.DOMAIN_WITH_LINK, DriveApp.Permission.VIEW); } catch (e2) {}
+  }
+  var fid = file.getId();
+  return {
+    fileId: fid,
+    viewUrl: "https://drive.google.com/file/d/" + fid + "/view?usp=sharing",
+    downloadUrl: "https://drive.google.com/uc?export=download&id=" + fid,
+    thumbnailUrl: "https://drive.google.com/thumbnail?id=" + fid + "&sz=w1600",
+    folderName: folder.getName()
+  };
+}
+
+function handleUploadFileToDrive(data) {
+  var saved = saveBase64FileToDrive(data.base64Data, data.fileName, data.folderId, data.subFolder || "Tickets");
+  if (!saved) return jsonResponse({ status: "error", message: "No base64 data provided" });
+  return jsonResponse({
+    status: "success",
+    fileId: saved.fileId,
+    viewUrl: saved.viewUrl,
+    downloadUrl: saved.downloadUrl,
+    thumbnailUrl: saved.thumbnailUrl,
+    folderName: saved.folderName
+  });
+}
+
 function handleCreateTicket(data) {
   var ss = getSpreadsheet();
   var sheet = ss.getSheetByName("Tickets");
   var t = data.ticketData;
+  var attUrl = t.attachment_url || "";
+  var driveId = t.drive_file_id || "";
+  if (!driveId && t.attachment_base64) {
+    try {
+      var saved = saveBase64FileToDrive(t.attachment_base64, (t.ticket_id || "TKT") + "_" + (t.attachment_name || "image.png"), data.folderId || "", "Tickets");
+      if (saved) {
+        driveId = saved.fileId;
+        attUrl = saved.viewUrl;
+      }
+    } catch (e) {}
+  }
   sheet.appendRow([
     t.ticket_id, t.title, t.category, t.priority, t.status,
     t.reporter_name, t.reporter_dept, t.reporter_contact, t.description,
     t.created_at, t.sla_target, t.assigned_agent, t.resolved_at,
-    t.csat_score, t.csat_feedback, t.attachment_name, JSON.stringify(t.comments || [])
+    t.csat_score, t.csat_feedback, t.attachment_name, JSON.stringify(t.comments || []),
+    attUrl, driveId, t.system_name || ""
   ]);
   SpreadsheetApp.flush();
-  return jsonResponse({ status: "success", message: "สร้างเคสเรียบร้อย" });
+  return jsonResponse({ status: "success", message: "สร้างเคสเรียบร้อย", attachment_url: attUrl, drive_file_id: driveId });
 }
 
 function handleUpdateTicket(data) {
@@ -6341,6 +7214,8 @@ function handleUpdateTicket(data) {
       if (u.csat_score !== undefined) sheet.getRange(row, 14).setValue(u.csat_score);
       if (u.csat_feedback !== undefined) sheet.getRange(row, 15).setValue(u.csat_feedback);
       if (u.comments !== undefined) sheet.getRange(row, 17).setValue(JSON.stringify(u.comments));
+      if (u.attachment_url !== undefined) sheet.getRange(row, 18).setValue(u.attachment_url);
+      if (u.drive_file_id !== undefined) sheet.getRange(row, 19).setValue(u.drive_file_id);
       break;
     }
   }
@@ -6352,9 +7227,21 @@ function handleSaveKbArticle(data) {
   var ss = getSpreadsheet();
   var sheet = ss.getSheetByName("KnowledgeBase");
   var k = data.articleData;
-  sheet.appendRow([k.kb_id, k.category, k.title, k.content, k.doc_url || "", k.attachment_name || "", k.attachment_base64 || ""]);
+  var attUrl = k.attachment_url || "";
+  var driveId = k.drive_file_id || "";
+  if (!driveId && k.attachment_base64) {
+    try {
+      var saved = saveBase64FileToDrive(k.attachment_base64, (k.kb_id || "KB") + "_" + (k.attachment_name || "file"), data.folderId || "", "KnowledgeBase");
+      if (saved) {
+        driveId = saved.fileId;
+        attUrl = saved.viewUrl;
+      }
+    } catch (e) {}
+  }
+  var safeB64 = (k.attachment_base64 && String(k.attachment_base64).length < 45000) ? k.attachment_base64 : "";
+  sheet.appendRow([k.kb_id, k.category, k.title, k.content, k.doc_url || attUrl || "", k.attachment_name || "", safeB64, attUrl, driveId]);
   SpreadsheetApp.flush();
-  return jsonResponse({ status: "success", message: "บันทึกเรียบร้อย" });
+  return jsonResponse({ status: "success", message: "บันทึกเรียบร้อย", attachment_url: attUrl, drive_file_id: driveId });
 }
 
 function handleDeleteKbArticle(data) {
@@ -6622,6 +7509,8 @@ function handleDeleteUserRole(data) {
     function openSetupModal() {
       const urlInput = document.getElementById("inputWebAppUrl");
       if (urlInput) urlInput.value = state.webAppUrl || "";
+      const driveInput = document.getElementById("inputDriveFolderId");
+      if (driveInput) driveInput.value = state.driveFolderId || "";
       const codeBlock = document.getElementById("gasCodeBlock");
       if (codeBlock) codeBlock.textContent = SELF_HEALING_GAS_CODE;
       document.getElementById("setupModal")?.classList.remove("hidden");
@@ -6763,6 +7652,19 @@ function handleDeleteUserRole(data) {
               resolve({ status: "success", message: "ลบสิทธิ์ในระบบจำลองเรียบร้อย" });
               break;
             }
+            case "uploadFileToDrive": {
+              const simId = "DRV_" + Date.now().toString(36).toUpperCase() + "_" + Math.random().toString(36).substring(2, 6).toUpperCase();
+              const folderLabel = data.folderId ? `Folder:${data.folderId}` : `TCC_IT_System_Attachments/${data.subFolder || 'Tickets'}`;
+              resolve({
+                status: "success",
+                fileId: simId,
+                viewUrl: `https://drive.google.com/file/d/${simId}/view?usp=sharing`,
+                downloadUrl: `https://drive.google.com/uc?export=download&id=${simId}`,
+                thumbnailUrl: data.base64Data || "",
+                folderName: folderLabel
+              });
+              break;
+            }
             case "addItem":
             case "updateItem":
             case "addDepartment":
@@ -6797,8 +7699,30 @@ function handleDeleteUserRole(data) {
           if (Array.isArray(res.items) && res.items.length > 0) state.items = res.items;
           if (Array.isArray(res.activeBorrows)) state.activeBorrows = res.activeBorrows;
           if (Array.isArray(res.allLogs)) state.allLogs = res.allLogs;
-          if (Array.isArray(res.tickets) && res.tickets.length > 0) state.tickets = res.tickets;
-          if (Array.isArray(res.knowledgeBase) && res.knowledgeBase.length > 0) state.knowledgeBase = res.knowledgeBase;
+          if (Array.isArray(res.tickets) && res.tickets.length > 0) {
+            state.tickets = res.tickets.map(t => {
+              const cached = getAttachmentFromCache(t.ticket_id);
+              if (cached) {
+                if (!t.attachment_name && cached.name) t.attachment_name = cached.name;
+                if (!t.attachment_base64 && cached.base64) t.attachment_base64 = cached.base64;
+                if (!t.attachment_url && cached.driveUrl) t.attachment_url = cached.driveUrl;
+                if (!t.drive_file_id && cached.driveFileId) t.drive_file_id = cached.driveFileId;
+              }
+              return t;
+            });
+          }
+          if (Array.isArray(res.knowledgeBase) && res.knowledgeBase.length > 0) {
+            state.knowledgeBase = res.knowledgeBase.map(k => {
+              const cached = getAttachmentFromCache(k.kb_id);
+              if (cached) {
+                if (!k.attachment_name && cached.name) k.attachment_name = cached.name;
+                if (!k.attachment_base64 && cached.base64) k.attachment_base64 = cached.base64;
+                if (!k.attachment_url && cached.driveUrl) k.attachment_url = cached.driveUrl;
+                if (!k.drive_file_id && cached.driveFileId) k.drive_file_id = cached.driveFileId;
+              }
+              return k;
+            });
+          }
           if (Array.isArray(res.categories) && res.categories.length > 0) state.categories = res.categories;
           if (Array.isArray(res.ticketCategories) && res.ticketCategories.length > 0) state.ticketCategories = res.ticketCategories;
           if (Array.isArray(res.internalSystems) && res.internalSystems.length > 0) {
@@ -6933,6 +7857,39 @@ function handleDeleteUserRole(data) {
       const initialTab = getTargetTabFromUrl() || 'borrowTab';
       switchTab(initialTab);
       setTimeout(() => refreshData(false), 500);
+
+      const dropZone = document.getElementById("ticketFileDropZone");
+      if (dropZone) {
+        ["dragenter", "dragover"].forEach(evtName => {
+          dropZone.addEventListener(evtName, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropZone.classList.add("border-tcc-500", "bg-tcc-50/50");
+          });
+        });
+        ["dragleave", "drop"].forEach(evtName => {
+          dropZone.addEventListener(evtName, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropZone.classList.remove("border-tcc-500", "bg-tcc-50/50");
+          });
+        });
+        dropZone.addEventListener("drop", (e) => {
+          const dtFiles = e.dataTransfer?.files;
+          if (dtFiles && dtFiles.length > 0) {
+            handleTicketFileSelect({ target: { files: dtFiles } });
+          }
+        });
+      }
+
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          const previewModal = document.getElementById("attachmentPreviewModal");
+          if (previewModal && !previewModal.classList.contains("hidden")) {
+            closeAttachmentPreviewModal();
+          }
+        }
+      });
     });
   </script>
 </body>

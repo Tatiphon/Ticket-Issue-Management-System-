@@ -344,6 +344,10 @@
             <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
             <span>จัดการสิทธิ์ผู้ใช้งาน</span>
           </button>
+          <button type="button" onclick="switchTab('emailSettingsTab')" id="sidebarBtn-emailSettingsTab" class="admin-sidebar-btn w-full px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 text-slate-700 hover:bg-slate-100 transition">
+            <svg class="w-4 h-4 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            <span>จัดการอีเมล &amp; ข้อความแจ้งเตือน</span>
+          </button>
           <button type="button" onclick="openDeptManagementModal()" class="w-full px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 text-slate-700 hover:bg-slate-100 transition">
             <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
             <span>จัดการฝ่าย / แผนก</span>
@@ -648,13 +652,13 @@
                       </div>
                     </div>
 
-                    <!-- Selected Items Container -->
-                    <div class="mt-2.5 p-3 bg-slate-50 rounded-xl border border-slate-200 min-h-[75px]">
-                      <div class="flex items-center justify-between mb-1.5 pb-1 border-b border-slate-200 text-[11px] text-slate-500">
-                        <span>รายการอุปกรณ์ที่จะขอยืมในรอบนี้:</span>
+                    <!-- Selected Items Container + Equipment Preview Gallery -->
+                    <div class="mt-2.5 p-3 bg-slate-50 rounded-xl border border-slate-200 min-h-[85px] space-y-2.5">
+                      <div class="flex items-center justify-between pb-1.5 border-b border-slate-200 text-[11px] text-slate-500">
+                        <span class="font-semibold text-slate-700">🖼️ รายการและรูปตัวอย่างอุปกรณ์ที่จะขอยืมในรอบนี้:</span>
                         <button type="button" onclick="clearSelectedBorrowItems()" class="text-rose-500 hover:text-rose-700 font-semibold">ล้างทั้งหมด</button>
                       </div>
-                      <div id="selectedItemsContainer" class="flex flex-wrap gap-2"></div>
+                      <div id="selectedItemsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5"></div>
                     </div>
                   </div>
 
@@ -1715,6 +1719,200 @@
         </div>
 
         <!-- ============================================================== -->
+        <!-- TAB: EMAIL MANAGEMENT & MESSAGE TEMPLATES (Admin Only) -->
+        <!-- ============================================================== -->
+        <div id="tabContent-emailSettingsTab" class="tab-content hidden admin-only-view">
+          <div class="space-y-4 max-w-[920px] mx-auto w-full">
+
+            <!-- Header Card -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-sky-500 shrink-0"></span>
+                  <h2 class="text-sm sm:text-base md:text-lg font-bold text-slate-900 tracking-tight truncate">
+                    จัดการอีเมลแจ้งเตือน &amp; ข้อความอีเมลอัตโนมัติ <span class="text-slate-500 font-semibold text-xs sm:text-sm font-sans">(Admin Email Management)</span>
+                  </h2>
+                </div>
+                <p class="text-xs text-slate-500 mt-0.5 truncate">กำหนดรายชื่ออีเมลผู้รับแจ้งเตือน แก้ไขหัวข้อและเนื้อหาข้อความแจ้งเตือนสำหรับการยืม-คืน และ Helpdesk</p>
+              </div>
+              <div class="flex flex-wrap items-center gap-2 shrink-0">
+                <button type="button" onclick="openEmailLogModal()" class="px-3 py-1.5 bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer">
+                  <span>📜</span>
+                  <span>ประวัติการส่งอีเมล</span>
+                </button>
+                <button type="button" onclick="saveAllEmailSettingsToServer()" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm transition cursor-pointer">
+                  <span>💾</span>
+                  <span>บันทึกการตั้งค่าทั้งหมด</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Section 1: Global Email Config & Notification Recipient List -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-5 space-y-4">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
+                <div>
+                  <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+                    <span>📬 1. จัดการอีเมลที่ใช้ส่งแจ้งเตือน และเงื่อนไขการส่งอัตโนมัติ</span>
+                  </h3>
+                  <p class="text-[11px] text-slate-500">เพิ่ม แก้ไข เปิด/ปิด หรือลบอีเมลผู้ดูแลระบบที่ต้องการให้รับการแจ้งเตือนอัตโนมัติ (แยกตามระบบยืม-คืน หรือ Helpdesk)</p>
+                </div>
+                <button type="button" onclick="openEmailRecipientModal(-1)" class="px-3.5 py-1.5 bg-tcc-600 hover:bg-tcc-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm transition cursor-pointer shrink-0">
+                  <span>+ เพิ่มอีเมลแจ้งเตือน</span>
+                </button>
+              </div>
+
+              <!-- Global Routing & Sender Settings -->
+              <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-3 text-xs">
+                <div class="flex flex-wrap items-center justify-between gap-3 pb-2.5 border-b border-slate-200/70">
+                  <label class="flex items-center gap-2 cursor-pointer font-bold text-emerald-900">
+                    <input type="checkbox" id="cfgEmailNotifyEnabled" onchange="toggleGlobalEmailSetting(this.checked)" class="w-4 h-4 rounded text-emerald-600 cursor-pointer">
+                    <span>เปิดใช้งานระบบส่งอีเมลแจ้งเตือนอัตโนมัติ (GAS MailApp)</span>
+                  </label>
+                  <span id="cfgEmailSyncStatusBadge" class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">✓ พร้อมใช้งาน</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label class="block text-[11px] font-semibold text-slate-700 mb-1">ชื่อผู้ส่งที่แสดงบนอีเมล (Sender Display Name):</label>
+                    <input type="text" id="cfgEmailSenderName" onchange="handleEmailConfigFieldChange()" placeholder="เช่น TCC IT Service &amp; Asset System" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs outline-none focus:ring-2 focus:ring-tcc-500">
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-semibold text-slate-700 mb-1">อีเมลสำหรับตอบกลับ (Reply-To Email):</label>
+                    <input type="email" id="cfgEmailReplyTo" onchange="handleEmailConfigFieldChange()" placeholder="เช่น it-support@thaichamber.or.th" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs outline-none focus:ring-2 focus:ring-tcc-500">
+                  </div>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-4 pt-1 text-[11px]">
+                  <label class="flex items-center gap-1.5 cursor-pointer font-medium text-slate-700">
+                    <input type="checkbox" id="cfgEmailNotifyRequester" onchange="handleEmailConfigFieldChange()" class="w-3.5 h-3.5 rounded text-tcc-600 cursor-pointer">
+                    <span>ส่งแจ้งผู้ยืมอุปกรณ์ / ผู้เปิดเคสอัตโนมัติ</span>
+                  </label>
+                  <label class="flex items-center gap-1.5 cursor-pointer font-medium text-slate-700">
+                    <input type="checkbox" id="cfgEmailNotifyAssignedAgent" onchange="handleEmailConfigFieldChange()" class="w-3.5 h-3.5 rounded text-tcc-600 cursor-pointer">
+                    <span>ส่งแจ้งเจ้าหน้าที่ผู้รับผิดชอบเคส (Assigned Agent)</span>
+                  </label>
+                  <label class="flex items-center gap-1.5 cursor-pointer font-medium text-slate-700">
+                    <input type="checkbox" id="cfgEmailNotifyAdminRoles" onchange="handleEmailConfigFieldChange()" class="w-3.5 h-3.5 rounded text-tcc-600 cursor-pointer">
+                    <span>รวมอีเมล Admin/Super Admin จากฐานข้อมูล UserRoles อัตโนมัติ</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Search & Scope Filter for Custom Recipient List -->
+              <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 text-xs">
+                <div class="flex items-center gap-2 flex-1">
+                  <input type="text" id="searchEmailRecipientInput" oninput="renderEmailRecipientsTable()" placeholder="ค้นหาอีเมล หรือชื่อผู้รับแจ้งเตือน..." class="flex-1 px-3 py-1.5 rounded-xl border border-slate-300 text-xs outline-none focus:ring-2 focus:ring-tcc-500">
+                  <select id="filterEmailRecipientScope" onchange="renderEmailRecipientsTable()" class="px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white text-xs font-medium text-slate-700">
+                    <option value="">ทุกขอบเขตการแจ้งเตือน</option>
+                    <option value="all">ทั้งหมด (ยืม-คืน &amp; Helpdesk)</option>
+                    <option value="borrow">เฉพาะระบบยืม-คืนอุปกรณ์</option>
+                    <option value="ticket">เฉพาะระบบแจ้งซ่อม (Helpdesk)</option>
+                  </select>
+                </div>
+                <span id="emailRecipientCountBadge" class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 font-bold text-[11px] shrink-0 text-center">0 อีเมล</span>
+              </div>
+
+              <!-- Recipients Table -->
+              <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-2xs">
+                <table class="w-full text-left text-xs whitespace-nowrap divide-y divide-slate-100">
+                  <thead class="bg-slate-50 text-slate-600 uppercase font-bold text-[11px] border-b border-slate-200">
+                    <tr>
+                      <th class="py-2.5 px-3 w-10 text-center">ลำดับ</th>
+                      <th class="py-2.5 px-3">อีเมลผู้รับแจ้งเตือน (Email)</th>
+                      <th class="py-2.5 px-3">ชื่อ / กลุ่ม / หมายเหตุ</th>
+                      <th class="py-2.5 px-3 text-center">ขอบเขตการรับแจ้งเตือน</th>
+                      <th class="py-2.5 px-3 text-center">สถานะ</th>
+                      <th class="py-2.5 px-3 text-center">จัดการ</th>
+                    </tr>
+                  </thead>
+                  <tbody id="emailRecipientsTableBody" class="divide-y divide-slate-100 bg-white"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Section 2: Email Message Template Editor -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-5 space-y-4">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
+                <div>
+                  <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+                    <span>✉️ 2. จัดการข้อความและหัวข้ออีเมลสำหรับแจ้งเตือนอัตโนมัติ (Email Message Templates)</span>
+                  </h3>
+                  <p class="text-[11px] text-slate-500">ปรับแต่งหัวข้อและข้อความของแต่ละเหตุการณ์ทั้งการยืม-คืนอุปกรณ์ และ Helpdesk พร้อมแทรกตัวแปรข้อมูลอัตโนมัติ</p>
+                </div>
+                <button type="button" onclick="resetAllEmailTemplatesToDefault()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-[11px] font-semibold transition cursor-pointer shrink-0">
+                  ↩️ คืนค่าเริ่มต้นทุกเทมเพลต
+                </button>
+              </div>
+
+              <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+                <!-- Event List (Left Column) -->
+                <div class="lg:col-span-4 space-y-1.5" id="emailTemplateEventList"></div>
+
+                <!-- Template Editor & Live Preview (Right Column) -->
+                <div class="lg:col-span-8 p-4 bg-slate-50/80 rounded-2xl border border-slate-200 space-y-3.5 text-xs">
+                  <div class="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-slate-200">
+                    <div>
+                      <span id="tplEditorEventBadge" class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-tcc-100 text-tcc-800 border border-tcc-200">BORROW_CREATED</span>
+                      <h4 id="tplEditorEventTitle" class="font-bold text-slate-900 text-sm mt-1">แจ้งเตือนเมื่อมีการยืมอุปกรณ์ใหม่</h4>
+                    </div>
+                    <label class="flex items-center gap-1.5 cursor-pointer font-bold text-emerald-800 bg-white px-2.5 py-1.5 rounded-xl border border-emerald-200">
+                      <input type="checkbox" id="tplEnabledCheckbox" onchange="handleTemplateFormInput()" class="w-4 h-4 rounded text-emerald-600 cursor-pointer">
+                      <span>เปิดส่งเหตุการณ์นี้</span>
+                    </label>
+                  </div>
+
+                  <div>
+                    <label class="block font-bold text-slate-700 mb-1">หัวข้ออีเมล (Subject): <span class="text-rose-500">*</span></label>
+                    <input type="text" id="tplSubjectInput" onfocus="setLastFocusedTemplateField('tplSubjectInput')" oninput="handleTemplateFormInput()" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs font-semibold outline-none focus:ring-2 focus:ring-tcc-500">
+                  </div>
+
+                  <div>
+                    <div class="flex items-center justify-between mb-1">
+                      <label class="block font-bold text-slate-700">คลิกเพื่อแทรกตัวแปรอัตโนมัติ (Dynamic Placeholders):</label>
+                      <span class="text-[10px] text-slate-400">แทรกลงในช่องหัวข้อหรือเนื้อหาที่กำลังเลือก</span>
+                    </div>
+                    <div id="tplVariableChips" class="flex flex-wrap gap-1.5 p-2 bg-white rounded-xl border border-slate-200"></div>
+                  </div>
+
+                  <div>
+                    <label class="block font-bold text-slate-700 mb-1">ข้อความเนื้อหาอีเมล (Email Body): <span class="text-rose-500">*</span></label>
+                    <textarea id="tplBodyInput" rows="7" onfocus="setLastFocusedTemplateField('tplBodyInput')" oninput="handleTemplateFormInput()" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs leading-relaxed font-sans outline-none focus:ring-2 focus:ring-tcc-500"></textarea>
+                  </div>
+
+                  <!-- Live Preview Box -->
+                  <div class="p-3.5 bg-white rounded-xl border border-sky-200 space-y-2 shadow-2xs">
+                    <div class="flex items-center justify-between text-[11px] font-bold text-sky-900 border-b border-sky-100 pb-1.5">
+                      <span>👁️ ตัวอย่างอีเมลจริงที่จะส่งออก (Live Preview)</span>
+                      <span class="text-[10px] font-normal text-slate-400">จำลองแทนค่าตัวแปรอัตโนมัติ</span>
+                    </div>
+                    <div class="text-xs font-bold text-slate-900 bg-slate-50 px-2.5 py-1.5 rounded-lg border border-slate-200">
+                      <span class="text-slate-400 font-semibold mr-1">Subject:</span>
+                      <span id="tplPreviewSubject">-</span>
+                    </div>
+                    <pre id="tplPreviewBody" class="text-xs text-slate-700 whitespace-pre-wrap font-sans leading-relaxed bg-slate-50/60 p-2.5 rounded-lg border border-slate-100 max-h-52 overflow-y-auto"></pre>
+                  </div>
+
+                  <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-200">
+                    <button type="button" onclick="resetSelectedTemplateToDefault()" class="px-3 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-600 border border-slate-300 font-semibold text-xs transition cursor-pointer">
+                      ↩️ คืนค่าเริ่มต้นเหตุการณ์นี้
+                    </button>
+                    <div class="flex flex-wrap items-center gap-2">
+                      <button type="button" onclick="testSendSelectedEmailTemplate()" class="px-3.5 py-2 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 font-bold text-xs transition cursor-pointer">
+                        🚀 ทดสอบส่งอีเมลด้วยเทมเพลตนี้
+                      </button>
+                      <button type="button" onclick="saveCurrentEmailTemplate()" class="px-4 py-2 rounded-xl bg-tcc-600 hover:bg-tcc-700 text-white font-bold text-xs shadow-sm transition cursor-pointer">
+                        💾 บันทึกเทมเพลตนี้
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ============================================================== -->
         <!-- TAB: AI ASSISTANT -->
         <!-- ============================================================== -->
         <div id="tabContent-aiAssistantTab" class="tab-content hidden">
@@ -2384,7 +2582,7 @@
           </div>
           <div>
             <span class="text-[10px] text-slate-400 block mb-0.5">หรือระบุลิงก์รูปภาพ / Google Drive File URL:</span>
-            <input type="text" id="editItemDriveUrl" placeholder="https://drive.google.com/file/d/..." class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs bg-white outline-none focus:ring-2 focus:ring-tcc-500">
+            <input type="text" id="editItemDriveUrl" oninput="handleItemDriveUrlInput(this.value, 'edit')" onchange="handleItemDriveUrlInput(this.value, 'edit')" placeholder="https://drive.google.com/file/d/..." class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs bg-white outline-none focus:ring-2 focus:ring-tcc-500">
           </div>
         </div>
 
@@ -2554,7 +2752,7 @@
           </div>
           <div>
             <span class="text-[10px] text-slate-400 block mb-0.5">หรือระบุลิงก์รูปภาพ / Google Drive File URL:</span>
-            <input type="text" id="newItemDriveUrl" placeholder="https://drive.google.com/file/d/..." class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs bg-white outline-none focus:ring-2 focus:ring-tcc-500">
+            <input type="text" id="newItemDriveUrl" oninput="handleItemDriveUrlInput(this.value, 'add')" onchange="handleItemDriveUrlInput(this.value, 'add')" placeholder="https://drive.google.com/file/d/..." class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs bg-white outline-none focus:ring-2 focus:ring-tcc-500">
           </div>
         </div>
 
@@ -2676,7 +2874,10 @@
           <input type="checkbox" id="globalEmailNotifyToggle" onchange="toggleGlobalEmailSetting(this.checked)" checked class="w-4 h-4 rounded text-emerald-600 cursor-pointer">
           <span>เปิดใช้งานระบบส่งอีเมลแจ้งเตือนอัตโนมัติ (Google Apps Script MailApp)</span>
         </label>
-        <div class="flex items-center gap-2">
+        <div class="flex flex-wrap items-center gap-2">
+          <button type="button" onclick="closeEmailLogModal(); switchTab('emailSettingsTab');" class="admin-only admin-hidden px-3 py-1.5 rounded-xl bg-tcc-600 hover:bg-tcc-700 text-white font-bold text-[11px] transition cursor-pointer">
+            ⚙️ ตั้งค่าอีเมล &amp; ข้อความแจ้งเตือน
+          </button>
           <button type="button" onclick="sendTestEmailNotification()" class="px-3 py-1.5 rounded-xl bg-white hover:bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold text-[11px] transition cursor-pointer">
             🚀 ทดสอบส่งอีเมลแจ้งเตือน
           </button>
@@ -2692,6 +2893,50 @@
         <span>* ระบบส่งอีเมลจริงผ่าน MailApp.sendEmail ของ Google Apps Script ไปยังอีเมลผู้ใช้งานและทีม Admin ไอที</span>
         <button type="button" onclick="closeEmailLogModal()" class="px-4 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs">ปิดหน้าต่าง</button>
       </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD / EDIT NOTIFICATION EMAIL RECIPIENT -->
+  <div id="emailRecipientModal" onclick="if(event.target === this) closeEmailRecipientModal()" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100 animate-fadeIn">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+        <div>
+          <h3 id="emailRecipientModalTitle" class="font-bold text-slate-900 text-sm">เพิ่มอีเมลรับแจ้งเตือนอัตโนมัติ</h3>
+          <p class="text-[11px] text-slate-500">กำหนดอีเมลเจ้าหน้าที่หรือกลุ่มผู้รับแจ้งเตือนตามระบบ</p>
+        </div>
+        <button type="button" onclick="closeEmailRecipientModal()" class="text-slate-400 hover:text-slate-600 font-bold p-1">✕</button>
+      </div>
+
+      <form onsubmit="handleSaveEmailRecipient(event)" class="space-y-3 text-xs">
+        <input type="hidden" id="emailRecipientEditIdx" value="-1">
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">อีเมลผู้รับแจ้งเตือน (Email Address) <span class="text-rose-500">*</span></label>
+          <input type="email" id="inputEmailRecipientAddr" required list="userDatabaseEmailsList" placeholder="เช่น it-support@thaichamber.or.th" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs outline-none focus:ring-2 focus:ring-tcc-500">
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">ชื่อผู้รับ / กลุ่มผู้รับ / หมายเหตุ</label>
+          <input type="text" id="inputEmailRecipientName" placeholder="เช่น ทีมผู้ดูแลระบบไอที TCC" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs outline-none focus:ring-2 focus:ring-tcc-500">
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">ขอบเขตการรับอีเมลแจ้งเตือน <span class="text-rose-500">*</span></label>
+          <select id="inputEmailRecipientScope" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs font-semibold text-slate-800 outline-none focus:ring-2 focus:ring-tcc-500">
+            <option value="all">ทั้งหมด (ทั้งยืม-คืนอุปกรณ์ และ Helpdesk)</option>
+            <option value="borrow">เฉพาะระบบยืม-คืนอุปกรณ์ (Borrow &amp; Return)</option>
+            <option value="ticket">เฉพาะระบบแจ้งซ่อมไอที (IT Helpdesk)</option>
+          </select>
+        </div>
+        <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200">
+          <label class="flex items-center gap-2 cursor-pointer font-semibold text-slate-800">
+            <input type="checkbox" id="inputEmailRecipientActive" checked class="w-4 h-4 rounded text-emerald-600 cursor-pointer">
+            <span>เปิดใช้งานการส่งอีเมลไปยังที่อยู่นี้</span>
+          </label>
+        </div>
+
+        <div class="pt-3 flex justify-end gap-2 border-t border-slate-100">
+          <button type="button" onclick="closeEmailRecipientModal()" class="px-4 py-2 rounded-xl font-semibold text-slate-600 hover:bg-slate-100">ยกเลิก</button>
+          <button type="submit" class="px-4 py-2 rounded-xl font-bold bg-tcc-600 hover:bg-tcc-700 text-white shadow-sm">บันทึกข้อมูล</button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -3070,6 +3315,212 @@
 
     const STORAGE_KEY_EMAIL_LOGS = "it_asset_email_notification_logs";
     const STORAGE_KEY_EMAIL_ENABLED = "it_asset_email_notify_enabled";
+    const STORAGE_KEY_EMAIL_CONFIG = "it_asset_email_config";
+    const STORAGE_KEY_EMAIL_TEMPLATES = "it_asset_email_templates";
+
+    const DEFAULT_EMAIL_CONFIG = {
+      senderName: "TCC IT Service & Asset System",
+      replyTo: "tatiphon.hi@thaichamber.or.th",
+      notifyRequester: true,
+      notifyAssignedAgent: true,
+      notifyAdminRoles: true,
+      recipients: [
+        { email: "tatiphon.hi@thaichamber.or.th", name: "ผู้ดูแลระบบหลัก (Super Admin)", scope: "all", active: true },
+        { email: "wattanachai.mi@thaichamber.or.th", name: "เจ้าหน้าที่ไอที (Helpdesk & Asset)", scope: "all", active: true },
+        { email: "supakon.su@thaichamber.or.th", name: "เจ้าหน้าที่ไอที (Network & Support)", scope: "ticket", active: true }
+      ]
+    };
+
+    const DEFAULT_EMAIL_TEMPLATES = {
+      BORROW_CREATED: {
+        key: "BORROW_CREATED",
+        title: "ยืมอุปกรณ์ใหม่ (Borrow Created)",
+        group: "borrow",
+        enabled: true,
+        subject: "[TCC IT Asset] ยืนยันการยืมอุปกรณ์ {{trans_id}} ({{borrower_name}})",
+        body: "เรียน คุณ{{borrower_name}} ({{borrower_dept}})\n\nระบบได้รับคำขอยืมอุปกรณ์ไอทีของท่านเรียบร้อยแล้ว โดยมีรายละเอียดดังนี้:\n• รหัสธุรกรรม: {{trans_id}}\n• รายการอุปกรณ์: {{item_names}}\n• วันที่ยืม: {{borrow_date}}\n• กำหนดส่งคืน: {{expected_return}}\n• วัตถุประสงค์ / หมายเหตุ: {{notes}}\n\nกรุณาส่งคืนอุปกรณ์ภายในวันที่กำหนด ขอบคุณครับ/ค่ะ\nฝ่ายเทคโนโลยีสารสนเทศ หอการค้าไทย",
+        variables: ["{{trans_id}}", "{{item_names}}", "{{borrower_name}}", "{{borrower_dept}}", "{{borrower_contact}}", "{{borrow_date}}", "{{expected_return}}", "{{notes}}", "{{timestamp}}"],
+        sampleData: {
+          trans_id: "ITB-2026-11-01-0001",
+          item_names: "[IT-001] Dell Latitude 5430 (i7/16GB)",
+          borrower_name: "สมชาย ใจดี",
+          borrower_dept: "ฝ่ายการเงินและการบัญชี",
+          borrower_contact: "somchai.user@thaichamber.or.th",
+          borrow_date: getOffsetDate(0),
+          expected_return: getOffsetDate(3),
+          notes: "ใช้ประชุมงานนอกสถานที่",
+          timestamp: getLocalTimestamp(0)
+        }
+      },
+      BORROW_RETURNED: {
+        key: "BORROW_RETURNED",
+        title: "ยืนยันรับคืนอุปกรณ์ (Borrow Returned)",
+        group: "borrow",
+        enabled: true,
+        subject: "[TCC IT Asset] ยืนยันการรับคืนอุปกรณ์เรียบร้อย ({{trans_id}})",
+        body: "เรียน คุณ{{borrower_name}} ({{borrower_dept}})\n\nฝ่ายเทคโนโลยีสารสนเทศได้รับคืนอุปกรณ์จากท่านเรียบร้อยแล้ว:\n• รหัสธุรกรรม: {{trans_id}}\n• รายการอุปกรณ์ที่คืน: {{item_names}}\n• วัน-เวลาที่รับคืน: {{actual_return}}\n\nขอบคุณที่ดูแลรักษาอุปกรณ์เป็นอย่างดีครับ/ค่ะ",
+        variables: ["{{trans_id}}", "{{item_names}}", "{{borrower_name}}", "{{borrower_dept}}", "{{borrower_contact}}", "{{actual_return}}", "{{timestamp}}"],
+        sampleData: {
+          trans_id: "ITB-2026-11-01-0001",
+          item_names: "[IT-001] Dell Latitude 5430 (i7/16GB)",
+          borrower_name: "สมชาย ใจดี",
+          borrower_dept: "ฝ่ายการเงินและการบัญชี",
+          borrower_contact: "somchai.user@thaichamber.or.th",
+          actual_return: getLocalTimestamp(0),
+          timestamp: getLocalTimestamp(0)
+        }
+      },
+      BORROW_UPDATED: {
+        key: "BORROW_UPDATED",
+        title: "แก้ไข / อัปเดตรายการยืม-คืน (Borrow Updated)",
+        group: "borrow",
+        enabled: true,
+        subject: "[TCC IT Asset] อัปเดตข้อมูลรายการยืม-คืน {{trans_id}} ({{trans_status}})",
+        body: "เรียน คุณ{{borrower_name}} ({{borrower_dept}})\n\nเจ้าหน้าที่ได้ปรับปรุงข้อมูลรายการยืม-คืนของท่านแล้ว:\n• รหัสธุรกรรม: {{trans_id}}\n• อุปกรณ์: {{item_names}}\n• สถานะล่าสุด: {{trans_status}}\n• กำหนดส่งคืน: {{expected_return}}\n• วันที่คืนจริง: {{actual_return}}\n• หมายเหตุ: {{notes}}\n\nฝ่ายเทคโนโลยีสารสนเทศ หอการค้าไทย",
+        variables: ["{{trans_id}}", "{{item_names}}", "{{borrower_name}}", "{{borrower_dept}}", "{{trans_status}}", "{{borrow_date}}", "{{expected_return}}", "{{actual_return}}", "{{notes}}", "{{timestamp}}"],
+        sampleData: {
+          trans_id: "ITB-2026-11-01-0001",
+          item_names: "[IT-001] Dell Latitude 5430 (i7/16GB)",
+          borrower_name: "สมชาย ใจดี",
+          borrower_dept: "ฝ่ายการเงินและการบัญชี",
+          trans_status: "Returned",
+          borrow_date: getOffsetDate(-2),
+          expected_return: getOffsetDate(1),
+          actual_return: getLocalTimestamp(0),
+          notes: "ตรวจสอบสภาพสมบูรณ์ครบถ้วน",
+          timestamp: getLocalTimestamp(0)
+        }
+      },
+      TICKET_CREATED: {
+        key: "TICKET_CREATED",
+        title: "เปิดเคสแจ้งซ่อมใหม่ (Ticket Created)",
+        group: "ticket",
+        enabled: true,
+        subject: "[TCC IT Helpdesk] แจ้งเปิดเคสใหม่ #{{ticket_id}}: {{title}}",
+        body: "เรียน คุณ{{reporter_name}} และทีมเจ้าหน้าที่ไอที\n\nระบบได้รับแจ้งปัญหา/เปิดเคสใหม่เรียบร้อยแล้ว:\n• รหัสเคส: {{ticket_id}}\n• หัวข้อปัญหา: {{title}}\n• หมวดหมู่: {{category}} {{system_name}}\n• ระดับความสำคัญ: {{priority}} (กำหนด SLA: {{sla_target}})\n• ผู้แจ้ง: {{reporter_name}} ({{reporter_dept}})\n• รายละเอียด: {{description}}\n\nเจ้าหน้าที่จะดำเนินการตรวจสอบโดยเร็วที่สุดครับ/ค่ะ",
+        variables: ["{{ticket_id}}", "{{title}}", "{{category}}", "{{system_name}}", "{{priority}}", "{{status}}", "{{reporter_name}}", "{{reporter_dept}}", "{{reporter_contact}}", "{{description}}", "{{sla_target}}", "{{assigned_agent}}", "{{timestamp}}"],
+        sampleData: {
+          ticket_id: "ITC-2026-11-01-0001",
+          title: "ไม่สามารถเข้าใช้งานอีเมลองค์กรบนมือถือได้",
+          category: "อีเมลองค์กร / บัญชีผู้ใช้งาน / รหัสผ่าน",
+          system_name: "",
+          priority: "High",
+          status: "Open",
+          reporter_name: "สมชาย ใจดี",
+          reporter_dept: "ฝ่ายการเงินและการบัญชี",
+          reporter_contact: "somchai.user@thaichamber.or.th",
+          description: "ระบบแจ้งรหัสผ่านหมดอายุหลังจากเปลี่ยนเครื่องใหม่",
+          sla_target: getLocalTimestamp(4),
+          assigned_agent: "ยังไม่มอบหมาย",
+          timestamp: getLocalTimestamp(0)
+        }
+      },
+      TICKET_UPDATED: {
+        key: "TICKET_UPDATED",
+        title: "อัปเดตสถานะเคส (Ticket Updated)",
+        group: "ticket",
+        enabled: true,
+        subject: "[TCC IT Helpdesk] อัปเดตสถานะเคส #{{ticket_id}} → {{status}}",
+        body: "เรียน คุณ{{reporter_name}}\n\nเคสแจ้งปัญหาของคุณมีการอัปเดตสถานะจากทีมไอทีแล้ว:\n• รหัสเคส: {{ticket_id}}\n• หัวข้อ: {{title}}\n• สถานะล่าสุด: {{status}}\n• ผู้รับผิดชอบ: {{assigned_agent}}\n• บันทึกเพิ่มเติม: {{note}}\n\nท่านสามารถติดตามรายละเอียดได้ในเมนู 'เคสแจ้งซ่อมของฉัน'",
+        variables: ["{{ticket_id}}", "{{title}}", "{{status}}", "{{assigned_agent}}", "{{reporter_name}}", "{{note}}", "{{resolved_at}}", "{{timestamp}}"],
+        sampleData: {
+          ticket_id: "ITC-2026-11-01-0001",
+          title: "ไม่สามารถเข้าใช้งานอีเมลองค์กรบนมือถือได้",
+          status: "Resolved",
+          assigned_agent: "wattanachai.mi@thaichamber.or.th",
+          reporter_name: "สมชาย ใจดี",
+          note: "ดำเนินการรีเซ็ต Token และทดสอบเข้าใช้งานสำเร็จแล้ว",
+          resolved_at: getLocalTimestamp(0),
+          timestamp: getLocalTimestamp(0)
+        }
+      },
+      TICKET_ASSIGNED: {
+        key: "TICKET_ASSIGNED",
+        title: "มอบหมายผู้รับผิดชอบเคส (Ticket Assigned)",
+        group: "ticket",
+        enabled: true,
+        subject: "[TCC IT Helpdesk] มอบหมายเคส #{{ticket_id}} ให้ {{assigned_agent}}",
+        body: "เรียน {{assigned_agent}} และคุณ{{reporter_name}}\n\nระบบได้มอบหมายผู้รับผิดชอบเคสแจ้งซ่อมเรียบร้อยแล้ว:\n• รหัสเคส: {{ticket_id}}\n• หัวข้อ: {{title}}\n• ความสำคัญ: {{priority}} (SLA: {{sla_target}})\n• ผู้แจ้ง: {{reporter_name}} ({{reporter_dept}})\n• ผู้รับผิดชอบเคส: {{assigned_agent}}",
+        variables: ["{{ticket_id}}", "{{title}}", "{{priority}}", "{{status}}", "{{assigned_agent}}", "{{reporter_name}}", "{{reporter_dept}}", "{{sla_target}}", "{{timestamp}}"],
+        sampleData: {
+          ticket_id: "ITC-2026-11-01-0001",
+          title: "ไม่สามารถเข้าใช้งานอีเมลองค์กรบนมือถือได้",
+          priority: "High",
+          status: "In Progress",
+          assigned_agent: "Wattanachai (Admin) (wattanachai.mi@thaichamber.or.th)",
+          reporter_name: "สมชาย ใจดี",
+          reporter_dept: "ฝ่ายการเงินและการบัญชี",
+          sla_target: getLocalTimestamp(4),
+          timestamp: getLocalTimestamp(0)
+        }
+      },
+      TICKET_COMMENT: {
+        key: "TICKET_COMMENT",
+        title: "ข้อความตอบกลับใหม่ในเคส (Ticket Comment)",
+        group: "ticket",
+        enabled: true,
+        subject: "[TCC IT Helpdesk] ข้อความใหม่ในเคส #{{ticket_id}}: {{title}}",
+        body: "เรียน คุณ{{reporter_name}} และผู้รับผิดชอบเคส\n\nมีการตอบกลับข้อความใหม่ในเคส #{{ticket_id}} ({{title}}):\n• จาก: {{sender}}\n• ข้อความ: {{message}}\n• สถานะเคส: {{status}}\n\nกรุณาตรวจสอบรายละเอียดและตอบกลับผ่านระบบ IT Helpdesk ครับ/ค่ะ",
+        variables: ["{{ticket_id}}", "{{title}}", "{{status}}", "{{reporter_name}}", "{{assigned_agent}}", "{{sender}}", "{{message}}", "{{timestamp}}"],
+        sampleData: {
+          ticket_id: "ITC-2026-11-01-0001",
+          title: "ไม่สามารถเข้าใช้งานอีเมลองค์กรบนมือถือได้",
+          status: "In Progress",
+          reporter_name: "สมชาย ใจดี",
+          assigned_agent: "wattanachai.mi@thaichamber.or.th",
+          sender: "Wattanachai (Admin)",
+          message: "เจ้าหน้าที่ได้ทำการตรวจสอบบัญชีให้เรียบร้อยแล้ว รบกวนลองเข้าสู่ระบบใหม่อีกครั้งครับ",
+          timestamp: getLocalTimestamp(0)
+        }
+      }
+    };
+
+    function loadSavedEmailConfig() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_EMAIL_CONFIG);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && typeof parsed === "object") {
+            return {
+              ...DEFAULT_EMAIL_CONFIG,
+              ...parsed,
+              recipients: Array.isArray(parsed.recipients)
+                ? parsed.recipients.map(r => ({
+                    email: String(r.email || "").trim().toLowerCase(),
+                    name: String(r.name || "").trim(),
+                    scope: ["all", "borrow", "ticket"].includes(r.scope) ? r.scope : "all",
+                    active: r.active !== false
+                  })).filter(r => r.email)
+                : [...DEFAULT_EMAIL_CONFIG.recipients]
+            };
+          }
+        }
+      } catch (e) {}
+      return JSON.parse(JSON.stringify(DEFAULT_EMAIL_CONFIG));
+    }
+
+    function loadSavedEmailTemplates() {
+      const merged = JSON.parse(JSON.stringify(DEFAULT_EMAIL_TEMPLATES));
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_EMAIL_TEMPLATES);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && typeof parsed === "object") {
+            Object.keys(merged).forEach(k => {
+              if (parsed[k] && typeof parsed[k] === "object") {
+                merged[k] = {
+                  ...merged[k],
+                  enabled: parsed[k].enabled !== undefined ? !!parsed[k].enabled : merged[k].enabled,
+                  subject: parsed[k].subject || merged[k].subject,
+                  body: parsed[k].body || merged[k].body
+                };
+              }
+            });
+          }
+        }
+      } catch (e) {}
+      return merged;
+    }
 
     function loadSavedEmailLogs() {
       try {
@@ -3134,6 +3585,9 @@
       currentUser: null,
       userRoles: loadSavedUserRoles(),
       emailNotifyEnabled: localStorage.getItem(STORAGE_KEY_EMAIL_ENABLED) !== "false",
+      emailConfig: loadSavedEmailConfig(),
+      emailTemplates: loadSavedEmailTemplates(),
+      selectedEmailTemplateEvent: "BORROW_CREATED",
       emailLogs: loadSavedEmailLogs()
     };
 
@@ -3327,19 +3781,125 @@
     }
 
     /* ============================================================================
-     * REQUIREMENT 2: AUTOMATED EMAIL NOTIFICATION SYSTEM (แจ้งเตือนอีเมลอัตโนมัติ)
+     * REQUIREMENT 2: AUTOMATED EMAIL NOTIFICATION SYSTEM & ADMIN EMAIL MANAGER
      * ============================================================================ */
+    let lastFocusedTemplateFieldId = "tplBodyInput";
+
     function resolveUserEmailAddress(contactOrName, fallbackName = "") {
       const raw = String(contactOrName || "").trim();
-      if (raw.includes("@") && raw.includes(".")) return raw.toLowerCase();
+      const emailMatch = raw.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+      if (emailMatch) return emailMatch[0].toLowerCase();
       const matched = findMatchedUserInDatabase(raw) || findMatchedUserInDatabase(fallbackName);
-      if (matched && matched.email && matched.email.includes("@")) return matched.email.toLowerCase();
+      if (matched && matched.email && matched.email.includes("@")) return matched.email.trim().toLowerCase();
       return "";
     }
 
     function getAdminRecipientEmails() {
       const admins = (state.userRoles || []).filter(r => (r.role === "admin" || r.role === "superadmin") && r.status !== "disabled" && String(r.email || "").includes("@"));
-      return Array.from(new Set(admins.map(a => a.email.trim().toLowerCase()))).slice(0, 5);
+      return Array.from(new Set(admins.map(a => a.email.trim().toLowerCase()))).slice(0, 10);
+    }
+
+    function getEmailEventGroup(eventType) {
+      const s = String(eventType || "").toUpperCase();
+      if (s.startsWith("BORROW_")) return "borrow";
+      if (s.startsWith("TICKET_")) return "ticket";
+      return "all";
+    }
+
+    function saveEmailConfigToStorage() {
+      try {
+        localStorage.setItem(STORAGE_KEY_EMAIL_CONFIG, JSON.stringify(state.emailConfig || DEFAULT_EMAIL_CONFIG));
+      } catch (e) {}
+    }
+
+    function saveEmailTemplatesToStorage() {
+      try {
+        const compact = {};
+        Object.keys(state.emailTemplates || {}).forEach(k => {
+          const tpl = state.emailTemplates[k];
+          compact[k] = {
+            enabled: tpl.enabled !== false,
+            subject: tpl.subject || "",
+            body: tpl.body || ""
+          };
+        });
+        localStorage.setItem(STORAGE_KEY_EMAIL_TEMPLATES, JSON.stringify(compact));
+      } catch (e) {}
+    }
+
+    async function saveAllEmailSettingsToServer(silent = false) {
+      saveEmailConfigToStorage();
+      saveEmailTemplatesToStorage();
+      localStorage.setItem(STORAGE_KEY_EMAIL_ENABLED, state.emailNotifyEnabled ? "true" : "false");
+
+      const badge = document.getElementById("cfgEmailSyncStatusBadge");
+      if (badge) badge.innerText = "🔄 กำลังบันทึก...";
+
+      const compactTemplates = {};
+      Object.keys(state.emailTemplates || {}).forEach(k => {
+        const t = state.emailTemplates[k];
+        compactTemplates[k] = { enabled: t.enabled !== false, subject: t.subject || "", body: t.body || "" };
+      });
+
+      const res = await callAPI("saveEmailSettings", {
+        emailNotifyEnabled: !!state.emailNotifyEnabled,
+        emailConfig: state.emailConfig,
+        emailTemplates: compactTemplates
+      }, true);
+
+      if (badge) {
+        badge.innerText = res && res.status === "success"
+          ? (state.isLive ? "✓ ซิงค์กับ Google Sheets แล้ว" : "✓ บันทึกในระบบเรียบร้อย")
+          : "✓ บันทึกในเบราว์เซอร์แล้ว";
+      }
+      if (!silent) {
+        showNotification("💾 บันทึกการตั้งค่าอีเมลและเทมเพลตข้อความทั้งหมดเรียบร้อยแล้ว", "success");
+      }
+    }
+
+    function renderEmailTemplate(templateStr, vars = {}) {
+      let out = String(templateStr || "");
+      out = out.replace(/\{\{([a-zA-Z0-9_]+)\}\}/g, (_, key) => {
+        const val = vars[key];
+        return (val !== undefined && val !== null) ? String(val) : "";
+      });
+      return out.split("\n").map(line => line.replace(/ {2,}/g, " ").trimEnd()).join("\n").trim();
+    }
+
+    function buildNormalizedEmailVars(eventType, details = {}) {
+      const transIdsStr = Array.isArray(details.transIds) ? details.transIds.join(", ") : "";
+      const itemNamesStr = Array.isArray(details.itemNames) ? details.itemNames.join(", ") : "";
+      const sysRaw = String(details.system_name || details.systemName || "").trim();
+
+      return {
+        trans_id: String(details.trans_id || details.transId || transIdsStr || "-"),
+        item_names: String(details.item_names || details.item_name || itemNamesStr || details.item_id || "-"),
+        borrower_name: String(details.borrower_name || details.borrowerName || details.userName || "-"),
+        borrower_dept: String(details.borrower_dept || details.dept || details.reporter_dept || "-"),
+        borrower_contact: String(details.borrower_contact || details.contact || details.userContact || "-"),
+        borrow_date: String(details.borrow_date || details.borrowDate || "-"),
+        expected_return: String(details.expected_return || details.expectedReturn || "-"),
+        actual_return: String(details.actual_return || details.actualReturn || "-"),
+        trans_status: String(details.trans_status || details.status || "-"),
+        notes: String(details.notes || details.note || "-"),
+        note: String(details.note || details.notes || "-"),
+        ticket_id: String(details.ticket_id || details.ticketId || "-"),
+        title: String(details.title || "-"),
+        category: String(details.category || "-"),
+        system_name: sysRaw ? `(ระบบ: ${sysRaw})` : "",
+        priority: String(details.priority || "-"),
+        status: String(details.status || details.trans_status || "-"),
+        reporter_name: String(details.reporter_name || details.reporterName || details.userName || "-"),
+        reporter_dept: String(details.reporter_dept || details.dept || "-"),
+        reporter_contact: String(details.reporter_contact || details.contact || details.userContact || "-"),
+        description: String(details.description || "-"),
+        sla_target: String(details.sla_target || details.slaTarget || "-"),
+        assigned_agent: String(details.assigned_agent || details.assignedAgent || "ยังไม่มอบหมาย"),
+        resolved_at: String(details.resolved_at || details.resolvedAt || "-"),
+        sender: String(details.sender || "-"),
+        message: String(details.message || "-"),
+        timestamp: String(details.timestamp || getLocalTimestamp(0))
+      };
     }
 
     function updateEmailLogBadges() {
@@ -3347,28 +3907,56 @@
       if (badge) badge.innerText = (state.emailLogs || []).length;
       const toggle = document.getElementById("globalEmailNotifyToggle");
       if (toggle) toggle.checked = !!state.emailNotifyEnabled;
+      const cfgToggle = document.getElementById("cfgEmailNotifyEnabled");
+      if (cfgToggle) cfgToggle.checked = !!state.emailNotifyEnabled;
     }
 
     async function sendSystemEmailNotification(eventType, details = {}) {
       if (!state.emailNotifyEnabled && !details.forceSend) return null;
 
+      const tpl = (state.emailTemplates || {})[eventType];
+      if (tpl && tpl.enabled === false && !details.forceSend) {
+        return null;
+      }
+
+      const cfg = state.emailConfig || DEFAULT_EMAIL_CONFIG;
+      const group = getEmailEventGroup(eventType);
       const recipientsSet = new Set();
+
       if (Array.isArray(details.recipients)) {
         details.recipients.forEach(r => {
           const resolved = resolveUserEmailAddress(r);
           if (resolved) recipientsSet.add(resolved);
         });
       }
-      if (details.userContact || details.userName) {
-        const userMail = resolveUserEmailAddress(details.userContact, details.userName);
-        if (userMail) recipientsSet.add(userMail);
+
+      if (cfg.notifyRequester !== false && details.notifyRequester !== false) {
+        const contactCandidate = details.borrower_contact || details.contact || details.reporter_contact || details.userContact || "";
+        const nameCandidate = details.borrower_name || details.borrowerName || details.reporter_name || details.reporterName || details.userName || "";
+        if (contactCandidate || nameCandidate) {
+          const userMail = resolveUserEmailAddress(contactCandidate, nameCandidate);
+          if (userMail) recipientsSet.add(userMail);
+        }
       }
-      if (details.assignedAgent) {
-        const agentMail = resolveUserEmailAddress(details.assignedAgent, details.assignedAgent);
+
+      if (cfg.notifyAssignedAgent !== false && (details.assigned_agent || details.assignedAgent)) {
+        const agRaw = details.assigned_agent || details.assignedAgent;
+        const agentMail = resolveUserEmailAddress(agRaw, agRaw);
         if (agentMail) recipientsSet.add(agentMail);
       }
+
       if (details.notifyAdmins !== false) {
-        getAdminRecipientEmails().forEach(em => recipientsSet.add(em));
+        (cfg.recipients || []).forEach(rec => {
+          if (!rec || rec.active === false) return;
+          const sc = rec.scope || "all";
+          if (sc === "all" || sc === group || group === "all") {
+            const em = resolveUserEmailAddress(rec.email);
+            if (em) recipientsSet.add(em);
+          }
+        });
+        if (cfg.notifyAdminRoles !== false) {
+          getAdminRecipientEmails().forEach(em => recipientsSet.add(em));
+        }
       }
 
       const recipients = Array.from(recipientsSet).filter(Boolean);
@@ -3376,17 +3964,25 @@
         recipients.push(state.currentUser.email);
       }
 
-      const subject = details.subject || "[TCC IT Service] แจ้งเตือนความเคลื่อนไหวระบบบริการไอที";
-      const summary = details.summary || "";
-      const htmlBody = details.htmlBody || "";
+      const vars = buildNormalizedEmailVars(eventType, details);
+      const subject = details.subject
+        ? renderEmailTemplate(details.subject, vars)
+        : (tpl ? renderEmailTemplate(tpl.subject, vars) : "[TCC IT Service] แจ้งเตือนความเคลื่อนไหวระบบบริการไอที");
+      const body = details.body
+        ? renderEmailTemplate(details.body, vars)
+        : (tpl ? renderEmailTemplate(tpl.body, vars) : (details.summary || ""));
+      const summary = details.summary || body.split("\n").filter(Boolean).slice(0, 2).join(" • ");
 
       const logEntry = {
         id: "EML-" + Date.now().toString(36).toUpperCase(),
         timestamp: getLocalTimestamp(0),
         eventType: eventType || "SYSTEM_UPDATE",
         subject,
-        recipients,
+        body,
         summary,
+        recipients,
+        senderName: cfg.senderName || DEFAULT_EMAIL_CONFIG.senderName,
+        replyTo: cfg.replyTo || "",
         status: state.isLive ? "Sent (GAS MailApp)" : "Sent (Simulated)"
       };
 
@@ -3401,15 +3997,18 @@
         showNotification(`📧 ส่งอีเมลแจ้งเตือนไปยัง ${recipients.slice(0, 2).join(", ")}${recipients.length > 2 ? ` (+${recipients.length - 2})` : ""} เรียบร้อย`, "info");
       }
 
-      // Trigger backend GAS MailApp if requested as standalone call
-      if (details.sendViaApi) {
+      if (details.sendViaApi !== false) {
         try {
           await callAPI("sendEmailNotification", {
             eventType,
+            to: recipients,
             recipients,
             subject,
+            body,
             summary,
-            details: details.meta || {}
+            senderName: cfg.senderName || DEFAULT_EMAIL_CONFIG.senderName,
+            replyTo: cfg.replyTo || "",
+            details: vars
           }, true);
         } catch (err) {
           console.warn("Email API fallback:", err);
@@ -3431,12 +4030,14 @@
     function toggleGlobalEmailSetting(enabled) {
       state.emailNotifyEnabled = !!enabled;
       localStorage.setItem(STORAGE_KEY_EMAIL_ENABLED, state.emailNotifyEnabled ? "true" : "false");
+      updateEmailLogBadges();
       showNotification(
         state.emailNotifyEnabled
           ? "เปิดระบบส่งอีเมลแจ้งเตือนอัตโนมัติแล้ว"
           : "ปิดระบบส่งอีเมลแจ้งเตือนชั่วคราว",
         state.emailNotifyEnabled ? "success" : "warning"
       );
+      saveAllEmailSettingsToServer(true);
     }
 
     function clearEmailLogs() {
@@ -3448,14 +4049,16 @@
     }
 
     async function sendTestEmailNotification() {
-      const targetEmail = state.currentUser?.email || "tatiphon.hi@thaichamber.or.th";
+      const targetEmail = state.currentUser?.email || state.emailConfig?.replyTo || "tatiphon.hi@thaichamber.or.th";
       await sendSystemEmailNotification("TEST_EMAIL", {
         forceSend: true,
         sendViaApi: true,
         recipients: [targetEmail],
         notifyAdmins: false,
+        notifyRequester: false,
         subject: `[TCC IT System] ทดสอบระบบแจ้งเตือนอีเมลอัตโนมัติ (${getLocalTimestamp(0)})`,
-        summary: `ทดสอบส่งอีเมลแจ้งเตือนไปยังผู้ใช้งานปัจจุบัน: ${state.currentUser?.name || 'Admin'} (${targetEmail})`
+        body: `เรียน คุณ${state.currentUser?.name || "Admin"}\n\nนี่คืออีเมลทดสอบจากระบบบริหารจัดการอุปกรณ์และ Helpdesk ฝ่ายเทคโนโลยีสารสนเทศ หอการค้าไทย\n• ผู้ทดสอบ: ${state.currentUser?.name || "Admin"} (${targetEmail})\n• สถานะการส่ง: ปกติ`,
+        summary: `ทดสอบส่งอีเมลแจ้งเตือนไปยังผู้ใช้งานปัจจุบัน: ${state.currentUser?.name || "Admin"} (${targetEmail})`
       });
     }
 
@@ -3481,6 +4084,7 @@
 
       container.innerHTML = logs.map(l => {
         const badge = typeBadgeMap[l.eventType] || { label: "📧 แจ้งเตือนระบบ", cls: "bg-slate-100 text-slate-700 border-slate-200" };
+        const bodyOrSummary = l.body || l.summary || "";
         return `
           <div class="p-3 rounded-2xl border border-slate-200 bg-slate-50/60 hover:bg-white transition space-y-1.5 text-xs">
             <div class="flex flex-wrap items-center justify-between gap-2">
@@ -3488,10 +4092,10 @@
                 <span class="px-2 py-0.5 rounded-lg border text-[10px] font-bold ${badge.cls}">${badge.label}</span>
                 <span class="font-mono text-[10px] text-slate-400">${l.timestamp}</span>
               </div>
-              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">✓ ${l.status || 'Sent'}</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">✓ ${l.status || "Sent"}</span>
             </div>
             <div class="font-bold text-slate-900">${l.subject}</div>
-            ${l.summary ? `<div class="text-slate-600 text-[11px]">${l.summary}</div>` : ''}
+            ${bodyOrSummary ? `<div class="text-slate-600 text-[11px] whitespace-pre-line bg-white/80 p-2 rounded-xl border border-slate-100">${bodyOrSummary}</div>` : ""}
             <div class="text-[10px] text-slate-500 flex flex-wrap items-center gap-1 pt-1 border-t border-slate-100">
               <span class="font-semibold text-slate-600">ผู้รับ (To):</span>
               ${(l.recipients || []).map(r => `<span class="px-1.5 py-0.2 bg-white border border-slate-200 rounded font-mono text-tcc-700">${r}</span>`).join("")}
@@ -3499,6 +4103,323 @@
           </div>
         `;
       }).join("");
+    }
+
+    /* ADMIN EMAIL SETTINGS & TEMPLATE MANAGER UI FUNCTIONS */
+    function renderEmailSettingsTab() {
+      const cfg = state.emailConfig || DEFAULT_EMAIL_CONFIG;
+      const elEnabled = document.getElementById("cfgEmailNotifyEnabled");
+      const elSender = document.getElementById("cfgEmailSenderName");
+      const elReply = document.getElementById("cfgEmailReplyTo");
+      const elReq = document.getElementById("cfgEmailNotifyRequester");
+      const elAgent = document.getElementById("cfgEmailNotifyAssignedAgent");
+      const elRoles = document.getElementById("cfgEmailNotifyAdminRoles");
+
+      if (elEnabled) elEnabled.checked = !!state.emailNotifyEnabled;
+      if (elSender) elSender.value = cfg.senderName || "";
+      if (elReply) elReply.value = cfg.replyTo || "";
+      if (elReq) elReq.checked = cfg.notifyRequester !== false;
+      if (elAgent) elAgent.checked = cfg.notifyAssignedAgent !== false;
+      if (elRoles) elRoles.checked = cfg.notifyAdminRoles !== false;
+
+      renderEmailRecipientsTable();
+      renderEmailTemplateEventList();
+      selectEmailTemplateEvent(state.selectedEmailTemplateEvent || "BORROW_CREATED");
+    }
+
+    function handleEmailConfigFieldChange() {
+      if (!state.emailConfig) state.emailConfig = JSON.parse(JSON.stringify(DEFAULT_EMAIL_CONFIG));
+      state.emailConfig.senderName = document.getElementById("cfgEmailSenderName")?.value.trim() || DEFAULT_EMAIL_CONFIG.senderName;
+      state.emailConfig.replyTo = document.getElementById("cfgEmailReplyTo")?.value.trim() || "";
+      state.emailConfig.notifyRequester = !!document.getElementById("cfgEmailNotifyRequester")?.checked;
+      state.emailConfig.notifyAssignedAgent = !!document.getElementById("cfgEmailNotifyAssignedAgent")?.checked;
+      state.emailConfig.notifyAdminRoles = !!document.getElementById("cfgEmailNotifyAdminRoles")?.checked;
+      saveEmailConfigToStorage();
+      const badge = document.getElementById("cfgEmailSyncStatusBadge");
+      if (badge) badge.innerText = "● มีการแก้ไข (อย่าลืมกดบันทึกทั้งหมด)";
+    }
+
+    function renderEmailRecipientsTable() {
+      const tbody = document.getElementById("emailRecipientsTableBody");
+      const countBadge = document.getElementById("emailRecipientCountBadge");
+      if (!tbody) return;
+
+      const list = (state.emailConfig?.recipients || []);
+      const q = (document.getElementById("searchEmailRecipientInput")?.value || "").trim().toLowerCase();
+      const scopeFilter = document.getElementById("filterEmailRecipientScope")?.value || "";
+
+      const indexed = list.map((rec, idx) => ({ ...rec, _idx: idx })).filter(rec => {
+        const matchQ = !q || safeLower(rec.email).includes(q) || safeLower(rec.name).includes(q);
+        const matchScope = !scopeFilter || (rec.scope || "all") === scopeFilter;
+        return matchQ && matchScope;
+      });
+
+      if (countBadge) countBadge.innerText = `${indexed.length} / ${list.length} อีเมล`;
+
+      if (indexed.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-xs text-slate-400">ไม่พบรายการอีเมลแจ้งเตือน (กด "+ เพิ่มอีเมลแจ้งเตือน" เพื่อเพิ่ม)</td></tr>`;
+        return;
+      }
+
+      const scopeBadge = {
+        all: `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">🌐 ทั้งหมด (ยืม-คืน &amp; Helpdesk)</span>`,
+        borrow: `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-tcc-50 text-tcc-700 border border-tcc-200">💻 เฉพาะยืม-คืนอุปกรณ์</span>`,
+        ticket: `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">🛠️ เฉพาะ Helpdesk</span>`
+      };
+
+      tbody.innerHTML = indexed.map((rec, rowNum) => {
+        const active = rec.active !== false;
+        return `
+          <tr class="hover:bg-slate-50/80 transition text-xs">
+            <td class="py-2.5 px-3 text-center text-slate-400 font-mono text-[11px]">${rowNum + 1}</td>
+            <td class="py-2.5 px-3 font-mono font-semibold text-slate-800">${rec.email}</td>
+            <td class="py-2.5 px-3 text-slate-700">${rec.name || "-"}</td>
+            <td class="py-2.5 px-3 text-center">${scopeBadge[rec.scope || "all"] || scopeBadge.all}</td>
+            <td class="py-2.5 px-3 text-center">
+              <button type="button" onclick="toggleEmailRecipientActive(${rec._idx})" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition cursor-pointer ${active ? "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100" : "bg-slate-100 text-slate-500 border-slate-200 hover:bg-slate-200"}">
+                ${active ? "✓ เปิดรับแจ้งเตือน" : "⏸ พักการส่ง"}
+              </button>
+            </td>
+            <td class="py-2.5 px-3 text-center">
+              <div class="inline-flex items-center gap-1">
+                <button type="button" onclick="openEmailRecipientModal(${rec._idx})" class="px-2 py-1 rounded-lg bg-tcc-50 hover:bg-tcc-100 text-tcc-700 font-semibold text-[11px] border border-tcc-200/70 transition cursor-pointer">✏️ แก้ไข</button>
+                <button type="button" onclick="deleteEmailRecipient(${rec._idx})" class="px-2 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 font-semibold text-[11px] border border-rose-200/70 transition cursor-pointer">🗑️</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function openEmailRecipientModal(idx = -1) {
+      const idxInput = document.getElementById("emailRecipientEditIdx");
+      const titleEl = document.getElementById("emailRecipientModalTitle");
+      const emailEl = document.getElementById("inputEmailRecipientAddr");
+      const nameEl = document.getElementById("inputEmailRecipientName");
+      const scopeEl = document.getElementById("inputEmailRecipientScope");
+      const activeEl = document.getElementById("inputEmailRecipientActive");
+
+      if (idxInput) idxInput.value = String(idx);
+      const existing = idx >= 0 ? (state.emailConfig?.recipients || [])[idx] : null;
+      if (existing) {
+        if (titleEl) titleEl.innerText = "แก้ไขอีเมลรับแจ้งเตือนอัตโนมัติ";
+        if (emailEl) emailEl.value = existing.email || "";
+        if (nameEl) nameEl.value = existing.name || "";
+        if (scopeEl) scopeEl.value = existing.scope || "all";
+        if (activeEl) activeEl.checked = existing.active !== false;
+      } else {
+        if (titleEl) titleEl.innerText = "เพิ่มอีเมลรับแจ้งเตือนอัตโนมัติ";
+        if (emailEl) emailEl.value = "";
+        if (nameEl) nameEl.value = "";
+        if (scopeEl) scopeEl.value = "all";
+        if (activeEl) activeEl.checked = true;
+      }
+      document.getElementById("emailRecipientModal")?.classList.remove("hidden");
+    }
+
+    function closeEmailRecipientModal() {
+      document.getElementById("emailRecipientModal")?.classList.add("hidden");
+    }
+
+    function handleSaveEmailRecipient(e) {
+      e.preventDefault();
+      const idx = parseInt(document.getElementById("emailRecipientEditIdx")?.value || "-1", 10);
+      const email = (document.getElementById("inputEmailRecipientAddr")?.value || "").trim().toLowerCase();
+      const name = (document.getElementById("inputEmailRecipientName")?.value || "").trim();
+      const scope = document.getElementById("inputEmailRecipientScope")?.value || "all";
+      const active = !!document.getElementById("inputEmailRecipientActive")?.checked;
+
+      if (!email || !email.includes("@")) {
+        return showNotification("กรุณาระบุรูปแบบอีเมลที่ถูกต้อง", "warning");
+      }
+      if (!state.emailConfig) state.emailConfig = JSON.parse(JSON.stringify(DEFAULT_EMAIL_CONFIG));
+      if (!Array.isArray(state.emailConfig.recipients)) state.emailConfig.recipients = [];
+
+      const dupIdx = state.emailConfig.recipients.findIndex((r, i) => i !== idx && safeLower(r.email) === email);
+      if (dupIdx !== -1) {
+        return showNotification(`อีเมล "${email}" มีอยู่ในรายการแจ้งเตือนแล้ว`, "warning");
+      }
+
+      const recObj = { email, name, scope, active };
+      if (idx >= 0 && idx < state.emailConfig.recipients.length) {
+        state.emailConfig.recipients[idx] = recObj;
+      } else {
+        state.emailConfig.recipients.push(recObj);
+      }
+
+      closeEmailRecipientModal();
+      renderEmailRecipientsTable();
+      saveAllEmailSettingsToServer(true);
+      showNotification(`บันทึกอีเมลแจ้งเตือน [${email}] เรียบร้อย`, "success");
+    }
+
+    function toggleEmailRecipientActive(idx) {
+      const list = state.emailConfig?.recipients;
+      if (!list || !list[idx]) return;
+      list[idx].active = list[idx].active === false;
+      renderEmailRecipientsTable();
+      saveAllEmailSettingsToServer(true);
+      showNotification(`${list[idx].active ? "เปิด" : "พัก"}การส่งอีเมลไปยัง ${list[idx].email} แล้ว`, "info");
+    }
+
+    function deleteEmailRecipient(idx) {
+      const list = state.emailConfig?.recipients;
+      if (!list || !list[idx]) return;
+      const targetEmail = list[idx].email;
+      if (!confirm(`ต้องการลบอีเมล "${targetEmail}" ออกจากรายการแจ้งเตือนใช่หรือไม่?`)) return;
+      list.splice(idx, 1);
+      renderEmailRecipientsTable();
+      saveAllEmailSettingsToServer(true);
+      showNotification(`ลบอีเมล [${targetEmail}] ออกจากรายการแจ้งเตือนเรียบร้อย`, "info");
+    }
+
+    function renderEmailTemplateEventList() {
+      const container = document.getElementById("emailTemplateEventList");
+      if (!container) return;
+      const tpls = state.emailTemplates || DEFAULT_EMAIL_TEMPLATES;
+      const selectedKey = state.selectedEmailTemplateEvent || "BORROW_CREATED";
+      const eventOrder = [
+        "BORROW_CREATED", "BORROW_RETURNED", "BORROW_UPDATED",
+        "TICKET_CREATED", "TICKET_UPDATED", "TICKET_ASSIGNED", "TICKET_COMMENT"
+      ];
+
+      container.innerHTML = eventOrder.map(key => {
+        const tpl = tpls[key] || DEFAULT_EMAIL_TEMPLATES[key];
+        if (!tpl) return "";
+        const isSelected = key === selectedKey;
+        const isBorrow = tpl.group === "borrow";
+        const groupBadge = isBorrow
+          ? `<span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-tcc-50 text-tcc-700 border border-tcc-200">ยืม-คืน</span>`
+          : `<span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-rose-50 text-rose-700 border border-rose-200">Helpdesk</span>`;
+        const statusDot = tpl.enabled !== false
+          ? `<span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0" title="เปิดส่งอัตโนมัติ"></span>`
+          : `<span class="w-2 h-2 rounded-full bg-slate-300 shrink-0" title="ปิดใช้งานชั่วคราว"></span>`;
+
+        return `
+          <button type="button" onclick="selectEmailTemplateEvent('${key}')" class="w-full text-left p-2.5 rounded-xl border transition cursor-pointer flex items-center justify-between gap-2 ${isSelected ? "bg-tcc-600 text-white border-tcc-600 shadow-sm" : "bg-white hover:bg-slate-50 text-slate-800 border-slate-200"}">
+            <div class="min-w-0">
+              <div class="flex items-center gap-1.5 mb-0.5">
+                ${isSelected ? `<span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-white/20 text-white">${isBorrow ? "ยืม-คืน" : "Helpdesk"}</span>` : groupBadge}
+                <span class="font-mono text-[10px] ${isSelected ? "text-sky-100" : "text-slate-400"} truncate">${key}</span>
+              </div>
+              <div class="font-bold text-xs truncate">${tpl.title}</div>
+            </div>
+            ${statusDot}
+          </button>
+        `;
+      }).join("");
+    }
+
+    function selectEmailTemplateEvent(eventKey) {
+      if (!state.emailTemplates) state.emailTemplates = loadSavedEmailTemplates();
+      const tpl = state.emailTemplates[eventKey] || DEFAULT_EMAIL_TEMPLATES[eventKey];
+      if (!tpl) return;
+      state.selectedEmailTemplateEvent = eventKey;
+
+      const badge = document.getElementById("tplEditorEventBadge");
+      const titleEl = document.getElementById("tplEditorEventTitle");
+      const enabledChk = document.getElementById("tplEnabledCheckbox");
+      const subjEl = document.getElementById("tplSubjectInput");
+      const bodyEl = document.getElementById("tplBodyInput");
+      const chipsEl = document.getElementById("tplVariableChips");
+
+      if (badge) badge.innerText = eventKey;
+      if (titleEl) titleEl.innerText = tpl.title;
+      if (enabledChk) enabledChk.checked = tpl.enabled !== false;
+      if (subjEl) subjEl.value = tpl.subject || "";
+      if (bodyEl) bodyEl.value = tpl.body || "";
+
+      if (chipsEl) {
+        const vars = (DEFAULT_EMAIL_TEMPLATES[eventKey]?.variables || tpl.variables || []);
+        chipsEl.innerHTML = vars.map(v => `
+          <button type="button" onclick="insertTemplateVariable('${v}')" class="px-2 py-0.5 rounded-lg bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 font-mono text-[11px] font-semibold transition cursor-pointer">
+            + ${v}
+          </button>
+        `).join("");
+      }
+
+      renderEmailTemplateEventList();
+      updateTemplateLivePreview();
+    }
+
+    function setLastFocusedTemplateField(fieldId) {
+      lastFocusedTemplateFieldId = fieldId;
+    }
+
+    function insertTemplateVariable(varToken) {
+      const targetEl = document.getElementById(lastFocusedTemplateFieldId) || document.getElementById("tplBodyInput");
+      if (!targetEl) return;
+      const start = targetEl.selectionStart ?? targetEl.value.length;
+      const end = targetEl.selectionEnd ?? targetEl.value.length;
+      const val = targetEl.value;
+      targetEl.value = val.slice(0, start) + varToken + val.slice(end);
+      targetEl.focus();
+      const nextPos = start + varToken.length;
+      targetEl.setSelectionRange(nextPos, nextPos);
+      handleTemplateFormInput();
+    }
+
+    function handleTemplateFormInput() {
+      const eventKey = state.selectedEmailTemplateEvent || "BORROW_CREATED";
+      if (!state.emailTemplates || !state.emailTemplates[eventKey]) return;
+      const enabledChk = document.getElementById("tplEnabledCheckbox");
+      const subjEl = document.getElementById("tplSubjectInput");
+      const bodyEl = document.getElementById("tplBodyInput");
+
+      if (enabledChk) state.emailTemplates[eventKey].enabled = !!enabledChk.checked;
+      if (subjEl) state.emailTemplates[eventKey].subject = subjEl.value;
+      if (bodyEl) state.emailTemplates[eventKey].body = bodyEl.value;
+
+      renderEmailTemplateEventList();
+      updateTemplateLivePreview();
+    }
+
+    function updateTemplateLivePreview() {
+      const eventKey = state.selectedEmailTemplateEvent || "BORROW_CREATED";
+      const tpl = (state.emailTemplates || {})[eventKey] || DEFAULT_EMAIL_TEMPLATES[eventKey];
+      if (!tpl) return;
+      const sample = DEFAULT_EMAIL_TEMPLATES[eventKey]?.sampleData || {};
+      const subjEl = document.getElementById("tplPreviewSubject");
+      const bodyEl = document.getElementById("tplPreviewBody");
+      if (subjEl) subjEl.innerText = renderEmailTemplate(tpl.subject, sample);
+      if (bodyEl) bodyEl.innerText = renderEmailTemplate(tpl.body, sample);
+    }
+
+    function saveCurrentEmailTemplate() {
+      handleTemplateFormInput();
+      saveAllEmailSettingsToServer(false);
+    }
+
+    function resetSelectedTemplateToDefault() {
+      const eventKey = state.selectedEmailTemplateEvent || "BORROW_CREATED";
+      const def = DEFAULT_EMAIL_TEMPLATES[eventKey];
+      if (!def) return;
+      state.emailTemplates[eventKey] = JSON.parse(JSON.stringify(def));
+      selectEmailTemplateEvent(eventKey);
+      saveAllEmailSettingsToServer(true);
+      showNotification(`คืนค่าข้อความเริ่มต้นสำหรับเหตุการณ์ ${eventKey} แล้ว`, "info");
+    }
+
+    function resetAllEmailTemplatesToDefault() {
+      if (!confirm("ต้องการคืนค่าข้อความอีเมลเริ่มต้นของทุกเหตุการณ์ใช่หรือไม่?")) return;
+      state.emailTemplates = JSON.parse(JSON.stringify(DEFAULT_EMAIL_TEMPLATES));
+      selectEmailTemplateEvent(state.selectedEmailTemplateEvent || "BORROW_CREATED");
+      saveAllEmailSettingsToServer(true);
+      showNotification("คืนค่าข้อความอีเมลเริ่มต้นทั้งหมดเรียบร้อยแล้ว", "info");
+    }
+
+    async function testSendSelectedEmailTemplate() {
+      const eventKey = state.selectedEmailTemplateEvent || "BORROW_CREATED";
+      const sample = DEFAULT_EMAIL_TEMPLATES[eventKey]?.sampleData || {};
+      const targetEmail = state.currentUser?.email || state.emailConfig?.replyTo || "tatiphon.hi@thaichamber.or.th";
+      await sendSystemEmailNotification(eventKey, {
+        ...sample,
+        forceSend: true,
+        sendViaApi: true,
+        recipients: [targetEmail],
+        notifyAdmins: false,
+        notifyRequester: false
+      });
     }
 
     /* AUTH & RBAC (Req 2 & Req 4: USER & PASS ONLY) */
@@ -3702,7 +4623,7 @@
     /* TAB ROUTING & NAVIGATION WITH HASH (#) AND QUERY (?) */
     const ALL_TAB_IDS = [
       "borrowTab", "ticketCreateTab", "myBorrowsTab", "myTicketsTab", "kbTab",
-      "dashboardTab", "ticketAdminTab", "helpdeskReportTab", "returnTab", "inventoryTab", "historyTab", "rolesTab"
+      "dashboardTab", "ticketAdminTab", "helpdeskReportTab", "returnTab", "inventoryTab", "historyTab", "rolesTab", "emailSettingsTab"
     ];
 
     const TAB_ALIASES = {
@@ -3733,7 +4654,10 @@
       "history": "historyTab",
       "roles": "rolesTab",
       "users": "rolesTab",
-      "usermanagement": "rolesTab"
+      "usermanagement": "rolesTab",
+      "emailsettings": "emailSettingsTab",
+      "email": "emailSettingsTab",
+      "emailtemplates": "emailSettingsTab"
     };
 
     function getTargetTabFromUrl() {
@@ -3766,7 +4690,7 @@
       const isAdmin = role === "admin" || isSuper;
 
       if (tabId === "rolesTab") return isSuper || isAdmin;
-      const adminOnlyTabs = ["dashboardTab", "ticketAdminTab", "helpdeskReportTab", "returnTab", "inventoryTab", "historyTab"];
+      const adminOnlyTabs = ["dashboardTab", "ticketAdminTab", "helpdeskReportTab", "returnTab", "inventoryTab", "historyTab", "emailSettingsTab"];
       if (adminOnlyTabs.includes(tabId)) return isAdmin;
       return true;
     }
@@ -3889,6 +4813,7 @@
       if (tabId === "returnTab") renderReturnTable();
       if (tabId === "inventoryTab") renderInventoryTable();
       if (tabId === "historyTab") renderHistoryTable();
+      if (tabId === "emailSettingsTab") renderEmailSettingsTab();
     }
 
     // Hash change event listener for browser Back/Forward navigation
@@ -4103,7 +5028,29 @@
       if (m1) return m1[1];
       const m2 = s.match(/[?&]id=([a-zA-Z0-9_-]{10,})/);
       if (m2) return m2[1];
+      const m3 = s.match(/googleusercontent\.com\/d\/([a-zA-Z0-9_-]{10,})/);
+      if (m3) return m3[1];
+      const m4 = s.match(/^([a-zA-Z0-9_-]{20,})$/);
+      if (m4 && !s.includes("/") && !s.includes(".")) return m4[1];
       return "";
+    }
+    const extractGoogleDriveFileId = extractDriveFileIdFromUrl;
+
+    function handleEquipmentImageError(imgEl, driveFileId, fallbackSrc) {
+      if (!imgEl) return;
+      const step = parseInt(imgEl.dataset.errStep || "0", 10);
+      if (step === 0 && driveFileId && !String(driveFileId).startsWith("DRV_")) {
+        imgEl.dataset.errStep = "1";
+        imgEl.src = `https://lh3.googleusercontent.com/d/${driveFileId}=w1000`;
+        return;
+      }
+      if (step <= 1 && driveFileId && !String(driveFileId).startsWith("DRV_")) {
+        imgEl.dataset.errStep = "2";
+        imgEl.src = `https://drive.google.com/uc?export=view&id=${driveFileId}`;
+        return;
+      }
+      imgEl.onerror = null;
+      if (fallbackSrc) imgEl.src = fallbackSrc;
     }
 
     function saveDriveFolderSetting() {
@@ -4242,10 +5189,10 @@
       };
     }
 
-    function readAndPrepareAttachmentFile(file, onDone) {
+    function readAndPrepareAttachmentFile(file, onDone, maxSizeMB = 10) {
       if (!file) return;
-      if (file.size > 5 * 1024 * 1024) {
-        showNotification("ขนาดไฟล์แนบเกิน 5MB กรุณาเลือกไฟล์ขนาดไม่เกิน 5MB", "warning");
+      if (file.size > maxSizeMB * 1024 * 1024) {
+        showNotification(`ขนาดไฟล์แนบเกิน ${maxSizeMB}MB กรุณาเลือกไฟล์ขนาดไม่เกิน ${maxSizeMB}MB`, "warning");
         return;
       }
       const reader = new FileReader();
@@ -4342,13 +5289,17 @@
       }
 
       if (info.isImage && info.displaySrc) {
-        const fallbackSrc = generateFallbackDiagnosticImage(info.name, info.name, info.refId);
+        const fallbackSrc = info.fallbackSvg || generateFallbackDiagnosticImage(info.name, info.name, info.refId);
+        const onerrorAttr = info.driveFileId && !String(info.driveFileId).startsWith("DRV_")
+          ? `handleEquipmentImageError(this, '${escapeQuotes(info.driveFileId)}', '${fallbackSrc}');`
+          : `this.onerror=null; this.src='${fallbackSrc}';`;
         bodyEl.innerHTML = `
           <div class="flex flex-col items-center justify-center w-full gap-3">
             <img id="previewLightboxImg"
                  src="${info.displaySrc}"
                  alt="${escapeQuotes(info.name)}"
-                 onerror="this.onerror=null; this.src='${fallbackSrc}';"
+                 data-err-step="0"
+                 onerror="${onerrorAttr}"
                  onclick="this.classList.toggle('max-h-[65vh]'); this.classList.toggle('max-w-none'); this.classList.toggle('scale-125');"
                  class="max-h-[65vh] max-w-full w-auto object-contain rounded-xl shadow-2xl border border-slate-700 cursor-zoom-in transition-transform duration-200 bg-slate-800">
           </div>
@@ -4443,7 +5394,7 @@
     }
 
     function handleTicketFileSelect(input) {
-      const file = input?.files?.[0];
+      const file = input?.files?.[0] || input?.target?.files?.[0];
       if (!file) return;
       readAndPrepareAttachmentFile(file, (dataUrl, fileName, mimeType, origSize) => {
         state.currentAttachmentName = fileName;
@@ -5381,27 +6332,30 @@
     }
 
     function resolveItemImageInfo(item) {
-      if (!item) return { displaySrc: generateEquipmentFallbackSvg({}), isCustom: false, driveViewUrl: "", driveFileId: "", name: "" };
+      if (!item) return { displaySrc: generateEquipmentFallbackSvg({}), fallbackSvg: generateEquipmentFallbackSvg({}), isCustom: false, driveViewUrl: "", driveFileId: "", name: "" };
       const refId = String(item.item_id || "").trim();
       const cached = getAttachmentFromCache(refId);
 
       const name = item.image_name || item.attachment_name || cached?.name || `${refId}_preview.png`;
       const base64 = item.image_base64 || item.attachment_base64 || cached?.base64 || "";
       const rawUrl = item.image_url || item.attachment_url || cached?.driveUrl || "";
-      const driveFileId = item.drive_file_id || cached?.driveFileId || extractGoogleDriveFileId(rawUrl) || "";
+      const extractedFromUrl = extractGoogleDriveFileId(rawUrl);
+      const driveFileId = item.drive_file_id || cached?.driveFileId || extractedFromUrl || "";
+      const isSimulatedDriveId = String(driveFileId || "").startsWith("DRV_");
 
       let driveViewUrl = rawUrl;
       let driveDirectUrl = "";
-      if (driveFileId && !driveFileId.startsWith("DRV_")) {
-        driveViewUrl = `https://drive.google.com/file/d/${driveFileId}/view?usp=sharing`;
+      if (driveFileId && !isSimulatedDriveId) {
+        driveViewUrl = (rawUrl && rawUrl.startsWith("http")) ? rawUrl : `https://drive.google.com/file/d/${driveFileId}/view?usp=sharing`;
         driveDirectUrl = `https://drive.google.com/thumbnail?id=${driveFileId}&sz=w1000`;
-      } else if (driveFileId && driveFileId.startsWith("DRV_") && !driveViewUrl) {
+      } else if (driveFileId && isSimulatedDriveId && !driveViewUrl) {
         driveViewUrl = `https://drive.google.com/file/d/${driveFileId}/view?usp=sharing`;
       }
 
       const fallbackSvg = generateEquipmentFallbackSvg(item);
-      const displaySrc = base64 || driveDirectUrl || (rawUrl && !rawUrl.includes("drive.google.com/file/d/DRV_") ? rawUrl : "") || fallbackSvg;
-      const isCustom = Boolean(base64 || driveFileId || rawUrl);
+      const nonDriveDirectUrl = (rawUrl && !rawUrl.includes("DRV_") && !extractedFromUrl) ? rawUrl : "";
+      const displaySrc = base64 || driveDirectUrl || nonDriveDirectUrl || fallbackSvg;
+      const isCustom = Boolean(base64 || (driveFileId && !isSimulatedDriveId) || nonDriveDirectUrl || (driveFileId && isSimulatedDriveId && base64));
 
       return {
         refId,
@@ -5427,6 +6381,7 @@
         isImage: true,
         displaySrc: info.displaySrc,
         base64: info.base64,
+        fallbackSvg: info.fallbackSvg,
         driveFileId: info.driveFileId,
         driveViewUrl: info.driveViewUrl || (info.driveFileId ? `https://drive.google.com/file/d/${info.driveFileId}/view?usp=sharing` : ""),
         driveDirectUrl: info.driveDirectUrl
@@ -5434,36 +6389,113 @@
     }
 
     function handleItemImageSelect(input, mode) {
-      const file = input?.files?.[0];
+      const file = input?.files?.[0] || input?.target?.files?.[0];
       if (!file) return;
       if (file.size > 10 * 1024 * 1024) {
         showNotification("ไฟล์รูปภาพอุปกรณ์ต้องมีขนาดไม่เกิน 10MB", "warning");
-        input.value = "";
+        if (input && "value" in input) input.value = "";
         return;
       }
       readAndPrepareAttachmentFile(file, (dataUrl, fileName, mimeType, origSize) => {
         if (mode === "add") {
           state.draftItemImageAdd = { name: fileName, base64: dataUrl, mime: mimeType, size: origSize };
+          const urlInp = document.getElementById("newItemDriveUrl");
+          if (urlInp) urlInp.value = "";
           const box = document.getElementById("newItemImagePreviewBox");
-          const img = document.getElementById("newItemImagePreviewThumb");
-          const nameEl = document.getElementById("newItemImageNameText");
+          const img = document.getElementById("newItemImageThumb");
+          const nameEl = document.getElementById("newItemImageNameLabel");
           const btnClear = document.getElementById("btnClearNewItemImage");
-          if (img) img.src = dataUrl;
-          if (nameEl) nameEl.innerText = `${fileName} (${(origSize / 1024).toFixed(1)} KB)`;
+          if (img) {
+            img.onerror = null;
+            img.dataset.errStep = "0";
+            img.src = dataUrl;
+          }
+          if (nameEl) nameEl.innerText = `${fileName} (${(origSize / 1024).toFixed(1)} KB) • พร้อมอัปโหลดขึ้น Drive`;
           if (box) box.classList.remove("hidden");
           if (btnClear) btnClear.classList.remove("hidden");
         } else {
-          state.draftItemImageEdit = { name: fileName, base64: dataUrl, mime: mimeType, size: origSize };
+          state.draftItemImageEdit = { name: fileName, base64: dataUrl, mime: mimeType, size: origSize, cleared: false };
+          const urlInp = document.getElementById("editItemDriveUrl");
+          if (urlInp) urlInp.value = "";
           const box = document.getElementById("editItemImagePreviewBox");
-          const img = document.getElementById("editItemImagePreviewThumb");
-          const nameEl = document.getElementById("editItemImageNameText");
+          const img = document.getElementById("editItemImageThumb");
+          const nameEl = document.getElementById("editItemImageNameLabel");
           const btnClear = document.getElementById("btnClearEditItemImage");
-          if (img) img.src = dataUrl;
-          if (nameEl) nameEl.innerText = `${fileName} (${(origSize / 1024).toFixed(1)} KB)`;
+          if (img) {
+            img.onerror = null;
+            img.dataset.errStep = "0";
+            img.src = dataUrl;
+          }
+          if (nameEl) nameEl.innerText = `${fileName} (${(origSize / 1024).toFixed(1)} KB) • พร้อมอัปโหลดขึ้น Drive`;
           if (box) box.classList.remove("hidden");
           if (btnClear) btnClear.classList.remove("hidden");
         }
-      });
+      }, 10);
+    }
+
+    function handleItemDriveUrlInput(val, mode) {
+      const cleanUrl = String(val || "").trim();
+      const isAdd = mode === "add";
+      const box = document.getElementById(isAdd ? "newItemImagePreviewBox" : "editItemImagePreviewBox");
+      const img = document.getElementById(isAdd ? "newItemImageThumb" : "editItemImageThumb");
+      const nameEl = document.getElementById(isAdd ? "newItemImageNameLabel" : "editItemImageNameLabel");
+      const btnClear = document.getElementById(isAdd ? "btnClearNewItemImage" : "btnClearEditItemImage");
+      const fileInput = document.getElementById(isAdd ? "newItemImageInput" : "editItemImageInput");
+
+      if (!cleanUrl) {
+        const draft = isAdd ? state.draftItemImageAdd : state.draftItemImageEdit;
+        if (!draft?.base64) {
+          if (isAdd) {
+            if (img) img.src = "";
+            if (nameEl) nameEl.innerText = "";
+            if (box) box.classList.add("hidden");
+            if (btnClear) btnClear.classList.add("hidden");
+          } else {
+            const itemId = document.getElementById("editItemId")?.value.trim() || "IT";
+            const itemName = document.getElementById("editItemName")?.value.trim() || "IT Asset";
+            const cat = document.getElementById("editItemCategory")?.value || "Equipment";
+            const fallbackSvg = generateEquipmentFallbackSvg({ item_id: itemId, item_name: itemName, category: cat });
+            if (img) {
+              img.onerror = null;
+              img.src = fallbackSvg;
+            }
+            if (nameEl) nameEl.innerText = "ภาพจำลองมาตรฐานตามหมวดหมู่ (อัปโหลดรูปจริงหรือใส่ลิงก์ Drive ได้)";
+            if (box) box.classList.remove("hidden");
+            if (btnClear) btnClear.classList.add("hidden");
+          }
+        }
+        return;
+      }
+
+      if (fileInput) fileInput.value = "";
+      if (isAdd) {
+        state.draftItemImageAdd = { name: "", base64: "", mime: "" };
+      } else {
+        state.draftItemImageEdit = { name: "", base64: "", mime: "", cleared: false };
+      }
+
+      const driveId = extractGoogleDriveFileId(cleanUrl);
+      const isSim = String(driveId || "").startsWith("DRV_");
+      const itemId = document.getElementById(isAdd ? "newItemId" : "editItemId")?.value.trim() || "IT";
+      const itemName = document.getElementById(isAdd ? "newItemName" : "editItemName")?.value.trim() || "Equipment";
+      const cat = document.getElementById(isAdd ? "newItemCategory" : "editItemCategory")?.value || "Equipment";
+      const fallbackSvg = generateEquipmentFallbackSvg({ item_id: itemId, item_name: itemName, category: cat });
+      const previewSrc = (driveId && !isSim)
+        ? `https://drive.google.com/thumbnail?id=${driveId}&sz=w1000`
+        : cleanUrl;
+
+      if (img) {
+        img.dataset.errStep = "0";
+        img.onerror = function() { handleEquipmentImageError(this, driveId, fallbackSvg); };
+        img.src = previewSrc;
+      }
+      if (nameEl) {
+        nameEl.innerText = (driveId && !isSim)
+          ? `☁️ ลิงก์ Google Drive (${driveId})`
+          : "🔗 ลิงก์รูปภาพภายนอก / Google Drive";
+      }
+      if (box) box.classList.remove("hidden");
+      if (btnClear) btnClear.classList.remove("hidden");
     }
 
     function clearItemImageAttachment(mode) {
@@ -5471,6 +6503,12 @@
         state.draftItemImageAdd = { name: "", base64: "", mime: "" };
         const inp = document.getElementById("newItemImageInput");
         if (inp) inp.value = "";
+        const urlInp = document.getElementById("newItemDriveUrl");
+        if (urlInp) urlInp.value = "";
+        const img = document.getElementById("newItemImageThumb");
+        if (img) { img.onerror = null; img.src = ""; }
+        const nameEl = document.getElementById("newItemImageNameLabel");
+        if (nameEl) nameEl.innerText = "";
         const box = document.getElementById("newItemImagePreviewBox");
         const btnClear = document.getElementById("btnClearNewItemImage");
         if (box) box.classList.add("hidden");
@@ -5481,6 +6519,10 @@
         if (inp) inp.value = "";
         const urlInp = document.getElementById("editItemDriveUrl");
         if (urlInp) urlInp.value = "";
+        const img = document.getElementById("editItemImageThumb");
+        if (img) { img.onerror = null; img.src = ""; }
+        const nameEl = document.getElementById("editItemImageNameLabel");
+        if (nameEl) nameEl.innerText = "";
         const box = document.getElementById("editItemImagePreviewBox");
         const btnClear = document.getElementById("btnClearEditItemImage");
         if (box) box.classList.add("hidden");
@@ -5509,6 +6551,7 @@
           isImage: true,
           displaySrc: info.displaySrc,
           base64: info.base64,
+          fallbackSvg: info.fallbackSvg,
           driveFileId: info.driveFileId,
           driveViewUrl: info.driveViewUrl,
           driveDirectUrl: info.driveDirectUrl
@@ -5522,9 +6565,9 @@
           ...existing,
           item_name: document.getElementById("editItemName")?.value.trim() || existing.item_name,
           category: document.getElementById("editItemCategory")?.value.trim() || existing.category,
-          image_name: draft?.name || existing.image_name || "",
-          image_base64: draft?.base64 || existing.image_base64 || "",
-          image_url: urlVal || existing.image_url || ""
+          image_name: draft?.name || (draft?.cleared ? "" : existing.image_name) || "",
+          image_base64: draft?.base64 || (draft?.cleared ? "" : existing.image_base64) || "",
+          image_url: urlVal || (draft?.cleared ? "" : existing.image_url) || ""
         };
         const info = resolveItemImageInfo(tempItem);
         openAttachmentPreviewModal({
@@ -5533,6 +6576,7 @@
           isImage: true,
           displaySrc: info.displaySrc,
           base64: info.base64,
+          fallbackSvg: info.fallbackSvg,
           driveFileId: info.driveFileId,
           driveViewUrl: info.driveViewUrl,
           driveDirectUrl: info.driveDirectUrl
@@ -5570,7 +6614,7 @@
              class="p-2 hover:bg-tcc-50 rounded-xl cursor-pointer transition flex items-center justify-between gap-2.5 text-xs border border-transparent hover:border-tcc-200">
           <div class="flex items-center gap-2.5 min-w-0">
             <div onclick="event.stopPropagation(); openItemImagePreview('${escapeQuotes(item.item_id)}')" title="คลิกเพื่อดูรูปตัวอย่างขนาดใหญ่" class="w-12 h-9 rounded-lg overflow-hidden border border-slate-200 bg-slate-100 shrink-0 relative group">
-              <img src="${imgInfo.displaySrc}" alt="${escapeQuotes(item.item_name)}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='${imgInfo.fallbackSvg}';" />
+              <img src="${imgInfo.displaySrc}" alt="${escapeQuotes(item.item_name)}" data-err-step="0" class="w-full h-full object-cover" onerror="handleEquipmentImageError(this, '${escapeQuotes(imgInfo.driveFileId)}', '${imgInfo.fallbackSvg}');" />
               <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-[10px] text-white font-bold">🔍</div>
             </div>
             <div class="min-w-0">
@@ -5615,30 +6659,32 @@
 
       if (!container) return;
       if (count === 0) {
-        container.innerHTML = `<p class="text-xs text-slate-400 py-1 italic">ยังไม่ได้เลือกอุปกรณ์ (คลิกเลือกจากช่องค้นหาหรือตารางด้านขวาเพื่อดูรูปตัวอย่าง)</p>`;
+        container.innerHTML = `<p class="col-span-full text-xs text-slate-400 py-2 text-center italic">ยังไม่ได้เลือกอุปกรณ์ (คลิกเลือกจากช่องค้นหาหรือตารางด้านขวาเพื่อดูรูปตัวอย่าง)</p>`;
         return;
       }
       container.innerHTML = state.selectedBorrowItems.map(id => {
         const item = state.items.find(i => i.item_id === id) || { item_id: id, item_name: id, category: "Equipment" };
         const imgInfo = resolveItemImageInfo(item);
         return `
-          <div class="inline-flex items-center gap-2 p-1.5 pr-2.5 rounded-xl text-xs bg-white border border-tcc-300 text-tcc-900 shadow-sm animate-fadeIn">
-            <div onclick="openItemImagePreview('${escapeQuotes(id)}')" title="คลิกเพื่อขยายดูรูปตัวอย่างอุปกรณ์" class="w-11 h-8 rounded-lg overflow-hidden border border-slate-200 bg-slate-100 shrink-0 cursor-pointer relative group">
-              <img src="${imgInfo.displaySrc}" alt="${escapeQuotes(item.item_name)}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='${imgInfo.fallbackSvg}';" />
-              <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-[9px] text-white">🔍</div>
+          <div class="flex items-center gap-2.5 p-2 rounded-xl text-xs bg-white border border-tcc-200 text-tcc-900 shadow-xs hover:border-tcc-400 transition animate-fadeIn">
+            <div onclick="openItemImagePreview('${escapeQuotes(id)}')" title="คลิกเพื่อขยายดูรูปตัวอย่างอุปกรณ์" class="w-20 h-14 rounded-lg overflow-hidden border border-slate-200 bg-slate-100 shrink-0 cursor-pointer relative group">
+              <img src="${imgInfo.displaySrc}" alt="${escapeQuotes(item.item_name)}" data-err-step="0" class="w-full h-full object-cover" onerror="handleEquipmentImageError(this, '${escapeQuotes(imgInfo.driveFileId)}', '${imgInfo.fallbackSvg}');" />
+              <div class="absolute inset-0 bg-slate-900/45 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-[10px] text-white font-bold">🔍 ขยาย</div>
             </div>
-            <div class="min-w-0">
-              <div class="flex items-center gap-1">
-                <span class="font-mono font-bold text-[10px] text-tcc-700">[${id}]</span>
-                <span class="max-w-[150px] truncate font-semibold text-slate-800">${item.item_name}</span>
+            <div class="min-w-0 flex-1 space-y-0.5">
+              <div class="flex items-center justify-between gap-1">
+                <div class="flex items-center gap-1 min-w-0">
+                  <span class="font-mono font-bold text-[10px] px-1.5 py-0.5 rounded bg-tcc-50 text-tcc-700 border border-tcc-200/70 shrink-0">${id}</span>
+                  ${imgInfo.driveFileId ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold shrink-0">☁️ Drive</span>' : ''}
+                </div>
+                <button type="button" onclick="removeSelectedItem('${escapeQuotes(id)}')" title="นำรายการนี้ออก" class="text-slate-400 hover:text-rose-600 font-bold px-1 cursor-pointer shrink-0">✕</button>
               </div>
-              <div class="text-[9px] text-slate-400 flex items-center gap-1">
-                <span>${item.category || '-'}</span>
-                <span>•</span>
-                <button type="button" onclick="openItemImagePreview('${escapeQuotes(id)}')" class="text-tcc-600 hover:underline font-semibold">ดูรูปตัวอย่าง</button>
+              <div class="font-bold text-slate-900 text-xs truncate" title="${escapeQuotes(item.item_name)}">${item.item_name}</div>
+              <div class="text-[10px] text-slate-500 flex items-center justify-between gap-1">
+                <span class="truncate">${item.category || '-'}</span>
+                <button type="button" onclick="openItemImagePreview('${escapeQuotes(id)}')" class="text-tcc-600 hover:underline font-bold shrink-0 cursor-pointer">🔍 ขยายดูรูป</button>
               </div>
             </div>
-            <button type="button" onclick="removeSelectedItem('${escapeQuotes(id)}')" class="text-slate-400 hover:text-rose-600 font-bold ml-1 px-1">✕</button>
           </div>
         `;
       }).join("");
@@ -6441,7 +7487,7 @@
                class="p-2.5 rounded-xl border ${isSel ? 'border-tcc-500 bg-tcc-50/70 shadow-xs' : 'border-slate-100 hover:border-tcc-300 bg-white hover:bg-slate-50/60'} cursor-pointer transition flex items-center justify-between gap-2.5 text-xs">
             <div class="flex items-center gap-2.5 min-w-0 pr-1">
               <div onclick="event.stopPropagation(); openItemImagePreview('${escapeQuotes(i.item_id)}')" title="คลิกเพื่อดูรูปตัวอย่างอุปกรณ์ขนาดใหญ่" class="w-14 h-10 rounded-lg overflow-hidden border border-slate-200 bg-slate-100 shrink-0 relative group">
-                <img src="${imgInfo.displaySrc}" alt="${escapeQuotes(i.item_name)}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='${imgInfo.fallbackSvg}';" />
+                <img src="${imgInfo.displaySrc}" alt="${escapeQuotes(i.item_name)}" data-err-step="0" class="w-full h-full object-cover" onerror="handleEquipmentImageError(this, '${escapeQuotes(imgInfo.driveFileId)}', '${imgInfo.fallbackSvg}');" />
                 <div class="absolute inset-0 bg-slate-900/45 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-[10px] text-white font-bold">🔍 ดูรูป</div>
               </div>
               <div class="min-w-0">
@@ -6592,7 +7638,7 @@
             <td class="py-3 px-4">
               <div class="flex items-center gap-2.5">
                 <div onclick="openItemImagePreview('${escapeQuotes(b.item_id)}')" title="คลิกเพื่อดูรูปตัวอย่างอุปกรณ์" class="w-11 h-8 rounded-lg overflow-hidden border border-slate-200 bg-slate-100 shrink-0 cursor-pointer">
-                  <img src="${imgInfo.displaySrc}" alt="${escapeQuotes(item.item_name)}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='${imgInfo.fallbackSvg}';" />
+                  <img src="${imgInfo.displaySrc}" alt="${escapeQuotes(item.item_name)}" data-err-step="0" class="w-full h-full object-cover" onerror="handleEquipmentImageError(this, '${escapeQuotes(imgInfo.driveFileId)}', '${imgInfo.fallbackSvg}');" />
                 </div>
                 <div>
                   <div class="font-bold text-slate-900">${item.item_name}</div>
@@ -6636,7 +7682,7 @@
             <td class="py-2.5 px-2 font-mono text-[11px] font-bold text-tcc-700 whitespace-nowrap" title="${escapeQuotes(b.trans_id)}">${b.trans_id}</td>
             <td class="py-2.5 px-2 whitespace-nowrap max-w-[190px] truncate" title="[${escapeQuotes(b.item_id)}] ${escapeQuotes(item.item_name)}">
               <div class="flex items-center gap-2 truncate">
-                <img onclick="openItemImagePreview('${escapeQuotes(b.item_id)}')" src="${imgInfo.displaySrc}" alt="" class="w-8 h-6 rounded object-cover border border-slate-200 cursor-pointer shrink-0" onerror="this.onerror=null; this.src='${imgInfo.fallbackSvg}';" />
+                <img onclick="openItemImagePreview('${escapeQuotes(b.item_id)}')" src="${imgInfo.displaySrc}" alt="" data-err-step="0" class="w-8 h-6 rounded object-cover border border-slate-200 cursor-pointer shrink-0" onerror="handleEquipmentImageError(this, '${escapeQuotes(imgInfo.driveFileId)}', '${imgInfo.fallbackSvg}');" />
                 <div class="truncate">
                   <span class="font-semibold text-slate-800">${item.item_name}</span>
                   <span class="font-mono text-[10px] text-slate-400 ml-0.5">(${b.item_id})</span>
@@ -6773,7 +7819,7 @@
           <td class="py-3 px-4">
             <div class="flex items-center gap-3">
               <div onclick="openItemImagePreview('${escapeQuotes(item.item_id)}')" title="คลิกเพื่อดูรูปตัวอย่างอุปกรณ์ (Google Drive)" class="w-12 h-9 rounded-lg overflow-hidden border border-slate-200 bg-slate-100 shrink-0 cursor-pointer relative group">
-                <img src="${imgInfo.displaySrc}" alt="${escapeQuotes(item.item_name)}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='${imgInfo.fallbackSvg}';" />
+                <img src="${imgInfo.displaySrc}" alt="${escapeQuotes(item.item_name)}" data-err-step="0" class="w-full h-full object-cover" onerror="handleEquipmentImageError(this, '${escapeQuotes(imgInfo.driveFileId)}', '${imgInfo.fallbackSvg}');" />
                 <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-[10px] text-white">🔍</div>
               </div>
               <div>
@@ -8165,24 +9211,32 @@
         }
       }
 
+      const isSimulatedId = String(newItem.drive_file_id || "").startsWith("DRV_");
+      const addRes = await callAPI("addItem", {
+        itemId: newItem.item_id,
+        itemName: newItem.item_name,
+        category: newItem.category,
+        serialNumber: newItem.serial_number,
+        imageName: newItem.image_name,
+        imageUrl: isSimulatedId ? manualDriveUrl : newItem.image_url,
+        driveFileId: isSimulatedId ? (extractGoogleDriveFileId(manualDriveUrl) || "") : newItem.drive_file_id,
+        imageBase64: (!isSimulatedId && newItem.drive_file_id) ? "" : imageBase64,
+        folderId: state.driveFolderId || ""
+      }, true);
+
+      if (addRes && (addRes.drive_file_id || addRes.image_url)) {
+        newItem.drive_file_id = addRes.drive_file_id || newItem.drive_file_id;
+        newItem.image_url = addRes.image_url || newItem.image_url;
+        saveAttachmentToCache(itemId, imageName || `${itemId}.png`, imageBase64, newItem.image_url, newItem.drive_file_id);
+        renderAll();
+      }
+
       showNotification(
         newItem.drive_file_id || newItem.image_url
           ? `เพิ่มอุปกรณ์ [${newItem.item_id}] พร้อมบันทึกรูปลง Google Drive สำเร็จ`
           : `เพิ่มอุปกรณ์ [${newItem.item_id}] สำเร็จ`,
         "success"
       );
-
-      callAPI("addItem", {
-        itemId: newItem.item_id,
-        itemName: newItem.item_name,
-        category: newItem.category,
-        serialNumber: newItem.serial_number,
-        imageName: newItem.image_name,
-        imageUrl: newItem.image_url,
-        driveFileId: newItem.drive_file_id,
-        imageBase64: imageBase64,
-        folderId: state.driveFolderId || ""
-      }, true);
     }
 
     function exportHistoryCsv() {
@@ -8324,6 +9378,7 @@ function doPost(e) {
       case "deleteKbArticle": return handleDeleteKbArticle(data);
       case "uploadFileToDrive": return handleUploadFileToDrive(data);
       case "sendEmailNotification": return handleSendEmailNotification(data);
+      case "saveEmailSettings": return handleSaveEmailSettings(data);
       default: return jsonResponse({ status: "error", message: "Invalid action: " + action });
     }
   } catch (err) {
@@ -8406,7 +9461,7 @@ function getAdminEmailsGAS(ss) {
   return admins;
 }
 
-function sendNotificationEmailGAS(toList, subject, bodyText) {
+function sendNotificationEmailGAS(toList, subject, bodyText, senderName, replyTo) {
   try {
     var valid = [];
     if (Array.isArray(toList)) {
@@ -8421,6 +9476,7 @@ function sendNotificationEmailGAS(toList, subject, bodyText) {
       });
     }
     if (valid.length === 0) return false;
+    var dispName = senderName || "TCC IT Service & Asset System";
     var htmlBody = '<div style="font-family: Sarabun, sans-serif; max-width: 620px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden;">' +
       '<div style="background: linear-gradient(135deg, #003d73, #0284c7); color: #ffffff; padding: 18px 24px;">' +
       '<h2 style="margin: 0; font-size: 18px;">หอการค้าไทย (TCC IT Asset & Helpdesk Service)</h2>' +
@@ -8432,13 +9488,17 @@ function sendNotificationEmailGAS(toList, subject, bodyText) {
       '<div style="padding: 12px 24px; background: #f8fafc; color: #64748b; font-size: 11px; border-top: 1px solid #e2e8f0;">' +
       'อีเมลฉบับนี้ส่งอัตโนมัติจากระบบบริหารจัดการอุปกรณ์และแจ้งซ่อมไอที หอการค้าไทย' +
       '</div></div>';
-    MailApp.sendEmail({
+    var mailOpts = {
       to: valid.join(","),
       subject: subject,
       body: bodyText,
       htmlBody: htmlBody,
-      name: "TCC IT Service & Asset System"
-    });
+      name: dispName
+    };
+    if (replyTo && String(replyTo).indexOf("@") !== -1) {
+      mailOpts.replyTo = String(replyTo).trim();
+    }
+    MailApp.sendEmail(mailOpts);
     return true;
   } catch (err) {
     Logger.log("Email error: " + err);
@@ -8447,8 +9507,41 @@ function sendNotificationEmailGAS(toList, subject, bodyText) {
 }
 
 function handleSendEmailNotification(data) {
-  var sent = sendNotificationEmailGAS(data.to || data.recipients || [], data.subject || "[TCC IT Notification]", data.body || "");
+  var bodyText = data.body || data.summary || "";
+  var sent = sendNotificationEmailGAS(
+    data.to || data.recipients || [],
+    data.subject || "[TCC IT Notification]",
+    bodyText,
+    data.senderName || "TCC IT Service & Asset System",
+    data.replyTo || ""
+  );
   return jsonResponse({ status: "success", sent: sent });
+}
+
+function handleSaveEmailSettings(data) {
+  var ss = getSpreadsheet();
+  var sheet = getOrCreateSheet(ss, "EmailSettings", ["Setting Key", "JSON Value", "Updated At"], []);
+  var nowStr = Utilities.formatDate(new Date(), "GMT+7", "yyyy-MM-dd HH:mm:ss");
+  var updates = {};
+  if (data.emailNotifyEnabled !== undefined) updates["emailNotifyEnabled"] = JSON.stringify(!!data.emailNotifyEnabled);
+  if (data.emailConfig !== undefined) updates["emailConfig"] = JSON.stringify(data.emailConfig);
+  if (data.emailTemplates !== undefined) updates["emailTemplates"] = JSON.stringify(data.emailTemplates);
+
+  var values = sheet.getDataRange().getValues();
+  var rowMap = {};
+  for (var i = 1; i < values.length; i++) {
+    var key = String(values[i][0] || "").trim();
+    if (key) rowMap[key] = i + 1;
+  }
+  Object.keys(updates).forEach(function(key) {
+    if (rowMap[key]) {
+      sheet.getRange(rowMap[key], 2, 1, 2).setValues([[updates[key], nowStr]]);
+    } else {
+      sheet.appendRow([key, updates[key], nowStr]);
+    }
+  });
+  SpreadsheetApp.flush();
+  return jsonResponse({ status: "success", message: "บันทึกการตั้งค่าอีเมลลง Google Sheets เรียบร้อยแล้ว" });
 }
 
 function handleGetInitialData() {
@@ -8671,6 +9764,26 @@ function handleGetInitialData() {
     }
   }
 
+  var emailSheet = getOrCreateSheet(ss, "EmailSettings", ["Setting Key", "JSON Value", "Updated At"], []);
+  var emailNotifyEnabled = true;
+  var emailConfig = null;
+  var emailTemplates = null;
+  var eData = emailSheet.getDataRange().getValues();
+  for (var eIdx = 1; eIdx < eData.length; eIdx++) {
+    var eKey = String(eData[eIdx][0] || "").trim();
+    var eVal = String(eData[eIdx][1] || "").trim();
+    if (!eKey || !eVal) continue;
+    try {
+      if (eKey === "emailNotifyEnabled") {
+        emailNotifyEnabled = (eVal === "false") ? false : (eVal === "true" ? true : !!JSON.parse(eVal));
+      } else if (eKey === "emailConfig") {
+        emailConfig = JSON.parse(eVal);
+      } else if (eKey === "emailTemplates") {
+        emailTemplates = JSON.parse(eVal);
+      }
+    } catch (eErr) {}
+  }
+
   return jsonResponse({
     status: "success",
     items: items,
@@ -8681,7 +9794,10 @@ function handleGetInitialData() {
     userRoles: userRoles,
     ticketCategories: ticketCategories,
     tickets: tickets,
-    knowledgeBase: knowledgeBase
+    knowledgeBase: knowledgeBase,
+    emailNotifyEnabled: emailNotifyEnabled,
+    emailConfig: emailConfig,
+    emailTemplates: emailTemplates
   });
 }
 
@@ -9019,6 +10135,8 @@ function handleAddItem(data) {
   }
   var imgUrl = data.imageUrl || "";
   var driveId = data.driveFileId || "";
+  if (String(driveId).indexOf("DRV_") === 0) driveId = "";
+  if (String(imgUrl).indexOf("drive.google.com/file/d/DRV_") !== -1) imgUrl = "";
   var imgName = data.imageName || "";
   if (!driveId && data.imageBase64) {
     try {
@@ -9044,6 +10162,8 @@ function handleUpdateItem(data) {
   var values = sheet.getDataRange().getValues();
   var imgUrl = data.imageUrl;
   var driveId = data.driveFileId;
+  if (driveId !== undefined && String(driveId).indexOf("DRV_") === 0) driveId = "";
+  if (imgUrl !== undefined && String(imgUrl).indexOf("drive.google.com/file/d/DRV_") !== -1) imgUrl = "";
   if (!driveId && data.imageBase64) {
     try {
       var saved = saveBase64FileToDrive(data.imageBase64, (data.itemId || "IT") + "_" + (data.imageName || "equipment.png"), data.folderId || "", "Equipment");
@@ -9417,7 +10537,10 @@ function handleDeleteUserRole(data) {
                 departments: [...state.departments],
                 userRoles: [...state.userRoles],
                 tickets: [...state.tickets],
-                knowledgeBase: [...state.knowledgeBase]
+                knowledgeBase: [...state.knowledgeBase],
+                emailNotifyEnabled: state.emailNotifyEnabled,
+                emailConfig: state.emailConfig,
+                emailTemplates: state.emailTemplates
               });
               break;
             }
@@ -9485,6 +10608,31 @@ function handleDeleteUserRole(data) {
             }
             case "sendEmailNotification": {
               resolve({ status: "success", sent: true, message: "ส่งอีเมลแจ้งเตือนเรียบร้อย (Simulation)" });
+              break;
+            }
+            case "saveEmailSettings": {
+              if (data.emailNotifyEnabled !== undefined) {
+                state.emailNotifyEnabled = !!data.emailNotifyEnabled;
+                localStorage.setItem(STORAGE_KEY_EMAIL_ENABLED, state.emailNotifyEnabled ? "true" : "false");
+              }
+              if (data.emailConfig && typeof data.emailConfig === "object") {
+                state.emailConfig = data.emailConfig;
+                saveEmailConfigToStorage();
+              }
+              if (data.emailTemplates && typeof data.emailTemplates === "object") {
+                Object.keys(data.emailTemplates).forEach(k => {
+                  if (state.emailTemplates[k] && data.emailTemplates[k]) {
+                    state.emailTemplates[k] = {
+                      ...state.emailTemplates[k],
+                      enabled: data.emailTemplates[k].enabled !== false,
+                      subject: data.emailTemplates[k].subject || state.emailTemplates[k].subject,
+                      body: data.emailTemplates[k].body || state.emailTemplates[k].body
+                    };
+                  }
+                });
+                saveEmailTemplatesToStorage();
+              }
+              resolve({ status: "success", message: "บันทึกการตั้งค่าอีเมลเรียบร้อย (จำลอง)" });
               break;
             }
             case "addItem":
@@ -9563,6 +10711,41 @@ function handleDeleteUserRole(data) {
             saveInternalSystemsToStorage();
           }
           if (Array.isArray(res.departments) && res.departments.length > 0) state.departments = res.departments;
+          if (typeof res.emailNotifyEnabled === "boolean") {
+            state.emailNotifyEnabled = res.emailNotifyEnabled;
+            localStorage.setItem(STORAGE_KEY_EMAIL_ENABLED, state.emailNotifyEnabled ? "true" : "false");
+          }
+          if (res.emailConfig && typeof res.emailConfig === "object") {
+            state.emailConfig = {
+              ...DEFAULT_EMAIL_CONFIG,
+              ...res.emailConfig,
+              recipients: Array.isArray(res.emailConfig.recipients)
+                ? res.emailConfig.recipients.map(r => ({
+                    email: String(r.email || "").trim().toLowerCase(),
+                    name: String(r.name || "").trim(),
+                    scope: ["all", "borrow", "ticket"].includes(r.scope) ? r.scope : "all",
+                    active: r.active !== false
+                  })).filter(r => r.email)
+                : [...(state.emailConfig?.recipients || DEFAULT_EMAIL_CONFIG.recipients)]
+            };
+            saveEmailConfigToStorage();
+          }
+          if (res.emailTemplates && typeof res.emailTemplates === "object") {
+            const mergedTpls = JSON.parse(JSON.stringify(DEFAULT_EMAIL_TEMPLATES));
+            Object.keys(mergedTpls).forEach(k => {
+              const inc = res.emailTemplates[k];
+              if (inc && typeof inc === "object") {
+                mergedTpls[k] = {
+                  ...mergedTpls[k],
+                  enabled: inc.enabled !== undefined ? !!inc.enabled : mergedTpls[k].enabled,
+                  subject: inc.subject || mergedTpls[k].subject,
+                  body: inc.body || mergedTpls[k].body
+                };
+              }
+            });
+            state.emailTemplates = mergedTpls;
+            saveEmailTemplatesToStorage();
+          }
           if (Array.isArray(res.userRoles)) {
             state.userRoles = mergeWithBuiltinRoles(res.userRoles);
             localStorage.setItem(STORAGE_KEY_ROLES, JSON.stringify(state.userRoles));
@@ -9594,6 +10777,10 @@ function handleDeleteUserRole(data) {
 
           syncItemStatuses();
           renderAll();
+          const emailTabEl = document.getElementById("tabContent-emailSettingsTab");
+          if (emailTabEl && !emailTabEl.classList.contains("hidden")) {
+            renderEmailSettingsTab();
+          }
           autoFillUserFormsFromDatabase(false);
           updateLastSyncedTime();
           if (showToast) showNotification("ซิงค์ข้อมูลล่าสุดกับ Google Sheets เรียบร้อย", "success");
@@ -9654,14 +10841,21 @@ function handleDeleteUserRole(data) {
       const imgInput = document.getElementById("editItemImageInput");
       if (imgInput) imgInput.value = "";
       const imgInfo = resolveItemImageInfo(item);
+      const rawDisplayUrl = (item.image_url && !String(item.image_url).includes("/DRV_"))
+        ? item.image_url
+        : ((imgInfo.driveViewUrl && !String(imgInfo.driveViewUrl).includes("/DRV_")) ? imgInfo.driveViewUrl : "");
       const urlInput = document.getElementById("editItemDriveUrl");
-      if (urlInput) urlInput.value = item.image_url || imgInfo.driveViewUrl || "";
+      if (urlInput) urlInput.value = rawDisplayUrl;
 
       const box = document.getElementById("editItemImagePreviewBox");
-      const thumb = document.getElementById("editItemImagePreviewThumb");
-      const nameTxt = document.getElementById("editItemImageNameText");
+      const thumb = document.getElementById("editItemImageThumb");
+      const nameTxt = document.getElementById("editItemImageNameLabel");
       const btnClear = document.getElementById("btnClearEditItemImage");
       if (box && thumb) {
+        thumb.dataset.errStep = "0";
+        thumb.onerror = function() {
+          handleEquipmentImageError(this, imgInfo.driveFileId, imgInfo.fallbackSvg);
+        };
         thumb.src = imgInfo.displaySrc;
         if (nameTxt) nameTxt.innerText = imgInfo.isCustom ? (imgInfo.name || "รูปภาพอุปกรณ์บน Google Drive") : "ภาพจำลองมาตรฐานตามหมวดหมู่ (อัปโหลดรูปจริงเพื่อแทนที่ได้)";
         box.classList.remove("hidden");
@@ -9690,6 +10884,7 @@ function handleDeleteUserRole(data) {
 
       const manualUrl = document.getElementById("editItemDriveUrl")?.value.trim() || "";
       const draftImg = state.draftItemImageEdit || {};
+      const prevUrl = String(item.image_url || "").trim();
 
       if (draftImg.cleared && !draftImg.base64 && !manualUrl) {
         item.image_name = "";
@@ -9697,14 +10892,17 @@ function handleDeleteUserRole(data) {
         item.image_url = "";
         item.drive_file_id = "";
         saveAttachmentToCache(id, "", "", "", "");
-      } else {
-        if (manualUrl) {
-          item.image_url = manualUrl;
-          item.drive_file_id = extractGoogleDriveFileId(manualUrl) || item.drive_file_id || "";
-        }
-        if (draftImg.base64) {
-          item.image_name = draftImg.name || `${id}_preview.png`;
-          item.image_base64 = draftImg.base64;
+      } else if (draftImg.base64) {
+        item.image_name = draftImg.name || `${id}_preview.png`;
+        item.image_base64 = draftImg.base64;
+        item.image_url = "";
+        item.drive_file_id = "";
+      } else if (manualUrl) {
+        item.image_url = manualUrl;
+        item.drive_file_id = extractGoogleDriveFileId(manualUrl) || "";
+        if (manualUrl !== prevUrl) {
+          item.image_base64 = "";
+          if (!item.image_name) item.image_name = item.drive_file_id ? `drive_${item.drive_file_id}` : "external_image";
         }
       }
 
@@ -9726,19 +10924,29 @@ function handleDeleteUserRole(data) {
       }
 
       renderAll();
-      showNotification(`อัปเดตอุปกรณ์ [${id}] เรียบร้อย`, "success");
-      callAPI("updateItem", {
+
+      const isSimulatedId = String(item.drive_file_id || "").startsWith("DRV_");
+      const updateRes = await callAPI("updateItem", {
         itemId: id,
         itemName: item.item_name,
         category: item.category,
         serialNumber: item.serial_number,
         status: item.status,
         imageName: item.image_name || "",
-        imageUrl: item.image_url || "",
-        driveFileId: item.drive_file_id || "",
-        imageBase64: draftImg.base64 || "",
+        imageUrl: isSimulatedId ? manualUrl : (item.image_url || ""),
+        driveFileId: isSimulatedId ? (extractGoogleDriveFileId(manualUrl) || "") : (item.drive_file_id || ""),
+        imageBase64: (!isSimulatedId && item.drive_file_id) ? "" : (draftImg.base64 || ""),
         folderId: state.driveFolderId || ""
       }, true);
+
+      if (updateRes && (updateRes.drive_file_id || updateRes.image_url)) {
+        item.drive_file_id = updateRes.drive_file_id || item.drive_file_id;
+        item.image_url = updateRes.image_url || item.image_url;
+        saveAttachmentToCache(id, item.image_name || `${id}.png`, item.image_base64 || "", item.image_url || "", item.drive_file_id || "");
+        renderAll();
+      }
+
+      showNotification(`อัปเดตอุปกรณ์ [${id}] เรียบร้อย`, "success");
     }
 
     function handleEditHistoryStatusChange(val) {

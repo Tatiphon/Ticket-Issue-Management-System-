@@ -2549,10 +2549,13 @@
     const STORAGE_KEY_INTERNAL_SYSTEMS = "it_asset_internal_systems";
     const STORAGE_KEY_DRIVE_FOLDER = "it_asset_drive_folder_id";
     const STORAGE_KEY_ATTACHMENTS = "it_asset_attachments_cache";
-    const DEFAULT_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxEj-79eHal39qVlnENM2GxRTn5C1TVXYjE8IxehEKXokpOHh5VtfHCbuc7_PSr4xO0/exec";
+    const PROD_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxEj-79eHal39qVlnENM2GxRTn5C1TVXYjE8IxehEKXokpOHh5VtfHCbuc7_PSr4xO0/exec";
+    const UAT_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzfqBPSr-st5YVxHdl0yKgVmWz6xVPoHkS2d3IbzCKiEY6LXJMIC9h_D1Cp_3BdIUUd0Q/exec";
+    const IS_UAT_ENV = /(^|[.-])uat([.-]|$)/i.test(window.location.hostname) || ["localhost", "127.0.0.1"].includes(window.location.hostname);
+    const DEFAULT_WEB_APP_URL = IS_UAT_ENV ? UAT_WEB_APP_URL : PROD_WEB_APP_URL;
 
     let storedUrl = localStorage.getItem(STORAGE_KEY_URL);
-    if (!storedUrl || storedUrl.includes("AKfycbxypntn") || storedUrl.includes("AKfycbEj-") || storedUrl === "DEMO") {
+    if (!storedUrl || storedUrl.includes("AKfycbxypntn") || storedUrl.includes("AKfycbEj-") || storedUrl === "DEMO" || (!IS_UAT_ENV && storedUrl === UAT_WEB_APP_URL)) {
       storedUrl = DEFAULT_WEB_APP_URL;
       localStorage.setItem(STORAGE_KEY_URL, DEFAULT_WEB_APP_URL);
     }

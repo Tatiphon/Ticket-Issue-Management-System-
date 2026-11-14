@@ -130,6 +130,13 @@
             <span class="hidden sm:inline">รีเฟรช</span>
           </button>
 
+          <!-- Email Notification Center Button -->
+          <button onclick="openEmailLogModal()" class="p-1.5 sm:px-3 sm:py-1.5 text-xs font-semibold rounded-xl border border-sky-200 bg-sky-50/70 hover:bg-sky-100 text-sky-800 flex items-center gap-1.5 transition active:scale-95 shadow-sm relative" title="ศูนย์แจ้งเตือนอีเมลอัตโนมัติ (Email Notification Center)">
+            <span>📧</span>
+            <span class="hidden md:inline">แจ้งเตือนอีเมล</span>
+            <span id="headerEmailLogBadge" class="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-sky-600 text-white">0</span>
+          </button>
+
           <!-- Google Sheets Setup (Super Admin Only) -->
           <button onclick="openSetupModal()" class="superadmin-only superadmin-hidden hidden lg:inline-flex px-3 py-1.5 text-xs font-semibold rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-700 items-center gap-1.5 transition shadow-sm">
             <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
@@ -651,13 +658,24 @@
                     </div>
                   </div>
 
+                  <!-- Auto-Match User Profile Banner -->
+                  <div class="p-2.5 px-3 bg-sky-50/80 border border-sky-200/80 rounded-xl flex flex-wrap items-center justify-between gap-2 text-xs">
+                    <div class="flex items-center gap-2 min-w-0">
+                      <span class="text-sm shrink-0">🔗</span>
+                      <span id="borrowUserMatchBadge" class="font-semibold text-sky-900 truncate">จับคู่ข้อมูล ชื่อ-อีเมล-ฝ่าย จากฐานข้อมูลผู้ใช้งานอัตโนมัติ</span>
+                    </div>
+                    <button type="button" onclick="autoFillUserFormsFromDatabase(true); showNotification('ดึงข้อมูลผู้ใช้งานปัจจุบันจากฐานข้อมูลเรียบร้อย', 'info');" class="px-2.5 py-1 rounded-lg bg-white hover:bg-sky-100 text-tcc-700 border border-sky-200 font-bold text-[11px] transition shrink-0 cursor-pointer">
+                      🔄 ดึงข้อมูลบัญชีของฉัน
+                    </button>
+                  </div>
+
                   <!-- Borrower & Department -->
                   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label for="borrowerName" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                         2. ชื่อ-นามสกุล ผู้ยืม <span class="text-rose-500">*</span>
                       </label>
-                      <input type="text" id="borrowerName" required placeholder="เช่น สมชาย ใจดี" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-tcc-500 outline-none">
+                      <input type="text" id="borrowerName" list="userDatabaseNamesList" oninput="handleBorrowerUserAutoMatch('name')" onchange="handleBorrowerUserAutoMatch('name')" required placeholder="พิมพ์ชื่อ หรือเลือกจากฐานข้อมูล (จับคู่อัตโนมัติ)" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-tcc-500 outline-none">
                     </div>
 
                     <div>
@@ -676,7 +694,7 @@
                       <label for="borrowerContact" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                         4. อีเมล (@thaichamber.or.th) หรือ เบอร์โทร <span class="text-rose-500">*</span>
                       </label>
-                      <input type="text" id="borrowerContact" required placeholder="เช่น user@thaichamber.or.th" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-tcc-500 outline-none">
+                      <input type="text" id="borrowerContact" list="userDatabaseEmailsList" oninput="handleBorrowerUserAutoMatch('email')" onchange="handleBorrowerUserAutoMatch('email')" required placeholder="เช่น user@thaichamber.or.th (จับคู่ชื่อ/ฝ่ายอัตโนมัติ)" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-tcc-500 outline-none">
                     </div>
 
                     <div>
@@ -695,6 +713,15 @@
                     <textarea id="borrowPurpose" rows="2" placeholder="เช่น ใช้จัดประชุมคณะกรรมการ, สัมมนา WFH ชั่วคราว" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-tcc-500 outline-none"></textarea>
                   </div>
 
+                  <!-- Email Notification Option -->
+                  <div class="p-2.5 px-3 bg-emerald-50/70 border border-emerald-200 rounded-xl flex items-center justify-between gap-2 text-xs">
+                    <label class="flex items-center gap-2 cursor-pointer select-none text-emerald-900 font-semibold">
+                      <input type="checkbox" id="borrowNotifyEmailCheckbox" checked class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 cursor-pointer">
+                      <span>📧 ส่งอีเมลแจ้งเตือนรายละเอียดการยืม-คืนอุปกรณ์ให้ผู้ยืมและเจ้าหน้าที่ไอทีอัตโนมัติ</span>
+                    </label>
+                    <span class="hidden sm:inline-block text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Auto Email</span>
+                  </div>
+
                   <div class="pt-3 flex items-center justify-end gap-3 border-t border-slate-100">
                     <button type="reset" onclick="handleResetBorrowForm()" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-100 transition">
                       ล้างข้อมูล
@@ -709,13 +736,13 @@
             </div>
 
             <!-- Right: Quick Peek Available List (Constrained Height & Same-Screen View) -->
-            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-5 flex flex-col h-[620px] max-h-[620px]">
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-5 flex flex-col h-[650px] max-h-[650px]">
               <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-2.5 shrink-0">
                 <div class="flex items-center gap-2">
                   <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
                   <div>
-                    <h3 class="font-bold text-slate-900 text-sm">อุปกรณ์ที่ว่างพร้อมยืม</h3>
-                    <p class="text-[10px] text-slate-400">คลิกที่การ์ดอุปกรณ์เพื่อเพิ่มลงฟอร์มยืมได้ทันที</p>
+                    <h3 class="font-bold text-slate-900 text-sm">อุปกรณ์ที่ว่างพร้อมยืม (พร้อมรูปตัวอย่าง)</h3>
+                    <p class="text-[10px] text-slate-400">คลิกที่การ์ดเพื่อเลือกยืม หรือคลิกที่รูปเพื่อดูภาพขนาดใหญ่จาก Google Drive</p>
                   </div>
                 </div>
                 <span id="quickAvailableCount" class="text-xs bg-emerald-100 text-emerald-800 font-bold px-2.5 py-0.5 rounded-full">0 ชิ้น</span>
@@ -892,26 +919,46 @@
                 </div>
               </div>
 
-              <!-- Reporter Info Review -->
-              <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-                <div>
-                  <span class="text-slate-400 block text-[10px]">ผู้แจ้ง:</span>
-                  <input type="text" id="ticketReporterName" required class="w-full bg-white px-2.5 py-1.5 rounded-lg border border-slate-300 font-semibold text-slate-800">
+              <!-- Reporter Info Review with Auto-Matching -->
+              <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 space-y-2.5 text-xs">
+                <div class="flex items-center justify-between">
+                  <span id="ticketUserMatchBadge" class="text-[11px] font-bold text-sky-800 flex items-center gap-1">
+                    <span>🔗</span>
+                    <span>ข้อมูลผู้แจ้งเคส (จับคู่ ชื่อ-อีเมล-ฝ่าย จากฐานข้อมูลอัตโนมัติ)</span>
+                  </span>
+                  <button type="button" onclick="autoFillUserFormsFromDatabase(true); showNotification('ดึงข้อมูลผู้แจ้งจากฐานข้อมูลเรียบร้อย', 'info');" class="text-[11px] font-bold text-tcc-700 hover:underline cursor-pointer">
+                    🔄 ดึงข้อมูลบัญชีของฉัน
+                  </button>
                 </div>
-                <div>
-                  <span class="text-slate-400 block text-[10px]">แผนก/สังกัด: <span class="text-rose-500">*</span></span>
-                  <select id="ticketReporterDept" required class="w-full bg-white px-2.5 py-1.5 rounded-lg border border-slate-300 font-semibold text-slate-800 text-xs focus:ring-2 focus:ring-tcc-500 outline-none">
-                    <option value="">-- กรุณาเลือกฝ่าย / แผนก --</option>
-                  </select>
-                </div>
-                <div>
-                  <span class="text-slate-400 block text-[10px]">เบอร์ติดต่อ/อีเมล:</span>
-                  <input type="text" id="ticketReporterContact" required class="w-full bg-white px-2.5 py-1.5 rounded-lg border border-slate-300 font-semibold text-slate-800">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <span class="text-slate-500 font-semibold block text-[10px] mb-0.5">ชื่อ-นามสกุล ผู้แจ้ง: <span class="text-rose-500">*</span></span>
+                    <input type="text" id="ticketReporterName" list="userDatabaseNamesList" oninput="handleTicketReporterAutoMatch('name')" onchange="handleTicketReporterAutoMatch('name')" required placeholder="พิมพ์ชื่อผู้แจ้ง" class="w-full bg-white px-2.5 py-1.5 rounded-lg border border-slate-300 font-semibold text-slate-800">
+                  </div>
+                  <div>
+                    <span class="text-slate-500 font-semibold block text-[10px] mb-0.5">ฝ่าย/แผนก/สังกัด: <span class="text-rose-500">*</span></span>
+                    <select id="ticketReporterDept" required class="w-full bg-white px-2.5 py-1.5 rounded-lg border border-slate-300 font-semibold text-slate-800 text-xs focus:ring-2 focus:ring-tcc-500 outline-none">
+                      <option value="">-- กรุณาเลือกฝ่าย / แผนก --</option>
+                    </select>
+                  </div>
+                  <div>
+                    <span class="text-slate-500 font-semibold block text-[10px] mb-0.5">อีเมล / เบอร์ติดต่อ: <span class="text-rose-500">*</span></span>
+                    <input type="text" id="ticketReporterContact" list="userDatabaseEmailsList" oninput="handleTicketReporterAutoMatch('email')" onchange="handleTicketReporterAutoMatch('email')" required placeholder="user@thaichamber.or.th" class="w-full bg-white px-2.5 py-1.5 rounded-lg border border-slate-300 font-semibold text-slate-800">
+                  </div>
                 </div>
               </div>
 
+              <!-- Email Notification Option for Ticket -->
+              <div class="p-2.5 px-3 bg-emerald-50/70 border border-emerald-200 rounded-xl flex items-center justify-between gap-2 text-xs">
+                <label class="flex items-center gap-2 cursor-pointer select-none text-emerald-900 font-semibold">
+                  <input type="checkbox" id="ticketNotifyEmailCheckbox" checked class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 cursor-pointer">
+                  <span>📧 ส่งอีเมลแจ้งเตือนทันทีเมื่อเปิดเคส และแจ้งเตือนทุกครั้งที่มีการอัปเดตความคืบหน้า</span>
+                </label>
+                <span class="hidden sm:inline-block text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Auto Email</span>
+              </div>
+
               <div class="pt-3 flex items-center justify-end gap-3 border-t border-slate-100">
-                <button type="reset" onclick="clearTicketAttachment()" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-100 transition">
+                <button type="reset" onclick="clearTicketAttachment(); setTimeout(() => autoFillUserFormsFromDatabase(true), 20);" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-100 transition">
                   ล้างข้อมูล
                 </button>
                 <button type="submit" id="btnSubmitTicket" class="px-6 py-2.5 bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white font-bold text-xs sm:text-sm rounded-xl shadow-md shadow-rose-600/20 flex items-center gap-2 transition">
@@ -1881,6 +1928,13 @@
           <textarea id="adminActionNote" rows="2" placeholder="ระบุสิ่งที่แก้ไข หรือความคืบหน้า..." class="w-full px-3 py-2 rounded-xl border border-slate-300"></textarea>
         </div>
 
+        <div class="p-2.5 bg-emerald-50/70 border border-emerald-200 rounded-xl">
+          <label class="flex items-center gap-2 cursor-pointer select-none text-emerald-900 font-semibold">
+            <input type="checkbox" id="adminActionNotifyEmail" checked class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 cursor-pointer">
+            <span>📧 ส่งอีเมลแจ้งเตือนการอัปเดตสถานะเคสให้ผู้แจ้งและผู้รับผิดชอบอัตโนมัติ</span>
+          </label>
+        </div>
+
         <div class="pt-3 flex justify-end gap-2 border-t border-slate-100">
           <button type="button" onclick="closeTicketAdminActionModal()" class="px-4 py-2 rounded-xl text-slate-600 hover:bg-slate-100 font-semibold">ยกเลิก</button>
           <button type="submit" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-sm">บันทึก</button>
@@ -2281,9 +2335,9 @@
 
   <!-- MODAL: EDIT ASSET IN INVENTORY -->
   <div id="editItemModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100 animate-fadeIn">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100 max-h-[92vh] overflow-y-auto animate-fadeIn">
       <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
-        <h3 class="font-bold text-slate-900 text-sm">แก้ไขข้อมูลและสถานะอุปกรณ์</h3>
+        <h3 class="font-bold text-slate-900 text-sm">แก้ไขข้อมูล รูปภาพตัวอย่าง และสถานะอุปกรณ์</h3>
         <button onclick="closeEditItemModal()" class="text-slate-400 hover:text-slate-600">✕</button>
       </div>
       <form onsubmit="handleSaveItemEdit(event)" class="space-y-3 text-xs">
@@ -2308,6 +2362,32 @@
             <option value="Borrowed">Borrowed (กำลังถูกยืม)</option>
           </select>
         </div>
+
+        <!-- Equipment Preview Image (Google Drive Auto-Save) -->
+        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+          <div class="flex items-center justify-between">
+            <label class="block font-semibold text-slate-700">🖼️ รูปตัวอย่างอุปกรณ์ (แสดงเมื่อเลือกยืม)</label>
+            <span class="text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">☁️ เก็บที่ Google Drive</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <input type="file" id="editItemImageInput" onchange="handleItemImageSelect(this, 'edit')" accept="image/*" class="w-full text-xs text-slate-500 file:mr-2.5 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-tcc-50 file:text-tcc-700 hover:file:bg-tcc-100 cursor-pointer">
+            <button type="button" id="btnClearEditItemImage" onclick="clearItemImageAttachment('edit')" class="hidden text-rose-500 hover:text-rose-700 text-xs font-semibold shrink-0">ลบรูป</button>
+          </div>
+          <div id="editItemImagePreviewBox" class="hidden p-2 bg-white rounded-xl border border-slate-200 space-y-1.5">
+            <div class="rounded-lg overflow-hidden border border-slate-100 bg-slate-50 max-h-36 flex items-center justify-center p-1">
+              <img id="editItemImageThumb" src="" alt="รูปตัวอย่างอุปกรณ์" onclick="previewDraftItemImage('edit')" class="max-h-32 w-auto object-contain cursor-zoom-in rounded">
+            </div>
+            <div class="flex items-center justify-between text-[11px]">
+              <span id="editItemImageNameLabel" class="truncate font-semibold text-slate-700"></span>
+              <button type="button" onclick="previewDraftItemImage('edit')" class="text-tcc-700 font-bold hover:underline shrink-0">🔍 ขยายดูรูป</button>
+            </div>
+          </div>
+          <div>
+            <span class="text-[10px] text-slate-400 block mb-0.5">หรือระบุลิงก์รูปภาพ / Google Drive File URL:</span>
+            <input type="text" id="editItemDriveUrl" placeholder="https://drive.google.com/file/d/..." class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs bg-white outline-none focus:ring-2 focus:ring-tcc-500">
+          </div>
+        </div>
+
         <div class="pt-3 flex justify-end gap-2 border-t border-slate-100">
           <button type="button" onclick="closeEditItemModal()" class="px-4 py-2 rounded-xl font-semibold text-slate-600 hover:bg-slate-100">ยกเลิก</button>
           <button type="submit" class="px-4 py-2 rounded-xl font-semibold bg-tcc-600 hover:bg-tcc-700 text-white shadow-sm">บันทึกการแก้ไข</button>
@@ -2336,7 +2416,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label class="block font-semibold text-slate-700 mb-1">ชื่อ-นามสกุล ผู้ยืม *</label>
-            <input type="text" id="editHistoryBorrowerName" required class="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-tcc-500 outline-none">
+            <input type="text" id="editHistoryBorrowerName" list="userDatabaseNamesList" oninput="handleHistoryBorrowerAutoMatch('name')" onchange="handleHistoryBorrowerAutoMatch('name')" required class="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-tcc-500 outline-none">
           </div>
           <div>
             <label class="block font-semibold text-slate-700 mb-1">ฝ่าย / แผนกผู้ยืม *</label>
@@ -2348,7 +2428,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label class="block font-semibold text-slate-700 mb-1">เบอร์โทร / อีเมลติดต่อ</label>
-            <input type="text" id="editHistoryContact" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-tcc-500 outline-none">
+            <input type="text" id="editHistoryContact" list="userDatabaseEmailsList" oninput="handleHistoryBorrowerAutoMatch('email')" onchange="handleHistoryBorrowerAutoMatch('email')" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-tcc-500 outline-none">
           </div>
           <div>
             <label class="block font-semibold text-slate-700 mb-1">สถานะรายการยืม-คืน *</label>
@@ -2375,6 +2455,12 @@
         <div>
           <label class="block font-semibold text-slate-700 mb-1">วัตถุประสงค์ / หมายเหตุการใช้งาน</label>
           <textarea id="editHistoryNotes" rows="2" class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-tcc-500 outline-none"></textarea>
+        </div>
+        <div class="p-2.5 bg-emerald-50/70 border border-emerald-200 rounded-xl">
+          <label class="flex items-center gap-2 cursor-pointer select-none text-emerald-900 font-semibold">
+            <input type="checkbox" id="editHistoryNotifyEmail" checked class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 cursor-pointer">
+            <span>📧 ส่งอีเมลแจ้งเตือนการอัปเดตสถานะยืม-คืนให้ผู้ยืมอัตโนมัติ</span>
+          </label>
         </div>
         <div class="pt-3 flex justify-end gap-2 border-t border-slate-100">
           <button type="button" onclick="closeEditHistoryModal()" class="px-4 py-2 rounded-xl text-slate-600 hover:bg-slate-100 font-semibold transition">ยกเลิก</button>
@@ -2420,7 +2506,7 @@
 
   <!-- MODAL: ADD ASSET -->
   <div id="addItemModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100 animate-fadeIn">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100 max-h-[92vh] overflow-y-auto animate-fadeIn">
       <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
         <h3 class="font-bold text-slate-900">เพิ่มอุปกรณ์ใหม่เข้าสู่คลัง (TCC)</h3>
         <button onclick="closeAddItemModal()" class="text-slate-400 hover:text-slate-600">✕</button>
@@ -2446,6 +2532,32 @@
           <label class="block font-semibold text-slate-700 mb-1">Serial Number</label>
           <input type="text" id="newItemSerial" placeholder="เช่น SN-8923412" class="w-full px-3 py-2 rounded-xl border border-slate-300">
         </div>
+
+        <!-- Equipment Preview Image (Google Drive Auto-Save) -->
+        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+          <div class="flex items-center justify-between">
+            <label class="block font-semibold text-slate-700">🖼️ รูปตัวอย่างอุปกรณ์ (แสดงเมื่อเลือกยืม)</label>
+            <span class="text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">☁️ เก็บที่ Google Drive</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <input type="file" id="newItemImageInput" onchange="handleItemImageSelect(this, 'add')" accept="image/*" class="w-full text-xs text-slate-500 file:mr-2.5 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-tcc-50 file:text-tcc-700 hover:file:bg-tcc-100 cursor-pointer">
+            <button type="button" id="btnClearNewItemImage" onclick="clearItemImageAttachment('add')" class="hidden text-rose-500 hover:text-rose-700 text-xs font-semibold shrink-0">ลบรูป</button>
+          </div>
+          <div id="newItemImagePreviewBox" class="hidden p-2 bg-white rounded-xl border border-slate-200 space-y-1.5">
+            <div class="rounded-lg overflow-hidden border border-slate-100 bg-slate-50 max-h-36 flex items-center justify-center p-1">
+              <img id="newItemImageThumb" src="" alt="รูปตัวอย่างอุปกรณ์" onclick="previewDraftItemImage('add')" class="max-h-32 w-auto object-contain cursor-zoom-in rounded">
+            </div>
+            <div class="flex items-center justify-between text-[11px]">
+              <span id="newItemImageNameLabel" class="truncate font-semibold text-slate-700"></span>
+              <button type="button" onclick="previewDraftItemImage('add')" class="text-tcc-700 font-bold hover:underline shrink-0">🔍 ขยายดูรูป</button>
+            </div>
+          </div>
+          <div>
+            <span class="text-[10px] text-slate-400 block mb-0.5">หรือระบุลิงก์รูปภาพ / Google Drive File URL:</span>
+            <input type="text" id="newItemDriveUrl" placeholder="https://drive.google.com/file/d/..." class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs bg-white outline-none focus:ring-2 focus:ring-tcc-500">
+          </div>
+        </div>
+
         <div class="pt-3 flex justify-end gap-2 border-t border-slate-100">
           <button type="button" onclick="closeAddItemModal()" class="px-4 py-2 rounded-xl font-semibold text-slate-600 hover:bg-slate-100">ยกเลิก</button>
           <button type="submit" class="px-4 py-2 rounded-xl font-semibold bg-tcc-600 hover:bg-tcc-700 text-white">บันทึกอุปกรณ์</button>
@@ -2478,11 +2590,11 @@
         <div class="p-3.5 bg-sky-50/70 rounded-xl border border-sky-200 space-y-2">
           <div class="flex items-center justify-between">
             <label class="font-bold text-sky-950 flex items-center gap-1.5">
-              <span>☁️ 2. ตั้งค่าโฟลเดอร์ Google Drive สำหรับเก็บรูปภาพแนบ (Google Drive Storage):</span>
+              <span>☁️ 2. ตั้งค่าโฟลเดอร์ Google Drive สำหรับเก็บรูปตัวอย่างอุปกรณ์และรูปภาพแนบ:</span>
             </label>
             <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">Auto-Create Folder</span>
           </div>
-          <p class="text-[11px] text-slate-600">ระบุ Folder ID หรือวางลิงก์โฟลเดอร์ Google Drive ที่ต้องการใช้เก็บรูปภาพแจ้งซ่อมและคลังความรู้ (หากเว้นว่าง ระบบจะสร้างโฟลเดอร์ชื่อ <b>TCC_IT_System_Attachments</b> ใน Google Drive ให้อัตโนมัติ)</p>
+          <p class="text-[11px] text-slate-600">ระบุ Folder ID หรือวางลิงก์โฟลเดอร์ Google Drive ที่ต้องการใช้เก็บรูปตัวอย่างอุปกรณ์ (โฟลเดอร์ย่อย <b>Equipment</b>), รูปแจ้งซ่อม (<b>Tickets</b>) และคลังความรู้ (<b>KnowledgeBase</b>) (หากเว้นว่าง ระบบจะสร้างโฟลเดอร์ชื่อ <b>TCC_IT_System_Attachments</b> ใน Google Drive ให้อัตโนมัติ)</p>
           <div class="flex gap-2">
             <input type="text" id="inputDriveFolderId" placeholder="เว้นว่างเพื่อสร้างโฟลเดอร์อัตโนมัติ หรือใส่ Folder ID / ลิงก์โฟลเดอร์ Google Drive..." class="flex-1 px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs">
             <button type="button" onclick="saveDriveFolderSetting()" class="px-3.5 py-2 bg-tcc-600 hover:bg-tcc-700 text-white rounded-xl font-semibold shrink-0">บันทึกโฟลเดอร์</button>
@@ -2491,7 +2603,7 @@
 
         <div>
           <div class="flex items-center justify-between mb-1">
-            <span class="font-bold text-slate-800">3. โค้ด Apps Script เวอร์ชันล่าสุด (Code.gs รองรับ Google Sheets + Google Drive):</span>
+            <span class="font-bold text-slate-800">3. โค้ด Apps Script เวอร์ชันล่าสุด (Code.gs รองรับ Google Sheets + Google Drive + Email Notification):</span>
             <button onclick="copyGasCode()" class="text-tcc-600 font-semibold hover:underline">คัดลอกโค้ดทั้งหมด</button>
           </div>
           <pre id="gasCodeBlock" class="p-3 bg-slate-900 text-slate-100 rounded-xl text-[11px] font-mono overflow-x-auto max-h-56 leading-relaxed"></pre>
@@ -2507,7 +2619,11 @@
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
       </div>
       <h3 class="font-bold text-slate-900 text-base mb-1">ยืนยันการรับคืนอุปกรณ์</h3>
-      <div id="returnConfirmMessage" class="text-xs text-slate-600 mb-5 leading-relaxed"></div>
+      <div id="returnConfirmMessage" class="text-xs text-slate-600 mb-3 leading-relaxed"></div>
+      <div class="mb-4 p-2 bg-emerald-50 border border-emerald-200 rounded-xl text-[11px] text-emerald-900 font-semibold flex items-center justify-center gap-1.5">
+        <input type="checkbox" id="returnConfirmNotifyEmail" checked class="w-3.5 h-3.5 rounded text-emerald-600 cursor-pointer">
+        <label for="returnConfirmNotifyEmail" class="cursor-pointer">📧 ส่งอีเมลยืนยันการคืนอุปกรณ์ให้ผู้ยืมอัตโนมัติ</label>
+      </div>
       <div class="flex justify-center gap-2">
         <button type="button" onclick="closeReturnConfirmModal()" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100">ยกเลิก</button>
         <button type="button" id="btnConfirmReturnAction" class="px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm">ยืนยันรับคืน</button>
@@ -2540,6 +2656,48 @@
       </div>
     </div>
   </div>
+
+  <!-- MODAL: EMAIL NOTIFICATION CENTER -->
+  <div id="emailLogModal" onclick="if(event.target === this) closeEmailLogModal()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-2xl w-full p-6 shadow-2xl border border-slate-100 max-h-[90vh] flex flex-col animate-fadeIn">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4 shrink-0">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-2xl bg-sky-50 text-sky-700 flex items-center justify-center text-base font-bold border border-sky-200">📧</div>
+          <div>
+            <h3 class="font-bold text-slate-900 text-sm sm:text-base">ศูนย์แจ้งเตือนทางอีเมลอัตโนมัติ (Email Notification Center)</h3>
+            <p class="text-[11px] text-slate-500">แจ้งเตือนทุกความเคลื่อนไหวทั้งการยืม-คืนอุปกรณ์ และการเปิด/อัปเดตเคสแจ้งซ่อมไอที</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeEmailLogModal()" class="text-slate-400 hover:text-slate-600 font-bold p-1">✕</button>
+      </div>
+
+      <div class="p-3 bg-emerald-50/80 border border-emerald-200 rounded-2xl flex flex-wrap items-center justify-between gap-3 mb-4 text-xs shrink-0">
+        <label class="flex items-center gap-2 cursor-pointer font-bold text-emerald-900">
+          <input type="checkbox" id="globalEmailNotifyToggle" onchange="toggleGlobalEmailSetting(this.checked)" checked class="w-4 h-4 rounded text-emerald-600 cursor-pointer">
+          <span>เปิดใช้งานระบบส่งอีเมลแจ้งเตือนอัตโนมัติ (Google Apps Script MailApp)</span>
+        </label>
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="sendTestEmailNotification()" class="px-3 py-1.5 rounded-xl bg-white hover:bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold text-[11px] transition cursor-pointer">
+            🚀 ทดสอบส่งอีเมลแจ้งเตือน
+          </button>
+          <button type="button" onclick="clearEmailLogs()" class="px-2.5 py-1.5 rounded-xl bg-white hover:bg-rose-50 text-rose-600 border border-slate-200 font-semibold text-[11px] transition cursor-pointer">
+            ล้างประวัติ
+          </button>
+        </div>
+      </div>
+
+      <div id="emailLogListContainer" class="flex-1 overflow-y-auto space-y-2.5 pr-1 min-h-[220px]"></div>
+
+      <div class="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 shrink-0">
+        <span>* ระบบส่งอีเมลจริงผ่าน MailApp.sendEmail ของ Google Apps Script ไปยังอีเมลผู้ใช้งานและทีม Admin ไอที</span>
+        <button type="button" onclick="closeEmailLogModal()" class="px-4 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs">ปิดหน้าต่าง</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- GLOBAL DATALISTS FOR USER AUTO-MATCHING FROM DATABASE -->
+  <datalist id="userDatabaseNamesList"></datalist>
+  <datalist id="userDatabaseEmailsList"></datalist>
 
   <!-- JAVASCRIPT APPLICATION LOGIC -->
   <script>
@@ -2910,6 +3068,39 @@
       return mergeWithBuiltinRoles(INITIAL_DEMO_ROLES);
     }
 
+    const STORAGE_KEY_EMAIL_LOGS = "it_asset_email_notification_logs";
+    const STORAGE_KEY_EMAIL_ENABLED = "it_asset_email_notify_enabled";
+
+    function loadSavedEmailLogs() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_EMAIL_LOGS);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) return parsed;
+        }
+      } catch (e) {}
+      return [
+        {
+          id: "EML-INIT-1",
+          timestamp: getLocalTimestamp(-3),
+          eventType: "TICKET_CREATED",
+          subject: "[TCC IT Helpdesk] แจ้งเปิดเคสใหม่ #ITC-2026-10-25-0001: หน้าจอโน้ตบุ๊กกระพริบดับบางจังหวะ",
+          recipients: ["somchai.user@thaichamber.or.th", "wattanachai.mi@thaichamber.or.th"],
+          summary: "ผู้แจ้ง: สมชาย ใจดี (ฝ่ายการเงินและการบัญชี) • สถานะ: In Progress",
+          status: "Sent"
+        },
+        {
+          id: "EML-INIT-2",
+          timestamp: getLocalTimestamp(-1),
+          eventType: "BORROW_CREATED",
+          subject: "[TCC IT Asset] ยืนยันการยืมอุปกรณ์ #ITB-2026-10-28-0002 (Rode Wireless GO II Dual Mic)",
+          recipients: ["suwimon@thaichamber.or.th", "tatiphon.hi@thaichamber.or.th"],
+          summary: "ผู้ยืม: สุวิมล แสงทอง (ฝ่ายสมาชิกสัมพันธ์และการบริการ) • กำหนดคืน: " + getOffsetDate(4),
+          status: "Sent"
+        }
+      ];
+    }
+
     const state = {
       webAppUrl: initialUrl,
       isLive: !!initialUrl,
@@ -2935,12 +3126,380 @@
       currentKbAttachmentBase64: "",
       currentKbAttachmentName: "",
       currentKbAttachmentMime: "",
+      draftItemImageAdd: { name: "", base64: "", mime: "" },
+      draftItemImageEdit: { name: "", base64: "", mime: "", cleared: false },
       activePreviewAttachment: null,
       isRefreshing: false,
       autoReloadTimer: null,
       currentUser: null,
-      userRoles: loadSavedUserRoles()
+      userRoles: loadSavedUserRoles(),
+      emailNotifyEnabled: localStorage.getItem(STORAGE_KEY_EMAIL_ENABLED) !== "false",
+      emailLogs: loadSavedEmailLogs()
     };
+
+    /* ============================================================================
+     * REQUIREMENT 1: DATABASE USER AUTO-MATCHING (ชื่อ - อีเมล - ฝ่าย/แผนก อัตโนมัติ)
+     * ============================================================================ */
+    function findMatchedUserInDatabase(query) {
+      if (!query) return null;
+      const q = String(query).trim().toLowerCase();
+      if (!q) return null;
+      const roles = (state.userRoles || []).map(u => normalizeUserRole(u));
+
+      // 1. Exact email match
+      let found = roles.find(u => safeLower(u.email) === q);
+      if (found) return found;
+
+      // 2. Email username prefix match (e.g., "somchai.user" matches "somchai.user@thaichamber.or.th")
+      const qPrefix = q.includes("@") ? q.split("@")[0] : q;
+      found = roles.find(u => {
+        const em = safeLower(u.email);
+        return em && em.split("@")[0] === qPrefix;
+      });
+      if (found) return found;
+
+      // 3. Exact full name match ("first_name last_name" or "name")
+      const qNormalizedSpace = q.replace(/\s+/g, " ");
+      found = roles.find(u => {
+        const full1 = safeLower(u.name).replace(/\s+/g, " ");
+        const full2 = safeLower([u.first_name, u.last_name].filter(Boolean).join(" ")).replace(/\s+/g, " ");
+        return (full1 && full1 === qNormalizedSpace) || (full2 && full2 === qNormalizedSpace);
+      });
+      if (found) return found;
+
+      // 4. Exact first_name match (when unique or at least 2 chars)
+      if (q.length >= 2) {
+        found = roles.find(u => safeLower(u.first_name) === q);
+        if (found) return found;
+      }
+
+      return null;
+    }
+
+    function ensureDeptOptionExistsAndSelect(selectId, deptValue) {
+      const sel = document.getElementById(selectId);
+      if (!sel || !deptValue) return;
+      const cleanDept = String(deptValue).trim();
+      if (!cleanDept) return;
+
+      if (!state.departments.includes(cleanDept)) {
+        state.departments.push(cleanDept);
+      }
+      const hasOption = Array.from(sel.options).some(opt => opt.value === cleanDept);
+      if (!hasOption) {
+        const opt = document.createElement("option");
+        opt.value = cleanDept;
+        opt.textContent = cleanDept;
+        sel.appendChild(opt);
+      }
+      sel.value = cleanDept;
+    }
+
+    function populateUserAutocompleteDatalists() {
+      const namesList = document.getElementById("userDatabaseNamesList");
+      const emailsList = document.getElementById("userDatabaseEmailsList");
+      const roles = (state.userRoles || []).filter(u => u && u.status !== "disabled").map(u => normalizeUserRole(u));
+
+      if (namesList) {
+        const seenNames = new Set();
+        namesList.innerHTML = roles.map(u => {
+          const fullName = (u.name || [u.first_name, u.last_name].filter(Boolean).join(" ")).trim();
+          if (!fullName || seenNames.has(fullName.toLowerCase())) return "";
+          seenNames.add(fullName.toLowerCase());
+          const label = `${u.email}${u.dept ? ' • ' + u.dept : ''}`;
+          return `<option value="${escapeQuotes(fullName)}" label="${escapeQuotes(label)}"></option>`;
+        }).join("");
+      }
+
+      if (emailsList) {
+        const seenEmails = new Set();
+        emailsList.innerHTML = roles.map(u => {
+          const em = (u.email || "").trim();
+          if (!em || seenEmails.has(em.toLowerCase())) return "";
+          seenEmails.add(em.toLowerCase());
+          const fullName = (u.name || [u.first_name, u.last_name].filter(Boolean).join(" ")).trim();
+          const label = `${fullName}${u.dept ? ' • ' + u.dept : ''}`;
+          return `<option value="${escapeQuotes(em)}" label="${escapeQuotes(label)}"></option>`;
+        }).join("");
+      }
+    }
+
+    function updateMatchBadgeUI(badgeId, matchedUser) {
+      const badge = document.getElementById(badgeId);
+      if (!badge) return;
+      if (matchedUser) {
+        badge.innerHTML = `<span class="text-emerald-700 font-bold">✓ จับคู่ฐานข้อมูลสำเร็จ:</span> <span class="text-slate-800 font-semibold">${matchedUser.name}</span> <span class="text-slate-500">(${matchedUser.email}${matchedUser.dept ? ' • ' + matchedUser.dept : ''})</span>`;
+      } else {
+        badge.innerText = "จับคู่ข้อมูล ชื่อ-อีเมล-ฝ่าย จากฐานข้อมูลผู้ใช้งานอัตโนมัติ";
+      }
+    }
+
+    function autoFillUserFormsFromDatabase(forceOverwrite = false) {
+      if (!state.currentUser) return;
+      // Match current logged-in user against latest state.userRoles database
+      const dbUser = findMatchedUserInDatabase(state.currentUser.email) || findMatchedUserInDatabase(state.currentUser.name);
+      const effectiveName = (dbUser?.name || [dbUser?.first_name, dbUser?.last_name].filter(Boolean).join(" ") || state.currentUser.name || "").trim();
+      const effectiveEmail = (dbUser?.email || state.currentUser.email || "").trim();
+      const effectiveDept = (dbUser?.dept || state.currentUser.dept || "").trim();
+
+      if (dbUser) {
+        state.currentUser.name = effectiveName || state.currentUser.name;
+        state.currentUser.email = effectiveEmail || state.currentUser.email;
+        state.currentUser.dept = effectiveDept || state.currentUser.dept;
+      }
+
+      renderDepartmentSelects();
+
+      // 1. Borrow Form
+      const bName = document.getElementById("borrowerName");
+      const bContact = document.getElementById("borrowerContact");
+      const bDept = document.getElementById("borrowerDept");
+      if (bName && (forceOverwrite || !bName.value.trim())) bName.value = effectiveName;
+      if (bContact && (forceOverwrite || !bContact.value.trim())) bContact.value = effectiveEmail;
+      if (bDept && effectiveDept && (forceOverwrite || !bDept.value)) {
+        ensureDeptOptionExistsAndSelect("borrowerDept", effectiveDept);
+      }
+      updateMatchBadgeUI("borrowUserMatchBadge", dbUser || state.currentUser);
+
+      // 2. Ticket Create Form
+      const tName = document.getElementById("ticketReporterName");
+      const tContact = document.getElementById("ticketReporterContact");
+      const tDept = document.getElementById("ticketReporterDept");
+      if (tName && (forceOverwrite || !tName.value.trim())) tName.value = effectiveName;
+      if (tContact && (forceOverwrite || !tContact.value.trim())) tContact.value = effectiveEmail;
+      if (tDept && effectiveDept && (forceOverwrite || !tDept.value)) {
+        ensureDeptOptionExistsAndSelect("ticketReporterDept", effectiveDept);
+      }
+      updateMatchBadgeUI("ticketUserMatchBadge", dbUser || state.currentUser);
+    }
+
+    function handleBorrowerUserAutoMatch(sourceField) {
+      const nameEl = document.getElementById("borrowerName");
+      const emailEl = document.getElementById("borrowerContact");
+      const query = sourceField === "name" ? nameEl?.value : emailEl?.value;
+      const matched = findMatchedUserInDatabase(query);
+      if (!matched) return;
+
+      const fullName = (matched.name || [matched.first_name, matched.last_name].filter(Boolean).join(" ")).trim();
+      if (sourceField === "name") {
+        if (emailEl && matched.email) emailEl.value = matched.email;
+      } else if (sourceField === "email") {
+        if (nameEl && fullName) nameEl.value = fullName;
+      }
+      if (matched.dept) {
+        ensureDeptOptionExistsAndSelect("borrowerDept", matched.dept);
+      }
+      updateMatchBadgeUI("borrowUserMatchBadge", matched);
+    }
+
+    function handleTicketReporterAutoMatch(sourceField) {
+      const nameEl = document.getElementById("ticketReporterName");
+      const emailEl = document.getElementById("ticketReporterContact");
+      const query = sourceField === "name" ? nameEl?.value : emailEl?.value;
+      const matched = findMatchedUserInDatabase(query);
+      if (!matched) return;
+
+      const fullName = (matched.name || [matched.first_name, matched.last_name].filter(Boolean).join(" ")).trim();
+      if (sourceField === "name") {
+        if (emailEl && matched.email) emailEl.value = matched.email;
+      } else if (sourceField === "email") {
+        if (nameEl && fullName) nameEl.value = fullName;
+      }
+      if (matched.dept) {
+        ensureDeptOptionExistsAndSelect("ticketReporterDept", matched.dept);
+      }
+      updateMatchBadgeUI("ticketUserMatchBadge", matched);
+    }
+
+    function handleHistoryBorrowerAutoMatch(sourceField) {
+      const nameEl = document.getElementById("editHistoryBorrowerName");
+      const emailEl = document.getElementById("editHistoryContact");
+      const query = sourceField === "name" ? nameEl?.value : emailEl?.value;
+      const matched = findMatchedUserInDatabase(query);
+      if (!matched) return;
+
+      const fullName = (matched.name || [matched.first_name, matched.last_name].filter(Boolean).join(" ")).trim();
+      if (sourceField === "name" && emailEl && matched.email) emailEl.value = matched.email;
+      if (sourceField === "email" && nameEl && fullName) nameEl.value = fullName;
+      if (matched.dept) {
+        ensureDeptOptionExistsAndSelect("editHistoryDept", matched.dept);
+      }
+    }
+
+    /* ============================================================================
+     * REQUIREMENT 2: AUTOMATED EMAIL NOTIFICATION SYSTEM (แจ้งเตือนอีเมลอัตโนมัติ)
+     * ============================================================================ */
+    function resolveUserEmailAddress(contactOrName, fallbackName = "") {
+      const raw = String(contactOrName || "").trim();
+      if (raw.includes("@") && raw.includes(".")) return raw.toLowerCase();
+      const matched = findMatchedUserInDatabase(raw) || findMatchedUserInDatabase(fallbackName);
+      if (matched && matched.email && matched.email.includes("@")) return matched.email.toLowerCase();
+      return "";
+    }
+
+    function getAdminRecipientEmails() {
+      const admins = (state.userRoles || []).filter(r => (r.role === "admin" || r.role === "superadmin") && r.status !== "disabled" && String(r.email || "").includes("@"));
+      return Array.from(new Set(admins.map(a => a.email.trim().toLowerCase()))).slice(0, 5);
+    }
+
+    function updateEmailLogBadges() {
+      const badge = document.getElementById("headerEmailLogBadge");
+      if (badge) badge.innerText = (state.emailLogs || []).length;
+      const toggle = document.getElementById("globalEmailNotifyToggle");
+      if (toggle) toggle.checked = !!state.emailNotifyEnabled;
+    }
+
+    async function sendSystemEmailNotification(eventType, details = {}) {
+      if (!state.emailNotifyEnabled && !details.forceSend) return null;
+
+      const recipientsSet = new Set();
+      if (Array.isArray(details.recipients)) {
+        details.recipients.forEach(r => {
+          const resolved = resolveUserEmailAddress(r);
+          if (resolved) recipientsSet.add(resolved);
+        });
+      }
+      if (details.userContact || details.userName) {
+        const userMail = resolveUserEmailAddress(details.userContact, details.userName);
+        if (userMail) recipientsSet.add(userMail);
+      }
+      if (details.assignedAgent) {
+        const agentMail = resolveUserEmailAddress(details.assignedAgent, details.assignedAgent);
+        if (agentMail) recipientsSet.add(agentMail);
+      }
+      if (details.notifyAdmins !== false) {
+        getAdminRecipientEmails().forEach(em => recipientsSet.add(em));
+      }
+
+      const recipients = Array.from(recipientsSet).filter(Boolean);
+      if (recipients.length === 0 && state.currentUser?.email) {
+        recipients.push(state.currentUser.email);
+      }
+
+      const subject = details.subject || "[TCC IT Service] แจ้งเตือนความเคลื่อนไหวระบบบริการไอที";
+      const summary = details.summary || "";
+      const htmlBody = details.htmlBody || "";
+
+      const logEntry = {
+        id: "EML-" + Date.now().toString(36).toUpperCase(),
+        timestamp: getLocalTimestamp(0),
+        eventType: eventType || "SYSTEM_UPDATE",
+        subject,
+        recipients,
+        summary,
+        status: state.isLive ? "Sent (GAS MailApp)" : "Sent (Simulated)"
+      };
+
+      state.emailLogs = [logEntry, ...(state.emailLogs || [])].slice(0, 60);
+      try {
+        localStorage.setItem(STORAGE_KEY_EMAIL_LOGS, JSON.stringify(state.emailLogs));
+      } catch (e) {}
+      updateEmailLogBadges();
+      renderEmailLogsList();
+
+      if (!details.silentToast) {
+        showNotification(`📧 ส่งอีเมลแจ้งเตือนไปยัง ${recipients.slice(0, 2).join(", ")}${recipients.length > 2 ? ` (+${recipients.length - 2})` : ""} เรียบร้อย`, "info");
+      }
+
+      // Trigger backend GAS MailApp if requested as standalone call
+      if (details.sendViaApi) {
+        try {
+          await callAPI("sendEmailNotification", {
+            eventType,
+            recipients,
+            subject,
+            summary,
+            details: details.meta || {}
+          }, true);
+        } catch (err) {
+          console.warn("Email API fallback:", err);
+        }
+      }
+      return logEntry;
+    }
+
+    function openEmailLogModal() {
+      updateEmailLogBadges();
+      renderEmailLogsList();
+      document.getElementById("emailLogModal")?.classList.remove("hidden");
+    }
+
+    function closeEmailLogModal() {
+      document.getElementById("emailLogModal")?.classList.add("hidden");
+    }
+
+    function toggleGlobalEmailSetting(enabled) {
+      state.emailNotifyEnabled = !!enabled;
+      localStorage.setItem(STORAGE_KEY_EMAIL_ENABLED, state.emailNotifyEnabled ? "true" : "false");
+      showNotification(
+        state.emailNotifyEnabled
+          ? "เปิดระบบส่งอีเมลแจ้งเตือนอัตโนมัติแล้ว"
+          : "ปิดระบบส่งอีเมลแจ้งเตือนชั่วคราว",
+        state.emailNotifyEnabled ? "success" : "warning"
+      );
+    }
+
+    function clearEmailLogs() {
+      state.emailLogs = [];
+      localStorage.setItem(STORAGE_KEY_EMAIL_LOGS, "[]");
+      updateEmailLogBadges();
+      renderEmailLogsList();
+      showNotification("ล้างประวัติการแจ้งเตือนอีเมลเรียบร้อย", "info");
+    }
+
+    async function sendTestEmailNotification() {
+      const targetEmail = state.currentUser?.email || "tatiphon.hi@thaichamber.or.th";
+      await sendSystemEmailNotification("TEST_EMAIL", {
+        forceSend: true,
+        sendViaApi: true,
+        recipients: [targetEmail],
+        notifyAdmins: false,
+        subject: `[TCC IT System] ทดสอบระบบแจ้งเตือนอีเมลอัตโนมัติ (${getLocalTimestamp(0)})`,
+        summary: `ทดสอบส่งอีเมลแจ้งเตือนไปยังผู้ใช้งานปัจจุบัน: ${state.currentUser?.name || 'Admin'} (${targetEmail})`
+      });
+    }
+
+    function renderEmailLogsList() {
+      const container = document.getElementById("emailLogListContainer");
+      if (!container) return;
+      const logs = state.emailLogs || [];
+      if (logs.length === 0) {
+        container.innerHTML = `<div class="py-12 text-center text-xs text-slate-400">ยังไม่มีประวัติการส่งอีเมลแจ้งเตือน</div>`;
+        return;
+      }
+
+      const typeBadgeMap = {
+        BORROW_CREATED: { label: "📝 ยืมอุปกรณ์", cls: "bg-tcc-50 text-tcc-700 border-tcc-200" },
+        BORROW_RETURNED: { label: "✅ คืนอุปกรณ์", cls: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+        BORROW_UPDATED: { label: "🔄 อัปเดตการยืม", cls: "bg-amber-50 text-amber-800 border-amber-200" },
+        TICKET_CREATED: { label: "🛠️ เปิดเคสใหม่", cls: "bg-rose-50 text-rose-700 border-rose-200" },
+        TICKET_UPDATED: { label: "🔔 อัปเดตสถานะเคส", cls: "bg-purple-50 text-purple-700 border-purple-200" },
+        TICKET_COMMENT: { label: "💬 ข้อความใหม่ในเคส", cls: "bg-sky-50 text-sky-700 border-sky-200" },
+        TICKET_ASSIGNED: { label: "👤 มอบหมายเคส", cls: "bg-indigo-50 text-indigo-700 border-indigo-200" },
+        TEST_EMAIL: { label: "🚀 ทดสอบระบบ", cls: "bg-slate-100 text-slate-700 border-slate-300" }
+      };
+
+      container.innerHTML = logs.map(l => {
+        const badge = typeBadgeMap[l.eventType] || { label: "📧 แจ้งเตือนระบบ", cls: "bg-slate-100 text-slate-700 border-slate-200" };
+        return `
+          <div class="p-3 rounded-2xl border border-slate-200 bg-slate-50/60 hover:bg-white transition space-y-1.5 text-xs">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 rounded-lg border text-[10px] font-bold ${badge.cls}">${badge.label}</span>
+                <span class="font-mono text-[10px] text-slate-400">${l.timestamp}</span>
+              </div>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">✓ ${l.status || 'Sent'}</span>
+            </div>
+            <div class="font-bold text-slate-900">${l.subject}</div>
+            ${l.summary ? `<div class="text-slate-600 text-[11px]">${l.summary}</div>` : ''}
+            <div class="text-[10px] text-slate-500 flex flex-wrap items-center gap-1 pt-1 border-t border-slate-100">
+              <span class="font-semibold text-slate-600">ผู้รับ (To):</span>
+              ${(l.recipients || []).map(r => `<span class="px-1.5 py-0.2 bg-white border border-slate-200 rounded font-mono text-tcc-700">${r}</span>`).join("")}
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
 
     /* AUTH & RBAC (Req 2 & Req 4: USER & PASS ONLY) */
     function togglePasswordVisibility(inputId, iconId) {
@@ -2987,8 +3546,7 @@
     }
 
     function processUserLogin(emailOrUser, password) {
-      const lower = emailOrUser.trim().toLowerCase();
-      const user = state.userRoles.find(r => r.email.trim().toLowerCase() === lower || (r.name && r.name.trim().toLowerCase() === lower));
+      const user = findMatchedUserInDatabase(emailOrUser);
 
       if (!user) {
         showNotification("⛔ ไม่พบบัญชีผู้ใช้งานในระบบ (กรุณาให้ผู้ดูแลระบบ Super Admin เพิ่มบัญชีก่อน)", "error");
@@ -3005,11 +3563,14 @@
         return false;
       }
 
+      const fullName = (user.name || [user.first_name, user.last_name].filter(Boolean).join(" ") || user.email.split('@')[0]).trim();
       const userObj = {
-        name: user.name || user.email.split('@')[0],
+        name: fullName,
+        first_name: user.first_name || "",
+        last_name: user.last_name || "",
         email: user.email.trim().toLowerCase(),
         dept: user.dept || "",
-        picture: `https://placehold.co/100x100/005ba6/ffffff?text=${encodeURIComponent((user.name || user.email).charAt(0).toUpperCase())}`,
+        picture: `https://placehold.co/100x100/005ba6/ffffff?text=${encodeURIComponent((fullName || user.email).charAt(0).toUpperCase())}`,
         role: user.role || "user",
         status: user.status || "active"
       };
@@ -3019,7 +3580,7 @@
 
       if (userObj.role === "superadmin") showNotification(`👑 ยินดีต้อนรับ Super Admin: ${userObj.name}`, "success");
       else if (userObj.role === "admin") showNotification(`🛡️ ยินดีต้อนรับเจ้าหน้าที่ไอที (Admin): ${userObj.name}`, "success");
-      else showNotification(`✓ ยินดีต้อนรับคุณ ${userObj.name}`, "success");
+      else showNotification(`✓ ยินดีต้อนรับคุณ ${userObj.name} (${userObj.dept || 'จับคู่ข้อมูลสำเร็จ'})`, "success");
 
       return true;
     }
@@ -3038,23 +3599,10 @@
       applyUserRoleUI();
 
       if (user) {
-        const bName = document.getElementById("borrowerName");
-        const bContact = document.getElementById("borrowerContact");
-        const bDept = document.getElementById("borrowerDept");
-        const tName = document.getElementById("ticketReporterName");
-        const tContact = document.getElementById("ticketReporterContact");
-        const tDept = document.getElementById("ticketReporterDept");
-
-        if (bName) bName.value = user.name;
-        if (bContact) bContact.value = user.email;
-        if (bDept && user.dept) bDept.value = user.dept;
-
-        if (tName) tName.value = user.name;
-        if (tContact) tContact.value = user.email;
-        if (tDept && user.dept) tDept.value = user.dept;
+        autoFillUserFormsFromDatabase(true);
       }
-        const targetTab = getTargetTabFromUrl() || 'borrowTab';
-        switchTab(targetTab);
+      const targetTab = getTargetTabFromUrl() || 'borrowTab';
+      switchTab(targetTab);
     }
 
     function handleSignOut() {
@@ -3328,6 +3876,9 @@
         }
       }
 
+      if (tabId === "borrowTab" || tabId === "ticketCreateTab") {
+        autoFillUserFormsFromDatabase(false);
+      }
       if (tabId === "dashboardTab") renderMonthlyDashboard();
       if (tabId === "myTicketsTab") renderMyTicketsList();
       if (tabId === "ticketAdminTab") renderAdminTicketsView();
@@ -4021,15 +4572,35 @@
         ]
       };
 
+      const notifyTicketEmail = document.getElementById("ticketNotifyEmailCheckbox")?.checked !== false;
+
       state.tickets.unshift(newTicket);
       const createRes = await callAPI("createTicket", {
         ticketData: newTicket,
-        driveFolderId: state.driveFolderId || ""
+        driveFolderId: state.driveFolderId || "",
+        notifyEmail: notifyTicketEmail
       });
-      if (createRes && (createRes.drive_view_url || createRes.drive_file_id)) {
-        newTicket.attachment_url = createRes.drive_view_url || newTicket.attachment_url;
+      if (createRes && (createRes.drive_view_url || createRes.drive_file_id || createRes.attachment_url)) {
+        newTicket.attachment_url = createRes.drive_view_url || createRes.attachment_url || newTicket.attachment_url;
         newTicket.drive_file_id = createRes.drive_file_id || newTicket.drive_file_id;
         saveAttachmentToCache(ticketNum, attachName, attachBase64, newTicket.attachment_url, newTicket.drive_file_id);
+      }
+
+      if (notifyTicketEmail) {
+        sendSystemEmailNotification("TICKET_CREATED", {
+          ticket_id: newTicket.ticket_id,
+          title: newTicket.title,
+          category: newTicket.category,
+          system_name: newTicket.system_name,
+          priority: newTicket.priority,
+          status: newTicket.status,
+          reporter_name: newTicket.reporter_name,
+          reporter_dept: newTicket.reporter_dept,
+          reporter_contact: newTicket.reporter_contact,
+          description: newTicket.description,
+          sla_target: newTicket.sla_target,
+          assigned_agent: newTicket.assigned_agent
+        });
       }
 
       showNotification(
@@ -4039,17 +4610,15 @@
         "success"
       );
       document.getElementById("createTicketForm").reset();
+      const tktNotifyChk = document.getElementById("ticketNotifyEmailCheckbox");
+      if (tktNotifyChk) tktNotifyChk.checked = state.emailNotifyEnabled !== false;
       handleTicketCategoryChange(document.getElementById("ticketCategory")?.value || "");
       clearTicketAttachment();
 
       if (btn) btn.disabled = false;
       if (spinner) spinner.classList.add("hidden");
 
-      if (state.currentUser) {
-        document.getElementById("ticketReporterName").value = state.currentUser.name;
-        document.getElementById("ticketReporterContact").value = state.currentUser.email;
-        if (state.currentUser.dept) document.getElementById("ticketReporterDept").value = state.currentUser.dept;
-      }
+      autoFillUserFormsFromDatabase(true);
 
       renderAll();
       switchTab('myTicketsTab');
@@ -4361,9 +4930,23 @@
       renderTicketComments(ticket);
       showNotification("ส่งข้อความตอบกลับแล้ว", "success");
 
+      if (!isInternal) {
+        sendSystemEmailNotification("TICKET_COMMENT", {
+          ticket_id: ticket.ticket_id,
+          title: ticket.title,
+          status: ticket.status,
+          reporter_name: ticket.reporter_name,
+          reporter_contact: ticket.reporter_contact,
+          assigned_agent: ticket.assigned_agent,
+          sender: senderName,
+          message: msg
+        });
+      }
+
       callAPI("updateTicket", {
         ticketId: ticket.ticket_id,
-        updates: { comments: ticket.comments }
+        updates: { comments: ticket.comments },
+        notifyEmail: !isInternal
       }, true);
     }
 
@@ -4386,6 +4969,16 @@
       openTicketDetailModal(ticket.ticket_id);
       renderAll();
 
+      sendSystemEmailNotification("TICKET_UPDATED", {
+        ticket_id: ticket.ticket_id,
+        title: ticket.title,
+        status: ticket.status,
+        assigned_agent: ticket.assigned_agent,
+        reporter_name: ticket.reporter_name,
+        reporter_contact: ticket.reporter_contact,
+        note: `ผู้ใช้งานประเมินความพึงพอใจ (CSAT): ${ticket.csat_score} ดาว ⭐ ${ticket.csat_feedback ? `("${ticket.csat_feedback}")` : ""}`
+      });
+
       await callAPI("updateTicket", {
         ticketId: ticket.ticket_id,
         updates: { csat_score: ticket.csat_score, csat_feedback: ticket.csat_feedback }
@@ -4398,6 +4991,10 @@
       document.getElementById("adminActionTicketId").value = ticket.ticket_id;
       document.getElementById("adminActionTicketNumber").innerText = `รหัสเคส: ${ticket.ticket_id} - ${ticket.title}`;
       document.getElementById("adminActionStatus").value = ticket.status;
+      const noteEl = document.getElementById("adminActionNote");
+      if (noteEl) noteEl.value = "";
+      const notifyChk = document.getElementById("adminActionNotifyEmail");
+      if (notifyChk) notifyChk.checked = state.emailNotifyEnabled !== false;
 
       const agentSel = document.getElementById("adminActionAgent");
       if (agentSel) {
@@ -4420,6 +5017,7 @@
       ticket.status = document.getElementById("adminActionStatus").value;
       ticket.assigned_agent = document.getElementById("adminActionAgent").value;
       const note = document.getElementById("adminActionNote").value.trim();
+      const notifyEmail = document.getElementById("adminActionNotifyEmail")?.checked !== false;
 
       if (ticket.status === "Resolved" && !ticket.resolved_at) {
         ticket.resolved_at = getLocalTimestamp(0);
@@ -4438,6 +5036,19 @@
       showNotification(`บันทึกการจัดการเคส [${ticket.ticket_id}] สำเร็จ`, "success");
       renderAll();
 
+      if (notifyEmail) {
+        sendSystemEmailNotification("TICKET_UPDATED", {
+          ticket_id: ticket.ticket_id,
+          title: ticket.title,
+          status: ticket.status,
+          assigned_agent: ticket.assigned_agent,
+          reporter_name: ticket.reporter_name,
+          reporter_contact: ticket.reporter_contact,
+          resolved_at: ticket.resolved_at,
+          note: note
+        });
+      }
+
       await callAPI("updateTicket", {
         ticketId: ticket.ticket_id,
         updates: {
@@ -4445,7 +5056,8 @@
           assigned_agent: ticket.assigned_agent,
           resolved_at: ticket.resolved_at,
           comments: ticket.comments
-        }
+        },
+        notifyEmail: notifyEmail
       }, true);
     }
 
@@ -4458,17 +5070,39 @@
 
       openTickets.forEach((t, idx) => {
         const agent = admins[idx % admins.length];
-        t.assigned_agent = agent.name;
+        t.assigned_agent = agent.email || agent.name;
         t.status = "In Progress";
         (t.comments = Array.isArray(t.comments) ? t.comments : []).push({
           sender: "ระบบจ่ายงานอัตโนมัติ",
-          message: `มอบหมายงานให้ ${agent.name} เรียบร้อย`,
+          message: `มอบหมายงานให้ ${agent.name} (${agent.email}) เรียบร้อย`,
           time: getLocalTimestamp(0),
           is_internal: true
         });
+
+        sendSystemEmailNotification("TICKET_ASSIGNED", {
+          ticket_id: t.ticket_id,
+          title: t.title,
+          priority: t.priority,
+          status: t.status,
+          assigned_agent: `${agent.name} (${agent.email})`,
+          reporter_name: t.reporter_name,
+          reporter_dept: t.reporter_dept,
+          reporter_contact: t.reporter_contact,
+          sla_target: t.sla_target
+        });
+
+        callAPI("updateTicket", {
+          ticketId: t.ticket_id,
+          updates: {
+            status: t.status,
+            assigned_agent: t.assigned_agent,
+            comments: t.comments
+          },
+          notifyEmail: true
+        }, true);
       });
 
-      showNotification(`จ่ายงานอัตโนมัติสำเร็จ ${openTickets.length} เคส`, "success");
+      showNotification(`จ่ายงานอัตโนมัติและส่งอีเมลแจ้งเตือนสำเร็จ ${openTickets.length} เคส`, "success");
       renderAll();
     }
 
@@ -4700,6 +5334,212 @@
       });
     }
 
+    /* EQUIPMENT PREVIEW IMAGES & GOOGLE DRIVE STORAGE (Requirement 3) */
+    function generateEquipmentFallbackSvg(item) {
+      const cat = String(item?.category || "Equipment").trim();
+      const id = String(item?.item_id || "IT").trim();
+      const name = String(item?.item_name || "IT Asset").trim();
+      const catLower = cat.toLowerCase();
+
+      let bg1 = "#0f172a", bg2 = "#0284c7", accent = "#38bdf8", iconLabel = "💻";
+      if (catLower.includes("laptop") || catLower.includes("notebook")) {
+        bg1 = "#0c4a6e"; bg2 = "#0284c7"; accent = "#7dd3fc"; iconLabel = "💻 LAPTOP";
+      } else if (catLower.includes("projector")) {
+        bg1 = "#312e81"; bg2 = "#4f46e5"; accent = "#a5b4fc"; iconLabel = "📽️ PROJECTOR";
+      } else if (catLower.includes("monitor") || catLower.includes("display")) {
+        bg1 = "#1e293b"; bg2 = "#334155"; accent = "#94a3b8"; iconLabel = "🖥️ MONITOR";
+      } else if (catLower.includes("audio") || catLower.includes("mic")) {
+        bg1 = "#064e3b"; bg2 = "#059669"; accent = "#6ee7b7"; iconLabel = "🎙️ AUDIO";
+      } else if (catLower.includes("adapter") || catLower.includes("hub") || catLower.includes("accessory")) {
+        bg1 = "#78350f"; bg2 = "#d97706"; accent = "#fcd34d"; iconLabel = "🔌 ADAPTER";
+      } else if (catLower.includes("tablet") || catLower.includes("ipad")) {
+        bg1 = "#4c1d95"; bg2 = "#7c3aed"; accent = "#c4b5fd"; iconLabel = "📱 TABLET";
+      }
+
+      const safeTitle = name.replace(/[&<>'"]/g, "").substring(0, 32);
+      const safeId = id.replace(/[&<>'"]/g, "");
+      const safeCat = cat.replace(/[&<>'"]/g, "");
+
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="480" height="320" viewBox="0 0 480 320">
+        <defs>
+          <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="${bg1}"/>
+            <stop offset="100%" stop-color="${bg2}"/>
+          </linearGradient>
+        </defs>
+        <rect width="480" height="320" rx="24" fill="url(#g)"/>
+        <circle cx="410" cy="60" r="85" fill="${accent}" opacity="0.12"/>
+        <circle cx="65" cy="265" r="70" fill="${accent}" opacity="0.1"/>
+        <rect x="28" y="26" width="135" height="30" rx="8" fill="#ffffff" opacity="0.16"/>
+        <text x="40" y="46" fill="#ffffff" font-family="sans-serif" font-size="13" font-weight="bold">${safeId} • ${safeCat}</text>
+        <rect x="140" y="76" width="200" height="122" rx="14" fill="#ffffff" opacity="0.14" stroke="${accent}" stroke-width="2"/>
+        <text x="240" y="145" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-size="22" font-weight="bold">${iconLabel}</text>
+        <text x="240" y="236" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-size="17" font-weight="bold">${safeTitle}</text>
+        <text x="240" y="264" text-anchor="middle" fill="${accent}" font-family="sans-serif" font-size="12">☁️ TCC IT Asset Preview (Google Drive)</text>
+      </svg>`;
+      return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
+    }
+
+    function resolveItemImageInfo(item) {
+      if (!item) return { displaySrc: generateEquipmentFallbackSvg({}), isCustom: false, driveViewUrl: "", driveFileId: "", name: "" };
+      const refId = String(item.item_id || "").trim();
+      const cached = getAttachmentFromCache(refId);
+
+      const name = item.image_name || item.attachment_name || cached?.name || `${refId}_preview.png`;
+      const base64 = item.image_base64 || item.attachment_base64 || cached?.base64 || "";
+      const rawUrl = item.image_url || item.attachment_url || cached?.driveUrl || "";
+      const driveFileId = item.drive_file_id || cached?.driveFileId || extractGoogleDriveFileId(rawUrl) || "";
+
+      let driveViewUrl = rawUrl;
+      let driveDirectUrl = "";
+      if (driveFileId && !driveFileId.startsWith("DRV_")) {
+        driveViewUrl = `https://drive.google.com/file/d/${driveFileId}/view?usp=sharing`;
+        driveDirectUrl = `https://drive.google.com/thumbnail?id=${driveFileId}&sz=w1000`;
+      } else if (driveFileId && driveFileId.startsWith("DRV_") && !driveViewUrl) {
+        driveViewUrl = `https://drive.google.com/file/d/${driveFileId}/view?usp=sharing`;
+      }
+
+      const fallbackSvg = generateEquipmentFallbackSvg(item);
+      const displaySrc = base64 || driveDirectUrl || (rawUrl && !rawUrl.includes("drive.google.com/file/d/DRV_") ? rawUrl : "") || fallbackSvg;
+      const isCustom = Boolean(base64 || driveFileId || rawUrl);
+
+      return {
+        refId,
+        name,
+        isImage: true,
+        base64: base64 || displaySrc,
+        driveFileId,
+        driveViewUrl,
+        driveDirectUrl,
+        displaySrc,
+        fallbackSvg,
+        isCustom
+      };
+    }
+
+    function openItemImagePreview(itemId) {
+      const item = state.items.find(i => i.item_id === itemId);
+      if (!item) return;
+      const info = resolveItemImageInfo(item);
+      openAttachmentPreviewModal({
+        refId: item.item_id,
+        name: `${item.item_name} (${item.item_id})`,
+        isImage: true,
+        displaySrc: info.displaySrc,
+        base64: info.base64,
+        driveFileId: info.driveFileId,
+        driveViewUrl: info.driveViewUrl || (info.driveFileId ? `https://drive.google.com/file/d/${info.driveFileId}/view?usp=sharing` : ""),
+        driveDirectUrl: info.driveDirectUrl
+      });
+    }
+
+    function handleItemImageSelect(input, mode) {
+      const file = input?.files?.[0];
+      if (!file) return;
+      if (file.size > 10 * 1024 * 1024) {
+        showNotification("ไฟล์รูปภาพอุปกรณ์ต้องมีขนาดไม่เกิน 10MB", "warning");
+        input.value = "";
+        return;
+      }
+      readAndPrepareAttachmentFile(file, (dataUrl, fileName, mimeType, origSize) => {
+        if (mode === "add") {
+          state.draftItemImageAdd = { name: fileName, base64: dataUrl, mime: mimeType, size: origSize };
+          const box = document.getElementById("newItemImagePreviewBox");
+          const img = document.getElementById("newItemImagePreviewThumb");
+          const nameEl = document.getElementById("newItemImageNameText");
+          const btnClear = document.getElementById("btnClearNewItemImage");
+          if (img) img.src = dataUrl;
+          if (nameEl) nameEl.innerText = `${fileName} (${(origSize / 1024).toFixed(1)} KB)`;
+          if (box) box.classList.remove("hidden");
+          if (btnClear) btnClear.classList.remove("hidden");
+        } else {
+          state.draftItemImageEdit = { name: fileName, base64: dataUrl, mime: mimeType, size: origSize };
+          const box = document.getElementById("editItemImagePreviewBox");
+          const img = document.getElementById("editItemImagePreviewThumb");
+          const nameEl = document.getElementById("editItemImageNameText");
+          const btnClear = document.getElementById("btnClearEditItemImage");
+          if (img) img.src = dataUrl;
+          if (nameEl) nameEl.innerText = `${fileName} (${(origSize / 1024).toFixed(1)} KB)`;
+          if (box) box.classList.remove("hidden");
+          if (btnClear) btnClear.classList.remove("hidden");
+        }
+      });
+    }
+
+    function clearItemImageAttachment(mode) {
+      if (mode === "add") {
+        state.draftItemImageAdd = { name: "", base64: "", mime: "" };
+        const inp = document.getElementById("newItemImageInput");
+        if (inp) inp.value = "";
+        const box = document.getElementById("newItemImagePreviewBox");
+        const btnClear = document.getElementById("btnClearNewItemImage");
+        if (box) box.classList.add("hidden");
+        if (btnClear) btnClear.classList.add("hidden");
+      } else {
+        state.draftItemImageEdit = { name: "", base64: "", mime: "", cleared: true };
+        const inp = document.getElementById("editItemImageInput");
+        if (inp) inp.value = "";
+        const urlInp = document.getElementById("editItemDriveUrl");
+        if (urlInp) urlInp.value = "";
+        const box = document.getElementById("editItemImagePreviewBox");
+        const btnClear = document.getElementById("btnClearEditItemImage");
+        if (box) box.classList.add("hidden");
+        if (btnClear) btnClear.classList.add("hidden");
+      }
+    }
+
+    function previewDraftItemImage(mode) {
+      if (mode === "add") {
+        const draft = state.draftItemImageAdd;
+        const urlVal = document.getElementById("newItemDriveUrl")?.value.trim() || "";
+        const itemName = document.getElementById("newItemName")?.value.trim() || "อุปกรณ์ใหม่";
+        const itemId = document.getElementById("newItemId")?.value.trim() || "IT-NEW";
+        const tempItem = {
+          item_id: itemId,
+          item_name: itemName,
+          category: document.getElementById("newItemCategory")?.value || "Laptop",
+          image_name: draft?.name || "",
+          image_base64: draft?.base64 || "",
+          image_url: urlVal
+        };
+        const info = resolveItemImageInfo(tempItem);
+        openAttachmentPreviewModal({
+          refId: itemId,
+          name: `${itemName} (${itemId})`,
+          isImage: true,
+          displaySrc: info.displaySrc,
+          base64: info.base64,
+          driveFileId: info.driveFileId,
+          driveViewUrl: info.driveViewUrl,
+          driveDirectUrl: info.driveDirectUrl
+        });
+      } else {
+        const itemId = document.getElementById("editItemId")?.value.trim();
+        const existing = state.items.find(i => i.item_id === itemId) || {};
+        const draft = state.draftItemImageEdit;
+        const urlVal = document.getElementById("editItemDriveUrl")?.value.trim() || "";
+        const tempItem = {
+          ...existing,
+          item_name: document.getElementById("editItemName")?.value.trim() || existing.item_name,
+          category: document.getElementById("editItemCategory")?.value.trim() || existing.category,
+          image_name: draft?.name || existing.image_name || "",
+          image_base64: draft?.base64 || existing.image_base64 || "",
+          image_url: urlVal || existing.image_url || ""
+        };
+        const info = resolveItemImageInfo(tempItem);
+        openAttachmentPreviewModal({
+          refId: tempItem.item_id || "IT",
+          name: `${tempItem.item_name} (${tempItem.item_id})`,
+          isImage: true,
+          displaySrc: info.displaySrc,
+          base64: info.base64,
+          driveFileId: info.driveFileId,
+          driveViewUrl: info.driveViewUrl,
+          driveDirectUrl: info.driveDirectUrl
+        });
+      }
+    }
+
     function openSearchableItemDropdown() {
       filterSearchableItemDropdown();
       document.getElementById("searchableItemDropdownMenu").classList.remove("hidden");
@@ -4723,16 +5563,28 @@
         return;
       }
 
-      container.innerHTML = filtered.map(item => `
+      container.innerHTML = filtered.map(item => {
+        const imgInfo = resolveItemImageInfo(item);
+        return `
         <div onclick="addSelectedItem('${escapeQuotes(item.item_id)}'); document.getElementById('searchableItemDropdownMenu').classList.add('hidden');" 
-             class="p-2 hover:bg-tcc-50 rounded-xl cursor-pointer transition flex items-center justify-between text-xs">
-          <div>
-            <div class="font-semibold text-slate-800">${item.item_name}</div>
-            <div class="text-[10px] text-slate-400 font-mono">${item.item_id} • ${item.category}</div>
+             class="p-2 hover:bg-tcc-50 rounded-xl cursor-pointer transition flex items-center justify-between gap-2.5 text-xs border border-transparent hover:border-tcc-200">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <div onclick="event.stopPropagation(); openItemImagePreview('${escapeQuotes(item.item_id)}')" title="คลิกเพื่อดูรูปตัวอย่างขนาดใหญ่" class="w-12 h-9 rounded-lg overflow-hidden border border-slate-200 bg-slate-100 shrink-0 relative group">
+              <img src="${imgInfo.displaySrc}" alt="${escapeQuotes(item.item_name)}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='${imgInfo.fallbackSvg}';" />
+              <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-[10px] text-white font-bold">🔍</div>
+            </div>
+            <div class="min-w-0">
+              <div class="font-semibold text-slate-800 truncate">${item.item_name}</div>
+              <div class="text-[10px] text-slate-400 font-mono flex items-center gap-1.5">
+                <span>${item.item_id} • ${item.category}</span>
+                ${imgInfo.driveFileId ? '<span class="text-emerald-600 font-sans font-bold">☁️ Drive</span>' : ''}
+              </div>
+            </div>
           </div>
-          <span class="text-tcc-700 font-bold bg-tcc-50 px-2 py-0.5 rounded-lg">+ เลือก</span>
+          <span class="text-tcc-700 font-bold bg-tcc-50 px-2.5 py-1 rounded-lg shrink-0 border border-tcc-200/60">+ เลือก</span>
         </div>
-      `).join("");
+      `;
+      }).join("");
     }
 
     function addSelectedItem(itemId) {
@@ -4763,63 +5615,82 @@
 
       if (!container) return;
       if (count === 0) {
-        container.innerHTML = `<p class="text-xs text-slate-400 py-1 italic">ยังไม่ได้เลือกอุปกรณ์</p>`;
+        container.innerHTML = `<p class="text-xs text-slate-400 py-1 italic">ยังไม่ได้เลือกอุปกรณ์ (คลิกเลือกจากช่องค้นหาหรือตารางด้านขวาเพื่อดูรูปตัวอย่าง)</p>`;
         return;
       }
       container.innerHTML = state.selectedBorrowItems.map(id => {
-        const item = state.items.find(i => i.item_id === id) || { item_name: id };
+        const item = state.items.find(i => i.item_id === id) || { item_id: id, item_name: id, category: "Equipment" };
+        const imgInfo = resolveItemImageInfo(item);
         return `
-          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs bg-white border border-tcc-300 text-tcc-900 shadow-sm animate-fadeIn">
-            <span class="font-mono font-bold text-[10px] text-tcc-700">[${id}]</span>
-            <span class="max-w-[150px] truncate">${item.item_name}</span>
-            <button type="button" onclick="removeSelectedItem('${escapeQuotes(id)}')" class="text-slate-400 hover:text-rose-600 font-bold ml-1">✕</button>
-          </span>
+          <div class="inline-flex items-center gap-2 p-1.5 pr-2.5 rounded-xl text-xs bg-white border border-tcc-300 text-tcc-900 shadow-sm animate-fadeIn">
+            <div onclick="openItemImagePreview('${escapeQuotes(id)}')" title="คลิกเพื่อขยายดูรูปตัวอย่างอุปกรณ์" class="w-11 h-8 rounded-lg overflow-hidden border border-slate-200 bg-slate-100 shrink-0 cursor-pointer relative group">
+              <img src="${imgInfo.displaySrc}" alt="${escapeQuotes(item.item_name)}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='${imgInfo.fallbackSvg}';" />
+              <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-[9px] text-white">🔍</div>
+            </div>
+            <div class="min-w-0">
+              <div class="flex items-center gap-1">
+                <span class="font-mono font-bold text-[10px] text-tcc-700">[${id}]</span>
+                <span class="max-w-[150px] truncate font-semibold text-slate-800">${item.item_name}</span>
+              </div>
+              <div class="text-[9px] text-slate-400 flex items-center gap-1">
+                <span>${item.category || '-'}</span>
+                <span>•</span>
+                <button type="button" onclick="openItemImagePreview('${escapeQuotes(id)}')" class="text-tcc-600 hover:underline font-semibold">ดูรูปตัวอย่าง</button>
+              </div>
+            </div>
+            <button type="button" onclick="removeSelectedItem('${escapeQuotes(id)}')" class="text-slate-400 hover:text-rose-600 font-bold ml-1 px-1">✕</button>
+          </div>
         `;
       }).join("");
     }
 
     /* DEPARTMENT & CATEGORY SELECT POPULATION */
     function renderDepartmentSelects() {
-      const depts = state.departments || [];
+      const baseDepts = state.departments || [];
+      const roleDepts = (state.userRoles || []).map(u => String(u.dept || "").trim()).filter(Boolean);
+      const mergedDepts = Array.from(new Set([...baseDepts, ...roleDepts]));
+
       const optionsHtml = ['<option value="">-- กรุณาเลือกฝ่าย / แผนก --</option>']
-        .concat(depts.map(d => `<option value="${escapeQuotes(d)}">${d}</option>`))
+        .concat(mergedDepts.map(d => `<option value="${escapeQuotes(d)}">${d}</option>`))
         .join('');
 
       const borrowDeptEl = document.getElementById("borrowerDept");
       if (borrowDeptEl) {
         const cur = borrowDeptEl.value;
         borrowDeptEl.innerHTML = optionsHtml;
-        if (cur && depts.includes(cur)) borrowDeptEl.value = cur;
+        if (cur && mergedDepts.includes(cur)) borrowDeptEl.value = cur;
       }
 
       const ticketDeptEl = document.getElementById("ticketReporterDept");
       if (ticketDeptEl) {
         const cur = ticketDeptEl.value;
         ticketDeptEl.innerHTML = optionsHtml;
-        if (cur && depts.includes(cur)) ticketDeptEl.value = cur;
+        if (cur && mergedDepts.includes(cur)) ticketDeptEl.value = cur;
       }
 
       const editHistDeptEl = document.getElementById("editHistoryDept");
       if (editHistDeptEl) {
         const cur = editHistDeptEl.value;
         editHistDeptEl.innerHTML = optionsHtml;
-        if (cur && depts.includes(cur)) editHistDeptEl.value = cur;
+        if (cur && mergedDepts.includes(cur)) editHistDeptEl.value = cur;
       }
 
       const userRoleDeptEl = document.getElementById("inputRoleDept");
       if (userRoleDeptEl) {
         const cur = userRoleDeptEl.value;
-        userRoleDeptEl.innerHTML = '<option value="">-- ไม่ระบุฝ่าย --</option>' + depts.map(d => `<option value="${escapeQuotes(d)}">${d}</option>`).join("");
-        if (cur && depts.includes(cur)) userRoleDeptEl.value = cur;
+        userRoleDeptEl.innerHTML = '<option value="">-- ไม่ระบุฝ่าย --</option>' + mergedDepts.map(d => `<option value="${escapeQuotes(d)}">${d}</option>`).join("");
+        if (cur && mergedDepts.includes(cur)) userRoleDeptEl.value = cur;
       }
 
       const filterRoleDeptEl = document.getElementById("filterRoleDept");
       if (filterRoleDeptEl) {
         const cur = filterRoleDeptEl.value;
-        const allDepts = Array.from(new Set([...depts, ...(state.userRoles || []).map(u => u.dept).filter(Boolean)])).sort();
+        const allDepts = [...mergedDepts].sort();
         filterRoleDeptEl.innerHTML = '<option value="">🏢 ทุกฝ่าย / แผนก</option>' + allDepts.map(d => `<option value="${escapeQuotes(d)}">${d}</option>`).join("");
         if (cur) filterRoleDeptEl.value = cur;
       }
+
+      populateUserAutocompleteDatalists();
     }
 
     function renderTicketCategorySelects() {
@@ -5564,20 +6435,29 @@
 
       container.innerHTML = filtered.map(i => {
         const isSel = state.selectedBorrowItems.includes(i.item_id);
+        const imgInfo = resolveItemImageInfo(i);
         return `
           <div onclick="addSelectedItem('${escapeQuotes(i.item_id)}')" 
-               class="p-2.5 rounded-xl border ${isSel ? 'border-tcc-500 bg-tcc-50/70 shadow-xs' : 'border-slate-100 hover:border-tcc-300 bg-white hover:bg-slate-50/60'} cursor-pointer transition flex items-center justify-between text-xs">
-            <div class="min-w-0 pr-2">
-              <p class="font-bold text-slate-900 truncate">${i.item_name}</p>
-              <div class="flex items-center gap-1.5 text-[10px] text-slate-400 font-mono mt-0.5">
-                <span class="bg-slate-100 px-1.5 py-0.5 rounded text-slate-600 font-semibold">${i.item_id}</span>
-                <span>•</span>
-                <span class="truncate">${i.category}</span>
-                ${i.serial_number ? `<span>• S/N: ${i.serial_number}</span>` : ''}
+               class="p-2.5 rounded-xl border ${isSel ? 'border-tcc-500 bg-tcc-50/70 shadow-xs' : 'border-slate-100 hover:border-tcc-300 bg-white hover:bg-slate-50/60'} cursor-pointer transition flex items-center justify-between gap-2.5 text-xs">
+            <div class="flex items-center gap-2.5 min-w-0 pr-1">
+              <div onclick="event.stopPropagation(); openItemImagePreview('${escapeQuotes(i.item_id)}')" title="คลิกเพื่อดูรูปตัวอย่างอุปกรณ์ขนาดใหญ่" class="w-14 h-10 rounded-lg overflow-hidden border border-slate-200 bg-slate-100 shrink-0 relative group">
+                <img src="${imgInfo.displaySrc}" alt="${escapeQuotes(i.item_name)}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='${imgInfo.fallbackSvg}';" />
+                <div class="absolute inset-0 bg-slate-900/45 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-[10px] text-white font-bold">🔍 ดูรูป</div>
+              </div>
+              <div class="min-w-0">
+                <p class="font-bold text-slate-900 truncate">${i.item_name}</p>
+                <div class="flex items-center gap-1.5 text-[10px] text-slate-400 font-mono mt-0.5 flex-wrap">
+                  <span class="bg-slate-100 px-1.5 py-0.5 rounded text-slate-600 font-semibold">${i.item_id}</span>
+                  <span>•</span>
+                  <span class="truncate">${i.category}</span>
+                  ${i.serial_number ? `<span>• S/N: ${i.serial_number}</span>` : ''}
+                  ${imgInfo.driveFileId ? `<span class="text-emerald-600 font-sans font-bold">• ☁️ Drive</span>` : ''}
+                </div>
               </div>
             </div>
-            <div class="shrink-0">
-              ${isSel ? '<span class="inline-flex items-center gap-1 text-[11px] text-emerald-700 bg-emerald-100 px-2.5 py-0.5 rounded-lg font-bold">✓ เลือกแล้ว</span>' : '<span class="inline-flex items-center gap-1 text-[11px] text-tcc-700 bg-tcc-50 hover:bg-tcc-100 px-2.5 py-0.5 rounded-lg font-semibold border border-tcc-200">+ เลือก</span>'}
+            <div class="shrink-0 flex items-center gap-1">
+              <button type="button" onclick="event.stopPropagation(); openItemImagePreview('${escapeQuotes(i.item_id)}')" title="ดูรูปตัวอย่างอุปกรณ์" class="p-1.5 rounded-lg bg-slate-100 hover:bg-sky-50 text-slate-500 hover:text-sky-700 border border-slate-200/70 transition text-[11px]">🖼️</button>
+              ${isSel ? '<span class="inline-flex items-center gap-1 text-[11px] text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-lg font-bold">✓ เลือกแล้ว</span>' : '<span class="inline-flex items-center gap-1 text-[11px] text-tcc-700 bg-tcc-50 hover:bg-tcc-100 px-2.5 py-1 rounded-lg font-semibold border border-tcc-200">+ เลือก</span>'}
             </div>
           </div>
         `;
@@ -5596,7 +6476,12 @@
         return showNotification("กรุณาเลือกอุปกรณ์อย่างน้อย 1 ชิ้น", "warning");
       }
 
+      const bNameVal = document.getElementById("borrowerName").value.trim();
       const deptVal = document.getElementById("borrowerDept")?.value.trim() || "";
+      const contactVal = document.getElementById("borrowerContact").value.trim();
+      const notesVal = document.getElementById("borrowPurpose").value.trim();
+      const notifyEmail = document.getElementById("borrowNotifyEmailCheckbox")?.checked !== false;
+
       const btn = document.getElementById("btnSubmitBorrow");
       const spinner = document.getElementById("btnBorrowSpinner");
       btn.disabled = true; spinner.classList.remove("hidden");
@@ -5604,17 +6489,21 @@
       const bDate = getOffsetDate(0);
       const rDate = document.getElementById("expectedReturnDate").value;
       const createdTransIds = [];
+      const borrowedItemNames = [];
 
       state.selectedBorrowItems.forEach((id, idx) => {
         // Req 1: แต่ละรายการจะได้รับเลขรหัสธุรกรรม ITB-YYYY-MM-DD-XXXX เรียงลำดับ 4 หลักตามมาตรฐาน
         const transId = generateNextBorrowTransId(idx);
         createdTransIds.push(transId);
+        const itemObj = state.items.find(i => i.item_id === id);
+        borrowedItemNames.push(itemObj ? `[${id}] ${itemObj.item_name}` : `[${id}]`);
+
         const newBorrow = {
           trans_id: transId,
           item_id: id,
-          borrower_name: document.getElementById("borrowerName").value.trim(),
+          borrower_name: bNameVal,
           borrower_dept: deptVal,
-          borrower_contact: document.getElementById("borrowerContact").value.trim(),
+          borrower_contact: contactVal,
           borrow_date: bDate,
           expected_return: rDate
         };
@@ -5624,27 +6513,44 @@
           timestamp: getLocalTimestamp(0),
           actual_return: "",
           trans_status: "Borrowed",
-          notes: document.getElementById("borrowPurpose").value.trim()
+          notes: notesVal
         });
       });
 
       syncItemStatuses();
       showNotification(`บันทึกการยืมสำเร็จ ${state.selectedBorrowItems.length} รายการ (รหัส: ${createdTransIds[0]}${createdTransIds.length > 1 ? ' ถึง ' + createdTransIds[createdTransIds.length - 1] : ''})`, "success");
 
+      if (notifyEmail) {
+        sendSystemEmailNotification("BORROW_CREATED", {
+          transIds: createdTransIds,
+          itemNames: borrowedItemNames,
+          borrowerName: bNameVal,
+          dept: deptVal,
+          contact: contactVal,
+          borrowDate: bDate,
+          expectedReturn: rDate,
+          notes: notesVal
+        });
+      }
+
       callAPI("borrowItem", {
         itemIds: [...state.selectedBorrowItems],
         transIds: createdTransIds,
-        borrowerName: document.getElementById("borrowerName").value.trim(),
+        borrowerName: bNameVal,
         dept: deptVal,
-        contact: document.getElementById("borrowerContact").value.trim(),
+        contact: contactVal,
         borrowDate: bDate,
         expectedReturn: rDate,
-        notes: document.getElementById("borrowPurpose").value.trim()
+        notes: notesVal,
+        notifyEmail: notifyEmail
       }, true);
 
       document.getElementById("borrowForm").reset();
+      const borrowNotifyChk = document.getElementById("borrowNotifyEmailCheckbox");
+      if (borrowNotifyChk) borrowNotifyChk.checked = state.emailNotifyEnabled !== false;
       clearSelectedBorrowItems();
       setDefaultReturnDate();
+      autoFillUserFormsFromDatabase(true);
 
       btn.disabled = false; spinner.classList.add("hidden");
       renderAll();
@@ -5677,12 +6583,23 @@
 
       const today = getOffsetDate(0);
       tbody.innerHTML = myBorrows.map(b => {
-        const item = state.items.find(i => i.item_id === b.item_id) || { item_name: b.item_id };
+        const item = state.items.find(i => i.item_id === b.item_id) || { item_id: b.item_id, item_name: b.item_id };
+        const imgInfo = resolveItemImageInfo(item);
         const isOverdue = b.expected_return && b.expected_return < today;
         return `
           <tr class="hover:bg-slate-50 transition">
             <td class="py-3 px-4 font-mono font-medium text-xs text-slate-700">${b.trans_id}</td>
-            <td class="py-3 px-4"><div class="font-bold text-slate-900">${item.item_name}</div><div class="text-[11px] text-slate-400 font-mono">[${b.item_id}]</div></td>
+            <td class="py-3 px-4">
+              <div class="flex items-center gap-2.5">
+                <div onclick="openItemImagePreview('${escapeQuotes(b.item_id)}')" title="คลิกเพื่อดูรูปตัวอย่างอุปกรณ์" class="w-11 h-8 rounded-lg overflow-hidden border border-slate-200 bg-slate-100 shrink-0 cursor-pointer">
+                  <img src="${imgInfo.displaySrc}" alt="${escapeQuotes(item.item_name)}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='${imgInfo.fallbackSvg}';" />
+                </div>
+                <div>
+                  <div class="font-bold text-slate-900">${item.item_name}</div>
+                  <div class="text-[11px] text-slate-400 font-mono">[${b.item_id}]</div>
+                </div>
+              </div>
+            </td>
             <td class="py-3 px-4"><div class="font-medium text-slate-800">${b.borrower_name}</div><div class="text-[11px] text-slate-500">${b.borrower_dept}</div></td>
             <td class="py-3 px-4 text-xs">${b.borrow_date}</td>
             <td class="py-3 px-4 text-xs font-semibold ${isOverdue ? 'text-rose-600' : 'text-slate-700'}">${b.expected_return}</td>
@@ -5706,7 +6623,8 @@
       }
 
       tbody.innerHTML = list.map(b => {
-        const item = state.items.find(i => i.item_id === b.item_id) || { item_name: b.item_id };
+        const item = state.items.find(i => i.item_id === b.item_id) || { item_id: b.item_id, item_name: b.item_id };
+        const imgInfo = resolveItemImageInfo(item);
         const isOverdue = b.expected_return && b.expected_return < today;
         const isSel = state.selectedReturnTransIds.includes(b.trans_id);
 
@@ -5716,10 +6634,13 @@
               <input type="checkbox" onchange="toggleReturnSelection('${escapeQuotes(b.trans_id)}')" ${isSel ? 'checked' : ''} class="w-4 h-4 rounded text-tcc-600 cursor-pointer align-middle">
             </td>
             <td class="py-2.5 px-2 font-mono text-[11px] font-bold text-tcc-700 whitespace-nowrap" title="${escapeQuotes(b.trans_id)}">${b.trans_id}</td>
-            <td class="py-2.5 px-2 whitespace-nowrap max-w-[165px] truncate" title="[${escapeQuotes(b.item_id)}] ${escapeQuotes(item.item_name)}">
-              <div class="truncate">
-                <span class="font-semibold text-slate-800">${item.item_name}</span>
-                <span class="font-mono text-[10px] text-slate-400 ml-0.5">(${b.item_id})</span>
+            <td class="py-2.5 px-2 whitespace-nowrap max-w-[190px] truncate" title="[${escapeQuotes(b.item_id)}] ${escapeQuotes(item.item_name)}">
+              <div class="flex items-center gap-2 truncate">
+                <img onclick="openItemImagePreview('${escapeQuotes(b.item_id)}')" src="${imgInfo.displaySrc}" alt="" class="w-8 h-6 rounded object-cover border border-slate-200 cursor-pointer shrink-0" onerror="this.onerror=null; this.src='${imgInfo.fallbackSvg}';" />
+                <div class="truncate">
+                  <span class="font-semibold text-slate-800">${item.item_name}</span>
+                  <span class="font-mono text-[10px] text-slate-400 ml-0.5">(${b.item_id})</span>
+                </div>
               </div>
             </td>
             <td class="py-2.5 px-2 whitespace-nowrap max-w-[165px] truncate" title="${escapeQuotes(b.borrower_name)} (${escapeQuotes(b.borrower_dept || '-')})">
@@ -5774,24 +6695,32 @@
     function requestBulkReturn() {
       if (state.selectedReturnTransIds.length === 0) return;
       document.getElementById("returnConfirmMessage").innerText = `ยืนยันรับคืนอุปกรณ์ทั้งหมด ${state.selectedReturnTransIds.length} รายการ?`;
+      const chk = document.getElementById("returnConfirmNotifyEmail");
+      if (chk) chk.checked = state.emailNotifyEnabled !== false;
       document.getElementById("btnConfirmReturnAction").onclick = () => doExecuteBulkReturn([...state.selectedReturnTransIds]);
       document.getElementById("returnConfirmModal").classList.remove("hidden");
     }
     function requestReturnItem(tid, name) {
       document.getElementById("returnConfirmMessage").innerText = `ยืนยันรับคืน "${name}" (รหัส: ${tid})?`;
+      const chk = document.getElementById("returnConfirmNotifyEmail");
+      if (chk) chk.checked = state.emailNotifyEnabled !== false;
       document.getElementById("btnConfirmReturnAction").onclick = () => doExecuteBulkReturn([tid]);
       document.getElementById("returnConfirmModal").classList.remove("hidden");
     }
     function closeReturnConfirmModal() { document.getElementById("returnConfirmModal").classList.add("hidden"); }
 
     function doExecuteBulkReturn(transIds) {
+      const notifyEmail = document.getElementById("returnConfirmNotifyEmail")?.checked !== false;
       closeReturnConfirmModal();
       const now = getLocalTimestamp(0);
+      const returnedDetails = [];
+
       transIds.forEach(tid => {
         const bIdx = state.activeBorrows.findIndex(b => b.trans_id === tid);
+        let bRecord = null;
         if (bIdx !== -1) {
-          const b = state.activeBorrows[bIdx];
-          const item = state.items.find(i => i.item_id === b.item_id);
+          bRecord = state.activeBorrows[bIdx];
+          const item = state.items.find(i => i.item_id === bRecord.item_id);
           if (item) item.status = "Available";
           state.activeBorrows.splice(bIdx, 1);
         }
@@ -5799,6 +6728,17 @@
         if (log) {
           log.actual_return = now;
           log.trans_status = "Returned";
+          if (!bRecord) bRecord = log;
+        }
+        if (bRecord) {
+          const itemObj = state.items.find(i => i.item_id === bRecord.item_id);
+          returnedDetails.push({
+            trans_id: tid,
+            item_label: itemObj ? `[${bRecord.item_id}] ${itemObj.item_name}` : `[${bRecord.item_id}]`,
+            borrower_name: bRecord.borrower_name,
+            borrower_dept: bRecord.borrower_dept,
+            borrower_contact: bRecord.borrower_contact
+          });
         }
       });
       syncItemStatuses();
@@ -5806,27 +6746,56 @@
       showNotification(`รับคืนอุปกรณ์เรียบร้อยแล้ว`, "success");
       renderAll();
 
-      callAPI("returnItem", { transIds }, true);
+      if (notifyEmail && returnedDetails.length > 0) {
+        const first = returnedDetails[0];
+        sendSystemEmailNotification("BORROW_RETURNED", {
+          transIds: transIds,
+          itemNames: returnedDetails.map(d => d.item_label),
+          borrowerName: first.borrower_name,
+          dept: first.borrower_dept,
+          contact: first.borrower_contact,
+          actualReturn: now
+        });
+      }
+
+      callAPI("returnItem", { transIds, notifyEmail }, true);
     }
 
     function renderInventoryTable(filteredList = null) {
       const list = filteredList || state.items;
       const tbody = document.getElementById("inventoryTableBody");
       if (!tbody) return;
-      tbody.innerHTML = list.map(item => `
+      tbody.innerHTML = list.map(item => {
+        const imgInfo = resolveItemImageInfo(item);
+        return `
         <tr class="hover:bg-slate-50 transition">
           <td class="py-3 px-4 font-mono font-bold text-tcc-700">${item.item_id}</td>
-          <td class="py-3 px-4 font-bold text-slate-900">${item.item_name}</td>
+          <td class="py-3 px-4">
+            <div class="flex items-center gap-3">
+              <div onclick="openItemImagePreview('${escapeQuotes(item.item_id)}')" title="คลิกเพื่อดูรูปตัวอย่างอุปกรณ์ (Google Drive)" class="w-12 h-9 rounded-lg overflow-hidden border border-slate-200 bg-slate-100 shrink-0 cursor-pointer relative group">
+                <img src="${imgInfo.displaySrc}" alt="${escapeQuotes(item.item_name)}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='${imgInfo.fallbackSvg}';" />
+                <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-[10px] text-white">🔍</div>
+              </div>
+              <div>
+                <div class="font-bold text-slate-900">${item.item_name}</div>
+                <div class="text-[10px] text-slate-400 flex items-center gap-1.5 mt-0.5">
+                  <button type="button" onclick="openItemImagePreview('${escapeQuotes(item.item_id)}')" class="text-tcc-600 hover:underline font-semibold">🖼️ ดูรูปตัวอย่าง</button>
+                  ${imgInfo.driveFileId ? `<span class="text-emerald-600 font-bold">• ☁️ Google Drive</span>` : ''}
+                </div>
+              </div>
+            </div>
+          </td>
           <td class="py-3 px-4 text-xs"><span class="bg-slate-100 px-2 py-0.5 rounded">${item.category}</span></td>
           <td class="py-3 px-4 font-mono text-xs text-slate-500">${item.serial_number || '-'}</td>
           <td class="py-3 px-4 text-center">
             ${isItemBorrowed(item) ? '<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800">กำลังยืม</span>' : (item.status === 'Maintenance' ? '<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800">ซ่อมบำรุง</span>' : '<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">พร้อมใช้งาน</span>')}
           </td>
           <td class="py-3 px-4 text-center">
-            <button onclick="openEditItemModal('${escapeQuotes(item.item_id)}')" class="px-2.5 py-1 text-xs text-tcc-700 hover:bg-tcc-50 rounded-lg border border-slate-200">✏️ แก้ไข</button>
+            <button onclick="openEditItemModal('${escapeQuotes(item.item_id)}')" class="px-2.5 py-1 text-xs text-tcc-700 hover:bg-tcc-50 rounded-lg border border-slate-200">✏️ แก้ไข / รูปภาพ</button>
           </td>
         </tr>
-      `).join("");
+      `;
+      }).join("");
     }
 
     let historySortField = null;
@@ -7014,6 +7983,8 @@
       document.getElementById("editHistoryActualReturn").value = log.actual_return || "";
       document.getElementById("editHistoryStatus").value = log.trans_status;
       document.getElementById("editHistoryNotes").value = log.notes || "";
+      const notifyChk = document.getElementById("editHistoryNotifyEmail");
+      if (notifyChk) notifyChk.checked = state.emailNotifyEnabled !== false;
       document.getElementById("editHistoryModal").classList.remove("hidden");
     }
     function closeEditHistoryModal() { document.getElementById("editHistoryModal").classList.add("hidden"); }
@@ -7032,6 +8003,7 @@
       log.actual_return = document.getElementById("editHistoryActualReturn").value.trim();
       log.trans_status = document.getElementById("editHistoryStatus").value;
       log.notes = document.getElementById("editHistoryNotes").value.trim();
+      const notifyEmail = document.getElementById("editHistoryNotifyEmail")?.checked !== false;
 
       if (log.trans_status === "Returned") {
         if (!log.actual_return) log.actual_return = getLocalTimestamp(0);
@@ -7058,7 +8030,25 @@
       closeEditHistoryModal();
       showNotification(`แก้ไขข้อมูล [${tid}] เรียบร้อย`, "success");
       renderAll();
-      callAPI("updateHistoryLog", { logData: log }, true);
+
+      if (notifyEmail) {
+        const itemObj = state.items.find(i => i.item_id === log.item_id);
+        sendSystemEmailNotification("BORROW_UPDATED", {
+          trans_id: log.trans_id,
+          item_id: log.item_id,
+          item_name: itemObj ? `[${log.item_id}] ${itemObj.item_name}` : `[${log.item_id}]`,
+          borrower_name: log.borrower_name,
+          borrower_dept: log.borrower_dept,
+          borrower_contact: log.borrower_contact,
+          borrow_date: log.borrow_date,
+          expected_return: log.expected_return,
+          actual_return: log.actual_return,
+          trans_status: log.trans_status,
+          notes: log.notes
+        });
+      }
+
+      callAPI("updateHistoryLog", { transId: log.trans_id, updates: log, logData: log, notifyEmail }, true);
     }
 
     function openDeptManagementModal() {
@@ -7098,6 +8088,14 @@
     function openAddItemModal() {
       const nextNum = state.items.length + 1;
       document.getElementById("newItemId").value = "IT-" + String(nextNum).padStart(3, "0");
+      const nameInp = document.getElementById("newItemName");
+      if (nameInp) nameInp.value = "";
+      const serialInp = document.getElementById("newItemSerial");
+      if (serialInp) serialInp.value = "";
+      const driveUrlInp = document.getElementById("newItemDriveUrl");
+      if (driveUrlInp) driveUrlInp.value = "";
+      clearItemImageAttachment("add");
+
       const sel = document.getElementById("newItemCategory");
       if (sel) {
         sel.innerHTML = '<option value="">-- เลือกหมวดหมู่ --</option>' + state.categories.map(c => `<option value="${c}">${c}</option>`).join("") + '<option value="__custom__">+ เพิ่มหมวดหมู่ใหม่...</option>';
@@ -7114,30 +8112,77 @@
       }
     }
 
-    function handleAddNewItem(e) {
+    async function handleAddNewItem(e) {
       e.preventDefault();
       const catSel = document.getElementById("newItemCategory").value;
       const catCust = document.getElementById("newItemCustomCategory")?.value.trim();
       const finalCat = (catSel === "__custom__" ? catCust : catSel) || "Other";
+      const itemId = document.getElementById("newItemId").value.trim();
+      const itemName = document.getElementById("newItemName").value.trim();
+      const serialNum = document.getElementById("newItemSerial").value.trim() || "-";
+      const manualDriveUrl = document.getElementById("newItemDriveUrl")?.value.trim() || "";
+
+      if (state.items.some(i => safeLower(i.item_id) === safeLower(itemId))) {
+        return showNotification(`รหัสอุปกรณ์ "${itemId}" มีอยู่ในระบบแล้ว กรุณาใช้รหัสอื่น`, "warning");
+      }
+
+      const draftImg = state.draftItemImageAdd || {};
+      let imageName = draftImg.name || "";
+      let imageBase64 = draftImg.base64 || "";
+      let driveFileId = extractGoogleDriveFileId(manualDriveUrl) || "";
+      let imageUrl = manualDriveUrl;
 
       const newItem = {
-        item_id: document.getElementById("newItemId").value.trim(),
-        item_name: document.getElementById("newItemName").value.trim(),
+        item_id: itemId,
+        item_name: itemName,
         category: finalCat,
-        serial_number: document.getElementById("newItemSerial").value.trim() || "-",
-        status: "Available"
+        serial_number: serialNum,
+        status: "Available",
+        image_name: imageName,
+        image_base64: imageBase64,
+        image_url: imageUrl,
+        drive_file_id: driveFileId
       };
 
-      if (state.items.some(i => safeLower(i.item_id) === safeLower(newItem.item_id))) {
-        return showNotification(`รหัสอุปกรณ์ "${newItem.item_id}" มีอยู่ในระบบแล้ว กรุณาใช้รหัสอื่น`, "warning");
+      if (imageBase64 || imageUrl || driveFileId) {
+        saveAttachmentToCache(itemId, imageName || `${itemId}.png`, imageBase64, imageUrl, driveFileId);
       }
 
       if (!state.categories.includes(finalCat)) state.categories.push(finalCat);
       state.items.push(newItem);
       closeAddItemModal();
-      showNotification(`เพิ่มอุปกรณ์ [${newItem.item_id}] สำเร็จ`, "success");
+      clearItemImageAttachment("add");
       renderAll();
-      callAPI("addItem", { itemId: newItem.item_id, itemName: newItem.item_name, category: newItem.category, serialNumber: newItem.serial_number }, true);
+
+      if (imageBase64) {
+        showNotification(`กำลังอัปโหลดรูปตัวอย่างอุปกรณ์ [${itemId}] ขึ้น Google Drive...`, "info");
+        const driveRes = await uploadFileToGoogleDrive(imageBase64, `${itemId}_${imageName || "preview.png"}`, "Equipment", itemId);
+        if (driveRes && (driveRes.fileId || driveRes.viewUrl)) {
+          newItem.drive_file_id = driveRes.fileId || driveFileId;
+          newItem.image_url = driveRes.viewUrl || imageUrl;
+          saveAttachmentToCache(itemId, imageName || `${itemId}.png`, imageBase64, newItem.image_url, newItem.drive_file_id);
+          renderAll();
+        }
+      }
+
+      showNotification(
+        newItem.drive_file_id || newItem.image_url
+          ? `เพิ่มอุปกรณ์ [${newItem.item_id}] พร้อมบันทึกรูปลง Google Drive สำเร็จ`
+          : `เพิ่มอุปกรณ์ [${newItem.item_id}] สำเร็จ`,
+        "success"
+      );
+
+      callAPI("addItem", {
+        itemId: newItem.item_id,
+        itemName: newItem.item_name,
+        category: newItem.category,
+        serialNumber: newItem.serial_number,
+        imageName: newItem.image_name,
+        imageUrl: newItem.image_url,
+        driveFileId: newItem.drive_file_id,
+        imageBase64: imageBase64,
+        folderId: state.driveFolderId || ""
+      }, true);
     }
 
     function exportHistoryCsv() {
@@ -7217,6 +8262,7 @@
       renderMyTicketsList();
       renderAdminTicketsView();
       renderHelpdeskReport();
+      updateEmailLogBadges();
 
       const aiSel = document.getElementById("aiBorrowSelect");
       if (aiSel) {
@@ -7239,11 +8285,11 @@
       }
     }
 
-    /* GOOGLE APPS SCRIPT BACKEND CODE (Req 1 & Req 2 UPDATED) */
+    /* GOOGLE APPS SCRIPT BACKEND CODE (Req 1, 2, 3 UPDATED: Auto-Match UserRoles, MailApp Email Notifications & Google Drive Equipment Images) */
     const SELF_HEALING_GAS_CODE = `/**
  * IT Asset & Helpdesk Service System - Google Apps Script (TCC Full Self-Healing Edition)
  * พัฒนาสำหรับ: ฝ่ายเทคโนโลยีสารสนเทศ หอการค้าไทย
- * รองรับ: Items, Logs, Categories, Departments, UserRoles, Tickets, KnowledgeBase
+ * รองรับ: Items (พร้อมรูปตัวอย่างบน Google Drive), Logs, Categories, Departments, UserRoles, Tickets, KnowledgeBase และระบบแจ้งเตือนทางอีเมล (MailApp)
  * ระบบ Self-Healing: สร้างแท็บตารางที่ขาดหายให้อัตโนมัติ พร้อมตั้งค่าหัวตารางให้อัตโนมัติ
  */
 function doPost(e) {
@@ -7277,6 +8323,7 @@ function doPost(e) {
       case "saveKbArticle": return handleSaveKbArticle(data);
       case "deleteKbArticle": return handleDeleteKbArticle(data);
       case "uploadFileToDrive": return handleUploadFileToDrive(data);
+      case "sendEmailNotification": return handleSendEmailNotification(data);
       default: return jsonResponse({ status: "error", message: "Invalid action: " + action });
     }
   } catch (err) {
@@ -7316,17 +8363,108 @@ function getOrCreateSheet(ss, sheetName, headers, defaultRows) {
   return sheet;
 }
 
+// ฟังก์ชันค้นหาอีเมลจากตาราง UserRoles อัตโนมัติ (จากอีเมล หรือ ชื่อ-นามสกุล)
+function resolveEmailFromUserRolesGAS(ss, contactOrName, fallbackName) {
+  var raw = String(contactOrName || "").trim();
+  var emailMatch = raw.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}/);
+  if (emailMatch) return emailMatch[0].toLowerCase();
+  var sheet = ss.getSheetByName("UserRoles");
+  if (!sheet) return "";
+  var data = sheet.getDataRange().getValues();
+  if (data.length <= 1) return "";
+  var colMap = getUserRolesColumnMap(data[0]);
+  var q1 = raw.toLowerCase();
+  var q2 = String(fallbackName || "").trim().toLowerCase();
+  for (var i = 1; i < data.length; i++) {
+    var em = String(data[i][colMap.email] || "").trim().toLowerCase();
+    var fn = colMap.first_name !== -1 ? String(data[i][colMap.first_name] || "").trim() : "";
+    var ln = colMap.last_name !== -1 ? String(data[i][colMap.last_name] || "").trim() : "";
+    var full = [fn, ln].filter(Boolean).join(" ").toLowerCase();
+    if ((q1 && (em === q1 || full === q1 || (fn && fn.toLowerCase() === q1))) ||
+        (q2 && (em === q2 || full === q2 || (fn && fn.toLowerCase() === q2)))) {
+      return em;
+    }
+  }
+  return "";
+}
+
+function getAdminEmailsGAS(ss) {
+  var sheet = ss.getSheetByName("UserRoles");
+  if (!sheet) return ["tatiphon.hi@thaichamber.or.th"];
+  var data = sheet.getDataRange().getValues();
+  if (data.length <= 1) return ["tatiphon.hi@thaichamber.or.th"];
+  var colMap = getUserRolesColumnMap(data[0]);
+  var admins = [];
+  for (var i = 1; i < data.length; i++) {
+    var em = String(data[i][colMap.email] || "").trim().toLowerCase();
+    var rl = colMap.role !== -1 ? String(data[i][colMap.role] || "").trim().toLowerCase() : "";
+    var st = colMap.status !== -1 ? String(data[i][colMap.status] || "active").trim().toLowerCase() : "active";
+    if (em && em.indexOf("@") !== -1 && (rl === "admin" || rl === "superadmin") && st !== "disabled") {
+      if (admins.indexOf(em) === -1) admins.push(em);
+    }
+  }
+  return admins;
+}
+
+function sendNotificationEmailGAS(toList, subject, bodyText) {
+  try {
+    var valid = [];
+    if (Array.isArray(toList)) {
+      toList.forEach(function(e) {
+        var clean = String(e || "").trim().toLowerCase();
+        if (clean && clean.indexOf("@") !== -1 && valid.indexOf(clean) === -1) valid.push(clean);
+      });
+    } else if (typeof toList === "string") {
+      toList.split(",").forEach(function(e) {
+        var clean = String(e || "").trim().toLowerCase();
+        if (clean && clean.indexOf("@") !== -1 && valid.indexOf(clean) === -1) valid.push(clean);
+      });
+    }
+    if (valid.length === 0) return false;
+    var htmlBody = '<div style="font-family: Sarabun, sans-serif; max-width: 620px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden;">' +
+      '<div style="background: linear-gradient(135deg, #003d73, #0284c7); color: #ffffff; padding: 18px 24px;">' +
+      '<h2 style="margin: 0; font-size: 18px;">หอการค้าไทย (TCC IT Asset & Helpdesk Service)</h2>' +
+      '<p style="margin: 4px 0 0; font-size: 12px; opacity: 0.9;">ระบบแจ้งเตือนอัตโนมัติ ฝ่ายเทคโนโลยีสารสนเทศ</p>' +
+      '</div>' +
+      '<div style="padding: 20px 24px; background: #ffffff; color: #1e293b; font-size: 14px; line-height: 1.65; white-space: pre-line;">' +
+      String(bodyText || "").replace(/</g, "&lt;").replace(/>/g, "&gt;") +
+      '</div>' +
+      '<div style="padding: 12px 24px; background: #f8fafc; color: #64748b; font-size: 11px; border-top: 1px solid #e2e8f0;">' +
+      'อีเมลฉบับนี้ส่งอัตโนมัติจากระบบบริหารจัดการอุปกรณ์และแจ้งซ่อมไอที หอการค้าไทย' +
+      '</div></div>';
+    MailApp.sendEmail({
+      to: valid.join(","),
+      subject: subject,
+      body: bodyText,
+      htmlBody: htmlBody,
+      name: "TCC IT Service & Asset System"
+    });
+    return true;
+  } catch (err) {
+    Logger.log("Email error: " + err);
+    return false;
+  }
+}
+
+function handleSendEmailNotification(data) {
+  var sent = sendNotificationEmailGAS(data.to || data.recipients || [], data.subject || "[TCC IT Notification]", data.body || "");
+  return jsonResponse({ status: "success", sent: sent });
+}
+
 function handleGetInitialData() {
   var ss = getSpreadsheet();
   
-  getOrCreateSheet(ss, "Items", ["Item ID", "Item Name", "Category", "Serial Number", "Status"], [
-    ["IT-001", "Dell Latitude 5430 (i7/16GB)", "Laptop", "DL-5430-891", "Available"],
-    ["IT-002", "MacBook Air M2 (16GB/512GB)", "Laptop", "MBA-M2-044", "Borrowed"],
-    ["IT-003", "Epson EB-X06 Projector 3600lm", "Projector", "EP-X06-203", "Available"],
-    ["IT-004", "Dell UltraSharp 27-inch 4K", "Monitor", "DELL-U27-91", "Available"],
-    ["IT-005", "Rode Wireless GO II Dual Mic", "Audio", "RODE-WGO-88", "Borrowed"],
-    ["IT-006", "USB-C Multiport Hub 8-in-1", "Adapter", "HUB-8IN1-12", "Available"]
+  var itemSheet = getOrCreateSheet(ss, "Items", ["Item ID", "Item Name", "Category", "Serial Number", "Status", "Image Name", "Image URL", "Drive File ID"], [
+    ["IT-001", "Dell Latitude 5430 (i7/16GB)", "Laptop", "DL-5430-891", "Available", "", "", ""],
+    ["IT-002", "MacBook Air M2 (16GB/512GB)", "Laptop", "MBA-M2-044", "Borrowed", "", "", ""],
+    ["IT-003", "Epson EB-X06 Projector 3600lm", "Projector", "EP-X06-203", "Available", "", "", ""],
+    ["IT-004", "Dell UltraSharp 27-inch 4K", "Monitor", "DELL-U27-91", "Available", "", "", ""],
+    ["IT-005", "Rode Wireless GO II Dual Mic", "Audio", "RODE-WGO-88", "Borrowed", "", "", ""],
+    ["IT-006", "USB-C Multiport Hub 8-in-1", "Adapter", "HUB-8IN1-12", "Available", "", "", ""]
   ]);
+  if (itemSheet.getLastColumn() < 8) {
+    itemSheet.getRange(1, 6, 1, 3).setValues([["Image Name", "Image URL", "Drive File ID"]]).setFontWeight("bold").setBackground("#005ba6").setFontColor("#ffffff");
+  }
 
   getOrCreateSheet(ss, "Logs", ["Trans ID", "Timestamp", "Item ID", "Borrower Name", "Department", "Contact", "Borrow Date", "Expected Return", "Actual Return", "Status", "Notes"], [
     ["ITB-2026-10-23-0001", "2026-10-23 09:30", "IT-002", "กิตติศักดิ์ พัฒนพงศ์", "ฝ่ายประชาสัมพันธ์และสื่อสารองค์กร", "kittisak@thaichamber.or.th", "2026-10-23", "2026-10-27", "", "Borrowed", "นำเสนอแผนงานประจำปี"],
@@ -7383,7 +8521,16 @@ function handleGetInitialData() {
   var items = [];
   for (var i = 1; i < itemData.length; i++) {
     if (itemData[i][0]) {
-      items.push({ item_id: String(itemData[i][0]), item_name: String(itemData[i][1]), category: String(itemData[i][2]), serial_number: String(itemData[i][3]), status: String(itemData[i][4]) });
+      items.push({
+        item_id: String(itemData[i][0]),
+        item_name: String(itemData[i][1]),
+        category: String(itemData[i][2]),
+        serial_number: String(itemData[i][3]),
+        status: String(itemData[i][4]),
+        image_name: String(itemData[i][5] || ""),
+        image_url: String(itemData[i][6] || ""),
+        drive_file_id: String(itemData[i][7] || "")
+      });
     }
   }
 
@@ -7616,7 +8763,7 @@ function handleCreateTicket(data) {
   var driveId = t.drive_file_id || "";
   if (!driveId && t.attachment_base64) {
     try {
-      var saved = saveBase64FileToDrive(t.attachment_base64, (t.ticket_id || "TKT") + "_" + (t.attachment_name || "image.png"), data.folderId || "", "Tickets");
+      var saved = saveBase64FileToDrive(t.attachment_base64, (t.ticket_id || "TKT") + "_" + (t.attachment_name || "image.png"), data.driveFolderId || data.folderId || "", "Tickets");
       if (saved) {
         driveId = saved.fileId;
         attUrl = saved.viewUrl;
@@ -7771,12 +8918,12 @@ function handleReturnItem(data) {
 function handleUpdateHistoryLog(data) {
   var ss = getSpreadsheet();
   var sheet = ss.getSheetByName("Logs");
-  var tid = String(data.transId).trim().toLowerCase();
+  var u = data.updates || data.logData || {};
+  var tid = String(data.transId || u.trans_id || "").trim().toLowerCase();
   var values = sheet.getDataRange().getValues();
   for (var i = 1; i < values.length; i++) {
     if (String(values[i][0]).trim().toLowerCase() === tid) {
       var row = i + 1;
-      var u = data.updates || {};
       if (u.borrower_name !== undefined) sheet.getRange(row, 4).setValue(u.borrower_name);
       if (u.borrower_dept !== undefined) sheet.getRange(row, 5).setValue(u.borrower_dept);
       if (u.borrower_contact !== undefined) sheet.getRange(row, 6).setValue(u.borrower_contact);
@@ -7867,16 +9014,45 @@ function handleDeleteTicketCategory(data) {
 function handleAddItem(data) {
   var ss = getSpreadsheet();
   var sheet = ss.getSheetByName("Items");
-  sheet.appendRow([data.itemId, data.itemName, data.category, data.serialNumber, "Available"]);
+  if (sheet.getLastColumn() < 8) {
+    sheet.getRange(1, 6, 1, 3).setValues([["Image Name", "Image URL", "Drive File ID"]]).setFontWeight("bold").setBackground("#005ba6").setFontColor("#ffffff");
+  }
+  var imgUrl = data.imageUrl || "";
+  var driveId = data.driveFileId || "";
+  var imgName = data.imageName || "";
+  if (!driveId && data.imageBase64) {
+    try {
+      var saved = saveBase64FileToDrive(data.imageBase64, (data.itemId || "IT") + "_" + (imgName || "equipment.png"), data.folderId || "", "Equipment");
+      if (saved) {
+        driveId = saved.fileId;
+        imgUrl = saved.viewUrl;
+      }
+    } catch (e) {}
+  }
+  sheet.appendRow([data.itemId, data.itemName, data.category, data.serialNumber, "Available", imgName, imgUrl, driveId]);
   SpreadsheetApp.flush();
-  return jsonResponse({ status: "success", message: "เพิ่มอุปกรณ์เรียบร้อย" });
+  return jsonResponse({ status: "success", message: "เพิ่มอุปกรณ์เรียบร้อย", image_url: imgUrl, drive_file_id: driveId });
 }
 
 function handleUpdateItem(data) {
   var ss = getSpreadsheet();
   var sheet = ss.getSheetByName("Items");
+  if (sheet.getLastColumn() < 8) {
+    sheet.getRange(1, 6, 1, 3).setValues([["Image Name", "Image URL", "Drive File ID"]]).setFontWeight("bold").setBackground("#005ba6").setFontColor("#ffffff");
+  }
   var id = String(data.itemId).trim().toLowerCase();
   var values = sheet.getDataRange().getValues();
+  var imgUrl = data.imageUrl;
+  var driveId = data.driveFileId;
+  if (!driveId && data.imageBase64) {
+    try {
+      var saved = saveBase64FileToDrive(data.imageBase64, (data.itemId || "IT") + "_" + (data.imageName || "equipment.png"), data.folderId || "", "Equipment");
+      if (saved) {
+        driveId = saved.fileId;
+        imgUrl = saved.viewUrl;
+      }
+    } catch (e) {}
+  }
   for (var i = 1; i < values.length; i++) {
     if (String(values[i][0]).trim().toLowerCase() === id) {
       var row = i + 1;
@@ -7884,11 +9060,14 @@ function handleUpdateItem(data) {
       if (data.category !== undefined) sheet.getRange(row, 3).setValue(data.category);
       if (data.serialNumber !== undefined) sheet.getRange(row, 4).setValue(data.serialNumber);
       if (data.status !== undefined) sheet.getRange(row, 5).setValue(data.status);
+      if (data.imageName !== undefined) sheet.getRange(row, 6).setValue(data.imageName);
+      if (imgUrl !== undefined) sheet.getRange(row, 7).setValue(imgUrl);
+      if (driveId !== undefined) sheet.getRange(row, 8).setValue(driveId);
       break;
     }
   }
   SpreadsheetApp.flush();
-  return jsonResponse({ status: "success", message: "อัปเดตอุปกรณ์เรียบร้อย" });
+  return jsonResponse({ status: "success", message: "อัปเดตอุปกรณ์เรียบร้อย", image_url: imgUrl || "", drive_file_id: driveId || "" });
 }
 
 function splitGASName(fullName, firstName, lastName) {
@@ -8304,6 +9483,10 @@ function handleDeleteUserRole(data) {
               });
               break;
             }
+            case "sendEmailNotification": {
+              resolve({ status: "success", sent: true, message: "ส่งอีเมลแจ้งเตือนเรียบร้อย (Simulation)" });
+              break;
+            }
             case "addItem":
             case "updateItem":
             case "addDepartment":
@@ -8335,7 +9518,18 @@ function handleDeleteUserRole(data) {
       try {
         const res = await callAPI("getInitialData", {}, !showToast);
         if (res && res.status === "success") {
-          if (Array.isArray(res.items) && res.items.length > 0) state.items = res.items;
+          if (Array.isArray(res.items) && res.items.length > 0) {
+            state.items = res.items.map(item => {
+              const cached = getAttachmentFromCache(item.item_id);
+              if (cached) {
+                if (!item.image_name && cached.name) item.image_name = cached.name;
+                if (!item.image_base64 && cached.base64) item.image_base64 = cached.base64;
+                if (!item.image_url && cached.driveUrl) item.image_url = cached.driveUrl;
+                if (!item.drive_file_id && cached.driveFileId) item.drive_file_id = cached.driveFileId;
+              }
+              return item;
+            });
+          }
           if (Array.isArray(res.activeBorrows)) state.activeBorrows = res.activeBorrows;
           if (Array.isArray(res.allLogs)) state.allLogs = res.allLogs;
           if (Array.isArray(res.tickets) && res.tickets.length > 0) {
@@ -8374,7 +9568,7 @@ function handleDeleteUserRole(data) {
             localStorage.setItem(STORAGE_KEY_ROLES, JSON.stringify(state.userRoles));
 
             if (state.currentUser) {
-              const updatedMe = state.userRoles.find(r => safeLower(r.email) === safeLower(state.currentUser.email));
+              const updatedMe = findMatchedUserInDatabase(state.currentUser.email) || findMatchedUserInDatabase(state.currentUser.name);
               if (!updatedMe || updatedMe.status === "disabled") {
                 state.currentUser = null;
                 localStorage.removeItem(STORAGE_KEY_USER);
@@ -8384,8 +9578,11 @@ function handleDeleteUserRole(data) {
               } else {
                 state.currentUser = {
                   ...state.currentUser,
+                  email: updatedMe.email || state.currentUser.email,
+                  first_name: updatedMe.first_name || state.currentUser.first_name || "",
+                  last_name: updatedMe.last_name || state.currentUser.last_name || "",
                   name: updatedMe.name || state.currentUser.name,
-                  dept: updatedMe.dept || "",
+                  dept: updatedMe.dept || state.currentUser.dept || "",
                   role: updatedMe.role || "user",
                   status: updatedMe.status || "active"
                 };
@@ -8397,6 +9594,7 @@ function handleDeleteUserRole(data) {
 
           syncItemStatuses();
           renderAll();
+          autoFillUserFormsFromDatabase(false);
           updateLastSyncedTime();
           if (showToast) showNotification("ซิงค์ข้อมูลล่าสุดกับ Google Sheets เรียบร้อย", "success");
         }
@@ -8451,6 +9649,28 @@ function handleDeleteUserRole(data) {
       document.getElementById("editItemSerial").value = item.serial_number || "";
       const stat = document.getElementById("editItemStatus");
       if (stat) stat.value = item.status;
+
+      state.draftItemImageEdit = { name: "", base64: "", mime: "", cleared: false };
+      const imgInput = document.getElementById("editItemImageInput");
+      if (imgInput) imgInput.value = "";
+      const imgInfo = resolveItemImageInfo(item);
+      const urlInput = document.getElementById("editItemDriveUrl");
+      if (urlInput) urlInput.value = item.image_url || imgInfo.driveViewUrl || "";
+
+      const box = document.getElementById("editItemImagePreviewBox");
+      const thumb = document.getElementById("editItemImagePreviewThumb");
+      const nameTxt = document.getElementById("editItemImageNameText");
+      const btnClear = document.getElementById("btnClearEditItemImage");
+      if (box && thumb) {
+        thumb.src = imgInfo.displaySrc;
+        if (nameTxt) nameTxt.innerText = imgInfo.isCustom ? (imgInfo.name || "รูปภาพอุปกรณ์บน Google Drive") : "ภาพจำลองมาตรฐานตามหมวดหมู่ (อัปโหลดรูปจริงเพื่อแทนที่ได้)";
+        box.classList.remove("hidden");
+        if (btnClear) {
+          if (imgInfo.isCustom) btnClear.classList.remove("hidden");
+          else btnClear.classList.add("hidden");
+        }
+      }
+
       document.getElementById("editItemModal")?.classList.remove("hidden");
     }
 
@@ -8458,7 +9678,7 @@ function handleDeleteUserRole(data) {
       document.getElementById("editItemModal")?.classList.add("hidden");
     }
 
-    function handleSaveItemEdit(e) {
+    async function handleSaveItemEdit(e) {
       e.preventDefault();
       const id = document.getElementById("editItemId").value;
       const item = state.items.find(i => i.item_id === id);
@@ -8467,11 +9687,58 @@ function handleDeleteUserRole(data) {
       item.category = document.getElementById("editItemCategory").value.trim();
       item.serial_number = document.getElementById("editItemSerial").value.trim();
       item.status = document.getElementById("editItemStatus").value;
+
+      const manualUrl = document.getElementById("editItemDriveUrl")?.value.trim() || "";
+      const draftImg = state.draftItemImageEdit || {};
+
+      if (draftImg.cleared && !draftImg.base64 && !manualUrl) {
+        item.image_name = "";
+        item.image_base64 = "";
+        item.image_url = "";
+        item.drive_file_id = "";
+        saveAttachmentToCache(id, "", "", "", "");
+      } else {
+        if (manualUrl) {
+          item.image_url = manualUrl;
+          item.drive_file_id = extractGoogleDriveFileId(manualUrl) || item.drive_file_id || "";
+        }
+        if (draftImg.base64) {
+          item.image_name = draftImg.name || `${id}_preview.png`;
+          item.image_base64 = draftImg.base64;
+        }
+      }
+
       closeEditItemModal();
       syncItemStatuses();
       renderAll();
+
+      if (draftImg.base64) {
+        showNotification(`กำลังอัปโหลดรูปภาพอุปกรณ์ [${id}] ขึ้น Google Drive...`, "info");
+        const driveRes = await uploadFileToGoogleDrive(draftImg.base64, `${id}_${item.image_name || "preview.png"}`, "Equipment", id);
+        if (driveRes && (driveRes.fileId || driveRes.viewUrl)) {
+          item.drive_file_id = driveRes.fileId || item.drive_file_id || "";
+          item.image_url = driveRes.viewUrl || item.image_url || "";
+        }
+      }
+
+      if (item.image_base64 || item.image_url || item.drive_file_id) {
+        saveAttachmentToCache(id, item.image_name || `${id}.png`, item.image_base64 || "", item.image_url || "", item.drive_file_id || "");
+      }
+
+      renderAll();
       showNotification(`อัปเดตอุปกรณ์ [${id}] เรียบร้อย`, "success");
-      callAPI("updateItem", { itemId: id, itemName: item.item_name, category: item.category, serialNumber: item.serial_number, status: item.status }, true);
+      callAPI("updateItem", {
+        itemId: id,
+        itemName: item.item_name,
+        category: item.category,
+        serialNumber: item.serial_number,
+        status: item.status,
+        imageName: item.image_name || "",
+        imageUrl: item.image_url || "",
+        driveFileId: item.drive_file_id || "",
+        imageBase64: draftImg.base64 || "",
+        folderId: state.driveFolderId || ""
+      }, true);
     }
 
     function handleEditHistoryStatusChange(val) {
@@ -8485,13 +9752,10 @@ function handleDeleteUserRole(data) {
     function handleResetBorrowForm() {
       clearSelectedBorrowItems();
       setTimeout(() => {
-        document.getElementById("borrowerDept").value = "";
         setDefaultReturnDate();
-        if (state.currentUser) {
-          document.getElementById("borrowerName").value = state.currentUser.name;
-          document.getElementById("borrowerContact").value = state.currentUser.email;
-          if (state.currentUser.dept) document.getElementById("borrowerDept").value = state.currentUser.dept;
-        }
+        const borrowNotifyChk = document.getElementById("borrowNotifyEmailCheckbox");
+        if (borrowNotifyChk) borrowNotifyChk.checked = state.emailNotifyEnabled !== false;
+        autoFillUserFormsFromDatabase(true);
       }, 10);
     }
 
@@ -8501,15 +9765,32 @@ function handleDeleteUserRole(data) {
 
     window.addEventListener("DOMContentLoaded", () => {
       setDefaultReturnDate();
+      // Restore cached equipment images from localStorage
+      state.items.forEach(item => {
+        const cached = getAttachmentFromCache(item.item_id);
+        if (cached) {
+          if (!item.image_name && cached.name) item.image_name = cached.name;
+          if (!item.image_base64 && cached.base64) item.image_base64 = cached.base64;
+          if (!item.image_url && cached.driveUrl) item.image_url = cached.driveUrl;
+          if (!item.drive_file_id && cached.driveFileId) item.drive_file_id = cached.driveFileId;
+        }
+      });
+
       const saved = localStorage.getItem(STORAGE_KEY_USER);
       if (saved) {
         try {
           const user = JSON.parse(saved);
-          const u = state.userRoles.find(r => r.email.toLowerCase() === user.email.toLowerCase());
+          const u = findMatchedUserInDatabase(user.email) || findMatchedUserInDatabase(user.name);
           if (u && u.status !== "disabled") {
-            user.role = u.role;
-            user.status = u.status;
+            user.email = u.email || user.email;
+            user.first_name = u.first_name || user.first_name || "";
+            user.last_name = u.last_name || user.last_name || "";
+            user.name = u.name || user.name;
+            user.dept = u.dept || user.dept || "";
+            user.role = u.role || "user";
+            user.status = u.status || "active";
             state.currentUser = user;
+            localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(user));
           } else {
             localStorage.removeItem(STORAGE_KEY_USER);
             state.currentUser = null;
@@ -8518,6 +9799,9 @@ function handleDeleteUserRole(data) {
       }
 
       applyUserRoleUI();
+      populateUserAutocompleteDatalists();
+      autoFillUserFormsFromDatabase(true);
+      updateEmailLogBadges();
       const initialTab = getTargetTabFromUrl() || 'borrowTab';
       switchTab(initialTab);
       setTimeout(() => refreshData(false), 500);
@@ -8551,6 +9835,10 @@ function handleDeleteUserRole(data) {
           const previewModal = document.getElementById("attachmentPreviewModal");
           if (previewModal && !previewModal.classList.contains("hidden")) {
             closeAttachmentPreviewModal();
+          }
+          const emailModal = document.getElementById("emailLogModal");
+          if (emailModal && !emailModal.classList.contains("hidden")) {
+            closeEmailLogModal();
           }
         }
       });

@@ -1771,7 +1771,28 @@
                   <span id="cfgEmailSyncStatusBadge" class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">✓ พร้อมใช้งาน</span>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <!-- Sender Transport Mode & Auth Explanation -->
+                <div class="p-3 bg-sky-50/80 rounded-xl border border-sky-200/80 space-y-2">
+                  <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div class="font-bold text-sky-950 flex items-center gap-1.5">
+                      <span>🔐 ช่องทางการส่งอีเมล (Sender Transport)</span>
+                    </div>
+                    <select id="cfgEmailTransportMode" onchange="handleEmailConfigFieldChange()" class="px-2.5 py-1 rounded-lg border border-sky-300 bg-white text-[11px] font-bold text-sky-900 outline-none focus:ring-2 focus:ring-tcc-500">
+                      <option value="gas_mailapp">Google Apps Script (MailApp — ไม่ต้องใช้ App Password)</option>
+                      <option value="webhook">External Email Webhook / SMTP Relay URL (สำหรับ App Password ฝั่ง Server)</option>
+                    </select>
+                  </div>
+                  <p class="text-[11px] text-slate-600 leading-relaxed">
+                    • <b>วิธีหลัก (GAS MailApp):</b> <b>ไม่ต้องตั้งรหัสผ่านหรือ App Password</b> เพราะระบบส่งออกจากบัญชี Google ของผู้ Deploy Google Apps Script (<code>Code.gs</code>) โดยใช้สิทธิ์ OAuth ของ Google โดยตรง (ต้องอัปเดตและ Deploy <code>Code.gs</code> ล่าสุด + กดอนุญาตสิทธิ์ส่งอีเมล)<br>
+                    • <b>กรณีต้องการส่งด้วยอีเมลอื่น / Gmail App Password:</b> เพื่อความปลอดภัยจะไม่เก็บรหัสผ่านไว้หน้าเว็บ สามารถตั้งค่า "Send mail as" Alias ใน Gmail ของบัญชีผู้ Deploy หรือเชื่อมต่อ <code>Webhook / SMTP Relay URL</code> ฝั่งเซิร์ฟเวอร์ได้
+                  </p>
+                  <div id="cfgEmailWebhookWrapper" class="hidden pt-1">
+                    <label class="block text-[11px] font-semibold text-slate-700 mb-1">External Email Webhook / SMTP Relay URL (POST JSON):</label>
+                    <input type="url" id="cfgEmailWebhookUrl" onchange="handleEmailConfigFieldChange()" placeholder="https://your-server.example.com/api/send-email" class="w-full px-3 py-1.5 rounded-xl border border-sky-300 bg-white text-xs outline-none focus:ring-2 focus:ring-tcc-500">
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div>
                     <label class="block text-[11px] font-semibold text-slate-700 mb-1">ชื่อผู้ส่งที่แสดงบนอีเมล (Sender Display Name):</label>
                     <input type="text" id="cfgEmailSenderName" onchange="handleEmailConfigFieldChange()" placeholder="เช่น TCC IT Service &amp; Asset System" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs outline-none focus:ring-2 focus:ring-tcc-500">
@@ -1779,6 +1800,10 @@
                   <div>
                     <label class="block text-[11px] font-semibold text-slate-700 mb-1">อีเมลสำหรับตอบกลับ (Reply-To Email):</label>
                     <input type="email" id="cfgEmailReplyTo" onchange="handleEmailConfigFieldChange()" placeholder="เช่น it-support@thaichamber.or.th" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs outline-none focus:ring-2 focus:ring-tcc-500">
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-semibold text-slate-700 mb-1">อีเมลผู้ส่ง Alias (ไม่บังคับ - Send mail as):</label>
+                    <input type="email" id="cfgEmailSenderAlias" onchange="handleEmailConfigFieldChange()" placeholder="เช่น noreply@thaichamber.or.th (ถ้าตั้งใน Gmail)" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs outline-none focus:ring-2 focus:ring-tcc-500">
                   </div>
                 </div>
 
@@ -1795,6 +1820,25 @@
                     <input type="checkbox" id="cfgEmailNotifyAdminRoles" onchange="handleEmailConfigFieldChange()" class="w-3.5 h-3.5 rounded text-tcc-600 cursor-pointer">
                     <span>รวมอีเมล Admin/Super Admin จากฐานข้อมูล UserRoles อัตโนมัติ</span>
                   </label>
+                </div>
+
+                <!-- Live Diagnostic & Test Email Bar -->
+                <div class="pt-3 border-t border-slate-200/80 space-y-2">
+                  <div class="flex flex-col md:flex-row md:items-center gap-2">
+                    <div class="flex-1 flex items-center gap-2">
+                      <span class="text-[11px] font-bold text-slate-700 shrink-0">🎯 ทดสอบส่งไปยังอีเมล:</span>
+                      <input type="email" id="cfgEmailTestRecipient" list="userDatabaseEmailsList" placeholder="กรอกอีเมลปลายทางที่ต้องการรับเมลทดสอบ..." class="flex-1 px-3 py-1.5 rounded-xl border border-slate-300 bg-white text-xs outline-none focus:ring-2 focus:ring-tcc-500">
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2 shrink-0">
+                      <button type="button" onclick="checkEmailDeliverySetup()" class="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 font-bold text-[11px] transition cursor-pointer">
+                        🔍 ตรวจสถานะ GAS MailApp
+                      </button>
+                      <button type="button" onclick="sendTestEmailNotification('cfgEmailTestRecipient', 'emailDiagnosticResultBox')" class="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] shadow-xs transition cursor-pointer">
+                        🚀 ทดสอบส่งอีเมลทันที
+                      </button>
+                    </div>
+                  </div>
+                  <div id="emailDiagnosticResultBox" class="hidden p-2.5 rounded-xl border text-[11px] leading-relaxed"></div>
                 </div>
               </div>
 
@@ -1892,18 +1936,22 @@
                     <pre id="tplPreviewBody" class="text-xs text-slate-700 whitespace-pre-wrap font-sans leading-relaxed bg-slate-50/60 p-2.5 rounded-lg border border-slate-100 max-h-52 overflow-y-auto"></pre>
                   </div>
 
-                  <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-200">
-                    <button type="button" onclick="resetSelectedTemplateToDefault()" class="px-3 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-600 border border-slate-300 font-semibold text-xs transition cursor-pointer">
-                      ↩️ คืนค่าเริ่มต้นเหตุการณ์นี้
-                    </button>
-                    <div class="flex flex-wrap items-center gap-2">
-                      <button type="button" onclick="testSendSelectedEmailTemplate()" class="px-3.5 py-2 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 font-bold text-xs transition cursor-pointer">
-                        🚀 ทดสอบส่งอีเมลด้วยเทมเพลตนี้
+                  <div class="pt-2 border-t border-slate-200 space-y-2">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                      <button type="button" onclick="resetSelectedTemplateToDefault()" class="px-3 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-600 border border-slate-300 font-semibold text-xs transition cursor-pointer">
+                        ↩️ คืนค่าเริ่มต้นเหตุการณ์นี้
                       </button>
-                      <button type="button" onclick="saveCurrentEmailTemplate()" class="px-4 py-2 rounded-xl bg-tcc-600 hover:bg-tcc-700 text-white font-bold text-xs shadow-sm transition cursor-pointer">
-                        💾 บันทึกเทมเพลตนี้
-                      </button>
+                      <div class="flex flex-wrap items-center gap-2">
+                        <input type="email" id="tplTestTargetEmail" list="userDatabaseEmailsList" placeholder="อีเมลรับเมลทดสอบ..." class="w-52 px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white text-xs outline-none focus:ring-2 focus:ring-tcc-500">
+                        <button type="button" onclick="testSendSelectedEmailTemplate()" class="px-3.5 py-2 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 font-bold text-xs transition cursor-pointer">
+                          🚀 ทดสอบส่งอีเมลด้วยเทมเพลตนี้
+                        </button>
+                        <button type="button" onclick="saveCurrentEmailTemplate()" class="px-4 py-2 rounded-xl bg-tcc-600 hover:bg-tcc-700 text-white font-bold text-xs shadow-sm transition cursor-pointer">
+                          💾 บันทึกเทมเพลตนี้
+                        </button>
+                      </div>
                     </div>
+                    <div id="tplTestResultBox" class="hidden p-2.5 rounded-xl border text-[11px] leading-relaxed"></div>
                   </div>
                 </div>
               </div>
@@ -2869,22 +2917,28 @@
         <button type="button" onclick="closeEmailLogModal()" class="text-slate-400 hover:text-slate-600 font-bold p-1">✕</button>
       </div>
 
-      <div class="p-3 bg-emerald-50/80 border border-emerald-200 rounded-2xl flex flex-wrap items-center justify-between gap-3 mb-4 text-xs shrink-0">
-        <label class="flex items-center gap-2 cursor-pointer font-bold text-emerald-900">
-          <input type="checkbox" id="globalEmailNotifyToggle" onchange="toggleGlobalEmailSetting(this.checked)" checked class="w-4 h-4 rounded text-emerald-600 cursor-pointer">
-          <span>เปิดใช้งานระบบส่งอีเมลแจ้งเตือนอัตโนมัติ (Google Apps Script MailApp)</span>
-        </label>
-        <div class="flex flex-wrap items-center gap-2">
-          <button type="button" onclick="closeEmailLogModal(); switchTab('emailSettingsTab');" class="admin-only admin-hidden px-3 py-1.5 rounded-xl bg-tcc-600 hover:bg-tcc-700 text-white font-bold text-[11px] transition cursor-pointer">
-            ⚙️ ตั้งค่าอีเมล &amp; ข้อความแจ้งเตือน
-          </button>
-          <button type="button" onclick="sendTestEmailNotification()" class="px-3 py-1.5 rounded-xl bg-white hover:bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold text-[11px] transition cursor-pointer">
+      <div class="p-3 bg-emerald-50/80 border border-emerald-200 rounded-2xl space-y-2.5 mb-4 text-xs shrink-0">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <label class="flex items-center gap-2 cursor-pointer font-bold text-emerald-900">
+            <input type="checkbox" id="globalEmailNotifyToggle" onchange="toggleGlobalEmailSetting(this.checked)" checked class="w-4 h-4 rounded text-emerald-600 cursor-pointer">
+            <span>เปิดใช้งานระบบส่งอีเมลแจ้งเตือนอัตโนมัติ (GAS MailApp — ไม่ต้องใช้ App Password)</span>
+          </label>
+          <div class="flex flex-wrap items-center gap-1.5">
+            <button type="button" onclick="closeEmailLogModal(); switchTab('emailSettingsTab');" class="admin-only admin-hidden px-2.5 py-1 rounded-xl bg-tcc-600 hover:bg-tcc-700 text-white font-bold text-[11px] transition cursor-pointer">
+              ⚙️ ตั้งค่าอีเมล &amp; เทมเพลต
+            </button>
+            <button type="button" onclick="clearEmailLogs()" class="px-2.5 py-1 rounded-xl bg-white hover:bg-rose-50 text-rose-600 border border-slate-200 font-semibold text-[11px] transition cursor-pointer">
+              ล้างประวัติ
+            </button>
+          </div>
+        </div>
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-2 border-t border-emerald-200/70">
+          <input type="email" id="emailLogTestRecipient" list="userDatabaseEmailsList" placeholder="กรอกอีเมลผู้รับเมลทดสอบ..." class="flex-1 px-3 py-1.5 rounded-xl border border-emerald-300 bg-white text-xs outline-none focus:ring-2 focus:ring-emerald-500">
+          <button type="button" onclick="sendTestEmailNotification('emailLogTestRecipient', 'emailLogTestStatusStrip')" class="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] shadow-xs transition cursor-pointer shrink-0">
             🚀 ทดสอบส่งอีเมลแจ้งเตือน
           </button>
-          <button type="button" onclick="clearEmailLogs()" class="px-2.5 py-1.5 rounded-xl bg-white hover:bg-rose-50 text-rose-600 border border-slate-200 font-semibold text-[11px] transition cursor-pointer">
-            ล้างประวัติ
-          </button>
         </div>
+        <div id="emailLogTestStatusStrip" class="hidden p-2 rounded-xl border text-[11px] leading-relaxed bg-white"></div>
       </div>
 
       <div id="emailLogListContainer" class="flex-1 overflow-y-auto space-y-2.5 pr-1 min-h-[220px]"></div>
@@ -3319,8 +3373,11 @@
     const STORAGE_KEY_EMAIL_TEMPLATES = "it_asset_email_templates";
 
     const DEFAULT_EMAIL_CONFIG = {
+      transportMode: "gas_mailapp",
       senderName: "TCC IT Service & Asset System",
       replyTo: "tatiphon.hi@thaichamber.or.th",
+      senderAlias: "",
+      webhookUrl: "",
       notifyRequester: true,
       notifyAssignedAgent: true,
       notifyAdminRoles: true,
@@ -3983,7 +4040,12 @@
         recipients,
         senderName: cfg.senderName || DEFAULT_EMAIL_CONFIG.senderName,
         replyTo: cfg.replyTo || "",
-        status: state.isLive ? "Sent (GAS MailApp)" : "Sent (Simulated)"
+        senderAlias: cfg.senderAlias || "",
+        senderEmail: "",
+        remainingQuota: null,
+        deliveryState: "pending",
+        status: "Sending...",
+        error: ""
       };
 
       state.emailLogs = [logEntry, ...(state.emailLogs || [])].slice(0, 60);
@@ -3993,33 +4055,150 @@
       updateEmailLogBadges();
       renderEmailLogsList();
 
-      if (!details.silentToast) {
-        showNotification(`📧 ส่งอีเมลแจ้งเตือนไปยัง ${recipients.slice(0, 2).join(", ")}${recipients.length > 2 ? ` (+${recipients.length - 2})` : ""} เรียบร้อย`, "info");
-      }
-
+      let apiRes = null;
       if (details.sendViaApi !== false) {
+        const emailPayload = {
+          eventType,
+          to: recipients,
+          recipients,
+          subject,
+          body,
+          summary,
+          senderName: cfg.senderName || DEFAULT_EMAIL_CONFIG.senderName,
+          replyTo: cfg.replyTo || "",
+          senderAlias: cfg.senderAlias || "",
+          details: vars
+        };
+
         try {
-          await callAPI("sendEmailNotification", {
-            eventType,
-            to: recipients,
-            recipients,
-            subject,
-            body,
-            summary,
-            senderName: cfg.senderName || DEFAULT_EMAIL_CONFIG.senderName,
-            replyTo: cfg.replyTo || "",
-            details: vars
-          }, true);
+          if (cfg.transportMode === "webhook" && cfg.webhookUrl && /^https?:\/\//i.test(cfg.webhookUrl)) {
+            const whRes = await fetch(cfg.webhookUrl.trim(), {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(emailPayload)
+            });
+            let whData = {};
+            try { whData = await whRes.json(); } catch (_) {}
+            if (!whRes.ok || whData.status === "error" || whData.sent === false) {
+              apiRes = { status: "error", sent: false, error: whData.error || whData.message || `Webhook HTTP ${whRes.status}` };
+            } else {
+              apiRes = { status: "success", sent: true, senderEmail: whData.senderEmail || cfg.senderAlias || cfg.replyTo || "Webhook Relay", ...whData };
+            }
+          } else {
+            apiRes = await callAPI("sendEmailNotification", emailPayload, true);
+          }
         } catch (err) {
           console.warn("Email API fallback:", err);
+          apiRes = { status: "error", sent: false, error: err?.message || String(err) };
+        }
+      } else {
+        apiRes = { status: "success", sent: false, simulated: true };
+      }
+
+      const rawMsg = String(apiRes?.error || apiRes?.message || "");
+      const isInvalidAction = /invalid action/i.test(rawMsg);
+      const isSimulated = Boolean(apiRes?.simulated);
+      const isDelivered = !isSimulated && apiRes && apiRes.status === "success" && apiRes.sent === true;
+
+      if (isDelivered) {
+        logEntry.deliveryState = "sent";
+        logEntry.status = cfg.transportMode === "webhook" && cfg.webhookUrl ? "Sent (Webhook Relay)" : "Sent (GAS MailApp)";
+        logEntry.senderEmail = apiRes.senderEmail || "";
+        logEntry.remainingQuota = apiRes.remainingQuota !== undefined ? apiRes.remainingQuota : null;
+      } else if (isSimulated) {
+        logEntry.deliveryState = "simulated";
+        logEntry.status = "Simulated (ไม่ส่งเมลจริง)";
+        logEntry.error = "ไม่ได้เชื่อมต่อ Live Google Apps Script (ทำงานในโหมดจำลอง)";
+      } else {
+        logEntry.deliveryState = "failed";
+        logEntry.status = isInvalidAction ? "Failed (GAS เวอร์ชันเก่า)" : "Failed (ส่งไม่สำเร็จ)";
+        logEntry.error = isInvalidAction
+          ? "Google Apps Script บน Web App URL ยังเป็นเวอร์ชันเก่า (ไม่รู้จัก sendEmailNotification) กรุณาคัดลอกโค้ดล่าสุดไปอัปเดตและ Deploy New Version"
+          : (rawMsg || "MailApp ปฏิเสธการส่ง หรือยังไม่ได้กดอนุญาตสิทธิ์ส่งอีเมลใน Google Apps Script");
+      }
+
+      try {
+        localStorage.setItem(STORAGE_KEY_EMAIL_LOGS, JSON.stringify(state.emailLogs));
+      } catch (e) {}
+      updateEmailLogBadges();
+      renderEmailLogsList();
+
+      if (!details.silentToast) {
+        const recPreview = `${recipients.slice(0, 2).join(", ")}${recipients.length > 2 ? ` (+${recipients.length - 2})` : ""}`;
+        if (logEntry.deliveryState === "sent") {
+          showNotification(`📧 ส่งอีเมลจริงสำเร็จไปยัง ${recPreview}`, "success");
+        } else if (logEntry.deliveryState === "simulated") {
+          showNotification(`⚠️ บันทึก Log จำลองสำหรับ ${recPreview} (ยังไม่ได้ส่งอีเมลจริง เนื่องจากทำงานในโหมด Demo)`, "warning");
+        } else {
+          showNotification(`❌ ส่งอีเมลไม่สำเร็จ (${recPreview}): ${logEntry.error}`, "error");
         }
       }
       return logEntry;
     }
 
+    function showEmailDiagnosticBox(boxId, type, htmlContent) {
+      const box = document.getElementById(boxId);
+      if (!box) return;
+      const styles = {
+        success: "bg-emerald-50 border-emerald-300 text-emerald-900",
+        warning: "bg-amber-50 border-amber-300 text-amber-900",
+        error: "bg-rose-50 border-rose-300 text-rose-900",
+        info: "bg-sky-50 border-sky-200 text-sky-900"
+      };
+      box.className = `p-2.5 rounded-xl border text-[11px] leading-relaxed ${styles[type] || styles.info}`;
+      box.innerHTML = htmlContent;
+      box.classList.remove("hidden");
+    }
+
+    async function checkEmailDeliverySetup(boxId = "emailDiagnosticResultBox") {
+      showEmailDiagnosticBox(boxId, "info", "🔄 กำลังตรวจสอบการเชื่อมต่อกับ Google Apps Script และสิทธิ์ MailApp...");
+      const cfg = state.emailConfig || DEFAULT_EMAIL_CONFIG;
+      if (cfg.transportMode === "webhook") {
+        if (!cfg.webhookUrl || !/^https?:\/\//i.test(cfg.webhookUrl)) {
+          return showEmailDiagnosticBox(boxId, "warning", "⚠️ เลือกโหมด <b>Webhook / SMTP Relay</b> แต่ยังไม่ได้กรอก Webhook URL ที่ถูกต้อง");
+        }
+        return showEmailDiagnosticBox(boxId, "info", `🔗 กำลังใช้งานผ่าน External Webhook: <code>${cfg.webhookUrl}</code> (กดปุ่ม <b>🚀 ทดสอบส่งอีเมลทันที</b> เพื่อตรวจสอบปลายทางจริง)`);
+      }
+
+      const res = await callAPI("checkEmailSetup", {}, true);
+      if (res && res.simulated) {
+        return showEmailDiagnosticBox(
+          boxId,
+          "warning",
+          `⚠️ <b>เชื่อมต่อ Google Apps Script ไม่สำเร็จ (Demo / Offline Mode)</b><br>กรุณาตรวจสอบ Web App URL ในเมนู <button type="button" onclick="openSetupModal()" class="underline font-bold text-tcc-700 cursor-pointer">Google Sheets &amp; Apps Script</button>`
+        );
+      }
+      const msg = String(res?.error || res?.message || "");
+      if (/invalid action/i.test(msg)) {
+        return showEmailDiagnosticBox(
+          boxId,
+          "error",
+          `❌ <b>Apps Script ยังเป็นเวอร์ชันเก่า (ไม่รองรับระบบส่งอีเมล):</b> <code>${msg}</code><br>วิธีแก้: กดปุ่ม <button type="button" onclick="openSetupModal()" class="underline font-bold text-rose-800 cursor-pointer">เปิดหน้าต่าง Google Sheets &amp; Apps Script</button> &rarr; คัดลอกโค้ดทั้งหมดไปวางทับใน <code>Code.gs</code> &rarr; กด <b>Run &gt; authorizeMailAndDrivePermissions</b> เพื่ออนุญาตสิทธิ์ &rarr; กด <b>Deploy &gt; Manage deployments &gt; Edit &gt; New version</b>`
+        );
+      }
+      if (!res || res.status === "error" || res.mailAuthorized === false) {
+        return showEmailDiagnosticBox(
+          boxId,
+          "error",
+          `❌ <b>ระบบส่งอีเมลใน Apps Script ยังไม่พร้อม:</b> ${msg || "ไม่ได้รับสิทธิ์ MailApp"}<br>วิธีแก้: เปิด Google Apps Script &rarr; รันฟังก์ชัน <code>authorizeMailAndDrivePermissions</code> และกด Allow อนุญาตสิทธิ์ส่งอีเมล จากนั้น Deploy New Version`
+        );
+      }
+      const aliasTxt = Array.isArray(res.aliases) && res.aliases.length > 0 ? `<br>• <b>Alias ที่ใช้ส่งได้:</b> ${res.aliases.join(", ")}` : "";
+      showEmailDiagnosticBox(
+        boxId,
+        "success",
+        `✅ <b>พร้อมส่งอีเมลจริงผ่าน Google Apps Script MailApp (ไม่ต้องใช้ App Password)</b><br>• <b>บัญชีผู้ส่งจริง (GAS Owner):</b> <code>${res.senderEmail || "-"}</code> | <b>โควต้าคงเหลือวันนี้:</b> ${res.remainingQuota ?? "-"} ฉบับ${aliasTxt}`
+      );
+    }
+
     function openEmailLogModal() {
       updateEmailLogBadges();
       renderEmailLogsList();
+      const inp = document.getElementById("emailLogTestRecipient");
+      if (inp && !inp.value.trim()) {
+        inp.value = state.currentUser?.email || state.emailConfig?.replyTo || "tatiphon.hi@thaichamber.or.th";
+      }
+      document.getElementById("emailLogTestStatusStrip")?.classList.add("hidden");
       document.getElementById("emailLogModal")?.classList.remove("hidden");
     }
 
@@ -4048,18 +4227,50 @@
       showNotification("ล้างประวัติการแจ้งเตือนอีเมลเรียบร้อย", "info");
     }
 
-    async function sendTestEmailNotification() {
-      const targetEmail = state.currentUser?.email || state.emailConfig?.replyTo || "tatiphon.hi@thaichamber.or.th";
-      await sendSystemEmailNotification("TEST_EMAIL", {
+    async function sendTestEmailNotification(inputId = "emailLogTestRecipient", resultBoxId = "emailLogTestStatusStrip") {
+      const inputEl = document.getElementById(inputId);
+      const targetEmail = (inputEl?.value || state.currentUser?.email || state.emailConfig?.replyTo || "tatiphon.hi@thaichamber.or.th").trim();
+      if (!targetEmail || !targetEmail.includes("@")) {
+        showNotification("กรุณาระบุอีเมลปลายทางสำหรับทดสอบส่งให้ถูกต้อง", "warning");
+        inputEl?.focus();
+        return;
+      }
+      if (inputEl && !inputEl.value.trim()) inputEl.value = targetEmail;
+      showEmailDiagnosticBox(resultBoxId, "info", `🚀 กำลังส่งอีเมลทดสอบไปยัง <code>${targetEmail}</code>...`);
+
+      const logEntry = await sendSystemEmailNotification("TEST_EMAIL", {
         forceSend: true,
         sendViaApi: true,
         recipients: [targetEmail],
         notifyAdmins: false,
         notifyRequester: false,
         subject: `[TCC IT System] ทดสอบระบบแจ้งเตือนอีเมลอัตโนมัติ (${getLocalTimestamp(0)})`,
-        body: `เรียน คุณ${state.currentUser?.name || "Admin"}\n\nนี่คืออีเมลทดสอบจากระบบบริหารจัดการอุปกรณ์และ Helpdesk ฝ่ายเทคโนโลยีสารสนเทศ หอการค้าไทย\n• ผู้ทดสอบ: ${state.currentUser?.name || "Admin"} (${targetEmail})\n• สถานะการส่ง: ปกติ`,
-        summary: `ทดสอบส่งอีเมลแจ้งเตือนไปยังผู้ใช้งานปัจจุบัน: ${state.currentUser?.name || "Admin"} (${targetEmail})`
+        body: `เรียน คุณ${state.currentUser?.name || "Admin"}\n\nนี่คืออีเมลทดสอบจากระบบบริหารจัดการอุปกรณ์และ Helpdesk ฝ่ายเทคโนโลยีสารสนเทศ หอการค้าไทย\n• ผู้ทดสอบ: ${state.currentUser?.name || "Admin"} (${targetEmail})\n• เวลาที่ส่ง: ${getLocalTimestamp(0)}\n• สถานะ: ระบบส่งอีเมลอัตโนมัติพร้อมใช้งาน`,
+        summary: `ทดสอบส่งอีเมลแจ้งเตือนไปยัง: ${targetEmail}`
       });
+
+      if (!logEntry) return;
+      if (logEntry.deliveryState === "sent") {
+        const senderNote = logEntry.senderEmail ? ` (จากบัญชี: <code>${logEntry.senderEmail}</code>)` : "";
+        const quotaNote = logEntry.remainingQuota !== null ? ` • โควต้าคงเหลือ: ${logEntry.remainingQuota} ฉบับ/วัน` : "";
+        showEmailDiagnosticBox(
+          resultBoxId,
+          "success",
+          `✅ <b>ส่งอีเมลจริงสำเร็จ!</b> ไปยัง <code>${targetEmail}</code>${senderNote}${quotaNote}<br><span class="text-slate-600">* หากไม่พบใน Inbox กรุณาตรวจสอบโฟลเดอร์ Spam/Junk หรือคลิกตรวจบัญชีผู้ส่งด้านบน</span>`
+        );
+      } else if (logEntry.deliveryState === "simulated") {
+        showEmailDiagnosticBox(
+          resultBoxId,
+          "warning",
+          `⚠️ <b>บันทึกเฉพาะ Log จำลอง (ไม่ได้ส่งเมลจริง):</b> ระบบยังไม่สามารถเชื่อมต่อ Live GAS Web App ได้ (${logEntry.error})`
+        );
+      } else {
+        showEmailDiagnosticBox(
+          resultBoxId,
+          "error",
+          `❌ <b>ส่งอีเมลจริงไม่สำเร็จ:</b> ${logEntry.error}<br><button type="button" onclick="openSetupModal()" class="underline font-bold text-rose-800 mt-1 cursor-pointer">เปิดดูโค้ด Google Apps Script ล่าสุดเพื่ออัปเดตและ Deploy</button>`
+        );
+      }
     }
 
     function renderEmailLogsList() {
@@ -4085,18 +4296,30 @@
       container.innerHTML = logs.map(l => {
         const badge = typeBadgeMap[l.eventType] || { label: "📧 แจ้งเตือนระบบ", cls: "bg-slate-100 text-slate-700 border-slate-200" };
         const bodyOrSummary = l.body || l.summary || "";
+        const dState = l.deliveryState || (String(l.status || "").toLowerCase().includes("fail") ? "failed" : (String(l.status || "").toLowerCase().includes("sim") ? "simulated" : "sent"));
+        let statusPill = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">✓ ${l.status || "Sent"}</span>`;
+        if (dState === "failed") {
+          statusPill = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800">✕ ${l.status || "Failed"}</span>`;
+        } else if (dState === "simulated") {
+          statusPill = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">⚠ ${l.status || "Simulated"}</span>`;
+        } else if (dState === "pending") {
+          statusPill = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-100 text-sky-800">🔄 ${l.status || "Sending..."}</span>`;
+        }
+
         return `
-          <div class="p-3 rounded-2xl border border-slate-200 bg-slate-50/60 hover:bg-white transition space-y-1.5 text-xs">
+          <div class="p-3 rounded-2xl border ${dState === "failed" ? "border-rose-200 bg-rose-50/30" : "border-slate-200 bg-slate-50/60"} hover:bg-white transition space-y-1.5 text-xs">
             <div class="flex flex-wrap items-center justify-between gap-2">
               <div class="flex items-center gap-2">
                 <span class="px-2 py-0.5 rounded-lg border text-[10px] font-bold ${badge.cls}">${badge.label}</span>
                 <span class="font-mono text-[10px] text-slate-400">${l.timestamp}</span>
               </div>
-              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">✓ ${l.status || "Sent"}</span>
+              ${statusPill}
             </div>
             <div class="font-bold text-slate-900">${l.subject}</div>
+            ${l.error ? `<div class="p-2 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-[11px] font-medium">⚠️ <b>สาเหตุ:</b> ${l.error}</div>` : ""}
             ${bodyOrSummary ? `<div class="text-slate-600 text-[11px] whitespace-pre-line bg-white/80 p-2 rounded-xl border border-slate-100">${bodyOrSummary}</div>` : ""}
             <div class="text-[10px] text-slate-500 flex flex-wrap items-center gap-1 pt-1 border-t border-slate-100">
+              ${l.senderEmail ? `<span class="font-semibold text-slate-600 mr-1">จาก (From):</span><span class="px-1.5 py-0.2 bg-white border border-slate-200 rounded font-mono text-emerald-700 mr-2">${l.senderEmail}</span>` : ""}
               <span class="font-semibold text-slate-600">ผู้รับ (To):</span>
               ${(l.recipients || []).map(r => `<span class="px-1.5 py-0.2 bg-white border border-slate-200 rounded font-mono text-tcc-700">${r}</span>`).join("")}
             </div>
@@ -4109,18 +4332,33 @@
     function renderEmailSettingsTab() {
       const cfg = state.emailConfig || DEFAULT_EMAIL_CONFIG;
       const elEnabled = document.getElementById("cfgEmailNotifyEnabled");
+      const elTransport = document.getElementById("cfgEmailTransportMode");
+      const elWebhookWrap = document.getElementById("cfgEmailWebhookWrapper");
+      const elWebhookUrl = document.getElementById("cfgEmailWebhookUrl");
       const elSender = document.getElementById("cfgEmailSenderName");
       const elReply = document.getElementById("cfgEmailReplyTo");
+      const elAlias = document.getElementById("cfgEmailSenderAlias");
       const elReq = document.getElementById("cfgEmailNotifyRequester");
       const elAgent = document.getElementById("cfgEmailNotifyAssignedAgent");
       const elRoles = document.getElementById("cfgEmailNotifyAdminRoles");
+      const elTestRec = document.getElementById("cfgEmailTestRecipient");
+      const elTplRec = document.getElementById("tplTestTargetEmail");
 
+      const mode = cfg.transportMode === "webhook" ? "webhook" : "gas_mailapp";
       if (elEnabled) elEnabled.checked = !!state.emailNotifyEnabled;
+      if (elTransport) elTransport.value = mode;
+      if (elWebhookWrap) elWebhookWrap.classList.toggle("hidden", mode !== "webhook");
+      if (elWebhookUrl) elWebhookUrl.value = cfg.webhookUrl || "";
       if (elSender) elSender.value = cfg.senderName || "";
       if (elReply) elReply.value = cfg.replyTo || "";
+      if (elAlias) elAlias.value = cfg.senderAlias || "";
       if (elReq) elReq.checked = cfg.notifyRequester !== false;
       if (elAgent) elAgent.checked = cfg.notifyAssignedAgent !== false;
       if (elRoles) elRoles.checked = cfg.notifyAdminRoles !== false;
+
+      const defaultTestEmail = state.currentUser?.email || cfg.replyTo || "tatiphon.hi@thaichamber.or.th";
+      if (elTestRec && !elTestRec.value.trim()) elTestRec.value = defaultTestEmail;
+      if (elTplRec && !elTplRec.value.trim()) elTplRec.value = defaultTestEmail;
 
       renderEmailRecipientsTable();
       renderEmailTemplateEventList();
@@ -4129,8 +4367,14 @@
 
     function handleEmailConfigFieldChange() {
       if (!state.emailConfig) state.emailConfig = JSON.parse(JSON.stringify(DEFAULT_EMAIL_CONFIG));
+      const mode = document.getElementById("cfgEmailTransportMode")?.value === "webhook" ? "webhook" : "gas_mailapp";
+      state.emailConfig.transportMode = mode;
+      state.emailConfig.webhookUrl = document.getElementById("cfgEmailWebhookUrl")?.value.trim() || "";
+      document.getElementById("cfgEmailWebhookWrapper")?.classList.toggle("hidden", mode !== "webhook");
+
       state.emailConfig.senderName = document.getElementById("cfgEmailSenderName")?.value.trim() || DEFAULT_EMAIL_CONFIG.senderName;
       state.emailConfig.replyTo = document.getElementById("cfgEmailReplyTo")?.value.trim() || "";
+      state.emailConfig.senderAlias = document.getElementById("cfgEmailSenderAlias")?.value.trim() || "";
       state.emailConfig.notifyRequester = !!document.getElementById("cfgEmailNotifyRequester")?.checked;
       state.emailConfig.notifyAssignedAgent = !!document.getElementById("cfgEmailNotifyAssignedAgent")?.checked;
       state.emailConfig.notifyAdminRoles = !!document.getElementById("cfgEmailNotifyAdminRoles")?.checked;
@@ -4411,8 +4655,17 @@
     async function testSendSelectedEmailTemplate() {
       const eventKey = state.selectedEmailTemplateEvent || "BORROW_CREATED";
       const sample = DEFAULT_EMAIL_TEMPLATES[eventKey]?.sampleData || {};
-      const targetEmail = state.currentUser?.email || state.emailConfig?.replyTo || "tatiphon.hi@thaichamber.or.th";
-      await sendSystemEmailNotification(eventKey, {
+      const targetEl = document.getElementById("tplTestTargetEmail");
+      const targetEmail = (targetEl?.value || state.currentUser?.email || state.emailConfig?.replyTo || "tatiphon.hi@thaichamber.or.th").trim();
+      if (!targetEmail || !targetEmail.includes("@")) {
+        showNotification("กรุณากรอกอีเมลปลายทางสำหรับทดสอบส่งให้ถูกต้อง", "warning");
+        targetEl?.focus();
+        return;
+      }
+      if (targetEl && !targetEl.value.trim()) targetEl.value = targetEmail;
+      showEmailDiagnosticBox("tplTestResultBox", "info", `🚀 กำลังทดสอบส่งเทมเพลต <b>${eventKey}</b> ไปยัง <code>${targetEmail}</code>...`);
+
+      const logEntry = await sendSystemEmailNotification(eventKey, {
         ...sample,
         forceSend: true,
         sendViaApi: true,
@@ -4420,6 +4673,29 @@
         notifyAdmins: false,
         notifyRequester: false
       });
+
+      if (!logEntry) return;
+      if (logEntry.deliveryState === "sent") {
+        const senderNote = logEntry.senderEmail ? ` (จาก: <code>${logEntry.senderEmail}</code>)` : "";
+        const quotaNote = logEntry.remainingQuota !== null ? ` • โควต้าคงเหลือ: ${logEntry.remainingQuota} ฉบับ/วัน` : "";
+        showEmailDiagnosticBox(
+          "tplTestResultBox",
+          "success",
+          `✅ <b>ส่งอีเมลจริงสำเร็จ!</b> ไปยัง <code>${targetEmail}</code>${senderNote}${quotaNote}<br><span class="text-slate-600">* หากไม่พบใน Inbox กรุณาตรวจสอบ Spam/Junk ของอีเมลปลายทาง</span>`
+        );
+      } else if (logEntry.deliveryState === "simulated") {
+        showEmailDiagnosticBox(
+          "tplTestResultBox",
+          "warning",
+          `⚠️ <b>บันทึกเฉพาะ Log จำลอง (ยังไม่ได้ส่งเมลจริง):</b> ${logEntry.error}`
+        );
+      } else {
+        showEmailDiagnosticBox(
+          "tplTestResultBox",
+          "error",
+          `❌ <b>ส่งอีเมลจริงไม่สำเร็จ:</b> ${logEntry.error}<br><button type="button" onclick="openSetupModal()" class="underline font-bold text-rose-800 mt-1 cursor-pointer">เปิดดูโค้ด Google Apps Script ล่าสุดเพื่ออัปเดตและ Deploy</button>`
+        );
+      }
     }
 
     /* AUTH & RBAC (Req 2 & Req 4: USER & PASS ONLY) */
@@ -9346,6 +9622,17 @@
  * รองรับ: Items (พร้อมรูปตัวอย่างบน Google Drive), Logs, Categories, Departments, UserRoles, Tickets, KnowledgeBase และระบบแจ้งเตือนทางอีเมล (MailApp)
  * ระบบ Self-Healing: สร้างแท็บตารางที่ขาดหายให้อัตโนมัติ พร้อมตั้งค่าหัวตารางให้อัตโนมัติ
  */
+/**
+ * รันฟังก์ชันนี้ 1 ครั้งใน Apps Script Editor (กด Run) เพื่อกดอนุญาตสิทธิ์เข้าถึง Google Sheets, Google Drive และการส่งอีเมล (MailApp)
+ */
+function authorizeMailAndDrivePermissions() {
+  var quota = MailApp.getRemainingDailyQuota();
+  var root = DriveApp.getRootFolder().getName();
+  var ssName = SpreadsheetApp.getActiveSpreadsheet().getName();
+  Logger.log("Authorized! Sheet=" + ssName + ", DriveRoot=" + root + ", EmailQuota=" + quota);
+  return { ok: true, sheet: ssName, remainingQuota: quota };
+}
+
 function doPost(e) {
   var lock = LockService.getScriptLock();
   try {
@@ -9379,6 +9666,7 @@ function doPost(e) {
       case "uploadFileToDrive": return handleUploadFileToDrive(data);
       case "sendEmailNotification": return handleSendEmailNotification(data);
       case "saveEmailSettings": return handleSaveEmailSettings(data);
+      case "checkEmailSetup": return handleCheckEmailSetup();
       default: return jsonResponse({ status: "error", message: "Invalid action: " + action });
     }
   } catch (err) {
@@ -9461,7 +9749,12 @@ function getAdminEmailsGAS(ss) {
   return admins;
 }
 
-function sendNotificationEmailGAS(toList, subject, bodyText, senderName, replyTo) {
+function sendNotificationEmailGAS(toList, subject, bodyText, senderName, replyTo, senderAlias) {
+  var senderEmail = "";
+  try {
+    senderEmail = Session.getEffectiveUser().getEmail() || "";
+  } catch (_) {}
+
   try {
     var valid = [];
     if (Array.isArray(toList)) {
@@ -9475,7 +9768,9 @@ function sendNotificationEmailGAS(toList, subject, bodyText, senderName, replyTo
         if (clean && clean.indexOf("@") !== -1 && valid.indexOf(clean) === -1) valid.push(clean);
       });
     }
-    if (valid.length === 0) return false;
+    if (valid.length === 0) {
+      return { ok: false, error: "ไม่พบอีเมลปลายทางที่ถูกต้อง", senderEmail: senderEmail };
+    }
     var dispName = senderName || "TCC IT Service & Asset System";
     var htmlBody = '<div style="font-family: Sarabun, sans-serif; max-width: 620px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden;">' +
       '<div style="background: linear-gradient(135deg, #003d73, #0284c7); color: #ffffff; padding: 18px 24px;">' +
@@ -9488,34 +9783,97 @@ function sendNotificationEmailGAS(toList, subject, bodyText, senderName, replyTo
       '<div style="padding: 12px 24px; background: #f8fafc; color: #64748b; font-size: 11px; border-top: 1px solid #e2e8f0;">' +
       'อีเมลฉบับนี้ส่งอัตโนมัติจากระบบบริหารจัดการอุปกรณ์และแจ้งซ่อมไอที หอการค้าไทย' +
       '</div></div>';
-    var mailOpts = {
-      to: valid.join(","),
-      subject: subject,
-      body: bodyText,
-      htmlBody: htmlBody,
-      name: dispName
-    };
-    if (replyTo && String(replyTo).indexOf("@") !== -1) {
-      mailOpts.replyTo = String(replyTo).trim();
+
+    var aliasClean = String(senderAlias || "").trim().toLowerCase();
+    var sentMethod = "MailApp";
+    if (aliasClean && aliasClean.indexOf("@") !== -1) {
+      try {
+        var aliases = GmailApp.getAliases();
+        var matchedAlias = "";
+        for (var i = 0; i < aliases.length; i++) {
+          if (String(aliases[i]).toLowerCase() === aliasClean) {
+            matchedAlias = aliases[i];
+            break;
+          }
+        }
+        if (matchedAlias) {
+          var gOpts = { htmlBody: htmlBody, name: dispName, from: matchedAlias };
+          if (replyTo && String(replyTo).indexOf("@") !== -1) gOpts.replyTo = String(replyTo).trim();
+          GmailApp.sendEmail(valid.join(","), subject, bodyText || " ", gOpts);
+          senderEmail = matchedAlias;
+          sentMethod = "GmailApp";
+        }
+      } catch (aliasErr) {
+        Logger.log("Alias fallback to MailApp: " + aliasErr);
+      }
     }
-    MailApp.sendEmail(mailOpts);
-    return true;
+
+    if (sentMethod === "MailApp") {
+      var mailOpts = {
+        to: valid.join(","),
+        subject: subject,
+        body: bodyText || " ",
+        htmlBody: htmlBody,
+        name: dispName
+      };
+      if (replyTo && String(replyTo).indexOf("@") !== -1) {
+        mailOpts.replyTo = String(replyTo).trim();
+      }
+      MailApp.sendEmail(mailOpts);
+    }
+
+    var quota = null;
+    try { quota = MailApp.getRemainingDailyQuota(); } catch (_) {}
+    return { ok: true, senderEmail: senderEmail, remainingQuota: quota, method: sentMethod, sentTo: valid };
   } catch (err) {
     Logger.log("Email error: " + err);
-    return false;
+    return { ok: false, error: err.toString(), senderEmail: senderEmail };
   }
 }
 
 function handleSendEmailNotification(data) {
   var bodyText = data.body || data.summary || "";
-  var sent = sendNotificationEmailGAS(
+  var res = sendNotificationEmailGAS(
     data.to || data.recipients || [],
     data.subject || "[TCC IT Notification]",
     bodyText,
     data.senderName || "TCC IT Service & Asset System",
-    data.replyTo || ""
+    data.replyTo || "",
+    data.senderAlias || ""
   );
-  return jsonResponse({ status: "success", sent: sent });
+  return jsonResponse({
+    status: res.ok ? "success" : "error",
+    sent: !!res.ok,
+    message: res.ok ? "ส่งอีเมลสำเร็จ" : ("MailApp Error: " + (res.error || "Unknown error")),
+    error: res.error || "",
+    senderEmail: res.senderEmail || "",
+    remainingQuota: res.remainingQuota !== undefined ? res.remainingQuota : null
+  });
+}
+
+function handleCheckEmailSetup() {
+  try {
+    var senderEmail = "";
+    try { senderEmail = Session.getEffectiveUser().getEmail() || ""; } catch (_) {}
+    var quota = MailApp.getRemainingDailyQuota();
+    var aliases = [];
+    try { aliases = GmailApp.getAliases() || []; } catch (_) {}
+    return jsonResponse({
+      status: "success",
+      version: "2026-11-email-v2",
+      mailAuthorized: true,
+      senderEmail: senderEmail,
+      remainingQuota: quota,
+      aliases: aliases
+    });
+  } catch (err) {
+    return jsonResponse({
+      status: "error",
+      mailAuthorized: false,
+      error: err.toString(),
+      message: err.toString()
+    });
+  }
 }
 
 function handleSaveEmailSettings(data) {
@@ -10607,7 +10965,11 @@ function handleDeleteUserRole(data) {
               break;
             }
             case "sendEmailNotification": {
-              resolve({ status: "success", sent: true, message: "ส่งอีเมลแจ้งเตือนเรียบร้อย (Simulation)" });
+              resolve({ status: "success", sent: false, simulated: true, message: "บันทึก Log จำลองเท่านั้น (ไม่ได้เชื่อมต่อ Live GAS)" });
+              break;
+            }
+            case "checkEmailSetup": {
+              resolve({ status: "success", simulated: true, mailAuthorized: false, message: "โหมดจำลอง (Demo Mode): ยังไม่ได้เชื่อมต่อ Google Apps Script จริง" });
               break;
             }
             case "saveEmailSettings": {

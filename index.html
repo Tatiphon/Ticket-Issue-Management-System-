@@ -224,11 +224,11 @@
       <div class="text-left border-t border-slate-100 pt-3">
         <span class="text-[11px] font-semibold text-slate-500 block mb-2">⚡ ทดสอบเข้าใช้งานด่วนตามสิทธิ์ (คลิกเพื่อเข้าสู่ระบบทันที):</span>
         <div class="grid grid-cols-2 gap-1.5 text-[11px]">
-          <button type="button" onclick="loginDemoAccount('tatitop07@gmail.com', 'admin1234')" class="px-2.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 rounded-xl font-semibold transition truncate text-left shadow-2xs">
-            👑 Super Admin 1
+          <button type="button" onclick="loginDemoAccount('itsupport@thaichamber.or.th', 'admin1234')" class="px-2.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 rounded-xl font-semibold transition truncate text-left shadow-2xs">
+            👑 Super Admin (itsupport)
           </button>
           <button type="button" onclick="loginDemoAccount('tatiphon.hi@thaichamber.or.th', 'admin1234')" class="px-2.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 rounded-xl font-semibold transition truncate text-left shadow-2xs">
-            👑 Super Admin 2
+            👑 Super Admin (tatiphon)
           </button>
           <button type="button" onclick="loginDemoAccount('wattanachai.mi@thaichamber.or.th', 'admin1234')" class="px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200 rounded-xl font-semibold transition truncate text-left shadow-2xs">
             🛡️ Admin (wattanachai)
@@ -1766,29 +1766,58 @@
                 <div class="flex flex-wrap items-center justify-between gap-3 pb-2.5 border-b border-slate-200/70">
                   <label class="flex items-center gap-2 cursor-pointer font-bold text-emerald-900">
                     <input type="checkbox" id="cfgEmailNotifyEnabled" onchange="toggleGlobalEmailSetting(this.checked)" class="w-4 h-4 rounded text-emerald-600 cursor-pointer">
-                    <span>เปิดใช้งานระบบส่งอีเมลแจ้งเตือนอัตโนมัติ (GAS MailApp)</span>
+                    <span>เปิดใช้งานระบบส่งอีเมลแจ้งเตือนอัตโนมัติ (ผู้ส่งหลัก: itsupport@thaichamber.or.th)</span>
                   </label>
-                  <span id="cfgEmailSyncStatusBadge" class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">✓ พร้อมใช้งาน</span>
+                  <div class="flex flex-wrap items-center gap-1.5">
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200">🚫 บล็อก tatitop07@gmail.com ถาวร</span>
+                    <span id="cfgEmailSyncStatusBadge" class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">✓ พร้อมใช้งาน</span>
+                  </div>
                 </div>
 
                 <!-- Sender Transport Mode & Auth Explanation -->
-                <div class="p-3 bg-sky-50/80 rounded-xl border border-sky-200/80 space-y-2">
+                <div class="p-3 bg-sky-50/80 rounded-xl border border-sky-200/80 space-y-2.5">
                   <div class="flex flex-wrap items-center justify-between gap-2">
                     <div class="font-bold text-sky-950 flex items-center gap-1.5">
-                      <span>🔐 ช่องทางการส่งอีเมล (Sender Transport)</span>
+                      <span>🔐 ช่องทางการส่งอีเมลด้วย <code class="px-1.5 py-0.5 rounded bg-white border border-sky-200 text-tcc-700">itsupport@thaichamber.or.th</code></span>
                     </div>
-                    <select id="cfgEmailTransportMode" onchange="handleEmailConfigFieldChange()" class="px-2.5 py-1 rounded-lg border border-sky-300 bg-white text-[11px] font-bold text-sky-900 outline-none focus:ring-2 focus:ring-tcc-500">
-                      <option value="gas_mailapp">Google Apps Script (MailApp — ไม่ต้องใช้ App Password)</option>
-                      <option value="webhook">External Email Webhook / SMTP Relay URL (สำหรับ App Password ฝั่ง Server)</option>
+                    <select id="cfgEmailTransportMode" onchange="handleEmailConfigFieldChange()" class="px-2.5 py-1.5 rounded-lg border border-sky-300 bg-white text-[11px] font-bold text-sky-900 outline-none focus:ring-2 focus:ring-tcc-500">
+                      <option value="gas_mailapp">1) Google Apps Script (ส่งในนาม itsupport@thaichamber.or.th — ไม่ใช้รหัสผ่านบนเว็บ)</option>
+                      <option value="smtp">2) SMTP โดยตรงด้วย itsupport@thaichamber.or.th (กรอกรหัสผ่าน / App Password)</option>
+                      <option value="webhook">3) External Email Webhook URL (กำหนดเซิร์ฟเวอร์เอง)</option>
                     </select>
                   </div>
                   <p class="text-[11px] text-slate-600 leading-relaxed">
-                    • <b>วิธีหลัก (GAS MailApp):</b> <b>ไม่ต้องตั้งรหัสผ่านหรือ App Password</b> เพราะระบบส่งออกจากบัญชี Google ของผู้ Deploy Google Apps Script (<code>Code.gs</code>) โดยใช้สิทธิ์ OAuth ของ Google โดยตรง (ต้องอัปเดตและ Deploy <code>Code.gs</code> ล่าสุด + กดอนุญาตสิทธิ์ส่งอีเมล)<br>
-                    • <b>กรณีต้องการส่งด้วยอีเมลอื่น / Gmail App Password:</b> เพื่อความปลอดภัยจะไม่เก็บรหัสผ่านไว้หน้าเว็บ สามารถตั้งค่า "Send mail as" Alias ใน Gmail ของบัญชีผู้ Deploy หรือเชื่อมต่อ <code>Webhook / SMTP Relay URL</code> ฝั่งเซิร์ฟเวอร์ได้
+                    • ระบบล็อกผู้ส่งเป็น <b><code>itsupport@thaichamber.or.th</code></b> และ<b>ปิดกั้นการใช้ <code>tatitop07@gmail.com</code> ทั้งในการส่งจริงและทดสอบ 100%</b><br>
+                    • <b>วิธีที่ 1 (Google Apps Script):</b> ให้เปิด Google Sheets / Apps Script ด้วยบัญชี <code>itsupport@thaichamber.or.th</code> แล้วกด Deploy Web App <b>หรือ</b>เพิ่ม <code>itsupport@thaichamber.or.th</code> ในเมนู <b>Gmail Settings &rarr; Accounts and Import &rarr; Send mail as (ส่งอีเมลในชื่อ)</b><br>
+                    • <b>วิธีที่ 2 (SMTP + รหัสผ่าน / App Password):</b> เลือกโหมด <b>SMTP โดยตรง</b> แล้วกรอกรหัสผ่านของ <code>itsupport@thaichamber.or.th</code> ระบบจะส่งผ่าน <code>/api/send-email</code> ออกในนาม <code>itsupport@thaichamber.or.th</code> ทันที (รหัสผ่านจะเก็บเฉพาะฝั่ง Server ไม่บันทึกลง Google Sheets)
                   </p>
+
+                  <!-- Direct SMTP Credentials Box -->
+                  <div id="cfgEmailSmtpWrapper" class="hidden pt-2 border-t border-sky-200/80 grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                    <div>
+                      <label class="block text-[11px] font-semibold text-slate-700 mb-1">ผู้ให้บริการ SMTP (Mail Server):</label>
+                      <select id="cfgEmailSmtpHost" onchange="handleEmailConfigFieldChange()" class="w-full px-2.5 py-1.5 rounded-xl border border-sky-300 bg-white text-xs font-medium text-slate-800 outline-none focus:ring-2 focus:ring-tcc-500">
+                        <option value="auto">ตรวจจับอัตโนมัติ (@thaichamber.or.th)</option>
+                        <option value="smtp.gmail.com">Google Workspace / Gmail (smtp.gmail.com:465)</option>
+                        <option value="smtp.office365.com">Microsoft 365 / Outlook (smtp.office365.com:587)</option>
+                      </select>
+                    </div>
+                    <div class="sm:col-span-2">
+                      <label class="block text-[11px] font-semibold text-slate-700 mb-1">รหัสผ่าน / App Password ของ <code class="text-tcc-700">itsupport@thaichamber.or.th</code>:</label>
+                      <div class="relative flex items-center gap-2">
+                        <div class="relative flex-1">
+                          <input type="password" id="cfgEmailSmtpPass" oninput="handleEmailConfigFieldChange()" placeholder="กรอกรหัสผ่าน หรือ App Password 16 หลักของ itsupport@thaichamber.or.th..." class="w-full pl-3 pr-9 py-1.5 rounded-xl border border-sky-300 bg-white text-xs outline-none focus:ring-2 focus:ring-tcc-500">
+                          <button type="button" onclick="togglePasswordVisibility('cfgEmailSmtpPass', 'cfgSmtpPassEye')" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer">
+                            <span id="cfgSmtpPassEye" class="text-xs">👁️</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
                   <div id="cfgEmailWebhookWrapper" class="hidden pt-1">
                     <label class="block text-[11px] font-semibold text-slate-700 mb-1">External Email Webhook / SMTP Relay URL (POST JSON):</label>
-                    <input type="url" id="cfgEmailWebhookUrl" onchange="handleEmailConfigFieldChange()" placeholder="https://your-server.example.com/api/send-email" class="w-full px-3 py-1.5 rounded-xl border border-sky-300 bg-white text-xs outline-none focus:ring-2 focus:ring-tcc-500">
+                    <input type="url" id="cfgEmailWebhookUrl" onchange="handleEmailConfigFieldChange()" placeholder="/api/send-email หรือ https://your-server.example.com/api/send-email" class="w-full px-3 py-1.5 rounded-xl border border-sky-300 bg-white text-xs outline-none focus:ring-2 focus:ring-tcc-500">
                   </div>
                 </div>
 
@@ -1798,12 +1827,12 @@
                     <input type="text" id="cfgEmailSenderName" onchange="handleEmailConfigFieldChange()" placeholder="เช่น TCC IT Service &amp; Asset System" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs outline-none focus:ring-2 focus:ring-tcc-500">
                   </div>
                   <div>
-                    <label class="block text-[11px] font-semibold text-slate-700 mb-1">อีเมลสำหรับตอบกลับ (Reply-To Email):</label>
-                    <input type="email" id="cfgEmailReplyTo" onchange="handleEmailConfigFieldChange()" placeholder="เช่น it-support@thaichamber.or.th" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs outline-none focus:ring-2 focus:ring-tcc-500">
+                    <label class="block text-[11px] font-semibold text-slate-700 mb-1">อีเมลผู้ส่งหลัก (Sender Email - From):</label>
+                    <input type="email" id="cfgEmailSenderAlias" onchange="handleEmailConfigFieldChange()" value="itsupport@thaichamber.or.th" placeholder="itsupport@thaichamber.or.th" class="w-full px-3 py-2 rounded-xl border border-emerald-300 bg-emerald-50/40 font-mono font-bold text-emerald-900 text-xs outline-none focus:ring-2 focus:ring-tcc-500">
                   </div>
                   <div>
-                    <label class="block text-[11px] font-semibold text-slate-700 mb-1">อีเมลผู้ส่ง Alias (ไม่บังคับ - Send mail as):</label>
-                    <input type="email" id="cfgEmailSenderAlias" onchange="handleEmailConfigFieldChange()" placeholder="เช่น noreply@thaichamber.or.th (ถ้าตั้งใน Gmail)" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs outline-none focus:ring-2 focus:ring-tcc-500">
+                    <label class="block text-[11px] font-semibold text-slate-700 mb-1">อีเมลสำหรับตอบกลับ (Reply-To Email):</label>
+                    <input type="email" id="cfgEmailReplyTo" onchange="handleEmailConfigFieldChange()" value="itsupport@thaichamber.or.th" placeholder="itsupport@thaichamber.or.th" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white font-mono text-xs outline-none focus:ring-2 focus:ring-tcc-500">
                   </div>
                 </div>
 
@@ -1818,7 +1847,7 @@
                   </label>
                   <label class="flex items-center gap-1.5 cursor-pointer font-medium text-slate-700">
                     <input type="checkbox" id="cfgEmailNotifyAdminRoles" onchange="handleEmailConfigFieldChange()" class="w-3.5 h-3.5 rounded text-tcc-600 cursor-pointer">
-                    <span>รวมอีเมล Admin/Super Admin จากฐานข้อมูล UserRoles อัตโนมัติ</span>
+                    <span>รวมอีเมล Admin/Super Admin ของ @thaichamber.or.th อัตโนมัติ (ยกเว้น tatitop07@gmail.com)</span>
                   </label>
                 </div>
 
@@ -1827,11 +1856,11 @@
                   <div class="flex flex-col md:flex-row md:items-center gap-2">
                     <div class="flex-1 flex items-center gap-2">
                       <span class="text-[11px] font-bold text-slate-700 shrink-0">🎯 ทดสอบส่งไปยังอีเมล:</span>
-                      <input type="email" id="cfgEmailTestRecipient" list="userDatabaseEmailsList" placeholder="กรอกอีเมลปลายทางที่ต้องการรับเมลทดสอบ..." class="flex-1 px-3 py-1.5 rounded-xl border border-slate-300 bg-white text-xs outline-none focus:ring-2 focus:ring-tcc-500">
+                      <input type="email" id="cfgEmailTestRecipient" list="userDatabaseEmailsList" placeholder="เช่น itsupport@thaichamber.or.th หรือ tatiphon.hi@thaichamber.or.th" class="flex-1 px-3 py-1.5 rounded-xl border border-slate-300 bg-white text-xs outline-none focus:ring-2 focus:ring-tcc-500">
                     </div>
                     <div class="flex flex-wrap items-center gap-2 shrink-0">
                       <button type="button" onclick="checkEmailDeliverySetup()" class="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 font-bold text-[11px] transition cursor-pointer">
-                        🔍 ตรวจสถานะ GAS MailApp
+                        🔍 ตรวจสถานะผู้ส่ง (itsupport)
                       </button>
                       <button type="button" onclick="sendTestEmailNotification('cfgEmailTestRecipient', 'emailDiagnosticResultBox')" class="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] shadow-xs transition cursor-pointer">
                         🚀 ทดสอบส่งอีเมลทันที
@@ -3020,8 +3049,9 @@
 
     /* BUILT-IN ACCOUNTS WITH PASSWORDS (Req 2 & Req 4) */
     const BUILTIN_ROLES = [
-      { email: "tatitop07@gmail.com", role: "superadmin", first_name: "Tatitop", last_name: "(Super Admin)", name: "Tatitop (Super Admin)", dept: "ฝ่ายเทคโนโลยีสารสนเทศ (IT)", password: "admin1234", status: "active", remark: "ผู้ดูแลระบบหลัก" },
-      { email: "tatiphon.hi@thaichamber.or.th", role: "superadmin", first_name: "Tatiphon", last_name: "(Super Admin)", name: "Tatiphon (Super Admin)", dept: "ฝ่ายเทคโนโลยีสารสนเทศ (IT)", password: "admin1234", status: "active", remark: "ผู้ดูแลระบบหลัก หอการค้าไทย" }
+      { email: "itsupport@thaichamber.or.th", role: "superadmin", first_name: "IT Support", last_name: "(TCC)", name: "IT Support (TCC)", dept: "ฝ่ายเทคโนโลยีสารสนเทศ (IT)", password: "admin1234", status: "active", remark: "อีเมลกลางฝ่ายไอที (ผู้ส่งระบบแจ้งเตือน)" },
+      { email: "tatiphon.hi@thaichamber.or.th", role: "superadmin", first_name: "Tatiphon", last_name: "(Super Admin)", name: "Tatiphon (Super Admin)", dept: "ฝ่ายเทคโนโลยีสารสนเทศ (IT)", password: "admin1234", status: "active", remark: "ผู้ดูแลระบบหลัก หอการค้าไทย" },
+      { email: "tatitop07@gmail.com", role: "superadmin", first_name: "Tatitop", last_name: "(Super Admin)", name: "Tatitop (Super Admin)", dept: "ฝ่ายเทคโนโลยีสารสนเทศ (IT)", password: "admin1234", status: "active", remark: "ผู้ดูแลระบบสำรอง (งดใช้ส่ง/รับอีเมล)" }
     ];
 
     const INITIAL_DEMO_ROLES = [
@@ -3343,7 +3373,7 @@
           const normCustom = normalizeUserRole(custom);
           const idx = merged.findIndex(m => safeLower(m.email) === safeLower(normCustom.email));
           if (idx !== -1) {
-            const isPrimary = merged[idx].email === "tatitop07@gmail.com" || merged[idx].email === "tatiphon.hi@thaichamber.or.th";
+            const isPrimary = merged[idx].email === "itsupport@thaichamber.or.th" || merged[idx].email === "tatitop07@gmail.com" || merged[idx].email === "tatiphon.hi@thaichamber.or.th";
             merged[idx] = normalizeUserRole({
               ...merged[idx],
               ...normCustom,
@@ -3371,17 +3401,33 @@
     const STORAGE_KEY_EMAIL_ENABLED = "it_asset_email_notify_enabled";
     const STORAGE_KEY_EMAIL_CONFIG = "it_asset_email_config";
     const STORAGE_KEY_EMAIL_TEMPLATES = "it_asset_email_templates";
+    const SESSION_KEY_SMTP_PASS = "it_asset_session_smtp_pass";
+
+    const PRIMARY_SENDER_EMAIL = "itsupport@thaichamber.or.th";
+    const BLOCKED_NOTIFICATION_EMAILS = ["tatitop07@gmail.com"];
+
+    function isBlockedNotificationEmail(email) {
+      const clean = String(email || "").trim().toLowerCase();
+      if (!clean) return true;
+      return BLOCKED_NOTIFICATION_EMAILS.includes(clean);
+    }
 
     const DEFAULT_EMAIL_CONFIG = {
       transportMode: "gas_mailapp",
       senderName: "TCC IT Service & Asset System",
-      replyTo: "tatiphon.hi@thaichamber.or.th",
-      senderAlias: "",
-      webhookUrl: "",
+      senderEmail: PRIMARY_SENDER_EMAIL,
+      replyTo: PRIMARY_SENDER_EMAIL,
+      senderAlias: PRIMARY_SENDER_EMAIL,
+      strictSenderOnly: true,
+      smtpHost: "auto",
+      smtpPort: 465,
+      smtpUser: PRIMARY_SENDER_EMAIL,
+      webhookUrl: "/api/send-email",
       notifyRequester: true,
       notifyAssignedAgent: true,
       notifyAdminRoles: true,
       recipients: [
+        { email: "itsupport@thaichamber.or.th", name: "ฝ่ายเทคโนโลยีสารสนเทศ (IT Support Center)", scope: "all", active: true },
         { email: "tatiphon.hi@thaichamber.or.th", name: "ผู้ดูแลระบบหลัก (Super Admin)", scope: "all", active: true },
         { email: "wattanachai.mi@thaichamber.or.th", name: "เจ้าหน้าที่ไอที (Helpdesk & Asset)", scope: "all", active: true },
         { email: "supakon.su@thaichamber.or.th", name: "เจ้าหน้าที่ไอที (Network & Support)", scope: "ticket", active: true }
@@ -3532,28 +3578,99 @@
       }
     };
 
+    function sanitizeEmailConfig(parsed = {}) {
+      const src = (parsed && typeof parsed === "object") ? parsed : {};
+      const cleanAlias = String(src.senderAlias || src.senderEmail || "").trim().toLowerCase();
+      const effectiveSender = (!cleanAlias || isBlockedNotificationEmail(cleanAlias))
+        ? PRIMARY_SENDER_EMAIL
+        : cleanAlias;
+
+      const rawReply = String(src.replyTo || "").trim().toLowerCase();
+      const isLegacyDefaultReply = rawReply === "tatiphon.hi@thaichamber.or.th" && !src.senderEmail;
+      const effectiveReplyTo = (!rawReply || isBlockedNotificationEmail(rawReply) || isLegacyDefaultReply)
+        ? effectiveSender
+        : rawReply;
+
+      const mode = ["gas_mailapp", "smtp", "webhook"].includes(src.transportMode)
+        ? src.transportMode
+        : "gas_mailapp";
+
+      let recList = Array.isArray(src.recipients)
+        ? src.recipients.map(r => ({
+            email: String(r.email || "").trim().toLowerCase(),
+            name: String(r.name || "").trim(),
+            scope: ["all", "borrow", "ticket"].includes(r.scope) ? r.scope : "all",
+            active: r.active !== false
+          })).filter(r => r.email && !isBlockedNotificationEmail(r.email))
+        : [...DEFAULT_EMAIL_CONFIG.recipients];
+
+      if (!src._migratedItSupportRec && !recList.some(r => r.email === PRIMARY_SENDER_EMAIL)) {
+        recList = [
+          { email: PRIMARY_SENDER_EMAIL, name: "ฝ่ายเทคโนโลยีสารสนเทศ (IT Support Center)", scope: "all", active: true },
+          ...recList
+        ];
+      }
+
+      const out = {
+        ...DEFAULT_EMAIL_CONFIG,
+        ...src,
+        transportMode: mode,
+        senderName: String(src.senderName || DEFAULT_EMAIL_CONFIG.senderName).trim() || DEFAULT_EMAIL_CONFIG.senderName,
+        senderEmail: effectiveSender,
+        senderAlias: effectiveSender,
+        replyTo: effectiveReplyTo,
+        strictSenderOnly: src.strictSenderOnly !== false,
+        smtpHost: String(src.smtpHost || "auto").trim() || "auto",
+        smtpPort: Number(src.smtpPort) || 465,
+        smtpUser: effectiveSender,
+        webhookUrl: String(src.webhookUrl || "/api/send-email").trim() || "/api/send-email",
+        recipients: recList,
+        _migratedItSupportRec: true
+      };
+      delete out.smtpPass;
+      return out;
+    }
+
+    function getSessionSmtpPass() {
+      try {
+        const el = document.getElementById("cfgEmailSmtpPass");
+        if (el && el.value.trim()) return el.value.trim();
+        return sessionStorage.getItem(SESSION_KEY_SMTP_PASS) || "";
+      } catch (_) {
+        return "";
+      }
+    }
+
+    function setSessionSmtpPass(val) {
+      try {
+        const clean = String(val || "").trim();
+        if (clean) sessionStorage.setItem(SESSION_KEY_SMTP_PASS, clean);
+      } catch (_) {}
+    }
+
+    function getPreferredTestRecipientEmail() {
+      const userMail = String(state.currentUser?.email || "").trim().toLowerCase();
+      if (userMail && userMail.includes("@") && !isBlockedNotificationEmail(userMail)) {
+        return userMail;
+      }
+      const replyMail = String(state.emailConfig?.replyTo || "").trim().toLowerCase();
+      if (replyMail && replyMail.includes("@") && !isBlockedNotificationEmail(replyMail)) {
+        return replyMail;
+      }
+      return PRIMARY_SENDER_EMAIL;
+    }
+
     function loadSavedEmailConfig() {
       try {
         const raw = localStorage.getItem(STORAGE_KEY_EMAIL_CONFIG);
         if (raw) {
           const parsed = JSON.parse(raw);
           if (parsed && typeof parsed === "object") {
-            return {
-              ...DEFAULT_EMAIL_CONFIG,
-              ...parsed,
-              recipients: Array.isArray(parsed.recipients)
-                ? parsed.recipients.map(r => ({
-                    email: String(r.email || "").trim().toLowerCase(),
-                    name: String(r.name || "").trim(),
-                    scope: ["all", "borrow", "ticket"].includes(r.scope) ? r.scope : "all",
-                    active: r.active !== false
-                  })).filter(r => r.email)
-                : [...DEFAULT_EMAIL_CONFIG.recipients]
-            };
+            return sanitizeEmailConfig(parsed);
           }
         }
       } catch (e) {}
-      return JSON.parse(JSON.stringify(DEFAULT_EMAIL_CONFIG));
+      return sanitizeEmailConfig(DEFAULT_EMAIL_CONFIG);
     }
 
     function loadSavedEmailTemplates() {
@@ -3593,6 +3710,7 @@
           timestamp: getLocalTimestamp(-3),
           eventType: "TICKET_CREATED",
           subject: "[TCC IT Helpdesk] แจ้งเปิดเคสใหม่ #ITC-2026-10-25-0001: หน้าจอโน้ตบุ๊กกระพริบดับบางจังหวะ",
+          senderEmail: PRIMARY_SENDER_EMAIL,
           recipients: ["somchai.user@thaichamber.or.th", "wattanachai.mi@thaichamber.or.th"],
           summary: "ผู้แจ้ง: สมชาย ใจดี (ฝ่ายการเงินและการบัญชี) • สถานะ: In Progress",
           status: "Sent"
@@ -3602,7 +3720,8 @@
           timestamp: getLocalTimestamp(-1),
           eventType: "BORROW_CREATED",
           subject: "[TCC IT Asset] ยืนยันการยืมอุปกรณ์ #ITB-2026-10-28-0002 (Rode Wireless GO II Dual Mic)",
-          recipients: ["suwimon@thaichamber.or.th", "tatiphon.hi@thaichamber.or.th"],
+          senderEmail: PRIMARY_SENDER_EMAIL,
+          recipients: ["suwimon@thaichamber.or.th", "itsupport@thaichamber.or.th"],
           summary: "ผู้ยืม: สุวิมล แสงทอง (ฝ่ายสมาชิกสัมพันธ์และการบริการ) • กำหนดคืน: " + getOffsetDate(4),
           status: "Sent"
         }
@@ -3709,7 +3828,9 @@
     function populateUserAutocompleteDatalists() {
       const namesList = document.getElementById("userDatabaseNamesList");
       const emailsList = document.getElementById("userDatabaseEmailsList");
-      const roles = (state.userRoles || []).filter(u => u && u.status !== "disabled").map(u => normalizeUserRole(u));
+      const roles = (state.userRoles || [])
+        .filter(u => u && u.status !== "disabled" && !isBlockedNotificationEmail(u.email))
+        .map(u => normalizeUserRole(u));
 
       if (namesList) {
         const seenNames = new Set();
@@ -3726,7 +3847,7 @@
         const seenEmails = new Set();
         emailsList.innerHTML = roles.map(u => {
           const em = (u.email || "").trim();
-          if (!em || seenEmails.has(em.toLowerCase())) return "";
+          if (!em || isBlockedNotificationEmail(em) || seenEmails.has(em.toLowerCase())) return "";
           seenEmails.add(em.toLowerCase());
           const fullName = (u.name || [u.first_name, u.last_name].filter(Boolean).join(" ")).trim();
           const label = `${fullName}${u.dept ? ' • ' + u.dept : ''}`;
@@ -3739,7 +3860,8 @@
       const badge = document.getElementById(badgeId);
       if (!badge) return;
       if (matchedUser) {
-        badge.innerHTML = `<span class="text-emerald-700 font-bold">✓ จับคู่ฐานข้อมูลสำเร็จ:</span> <span class="text-slate-800 font-semibold">${matchedUser.name}</span> <span class="text-slate-500">(${matchedUser.email}${matchedUser.dept ? ' • ' + matchedUser.dept : ''})</span>`;
+        const safeMail = isBlockedNotificationEmail(matchedUser.email) ? PRIMARY_SENDER_EMAIL : matchedUser.email;
+        badge.innerHTML = `<span class="text-emerald-700 font-bold">✓ จับคู่ฐานข้อมูลสำเร็จ:</span> <span class="text-slate-800 font-semibold">${matchedUser.name}</span> <span class="text-slate-500">(${safeMail}${matchedUser.dept ? ' • ' + matchedUser.dept : ''})</span>`;
       } else {
         badge.innerText = "จับคู่ข้อมูล ชื่อ-อีเมล-ฝ่าย จากฐานข้อมูลผู้ใช้งานอัตโนมัติ";
       }
@@ -3750,12 +3872,13 @@
       // Match current logged-in user against latest state.userRoles database
       const dbUser = findMatchedUserInDatabase(state.currentUser.email) || findMatchedUserInDatabase(state.currentUser.name);
       const effectiveName = (dbUser?.name || [dbUser?.first_name, dbUser?.last_name].filter(Boolean).join(" ") || state.currentUser.name || "").trim();
-      const effectiveEmail = (dbUser?.email || state.currentUser.email || "").trim();
+      const rawEmail = (dbUser?.email || state.currentUser.email || "").trim();
+      const effectiveEmail = isBlockedNotificationEmail(rawEmail) ? PRIMARY_SENDER_EMAIL : rawEmail;
       const effectiveDept = (dbUser?.dept || state.currentUser.dept || "").trim();
 
       if (dbUser) {
         state.currentUser.name = effectiveName || state.currentUser.name;
-        state.currentUser.email = effectiveEmail || state.currentUser.email;
+        state.currentUser.email = rawEmail || state.currentUser.email;
         state.currentUser.dept = effectiveDept || state.currentUser.dept;
       }
 
@@ -3766,7 +3889,7 @@
       const bContact = document.getElementById("borrowerContact");
       const bDept = document.getElementById("borrowerDept");
       if (bName && (forceOverwrite || !bName.value.trim())) bName.value = effectiveName;
-      if (bContact && (forceOverwrite || !bContact.value.trim())) bContact.value = effectiveEmail;
+      if (bContact && (forceOverwrite || !bContact.value.trim() || isBlockedNotificationEmail(bContact.value))) bContact.value = effectiveEmail;
       if (bDept && effectiveDept && (forceOverwrite || !bDept.value)) {
         ensureDeptOptionExistsAndSelect("borrowerDept", effectiveDept);
       }
@@ -3777,7 +3900,7 @@
       const tContact = document.getElementById("ticketReporterContact");
       const tDept = document.getElementById("ticketReporterDept");
       if (tName && (forceOverwrite || !tName.value.trim())) tName.value = effectiveName;
-      if (tContact && (forceOverwrite || !tContact.value.trim())) tContact.value = effectiveEmail;
+      if (tContact && (forceOverwrite || !tContact.value.trim() || isBlockedNotificationEmail(tContact.value))) tContact.value = effectiveEmail;
       if (tDept && effectiveDept && (forceOverwrite || !tDept.value)) {
         ensureDeptOptionExistsAndSelect("ticketReporterDept", effectiveDept);
       }
@@ -3792,10 +3915,12 @@
       if (!matched) return;
 
       const fullName = (matched.name || [matched.first_name, matched.last_name].filter(Boolean).join(" ")).trim();
+      const safeMail = isBlockedNotificationEmail(matched.email) ? PRIMARY_SENDER_EMAIL : matched.email;
       if (sourceField === "name") {
-        if (emailEl && matched.email) emailEl.value = matched.email;
+        if (emailEl && safeMail) emailEl.value = safeMail;
       } else if (sourceField === "email") {
         if (nameEl && fullName) nameEl.value = fullName;
+        if (emailEl && isBlockedNotificationEmail(emailEl.value)) emailEl.value = safeMail;
       }
       if (matched.dept) {
         ensureDeptOptionExistsAndSelect("borrowerDept", matched.dept);
@@ -3811,10 +3936,12 @@
       if (!matched) return;
 
       const fullName = (matched.name || [matched.first_name, matched.last_name].filter(Boolean).join(" ")).trim();
+      const safeMail = isBlockedNotificationEmail(matched.email) ? PRIMARY_SENDER_EMAIL : matched.email;
       if (sourceField === "name") {
-        if (emailEl && matched.email) emailEl.value = matched.email;
+        if (emailEl && safeMail) emailEl.value = safeMail;
       } else if (sourceField === "email") {
         if (nameEl && fullName) nameEl.value = fullName;
+        if (emailEl && isBlockedNotificationEmail(emailEl.value)) emailEl.value = safeMail;
       }
       if (matched.dept) {
         ensureDeptOptionExistsAndSelect("ticketReporterDept", matched.dept);
@@ -3830,7 +3957,8 @@
       if (!matched) return;
 
       const fullName = (matched.name || [matched.first_name, matched.last_name].filter(Boolean).join(" ")).trim();
-      if (sourceField === "name" && emailEl && matched.email) emailEl.value = matched.email;
+      const safeMail = isBlockedNotificationEmail(matched.email) ? PRIMARY_SENDER_EMAIL : matched.email;
+      if (sourceField === "name" && emailEl && safeMail) emailEl.value = safeMail;
       if (sourceField === "email" && nameEl && fullName) nameEl.value = fullName;
       if (matched.dept) {
         ensureDeptOptionExistsAndSelect("editHistoryDept", matched.dept);
@@ -3845,14 +3973,25 @@
     function resolveUserEmailAddress(contactOrName, fallbackName = "") {
       const raw = String(contactOrName || "").trim();
       const emailMatch = raw.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
-      if (emailMatch) return emailMatch[0].toLowerCase();
+      if (emailMatch) {
+        const candidate = emailMatch[0].toLowerCase();
+        return isBlockedNotificationEmail(candidate) ? "" : candidate;
+      }
       const matched = findMatchedUserInDatabase(raw) || findMatchedUserInDatabase(fallbackName);
-      if (matched && matched.email && matched.email.includes("@")) return matched.email.trim().toLowerCase();
+      if (matched && matched.email && matched.email.includes("@")) {
+        const candidate = matched.email.trim().toLowerCase();
+        return isBlockedNotificationEmail(candidate) ? "" : candidate;
+      }
       return "";
     }
 
     function getAdminRecipientEmails() {
-      const admins = (state.userRoles || []).filter(r => (r.role === "admin" || r.role === "superadmin") && r.status !== "disabled" && String(r.email || "").includes("@"));
+      const admins = (state.userRoles || []).filter(r =>
+        (r.role === "admin" || r.role === "superadmin") &&
+        r.status !== "disabled" &&
+        String(r.email || "").includes("@") &&
+        !isBlockedNotificationEmail(r.email)
+      );
       return Array.from(new Set(admins.map(a => a.email.trim().toLowerCase()))).slice(0, 10);
     }
 
@@ -3865,7 +4004,8 @@
 
     function saveEmailConfigToStorage() {
       try {
-        localStorage.setItem(STORAGE_KEY_EMAIL_CONFIG, JSON.stringify(state.emailConfig || DEFAULT_EMAIL_CONFIG));
+        state.emailConfig = sanitizeEmailConfig(state.emailConfig || DEFAULT_EMAIL_CONFIG);
+        localStorage.setItem(STORAGE_KEY_EMAIL_CONFIG, JSON.stringify(state.emailConfig));
       } catch (e) {}
     }
 
@@ -3885,6 +4025,7 @@
     }
 
     async function saveAllEmailSettingsToServer(silent = false) {
+      handleEmailConfigFieldChange();
       saveEmailConfigToStorage();
       saveEmailTemplatesToStorage();
       localStorage.setItem(STORAGE_KEY_EMAIL_ENABLED, state.emailNotifyEnabled ? "true" : "false");
@@ -3901,7 +4042,10 @@
       const res = await callAPI("saveEmailSettings", {
         emailNotifyEnabled: !!state.emailNotifyEnabled,
         emailConfig: state.emailConfig,
-        emailTemplates: compactTemplates
+        emailTemplates: compactTemplates,
+        smtpPass: getSessionSmtpPass(),
+        smtpHost: state.emailConfig?.smtpHost || "auto",
+        relayUrl: window.location.origin ? (window.location.origin + "/api/send-email") : ""
       }, true);
 
       if (badge) {
@@ -3910,7 +4054,7 @@
           : "✓ บันทึกในเบราว์เซอร์แล้ว";
       }
       if (!silent) {
-        showNotification("💾 บันทึกการตั้งค่าอีเมลและเทมเพลตข้อความทั้งหมดเรียบร้อยแล้ว", "success");
+        showNotification(`💾 บันทึกการตั้งค่าอีเมลผู้ส่ง (${state.emailConfig?.senderAlias || PRIMARY_SENDER_EMAIL}) และเทมเพลตเรียบร้อยแล้ว`, "success");
       }
     }
 
@@ -3968,6 +4112,40 @@
       if (cfgToggle) cfgToggle.checked = !!state.emailNotifyEnabled;
     }
 
+    async function sendViaBuiltInSmtpEndpoint(emailPayload, cfg) {
+      const endpointUrl = (cfg.transportMode === "webhook" && cfg.webhookUrl)
+        ? cfg.webhookUrl.trim()
+        : "/api/send-email";
+      const res = await fetch(endpointUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...emailPayload,
+          smtpHost: cfg.smtpHost || "auto",
+          smtpPort: cfg.smtpPort || 465,
+          smtpUser: emailPayload.senderAlias || PRIMARY_SENDER_EMAIL,
+          smtpPass: getSessionSmtpPass()
+        })
+      });
+      let data = {};
+      try { data = await res.json(); } catch (_) {}
+      if (!res.ok || data.status === "error" || data.sent === false) {
+        return {
+          status: "error",
+          sent: false,
+          needsSmtpPassword: !!data.needsSmtpPassword,
+          error: data.error || data.message || `SMTP Endpoint HTTP ${res.status}`
+        };
+      }
+      return {
+        status: "success",
+        sent: true,
+        senderEmail: data.senderEmail || emailPayload.senderAlias || PRIMARY_SENDER_EMAIL,
+        method: data.smtpEndpoint ? `SMTP (${data.smtpEndpoint})` : "SMTP Relay",
+        ...data
+      };
+    }
+
     async function sendSystemEmailNotification(eventType, details = {}) {
       if (!state.emailNotifyEnabled && !details.forceSend) return null;
 
@@ -3976,14 +4154,16 @@
         return null;
       }
 
-      const cfg = state.emailConfig || DEFAULT_EMAIL_CONFIG;
+      const cfg = sanitizeEmailConfig(state.emailConfig || DEFAULT_EMAIL_CONFIG);
+      const configuredSender = (!isBlockedNotificationEmail(cfg.senderAlias) && cfg.senderAlias) || PRIMARY_SENDER_EMAIL;
+      const configuredReplyTo = (!isBlockedNotificationEmail(cfg.replyTo) && cfg.replyTo) || configuredSender;
       const group = getEmailEventGroup(eventType);
       const recipientsSet = new Set();
 
       if (Array.isArray(details.recipients)) {
         details.recipients.forEach(r => {
           const resolved = resolveUserEmailAddress(r);
-          if (resolved) recipientsSet.add(resolved);
+          if (resolved && !isBlockedNotificationEmail(resolved)) recipientsSet.add(resolved);
         });
       }
 
@@ -3992,14 +4172,14 @@
         const nameCandidate = details.borrower_name || details.borrowerName || details.reporter_name || details.reporterName || details.userName || "";
         if (contactCandidate || nameCandidate) {
           const userMail = resolveUserEmailAddress(contactCandidate, nameCandidate);
-          if (userMail) recipientsSet.add(userMail);
+          if (userMail && !isBlockedNotificationEmail(userMail)) recipientsSet.add(userMail);
         }
       }
 
       if (cfg.notifyAssignedAgent !== false && (details.assigned_agent || details.assignedAgent)) {
         const agRaw = details.assigned_agent || details.assignedAgent;
         const agentMail = resolveUserEmailAddress(agRaw, agRaw);
-        if (agentMail) recipientsSet.add(agentMail);
+        if (agentMail && !isBlockedNotificationEmail(agentMail)) recipientsSet.add(agentMail);
       }
 
       if (details.notifyAdmins !== false) {
@@ -4008,17 +4188,19 @@
           const sc = rec.scope || "all";
           if (sc === "all" || sc === group || group === "all") {
             const em = resolveUserEmailAddress(rec.email);
-            if (em) recipientsSet.add(em);
+            if (em && !isBlockedNotificationEmail(em)) recipientsSet.add(em);
           }
         });
         if (cfg.notifyAdminRoles !== false) {
-          getAdminRecipientEmails().forEach(em => recipientsSet.add(em));
+          getAdminRecipientEmails().forEach(em => {
+            if (!isBlockedNotificationEmail(em)) recipientsSet.add(em);
+          });
         }
       }
 
-      const recipients = Array.from(recipientsSet).filter(Boolean);
-      if (recipients.length === 0 && state.currentUser?.email) {
-        recipients.push(state.currentUser.email);
+      const recipients = Array.from(recipientsSet).filter(em => em && !isBlockedNotificationEmail(em));
+      if (recipients.length === 0) {
+        recipients.push(getPreferredTestRecipientEmail());
       }
 
       const vars = buildNormalizedEmailVars(eventType, details);
@@ -4039,9 +4221,9 @@
         summary,
         recipients,
         senderName: cfg.senderName || DEFAULT_EMAIL_CONFIG.senderName,
-        replyTo: cfg.replyTo || "",
-        senderAlias: cfg.senderAlias || "",
-        senderEmail: "",
+        replyTo: configuredReplyTo,
+        senderAlias: configuredSender,
+        senderEmail: configuredSender,
         remainingQuota: null,
         deliveryState: "pending",
         status: "Sending...",
@@ -4065,27 +4247,53 @@
           body,
           summary,
           senderName: cfg.senderName || DEFAULT_EMAIL_CONFIG.senderName,
-          replyTo: cfg.replyTo || "",
-          senderAlias: cfg.senderAlias || "",
+          senderEmail: configuredSender,
+          replyTo: configuredReplyTo,
+          senderAlias: configuredSender,
+          strictSenderOnly: true,
+          blockedSenderEmails: BLOCKED_NOTIFICATION_EMAILS,
+          relayUrl: window.location.origin ? (window.location.origin + "/api/send-email") : "",
           details: vars
         };
 
         try {
-          if (cfg.transportMode === "webhook" && cfg.webhookUrl && /^https?:\/\//i.test(cfg.webhookUrl)) {
-            const whRes = await fetch(cfg.webhookUrl.trim(), {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(emailPayload)
-            });
-            let whData = {};
-            try { whData = await whRes.json(); } catch (_) {}
-            if (!whRes.ok || whData.status === "error" || whData.sent === false) {
-              apiRes = { status: "error", sent: false, error: whData.error || whData.message || `Webhook HTTP ${whRes.status}` };
-            } else {
-              apiRes = { status: "success", sent: true, senderEmail: whData.senderEmail || cfg.senderAlias || cfg.replyTo || "Webhook Relay", ...whData };
-            }
+          if (cfg.transportMode === "smtp" || (cfg.transportMode === "webhook" && cfg.webhookUrl)) {
+            apiRes = await sendViaBuiltInSmtpEndpoint(emailPayload, cfg);
           } else {
-            apiRes = await callAPI("sendEmailNotification", emailPayload, true);
+            // Pre-flight check on live GAS to prevent older Code.gs from falling back to tatitop07@gmail.com
+            let gasBlockedReason = "";
+            if (state.isLive) {
+              const setupCheck = await callAPI("checkEmailSetup", {}, true);
+              if (setupCheck && !setupCheck.simulated && setupCheck.status === "success") {
+                const ownerEm = String(setupCheck.senderEmail || "").trim().toLowerCase();
+                const aliasList = Array.isArray(setupCheck.aliases)
+                  ? setupCheck.aliases.map(a => String(a || "").trim().toLowerCase())
+                  : [];
+                const canSendAsConfigured = (ownerEm === configuredSender.toLowerCase()) || aliasList.includes(configuredSender.toLowerCase()) || Boolean(setupCheck.smtpRelayReady);
+                if (isBlockedNotificationEmail(ownerEm) && !canSendAsConfigured) {
+                  gasBlockedReason = `ระงับการส่งจาก ${ownerEm} อัตโนมัติ (ระบบกำหนดให้ใช้เฉพาะ ${configuredSender} ในการส่งจริงและทดสอบ) — กรุณาเพิ่ม ${configuredSender} ใน Gmail "Send mail as" หรือ Deploy Apps Script ด้วยบัญชี ${configuredSender} หรือเปลี่ยนเป็นโหมด "2) SMTP โดยตรงด้วย ${configuredSender}"`;
+                }
+              }
+            }
+
+            if (gasBlockedReason) {
+              if (getSessionSmtpPass()) {
+                apiRes = await sendViaBuiltInSmtpEndpoint(emailPayload, { ...cfg, transportMode: "smtp" });
+              } else {
+                apiRes = { status: "error", sent: false, blockedSender: true, error: gasBlockedReason };
+              }
+            } else {
+              apiRes = await callAPI("sendEmailNotification", emailPayload, true);
+              // Double-check returned senderEmail in case GAS sent or attempted with blocked email
+              if (apiRes && isBlockedNotificationEmail(apiRes.senderEmail)) {
+                apiRes = {
+                  status: "error",
+                  sent: false,
+                  blockedSender: true,
+                  error: `ไม่อนุญาตให้ส่งอีเมลด้วยบัญชี ${apiRes.senderEmail} (กรุณาอัปเดต Code.gs ล่าสุด และตั้งค่าผู้ส่งเป็น ${configuredSender})`
+                };
+              }
+            }
           }
         } catch (err) {
           console.warn("Email API fallback:", err);
@@ -4102,19 +4310,24 @@
 
       if (isDelivered) {
         logEntry.deliveryState = "sent";
-        logEntry.status = cfg.transportMode === "webhook" && cfg.webhookUrl ? "Sent (Webhook Relay)" : "Sent (GAS MailApp)";
-        logEntry.senderEmail = apiRes.senderEmail || "";
+        logEntry.status = cfg.transportMode === "smtp"
+          ? "Sent (SMTP itsupport)"
+          : (cfg.transportMode === "webhook" ? "Sent (Webhook Relay)" : "Sent (itsupport@thaichamber.or.th)");
+        logEntry.senderEmail = (!isBlockedNotificationEmail(apiRes.senderEmail) && apiRes.senderEmail) || configuredSender;
         logEntry.remainingQuota = apiRes.remainingQuota !== undefined ? apiRes.remainingQuota : null;
       } else if (isSimulated) {
         logEntry.deliveryState = "simulated";
         logEntry.status = "Simulated (ไม่ส่งเมลจริง)";
-        logEntry.error = "ไม่ได้เชื่อมต่อ Live Google Apps Script (ทำงานในโหมดจำลอง)";
+        logEntry.senderEmail = configuredSender;
+        logEntry.error = "ไม่ได้เชื่อมต่อ Live Google Apps Script / SMTP (ทำงานในโหมดจำลอง)";
       } else {
         logEntry.deliveryState = "failed";
-        logEntry.status = isInvalidAction ? "Failed (GAS เวอร์ชันเก่า)" : "Failed (ส่งไม่สำเร็จ)";
+        logEntry.status = apiRes?.blockedSender
+          ? "Blocked (ระงับเมล tatitop07)"
+          : (isInvalidAction ? "Failed (GAS เวอร์ชันเก่า)" : "Failed (ส่งไม่สำเร็จ)");
         logEntry.error = isInvalidAction
-          ? "Google Apps Script บน Web App URL ยังเป็นเวอร์ชันเก่า (ไม่รู้จัก sendEmailNotification) กรุณาคัดลอกโค้ดล่าสุดไปอัปเดตและ Deploy New Version"
-          : (rawMsg || "MailApp ปฏิเสธการส่ง หรือยังไม่ได้กดอนุญาตสิทธิ์ส่งอีเมลใน Google Apps Script");
+          ? "Google Apps Script บน Web App URL ยังเป็นเวอร์ชันเก่า กรุณาคัดลอกโค้ดล่าสุดไปอัปเดตและ Deploy New Version"
+          : (rawMsg || `ไม่สามารถส่งออกจาก ${configuredSender} ได้`);
       }
 
       try {
@@ -4126,9 +4339,9 @@
       if (!details.silentToast) {
         const recPreview = `${recipients.slice(0, 2).join(", ")}${recipients.length > 2 ? ` (+${recipients.length - 2})` : ""}`;
         if (logEntry.deliveryState === "sent") {
-          showNotification(`📧 ส่งอีเมลจริงสำเร็จไปยัง ${recPreview}`, "success");
+          showNotification(`📧 ส่งอีเมลจริงจาก ${logEntry.senderEmail} ไปยัง ${recPreview} สำเร็จ`, "success");
         } else if (logEntry.deliveryState === "simulated") {
-          showNotification(`⚠️ บันทึก Log จำลองสำหรับ ${recPreview} (ยังไม่ได้ส่งอีเมลจริง เนื่องจากทำงานในโหมด Demo)`, "warning");
+          showNotification(`⚠️ บันทึก Log จำลองจาก ${configuredSender} ไปยัง ${recPreview} (โหมด Demo)`, "warning");
         } else {
           showNotification(`❌ ส่งอีเมลไม่สำเร็จ (${recPreview}): ${logEntry.error}`, "error");
         }
@@ -4151,13 +4364,39 @@
     }
 
     async function checkEmailDeliverySetup(boxId = "emailDiagnosticResultBox") {
-      showEmailDiagnosticBox(boxId, "info", "🔄 กำลังตรวจสอบการเชื่อมต่อกับ Google Apps Script และสิทธิ์ MailApp...");
-      const cfg = state.emailConfig || DEFAULT_EMAIL_CONFIG;
-      if (cfg.transportMode === "webhook") {
-        if (!cfg.webhookUrl || !/^https?:\/\//i.test(cfg.webhookUrl)) {
-          return showEmailDiagnosticBox(boxId, "warning", "⚠️ เลือกโหมด <b>Webhook / SMTP Relay</b> แต่ยังไม่ได้กรอก Webhook URL ที่ถูกต้อง");
+      handleEmailConfigFieldChange();
+      const cfg = sanitizeEmailConfig(state.emailConfig || DEFAULT_EMAIL_CONFIG);
+      const targetSender = cfg.senderAlias || PRIMARY_SENDER_EMAIL;
+      showEmailDiagnosticBox(boxId, "info", `🔄 กำลังตรวจสอบความพร้อมของอีเมลผู้ส่ง <code>${targetSender}</code>...`);
+
+      if (cfg.transportMode === "smtp") {
+        try {
+          const checkRes = await sendViaBuiltInSmtpEndpoint(
+            { action: "check", senderAlias: targetSender, senderName: cfg.senderName },
+            cfg
+          );
+          if (checkRes && checkRes.status === "success") {
+            return showEmailDiagnosticBox(
+              boxId,
+              "success",
+              `✅ <b>พร้อมส่งอีเมลผ่าน SMTP โดยตรง!</b><br>• <b>ผู้ส่ง (From):</b> <code>${targetSender}</code> (${checkRes.method || "SMTP"})<br>• <b>สถานะ:</b> บล็อกการใช้ <code>tatitop07@gmail.com</code> ถาวรทั้งส่งจริงและทดสอบ`
+            );
+          }
+          return showEmailDiagnosticBox(
+            boxId,
+            "warning",
+            `⚠️ <b>โหมด SMTP (${targetSender}):</b> ${checkRes?.error || "กรุณากรอกรหัสผ่าน / App Password ของ " + targetSender}`
+          );
+        } catch (err) {
+          return showEmailDiagnosticBox(boxId, "error", `❌ <b>ตรวจสอบ SMTP ไม่สำเร็จ:</b> ${err?.message || err}`);
         }
-        return showEmailDiagnosticBox(boxId, "info", `🔗 กำลังใช้งานผ่าน External Webhook: <code>${cfg.webhookUrl}</code> (กดปุ่ม <b>🚀 ทดสอบส่งอีเมลทันที</b> เพื่อตรวจสอบปลายทางจริง)`);
+      }
+
+      if (cfg.transportMode === "webhook") {
+        if (!cfg.webhookUrl) {
+          return showEmailDiagnosticBox(boxId, "warning", "⚠️ เลือกโหมด <b>Webhook</b> แต่ยังไม่ได้กรอก Webhook URL");
+        }
+        return showEmailDiagnosticBox(boxId, "info", `🔗 กำลังใช้งานผ่าน Webhook: <code>${cfg.webhookUrl}</code> ในนามผู้ส่ง <code>${targetSender}</code>`);
       }
 
       const res = await callAPI("checkEmailSetup", {}, true);
@@ -4173,21 +4412,37 @@
         return showEmailDiagnosticBox(
           boxId,
           "error",
-          `❌ <b>Apps Script ยังเป็นเวอร์ชันเก่า (ไม่รองรับระบบส่งอีเมล):</b> <code>${msg}</code><br>วิธีแก้: กดปุ่ม <button type="button" onclick="openSetupModal()" class="underline font-bold text-rose-800 cursor-pointer">เปิดหน้าต่าง Google Sheets &amp; Apps Script</button> &rarr; คัดลอกโค้ดทั้งหมดไปวางทับใน <code>Code.gs</code> &rarr; กด <b>Run &gt; authorizeMailAndDrivePermissions</b> เพื่ออนุญาตสิทธิ์ &rarr; กด <b>Deploy &gt; Manage deployments &gt; Edit &gt; New version</b>`
+          `❌ <b>Apps Script ยังเป็นเวอร์ชันเก่า:</b> <code>${msg}</code><br>วิธีแก้: กดปุ่ม <button type="button" onclick="openSetupModal()" class="underline font-bold text-rose-800 cursor-pointer">เปิดหน้าต่าง Google Sheets &amp; Apps Script</button> &rarr; คัดลอกโค้ดไปวางทับใน <code>Code.gs</code> &rarr; Deploy New Version`
         );
       }
       if (!res || res.status === "error" || res.mailAuthorized === false) {
         return showEmailDiagnosticBox(
           boxId,
           "error",
-          `❌ <b>ระบบส่งอีเมลใน Apps Script ยังไม่พร้อม:</b> ${msg || "ไม่ได้รับสิทธิ์ MailApp"}<br>วิธีแก้: เปิด Google Apps Script &rarr; รันฟังก์ชัน <code>authorizeMailAndDrivePermissions</code> และกด Allow อนุญาตสิทธิ์ส่งอีเมล จากนั้น Deploy New Version`
+          `❌ <b>ระบบส่งอีเมลใน Apps Script ยังไม่พร้อม:</b> ${msg || "ไม่ได้รับสิทธิ์ MailApp"}`
         );
       }
-      const aliasTxt = Array.isArray(res.aliases) && res.aliases.length > 0 ? `<br>• <b>Alias ที่ใช้ส่งได้:</b> ${res.aliases.join(", ")}` : "";
+
+      const ownerEmail = String(res.senderEmail || "").trim().toLowerCase();
+      const aliases = Array.isArray(res.aliases) ? res.aliases.map(a => String(a || "").trim().toLowerCase()) : [];
+      const hasTargetAlias = (ownerEmail === targetSender.toLowerCase()) || aliases.includes(targetSender.toLowerCase());
+
+      if (isBlockedNotificationEmail(ownerEmail) && !hasTargetAlias && !res.smtpRelayReady) {
+        return showEmailDiagnosticBox(
+          boxId,
+          "error",
+          `⛔ <b>ตรวจพบว่า Google Apps Script ปัจจุบันยังผูกอยู่กับบัญชี <code>${ownerEmail}</code> (ซึ่งระบบได้สั่งบล็อกไม่ให้ใช้ส่งจริงและทดสอบแล้ว)</b><br>` +
+          `เพื่อให้ส่งออกจาก <b><code>${targetSender}</code></b> ได้ทันที กรุณาเลือกวิธีใดวิธีหนึ่ง:<br>` +
+          `1️⃣ <b>วิธีที่ง่ายที่สุด (ไม่ต้องย้าย Sheet):</b> เปลี่ยนช่องทางการส่งด้านบนเป็น <b>"2) SMTP โดยตรงด้วย ${targetSender}"</b> แล้วกรอกรหัสผ่าน/App Password ของ <code>${targetSender}</code><br>` +
+          `2️⃣ <b>หรือตั้งค่าใน Gmail / Apps Script:</b> เพิ่ม <code>${targetSender}</code> ในเมนู <b>Gmail Settings &rarr; Accounts and Import &rarr; Send mail as (ส่งอีเมลในชื่อ)</b> หรือเปิดโปรเจกต์ Apps Script ด้วยบัญชี <code>${targetSender}</code> แล้วกด Deploy Web App ใหม่`
+        );
+      }
+
+      const aliasTxt = aliases.length > 0 ? `<br>• <b>Alias ที่ตรวจพบ:</b> ${aliases.join(", ")}` : "";
       showEmailDiagnosticBox(
         boxId,
         "success",
-        `✅ <b>พร้อมส่งอีเมลจริงผ่าน Google Apps Script MailApp (ไม่ต้องใช้ App Password)</b><br>• <b>บัญชีผู้ส่งจริง (GAS Owner):</b> <code>${res.senderEmail || "-"}</code> | <b>โควต้าคงเหลือวันนี้:</b> ${res.remainingQuota ?? "-"} ฉบับ${aliasTxt}`
+        `✅ <b>พร้อมส่งอีเมลจริงในนาม <code>${targetSender}</code></b><br>• <b>บัญชีผู้ส่งที่จะใช้ส่งออก (From):</b> <code>${targetSender}</code> | <b>โควต้าคงเหลือวันนี้:</b> ${res.remainingQuota ?? "-"} ฉบับ${aliasTxt}`
       );
     }
 
@@ -4195,8 +4450,8 @@
       updateEmailLogBadges();
       renderEmailLogsList();
       const inp = document.getElementById("emailLogTestRecipient");
-      if (inp && !inp.value.trim()) {
-        inp.value = state.currentUser?.email || state.emailConfig?.replyTo || "tatiphon.hi@thaichamber.or.th";
+      if (inp && (!inp.value.trim() || isBlockedNotificationEmail(inp.value))) {
+        inp.value = getPreferredTestRecipientEmail();
       }
       document.getElementById("emailLogTestStatusStrip")?.classList.add("hidden");
       document.getElementById("emailLogModal")?.classList.remove("hidden");
@@ -4228,15 +4483,31 @@
     }
 
     async function sendTestEmailNotification(inputId = "emailLogTestRecipient", resultBoxId = "emailLogTestStatusStrip") {
+      handleEmailConfigFieldChange();
       const inputEl = document.getElementById(inputId);
-      const targetEmail = (inputEl?.value || state.currentUser?.email || state.emailConfig?.replyTo || "tatiphon.hi@thaichamber.or.th").trim();
+      let targetEmail = (inputEl?.value || "").trim().toLowerCase();
+      if (!targetEmail) {
+        targetEmail = getPreferredTestRecipientEmail();
+        if (inputEl) inputEl.value = targetEmail;
+      }
+      if (isBlockedNotificationEmail(targetEmail)) {
+        const msg = `⛔ ไม่อนุญาตให้ใช้อีเมล ${targetEmail} ในการทดสอบหรือส่งจริง กรุณาระบุอีเมลองค์กร เช่น ${PRIMARY_SENDER_EMAIL}`;
+        showNotification(msg, "error");
+        showEmailDiagnosticBox(resultBoxId, "error", msg);
+        if (inputEl) {
+          inputEl.value = getPreferredTestRecipientEmail();
+          inputEl.focus();
+        }
+        return;
+      }
       if (!targetEmail || !targetEmail.includes("@")) {
         showNotification("กรุณาระบุอีเมลปลายทางสำหรับทดสอบส่งให้ถูกต้อง", "warning");
         inputEl?.focus();
         return;
       }
-      if (inputEl && !inputEl.value.trim()) inputEl.value = targetEmail;
-      showEmailDiagnosticBox(resultBoxId, "info", `🚀 กำลังส่งอีเมลทดสอบไปยัง <code>${targetEmail}</code>...`);
+
+      const senderAddr = state.emailConfig?.senderAlias || PRIMARY_SENDER_EMAIL;
+      showEmailDiagnosticBox(resultBoxId, "info", `🚀 กำลังส่งอีเมลทดสอบจาก <code>${senderAddr}</code> ไปยัง <code>${targetEmail}</code>...`);
 
       const logEntry = await sendSystemEmailNotification("TEST_EMAIL", {
         forceSend: true,
@@ -4245,30 +4516,30 @@
         notifyAdmins: false,
         notifyRequester: false,
         subject: `[TCC IT System] ทดสอบระบบแจ้งเตือนอีเมลอัตโนมัติ (${getLocalTimestamp(0)})`,
-        body: `เรียน คุณ${state.currentUser?.name || "Admin"}\n\nนี่คืออีเมลทดสอบจากระบบบริหารจัดการอุปกรณ์และ Helpdesk ฝ่ายเทคโนโลยีสารสนเทศ หอการค้าไทย\n• ผู้ทดสอบ: ${state.currentUser?.name || "Admin"} (${targetEmail})\n• เวลาที่ส่ง: ${getLocalTimestamp(0)}\n• สถานะ: ระบบส่งอีเมลอัตโนมัติพร้อมใช้งาน`,
-        summary: `ทดสอบส่งอีเมลแจ้งเตือนไปยัง: ${targetEmail}`
+        body: `เรียน ผู้ดูแลระบบฝ่ายเทคโนโลยีสารสนเทศ\n\nนี่คืออีเมลทดสอบจากระบบบริหารจัดการอุปกรณ์และ Helpdesk หอการค้าไทย\n• ผู้ส่ง (From): ${senderAddr}\n• ผู้รับทดสอบ (To): ${targetEmail}\n• เวลาที่ส่ง: ${getLocalTimestamp(0)}\n• สถานะ: ระบบส่งอีเมลอัตโนมัติพร้อมใช้งาน (ปิดกั้น tatitop07@gmail.com ถาวร)`,
+        summary: `ทดสอบส่งอีเมลแจ้งเตือนจาก ${senderAddr} ไปยัง: ${targetEmail}`
       });
 
       if (!logEntry) return;
       if (logEntry.deliveryState === "sent") {
-        const senderNote = logEntry.senderEmail ? ` (จากบัญชี: <code>${logEntry.senderEmail}</code>)` : "";
+        const senderNote = ` (ผู้ส่ง From: <code>${logEntry.senderEmail || senderAddr}</code>)`;
         const quotaNote = logEntry.remainingQuota !== null ? ` • โควต้าคงเหลือ: ${logEntry.remainingQuota} ฉบับ/วัน` : "";
         showEmailDiagnosticBox(
           resultBoxId,
           "success",
-          `✅ <b>ส่งอีเมลจริงสำเร็จ!</b> ไปยัง <code>${targetEmail}</code>${senderNote}${quotaNote}<br><span class="text-slate-600">* หากไม่พบใน Inbox กรุณาตรวจสอบโฟลเดอร์ Spam/Junk หรือคลิกตรวจบัญชีผู้ส่งด้านบน</span>`
+          `✅ <b>ส่งอีเมลจริงสำเร็จ!</b> ไปยัง <code>${targetEmail}</code>${senderNote}${quotaNote}<br><span class="text-slate-600">* หากไม่พบใน Inbox กรุณาตรวจสอบโฟลเดอร์ Spam/Junk ของอีเมลปลายทาง</span>`
         );
       } else if (logEntry.deliveryState === "simulated") {
         showEmailDiagnosticBox(
           resultBoxId,
           "warning",
-          `⚠️ <b>บันทึกเฉพาะ Log จำลอง (ไม่ได้ส่งเมลจริง):</b> ระบบยังไม่สามารถเชื่อมต่อ Live GAS Web App ได้ (${logEntry.error})`
+          `⚠️ <b>บันทึกเฉพาะ Log จำลอง (ผู้ส่ง: <code>${senderAddr}</code>):</b> ${logEntry.error}`
         );
       } else {
         showEmailDiagnosticBox(
           resultBoxId,
           "error",
-          `❌ <b>ส่งอีเมลจริงไม่สำเร็จ:</b> ${logEntry.error}<br><button type="button" onclick="openSetupModal()" class="underline font-bold text-rose-800 mt-1 cursor-pointer">เปิดดูโค้ด Google Apps Script ล่าสุดเพื่ออัปเดตและ Deploy</button>`
+          `❌ <b>ส่งอีเมลไม่สำเร็จ:</b> ${logEntry.error}<br><button type="button" onclick="openSetupModal()" class="underline font-bold text-rose-800 mt-1 cursor-pointer">เปิดดูโค้ด Google Apps Script ล่าสุดเพื่ออัปเดตและ Deploy</button>`
         );
       }
     }
@@ -4296,7 +4567,7 @@
       container.innerHTML = logs.map(l => {
         const badge = typeBadgeMap[l.eventType] || { label: "📧 แจ้งเตือนระบบ", cls: "bg-slate-100 text-slate-700 border-slate-200" };
         const bodyOrSummary = l.body || l.summary || "";
-        const dState = l.deliveryState || (String(l.status || "").toLowerCase().includes("fail") ? "failed" : (String(l.status || "").toLowerCase().includes("sim") ? "simulated" : "sent"));
+        const dState = l.deliveryState || (String(l.status || "").toLowerCase().includes("fail") || String(l.status || "").toLowerCase().includes("block") ? "failed" : (String(l.status || "").toLowerCase().includes("sim") ? "simulated" : "sent"));
         let statusPill = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">✓ ${l.status || "Sent"}</span>`;
         if (dState === "failed") {
           statusPill = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800">✕ ${l.status || "Failed"}</span>`;
@@ -4305,6 +4576,7 @@
         } else if (dState === "pending") {
           statusPill = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-100 text-sky-800">🔄 ${l.status || "Sending..."}</span>`;
         }
+        const dispSender = (!isBlockedNotificationEmail(l.senderEmail) && l.senderEmail) || PRIMARY_SENDER_EMAIL;
 
         return `
           <div class="p-3 rounded-2xl border ${dState === "failed" ? "border-rose-200 bg-rose-50/30" : "border-slate-200 bg-slate-50/60"} hover:bg-white transition space-y-1.5 text-xs">
@@ -4319,9 +4591,9 @@
             ${l.error ? `<div class="p-2 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-[11px] font-medium">⚠️ <b>สาเหตุ:</b> ${l.error}</div>` : ""}
             ${bodyOrSummary ? `<div class="text-slate-600 text-[11px] whitespace-pre-line bg-white/80 p-2 rounded-xl border border-slate-100">${bodyOrSummary}</div>` : ""}
             <div class="text-[10px] text-slate-500 flex flex-wrap items-center gap-1 pt-1 border-t border-slate-100">
-              ${l.senderEmail ? `<span class="font-semibold text-slate-600 mr-1">จาก (From):</span><span class="px-1.5 py-0.2 bg-white border border-slate-200 rounded font-mono text-emerald-700 mr-2">${l.senderEmail}</span>` : ""}
+              <span class="font-semibold text-slate-600 mr-1">จาก (From):</span><span class="px-1.5 py-0.2 bg-white border border-slate-200 rounded font-mono text-emerald-700 mr-2">${dispSender}</span>
               <span class="font-semibold text-slate-600">ผู้รับ (To):</span>
-              ${(l.recipients || []).map(r => `<span class="px-1.5 py-0.2 bg-white border border-slate-200 rounded font-mono text-tcc-700">${r}</span>`).join("")}
+              ${(l.recipients || []).filter(r => !isBlockedNotificationEmail(r)).map(r => `<span class="px-1.5 py-0.2 bg-white border border-slate-200 rounded font-mono text-tcc-700">${r}</span>`).join("")}
             </div>
           </div>
         `;
@@ -4330,9 +4602,13 @@
 
     /* ADMIN EMAIL SETTINGS & TEMPLATE MANAGER UI FUNCTIONS */
     function renderEmailSettingsTab() {
-      const cfg = state.emailConfig || DEFAULT_EMAIL_CONFIG;
+      state.emailConfig = sanitizeEmailConfig(state.emailConfig || DEFAULT_EMAIL_CONFIG);
+      const cfg = state.emailConfig;
       const elEnabled = document.getElementById("cfgEmailNotifyEnabled");
       const elTransport = document.getElementById("cfgEmailTransportMode");
+      const elSmtpWrap = document.getElementById("cfgEmailSmtpWrapper");
+      const elSmtpHost = document.getElementById("cfgEmailSmtpHost");
+      const elSmtpPass = document.getElementById("cfgEmailSmtpPass");
       const elWebhookWrap = document.getElementById("cfgEmailWebhookWrapper");
       const elWebhookUrl = document.getElementById("cfgEmailWebhookUrl");
       const elSender = document.getElementById("cfgEmailSenderName");
@@ -4344,21 +4620,24 @@
       const elTestRec = document.getElementById("cfgEmailTestRecipient");
       const elTplRec = document.getElementById("tplTestTargetEmail");
 
-      const mode = cfg.transportMode === "webhook" ? "webhook" : "gas_mailapp";
+      const mode = ["gas_mailapp", "smtp", "webhook"].includes(cfg.transportMode) ? cfg.transportMode : "gas_mailapp";
       if (elEnabled) elEnabled.checked = !!state.emailNotifyEnabled;
       if (elTransport) elTransport.value = mode;
+      if (elSmtpWrap) elSmtpWrap.classList.toggle("hidden", mode !== "smtp");
+      if (elSmtpHost) elSmtpHost.value = cfg.smtpHost || "auto";
+      if (elSmtpPass && !elSmtpPass.value) elSmtpPass.value = getSessionSmtpPass();
       if (elWebhookWrap) elWebhookWrap.classList.toggle("hidden", mode !== "webhook");
-      if (elWebhookUrl) elWebhookUrl.value = cfg.webhookUrl || "";
-      if (elSender) elSender.value = cfg.senderName || "";
-      if (elReply) elReply.value = cfg.replyTo || "";
-      if (elAlias) elAlias.value = cfg.senderAlias || "";
+      if (elWebhookUrl) elWebhookUrl.value = cfg.webhookUrl || "/api/send-email";
+      if (elSender) elSender.value = cfg.senderName || DEFAULT_EMAIL_CONFIG.senderName;
+      if (elReply) elReply.value = (!isBlockedNotificationEmail(cfg.replyTo) && cfg.replyTo) || PRIMARY_SENDER_EMAIL;
+      if (elAlias) elAlias.value = (!isBlockedNotificationEmail(cfg.senderAlias) && cfg.senderAlias) || PRIMARY_SENDER_EMAIL;
       if (elReq) elReq.checked = cfg.notifyRequester !== false;
       if (elAgent) elAgent.checked = cfg.notifyAssignedAgent !== false;
       if (elRoles) elRoles.checked = cfg.notifyAdminRoles !== false;
 
-      const defaultTestEmail = state.currentUser?.email || cfg.replyTo || "tatiphon.hi@thaichamber.or.th";
-      if (elTestRec && !elTestRec.value.trim()) elTestRec.value = defaultTestEmail;
-      if (elTplRec && !elTplRec.value.trim()) elTplRec.value = defaultTestEmail;
+      const defaultTestEmail = getPreferredTestRecipientEmail();
+      if (elTestRec && (!elTestRec.value.trim() || isBlockedNotificationEmail(elTestRec.value))) elTestRec.value = defaultTestEmail;
+      if (elTplRec && (!elTplRec.value.trim() || isBlockedNotificationEmail(elTplRec.value))) elTplRec.value = defaultTestEmail;
 
       renderEmailRecipientsTable();
       renderEmailTemplateEventList();
@@ -4366,15 +4645,42 @@
     }
 
     function handleEmailConfigFieldChange() {
-      if (!state.emailConfig) state.emailConfig = JSON.parse(JSON.stringify(DEFAULT_EMAIL_CONFIG));
-      const mode = document.getElementById("cfgEmailTransportMode")?.value === "webhook" ? "webhook" : "gas_mailapp";
+      if (!state.emailConfig) state.emailConfig = sanitizeEmailConfig(DEFAULT_EMAIL_CONFIG);
+      const rawMode = document.getElementById("cfgEmailTransportMode")?.value || "gas_mailapp";
+      const mode = ["gas_mailapp", "smtp", "webhook"].includes(rawMode) ? rawMode : "gas_mailapp";
       state.emailConfig.transportMode = mode;
-      state.emailConfig.webhookUrl = document.getElementById("cfgEmailWebhookUrl")?.value.trim() || "";
+      state.emailConfig.smtpHost = document.getElementById("cfgEmailSmtpHost")?.value || "auto";
+      state.emailConfig.webhookUrl = document.getElementById("cfgEmailWebhookUrl")?.value.trim() || "/api/send-email";
+
+      const passInput = document.getElementById("cfgEmailSmtpPass");
+      if (passInput && passInput.value.trim()) {
+        setSessionSmtpPass(passInput.value.trim());
+      }
+
+      document.getElementById("cfgEmailSmtpWrapper")?.classList.toggle("hidden", mode !== "smtp");
       document.getElementById("cfgEmailWebhookWrapper")?.classList.toggle("hidden", mode !== "webhook");
 
+      const elAlias = document.getElementById("cfgEmailSenderAlias");
+      const elReply = document.getElementById("cfgEmailReplyTo");
+      let aliasVal = (elAlias?.value || "").trim().toLowerCase();
+      let replyVal = (elReply?.value || "").trim().toLowerCase();
+
+      if (!aliasVal || isBlockedNotificationEmail(aliasVal)) {
+        if (isBlockedNotificationEmail(aliasVal) && aliasVal) {
+          showNotification(`ไม่อนุญาตให้ใช้ ${aliasVal} เป็นผู้ส่ง ระบบเปลี่ยนกลับเป็น ${PRIMARY_SENDER_EMAIL}`, "warning");
+        }
+        aliasVal = PRIMARY_SENDER_EMAIL;
+        if (elAlias) elAlias.value = PRIMARY_SENDER_EMAIL;
+      }
+      if (!replyVal || isBlockedNotificationEmail(replyVal)) {
+        replyVal = aliasVal;
+        if (elReply) elReply.value = replyVal;
+      }
+
       state.emailConfig.senderName = document.getElementById("cfgEmailSenderName")?.value.trim() || DEFAULT_EMAIL_CONFIG.senderName;
-      state.emailConfig.replyTo = document.getElementById("cfgEmailReplyTo")?.value.trim() || "";
-      state.emailConfig.senderAlias = document.getElementById("cfgEmailSenderAlias")?.value.trim() || "";
+      state.emailConfig.senderEmail = aliasVal;
+      state.emailConfig.senderAlias = aliasVal;
+      state.emailConfig.replyTo = replyVal;
       state.emailConfig.notifyRequester = !!document.getElementById("cfgEmailNotifyRequester")?.checked;
       state.emailConfig.notifyAssignedAgent = !!document.getElementById("cfgEmailNotifyAssignedAgent")?.checked;
       state.emailConfig.notifyAdminRoles = !!document.getElementById("cfgEmailNotifyAdminRoles")?.checked;
@@ -4388,7 +4694,7 @@
       const countBadge = document.getElementById("emailRecipientCountBadge");
       if (!tbody) return;
 
-      const list = (state.emailConfig?.recipients || []);
+      const list = (state.emailConfig?.recipients || []).filter(rec => rec && !isBlockedNotificationEmail(rec.email));
       const q = (document.getElementById("searchEmailRecipientInput")?.value || "").trim().toLowerCase();
       const scopeFilter = document.getElementById("filterEmailRecipientScope")?.value || "";
 
@@ -4476,7 +4782,10 @@
       if (!email || !email.includes("@")) {
         return showNotification("กรุณาระบุรูปแบบอีเมลที่ถูกต้อง", "warning");
       }
-      if (!state.emailConfig) state.emailConfig = JSON.parse(JSON.stringify(DEFAULT_EMAIL_CONFIG));
+      if (isBlockedNotificationEmail(email)) {
+        return showNotification(`ไม่อนุญาตให้เพิ่ม ${email} ในระบบแจ้งเตือน (กรุณาใช้อีเมล @thaichamber.or.th)`, "error");
+      }
+      if (!state.emailConfig) state.emailConfig = sanitizeEmailConfig(DEFAULT_EMAIL_CONFIG);
       if (!Array.isArray(state.emailConfig.recipients)) state.emailConfig.recipients = [];
 
       const dupIdx = state.emailConfig.recipients.findIndex((r, i) => i !== idx && safeLower(r.email) === email);
@@ -4653,17 +4962,32 @@
     }
 
     async function testSendSelectedEmailTemplate() {
+      handleEmailConfigFieldChange();
       const eventKey = state.selectedEmailTemplateEvent || "BORROW_CREATED";
       const sample = DEFAULT_EMAIL_TEMPLATES[eventKey]?.sampleData || {};
       const targetEl = document.getElementById("tplTestTargetEmail");
-      const targetEmail = (targetEl?.value || state.currentUser?.email || state.emailConfig?.replyTo || "tatiphon.hi@thaichamber.or.th").trim();
+      let targetEmail = (targetEl?.value || "").trim().toLowerCase();
+      if (!targetEmail) {
+        targetEmail = getPreferredTestRecipientEmail();
+        if (targetEl) targetEl.value = targetEmail;
+      }
+      if (isBlockedNotificationEmail(targetEmail)) {
+        const msg = `⛔ ไม่อนุญาตให้ใช้อีเมล ${targetEmail} ในการทดสอบหรือส่งจริง กรุณาระบุอีเมลองค์กร เช่น ${PRIMARY_SENDER_EMAIL}`;
+        showNotification(msg, "error");
+        showEmailDiagnosticBox("tplTestResultBox", "error", msg);
+        if (targetEl) {
+          targetEl.value = getPreferredTestRecipientEmail();
+          targetEl.focus();
+        }
+        return;
+      }
       if (!targetEmail || !targetEmail.includes("@")) {
         showNotification("กรุณากรอกอีเมลปลายทางสำหรับทดสอบส่งให้ถูกต้อง", "warning");
         targetEl?.focus();
         return;
       }
-      if (targetEl && !targetEl.value.trim()) targetEl.value = targetEmail;
-      showEmailDiagnosticBox("tplTestResultBox", "info", `🚀 กำลังทดสอบส่งเทมเพลต <b>${eventKey}</b> ไปยัง <code>${targetEmail}</code>...`);
+      const senderAddr = state.emailConfig?.senderAlias || PRIMARY_SENDER_EMAIL;
+      showEmailDiagnosticBox("tplTestResultBox", "info", `🚀 กำลังทดสอบส่งเทมเพลต <b>${eventKey}</b> จาก <code>${senderAddr}</code> ไปยัง <code>${targetEmail}</code>...`);
 
       const logEntry = await sendSystemEmailNotification(eventKey, {
         ...sample,
@@ -4676,7 +5000,7 @@
 
       if (!logEntry) return;
       if (logEntry.deliveryState === "sent") {
-        const senderNote = logEntry.senderEmail ? ` (จาก: <code>${logEntry.senderEmail}</code>)` : "";
+        const senderNote = ` (จาก: <code>${logEntry.senderEmail || senderAddr}</code>)`;
         const quotaNote = logEntry.remainingQuota !== null ? ` • โควต้าคงเหลือ: ${logEntry.remainingQuota} ฉบับ/วัน` : "";
         showEmailDiagnosticBox(
           "tplTestResultBox",
@@ -4687,13 +5011,13 @@
         showEmailDiagnosticBox(
           "tplTestResultBox",
           "warning",
-          `⚠️ <b>บันทึกเฉพาะ Log จำลอง (ยังไม่ได้ส่งเมลจริง):</b> ${logEntry.error}`
+          `⚠️ <b>บันทึกเฉพาะ Log จำลอง (ผู้ส่ง: <code>${senderAddr}</code>):</b> ${logEntry.error}`
         );
       } else {
         showEmailDiagnosticBox(
           "tplTestResultBox",
           "error",
-          `❌ <b>ส่งอีเมลจริงไม่สำเร็จ:</b> ${logEntry.error}<br><button type="button" onclick="openSetupModal()" class="underline font-bold text-rose-800 mt-1 cursor-pointer">เปิดดูโค้ด Google Apps Script ล่าสุดเพื่ออัปเดตและ Deploy</button>`
+          `❌ <b>ส่งอีเมลไม่สำเร็จ:</b> ${logEntry.error}<br><button type="button" onclick="openSetupModal()" class="underline font-bold text-rose-800 mt-1 cursor-pointer">เปิดดูโค้ด Google Apps Script ล่าสุดเพื่ออัปเดตและ Deploy</button>`
         );
       }
     }
@@ -8309,7 +8633,7 @@
       }
 
       tbody.innerHTML = list.map((r, idx) => {
-        const isPrimary = r.email === "tatitop07@gmail.com" || r.email === "tatiphon.hi@thaichamber.or.th";
+        const isPrimary = r.email === "itsupport@thaichamber.or.th" || r.email === "tatiphon.hi@thaichamber.or.th";
         const isActive = (r.status || "active") !== "disabled";
         const realIndex = state.userRoles.findIndex(u => safeLower(u.email) === safeLower(r.email));
         const parsedName = splitFullName(r.name, r.first_name, r.last_name);
@@ -8383,7 +8707,7 @@
       const user = state.userRoles.find(u => safeLower(u.email) === email.toLowerCase()) || state.userRoles[idx];
       if (!user) return;
 
-      const isPrimary = user.email === "tatitop07@gmail.com" || user.email === "tatiphon.hi@thaichamber.or.th";
+      const isPrimary = user.email === "itsupport@thaichamber.or.th" || user.email === "tatiphon.hi@thaichamber.or.th";
       const isActive = (user.status || "active") !== "disabled";
 
       document.getElementById("actionMenuUserEmail").innerText = user.email;
@@ -8501,7 +8825,7 @@
 
     /* TOGGLE STATUS & RESET PASSWORD */
     function handleToggleUserStatus(email) {
-      if (email === "tatitop07@gmail.com" || email === "tatiphon.hi@thaichamber.or.th") {
+      if (email === "itsupport@thaichamber.or.th" || email === "tatiphon.hi@thaichamber.or.th") {
         return showNotification("ไม่สามารถปิดการใช้งานบัญชี Super Admin หลักได้", "warning");
       }
       const user = state.userRoles.find(u => safeLower(u.email) === email.toLowerCase());
@@ -8551,7 +8875,7 @@
     }
 
     async function handleDeleteUserRole(email) {
-      if (email === "tatitop07@gmail.com" || email === "tatiphon.hi@thaichamber.or.th") {
+      if (email === "itsupport@thaichamber.or.th" || email === "tatiphon.hi@thaichamber.or.th") {
         return showNotification("ไม่สามารถลบบัญชี Super Admin หลักของระบบได้", "warning");
       }
       if (!confirm(`คุณต้องการลบผู้ใช้งาน "${email}" ออกจากระบบใช่หรือไม่?`)) return;
@@ -9731,103 +10055,148 @@ function resolveEmailFromUserRolesGAS(ss, contactOrName, fallbackName) {
   return "";
 }
 
+function isBlockedGasEmail(email) {
+  var clean = String(email || "").trim().toLowerCase();
+  return !clean || clean === "tatitop07@gmail.com";
+}
+
 function getAdminEmailsGAS(ss) {
   var sheet = ss.getSheetByName("UserRoles");
-  if (!sheet) return ["tatiphon.hi@thaichamber.or.th"];
+  if (!sheet) return ["itsupport@thaichamber.or.th", "tatiphon.hi@thaichamber.or.th"];
   var data = sheet.getDataRange().getValues();
-  if (data.length <= 1) return ["tatiphon.hi@thaichamber.or.th"];
+  if (data.length <= 1) return ["itsupport@thaichamber.or.th", "tatiphon.hi@thaichamber.or.th"];
   var colMap = getUserRolesColumnMap(data[0]);
   var admins = [];
   for (var i = 1; i < data.length; i++) {
     var em = String(data[i][colMap.email] || "").trim().toLowerCase();
     var rl = colMap.role !== -1 ? String(data[i][colMap.role] || "").trim().toLowerCase() : "";
     var st = colMap.status !== -1 ? String(data[i][colMap.status] || "active").trim().toLowerCase() : "active";
-    if (em && em.indexOf("@") !== -1 && (rl === "admin" || rl === "superadmin") && st !== "disabled") {
+    if (em && em.indexOf("@") !== -1 && !isBlockedGasEmail(em) && (rl === "admin" || rl === "superadmin") && st !== "disabled") {
       if (admins.indexOf(em) === -1) admins.push(em);
     }
   }
   return admins;
 }
 
-function sendNotificationEmailGAS(toList, subject, bodyText, senderName, replyTo, senderAlias) {
-  var senderEmail = "";
+function sendNotificationEmailGAS(toList, subject, bodyText, senderName, replyTo, senderAlias, relayUrl) {
+  var ownerEmail = "";
   try {
-    senderEmail = Session.getEffectiveUser().getEmail() || "";
+    ownerEmail = String(Session.getEffectiveUser().getEmail() || "").trim().toLowerCase();
   } catch (_) {}
+
+  var targetSender = String(senderAlias || "itsupport@thaichamber.or.th").trim().toLowerCase();
+  if (isBlockedGasEmail(targetSender) || targetSender.indexOf("@") === -1) {
+    targetSender = "itsupport@thaichamber.or.th";
+  }
+  var cleanReply = String(replyTo || targetSender).trim().toLowerCase();
+  if (isBlockedGasEmail(cleanReply) || cleanReply.indexOf("@") === -1) {
+    cleanReply = targetSender;
+  }
 
   try {
     var valid = [];
     if (Array.isArray(toList)) {
       toList.forEach(function(e) {
         var clean = String(e || "").trim().toLowerCase();
-        if (clean && clean.indexOf("@") !== -1 && valid.indexOf(clean) === -1) valid.push(clean);
+        if (clean && clean.indexOf("@") !== -1 && !isBlockedGasEmail(clean) && valid.indexOf(clean) === -1) valid.push(clean);
       });
     } else if (typeof toList === "string") {
       toList.split(",").forEach(function(e) {
         var clean = String(e || "").trim().toLowerCase();
-        if (clean && clean.indexOf("@") !== -1 && valid.indexOf(clean) === -1) valid.push(clean);
+        if (clean && clean.indexOf("@") !== -1 && !isBlockedGasEmail(clean) && valid.indexOf(clean) === -1) valid.push(clean);
       });
     }
     if (valid.length === 0) {
-      return { ok: false, error: "ไม่พบอีเมลปลายทางที่ถูกต้อง", senderEmail: senderEmail };
+      return { ok: false, error: "ไม่พบอีเมลปลายทางที่ถูกต้อง (ระบบบล็อกการส่งหา tatitop07@gmail.com)", senderEmail: targetSender };
     }
     var dispName = senderName || "TCC IT Service & Asset System";
     var htmlBody = '<div style="font-family: Sarabun, sans-serif; max-width: 620px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden;">' +
       '<div style="background: linear-gradient(135deg, #003d73, #0284c7); color: #ffffff; padding: 18px 24px;">' +
       '<h2 style="margin: 0; font-size: 18px;">หอการค้าไทย (TCC IT Asset & Helpdesk Service)</h2>' +
-      '<p style="margin: 4px 0 0; font-size: 12px; opacity: 0.9;">ระบบแจ้งเตือนอัตโนมัติ ฝ่ายเทคโนโลยีสารสนเทศ</p>' +
+      '<p style="margin: 4px 0 0; font-size: 12px; opacity: 0.9;">ระบบแจ้งเตือนอัตโนมัติ ฝ่ายเทคโนโลยีสารสนเทศ (' + targetSender + ')</p>' +
       '</div>' +
       '<div style="padding: 20px 24px; background: #ffffff; color: #1e293b; font-size: 14px; line-height: 1.65; white-space: pre-line;">' +
       String(bodyText || "").replace(/</g, "&lt;").replace(/>/g, "&gt;") +
       '</div>' +
       '<div style="padding: 12px 24px; background: #f8fafc; color: #64748b; font-size: 11px; border-top: 1px solid #e2e8f0;">' +
-      'อีเมลฉบับนี้ส่งอัตโนมัติจากระบบบริหารจัดการอุปกรณ์และแจ้งซ่อมไอที หอการค้าไทย' +
+      'อีเมลฉบับนี้ส่งอัตโนมัติจากระบบบริหารจัดการอุปกรณ์และแจ้งซ่อมไอที หอการค้าไทย (' + targetSender + ')' +
       '</div></div>';
 
-    var aliasClean = String(senderAlias || "").trim().toLowerCase();
-    var sentMethod = "MailApp";
-    if (aliasClean && aliasClean.indexOf("@") !== -1) {
-      try {
-        var aliases = GmailApp.getAliases();
-        var matchedAlias = "";
-        for (var i = 0; i < aliases.length; i++) {
-          if (String(aliases[i]).toLowerCase() === aliasClean) {
-            matchedAlias = aliases[i];
-            break;
-          }
+    var matchedAlias = "";
+    try {
+      var aliases = GmailApp.getAliases() || [];
+      for (var i = 0; i < aliases.length; i++) {
+        if (String(aliases[i]).trim().toLowerCase() === targetSender) {
+          matchedAlias = aliases[i];
+          break;
         }
-        if (matchedAlias) {
-          var gOpts = { htmlBody: htmlBody, name: dispName, from: matchedAlias };
-          if (replyTo && String(replyTo).indexOf("@") !== -1) gOpts.replyTo = String(replyTo).trim();
-          GmailApp.sendEmail(valid.join(","), subject, bodyText || " ", gOpts);
-          senderEmail = matchedAlias;
-          sentMethod = "GmailApp";
-        }
-      } catch (aliasErr) {
-        Logger.log("Alias fallback to MailApp: " + aliasErr);
       }
+    } catch (_) {}
+
+    if (matchedAlias) {
+      var gOpts = { htmlBody: htmlBody, name: dispName, from: matchedAlias, replyTo: cleanReply };
+      GmailApp.sendEmail(valid.join(","), subject, bodyText || " ", gOpts);
+      var qAlias = null;
+      try { qAlias = MailApp.getRemainingDailyQuota(); } catch (_) {}
+      return { ok: true, senderEmail: matchedAlias, remainingQuota: qAlias, method: "GmailApp Alias", sentTo: valid };
     }
 
-    if (sentMethod === "MailApp") {
+    if (ownerEmail === targetSender && !isBlockedGasEmail(ownerEmail)) {
       var mailOpts = {
         to: valid.join(","),
         subject: subject,
         body: bodyText || " ",
         htmlBody: htmlBody,
-        name: dispName
+        name: dispName,
+        replyTo: cleanReply
       };
-      if (replyTo && String(replyTo).indexOf("@") !== -1) {
-        mailOpts.replyTo = String(replyTo).trim();
-      }
       MailApp.sendEmail(mailOpts);
+      var qOwner = null;
+      try { qOwner = MailApp.getRemainingDailyQuota(); } catch (_) {}
+      return { ok: true, senderEmail: ownerEmail, remainingQuota: qOwner, method: "MailApp Owner", sentTo: valid };
     }
 
-    var quota = null;
-    try { quota = MailApp.getRemainingDailyQuota(); } catch (_) {}
-    return { ok: true, senderEmail: senderEmail, remainingQuota: quota, method: sentMethod, sentTo: valid };
+    // Fallback to Server-Side SMTP Relay if configured in ScriptProperties
+    try {
+      var props = PropertiesService.getScriptProperties();
+      var savedPass = props.getProperty("TCC_SMTP_PASS") || "";
+      var savedHost = props.getProperty("TCC_SMTP_HOST") || "auto";
+      var savedRelay = relayUrl || props.getProperty("TCC_RELAY_URL") || "";
+      if (savedPass && savedRelay && savedRelay.indexOf("http") === 0) {
+        var fetchRes = UrlFetchApp.fetch(savedRelay, {
+          method: "post",
+          contentType: "application/json",
+          payload: JSON.stringify({
+            to: valid,
+            subject: subject,
+            body: bodyText || " ",
+            senderName: dispName,
+            senderEmail: targetSender,
+            replyTo: cleanReply,
+            smtpHost: savedHost,
+            smtpUser: targetSender,
+            smtpPass: savedPass
+          }),
+          muteHttpExceptions: true
+        });
+        var relayJson = JSON.parse(fetchRes.getContentText() || "{}");
+        if (relayJson && relayJson.status === "success" && relayJson.sent) {
+          return { ok: true, senderEmail: targetSender, remainingQuota: null, method: "SMTP Relay", sentTo: valid };
+        }
+      }
+    } catch (relayErr) {
+      Logger.log("Relay error: " + relayErr);
+    }
+
+    return {
+      ok: false,
+      blockedSender: ownerEmail || "tatitop07@gmail.com",
+      senderEmail: targetSender,
+      error: "ระบบระงับการส่งจาก " + (ownerEmail || "tatitop07@gmail.com") + " (ต้องส่งจาก " + targetSender + " เท่านั้น กรุณาตั้งค่า Send mail as หรือใช้โหมด SMTP)"
+    };
   } catch (err) {
     Logger.log("Email error: " + err);
-    return { ok: false, error: err.toString(), senderEmail: senderEmail };
+    return { ok: false, error: err.toString(), senderEmail: targetSender };
   }
 }
 
@@ -9838,15 +10207,17 @@ function handleSendEmailNotification(data) {
     data.subject || "[TCC IT Notification]",
     bodyText,
     data.senderName || "TCC IT Service & Asset System",
-    data.replyTo || "",
-    data.senderAlias || ""
+    data.replyTo || "itsupport@thaichamber.or.th",
+    data.senderAlias || data.senderEmail || "itsupport@thaichamber.or.th",
+    data.relayUrl || ""
   );
   return jsonResponse({
     status: res.ok ? "success" : "error",
     sent: !!res.ok,
-    message: res.ok ? "ส่งอีเมลสำเร็จ" : ("MailApp Error: " + (res.error || "Unknown error")),
+    blockedSender: res.blockedSender || "",
+    message: res.ok ? "ส่งอีเมลสำเร็จ" : (res.error || "Unknown error"),
     error: res.error || "",
-    senderEmail: res.senderEmail || "",
+    senderEmail: res.senderEmail || "itsupport@thaichamber.or.th",
     remainingQuota: res.remainingQuota !== undefined ? res.remainingQuota : null
   });
 }
@@ -9858,11 +10229,17 @@ function handleCheckEmailSetup() {
     var quota = MailApp.getRemainingDailyQuota();
     var aliases = [];
     try { aliases = GmailApp.getAliases() || []; } catch (_) {}
+    var smtpRelayReady = false;
+    try {
+      smtpRelayReady = Boolean(PropertiesService.getScriptProperties().getProperty("TCC_SMTP_PASS"));
+    } catch (_) {}
     return jsonResponse({
       status: "success",
-      version: "2026-11-email-v2",
+      version: "2026-11-email-v3-itsupport",
       mailAuthorized: true,
       senderEmail: senderEmail,
+      requiredSender: "itsupport@thaichamber.or.th",
+      smtpRelayReady: smtpRelayReady,
       remainingQuota: quota,
       aliases: aliases
     });
@@ -9880,9 +10257,29 @@ function handleSaveEmailSettings(data) {
   var ss = getSpreadsheet();
   var sheet = getOrCreateSheet(ss, "EmailSettings", ["Setting Key", "JSON Value", "Updated At"], []);
   var nowStr = Utilities.formatDate(new Date(), "GMT+7", "yyyy-MM-dd HH:mm:ss");
+  try {
+    var props = PropertiesService.getScriptProperties();
+    if (data.smtpPass && String(data.smtpPass).trim()) {
+      props.setProperty("TCC_SMTP_PASS", String(data.smtpPass).trim());
+    }
+    if (data.smtpHost) {
+      props.setProperty("TCC_SMTP_HOST", String(data.smtpHost).trim());
+    }
+    if (data.relayUrl) {
+      props.setProperty("TCC_RELAY_URL", String(data.relayUrl).trim());
+    }
+  } catch (_) {}
+
   var updates = {};
   if (data.emailNotifyEnabled !== undefined) updates["emailNotifyEnabled"] = JSON.stringify(!!data.emailNotifyEnabled);
-  if (data.emailConfig !== undefined) updates["emailConfig"] = JSON.stringify(data.emailConfig);
+  if (data.emailConfig !== undefined) {
+    var cleanCfg = JSON.parse(JSON.stringify(data.emailConfig));
+    delete cleanCfg.smtpPass;
+    cleanCfg.senderEmail = "itsupport@thaichamber.or.th";
+    if (!cleanCfg.senderAlias || cleanCfg.senderAlias === "tatitop07@gmail.com") cleanCfg.senderAlias = "itsupport@thaichamber.or.th";
+    if (!cleanCfg.replyTo || cleanCfg.replyTo === "tatitop07@gmail.com") cleanCfg.replyTo = "itsupport@thaichamber.or.th";
+    updates["emailConfig"] = JSON.stringify(cleanCfg);
+  }
   if (data.emailTemplates !== undefined) updates["emailTemplates"] = JSON.stringify(data.emailTemplates);
 
   var values = sheet.getDataRange().getValues();
@@ -9939,7 +10336,7 @@ function handleGetInitialData() {
   ]);
 
   var rolesSheet = getOrCreateSheet(ss, "UserRoles", ["email", "first_name", "last_name", "dept", "role", "password", "status", "remark", "updated_at"], [
-    ["tatitop07@gmail.com", "Tatitop", "(Super Admin)", "ฝ่ายเทคโนโลยีสารสนเทศ (IT)", "superadmin", "admin1234", "active", "ผู้ดูแลระบบหลัก", ""],
+    ["itsupport@thaichamber.or.th", "IT Support", "(TCC)", "ฝ่ายเทคโนโลยีสารสนเทศ (IT)", "superadmin", "admin1234", "active", "อีเมลกลางฝ่ายไอที (ผู้ส่งระบบแจ้งเตือน)", ""],
     ["tatiphon.hi@thaichamber.or.th", "Tatiphon", "(Super Admin)", "ฝ่ายเทคโนโลยีสารสนเทศ (IT)", "superadmin", "admin1234", "active", "ผู้ดูแลระบบหลัก หอการค้าไทย", ""],
     ["wattanachai.mi@thaichamber.or.th", "Wattanachai", "(Admin)", "ฝ่ายเทคโนโลยีสารสนเทศ (IT)", "admin", "admin1234", "active", "เจ้าหน้าที่ฝ่ายไอที", ""],
     ["supakon.su@thaichamber.or.th", "Supakon", "(Admin)", "ฝ่ายเทคโนโลยีสารสนเทศ (IT)", "admin", "admin1234", "active", "เจ้าหน้าที่ฝ่ายไอที", ""],
@@ -10978,7 +11375,7 @@ function handleDeleteUserRole(data) {
                 localStorage.setItem(STORAGE_KEY_EMAIL_ENABLED, state.emailNotifyEnabled ? "true" : "false");
               }
               if (data.emailConfig && typeof data.emailConfig === "object") {
-                state.emailConfig = data.emailConfig;
+                state.emailConfig = sanitizeEmailConfig(data.emailConfig);
                 saveEmailConfigToStorage();
               }
               if (data.emailTemplates && typeof data.emailTemplates === "object") {
@@ -11078,18 +11475,7 @@ function handleDeleteUserRole(data) {
             localStorage.setItem(STORAGE_KEY_EMAIL_ENABLED, state.emailNotifyEnabled ? "true" : "false");
           }
           if (res.emailConfig && typeof res.emailConfig === "object") {
-            state.emailConfig = {
-              ...DEFAULT_EMAIL_CONFIG,
-              ...res.emailConfig,
-              recipients: Array.isArray(res.emailConfig.recipients)
-                ? res.emailConfig.recipients.map(r => ({
-                    email: String(r.email || "").trim().toLowerCase(),
-                    name: String(r.name || "").trim(),
-                    scope: ["all", "borrow", "ticket"].includes(r.scope) ? r.scope : "all",
-                    active: r.active !== false
-                  })).filter(r => r.email)
-                : [...(state.emailConfig?.recipients || DEFAULT_EMAIL_CONFIG.recipients)]
-            };
+            state.emailConfig = sanitizeEmailConfig(res.emailConfig);
             saveEmailConfigToStorage();
           }
           if (res.emailTemplates && typeof res.emailTemplates === "object") {

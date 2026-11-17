@@ -14,6 +14,15 @@ function encodeMimeWord(str) {
   return "=?UTF-8?B?" + Buffer.from(String(str || ""), "utf8").toString("base64") + "?=";
 }
 
+function normalizeSmtpPassword(rawPass) {
+  const trimmed = String(rawPass || "").trim();
+  // Google App Passwords are 16 letters often copied as 4 groups of 4 chars ("xxxx xxxx xxxx xxxx")
+  if (/^[a-z0-9]{4}(\s+[a-z0-9]{4}){3}$/i.test(trimmed)) {
+    return trimmed.replace(/\s+/g, "");
+  }
+  return trimmed;
+}
+
 function buildHtmlEmailBody(bodyText) {
   const escaped = String(bodyText || "")
     .replace(/&/g, "&amp;")
@@ -34,28 +43,83 @@ function buildHtmlEmailBody(bodyText) {
   );
 }
 
-async function resolveSmtpEndpoints(smtpHost, smtpPort, userEmail) {
-  const hostClean = String(smtpHost || "auto").trim().toLowerCase();
-  if (hostClean && hostClean !== "auto") {
-    const port = Number(smtpPort) || (hostClean.includes("office365") || hostClean.includes("outlook") ? 587 : 465);
-    return [{ host: hostClean, port, secure: port === 465 }];
-  }
-
-  const domain = String(userEmail || DEFAULT_SENDER_EMAIL).split("@")[1] || "thaichamber.or.th";
-  const candidates = [];
+async function inspectDomainMailProvider(domain = "thaichamber.or.th") {
+  const info = {
+    domain,
+    mxRecords: [],
+    provider: "unknown",
+    recommendedSmtp: ""
+  };
   try {
-    const mxRecords = await dns.promises.resolveMx(domain);
-    const mxStr = mxRecords.map((r) => String(r.exchange || "").toLowerCase()).join(" ");
-    if (mxStr.includes("outlook.com") || mxStr.includes("protection.outlook.com")) {
-      candidates.push({ host: "smtp.office365.com", port: 587, secure: false });
-    } else if (mxStr.includes("google.com") || mxStr.includes("googlemail.com")) {
-      candidates.push({ host: "smtp.gmail.com", port: 465, secure: true });
-      candidates.push({ host: "smtp.gmail.com", port: 587, secure: false });
+    const records = await dns.promises.resolveMx(domain);
+    const sorted = (records || []).sort((a, b) => (a.priority || 0) - (b.priority || 0));
+    info.mxRecords = sorted.map((r) => String(r.exchange || "").toLowerCase().replace(/\.$/, ""));
+    const mxJoined = info.mxRecords.join(" ");
+    if (mxJoined.includes("google.com") || mxJoined.includes("googlemail.com") || mxJoined.includes("aspmx.l.google.com")) {
+      info.provider = "Google Workspace (Gmail)";
+      info.recommendedSmtp = "smtp.gmail.com:465";
+    } else if (mxJoined.includes("outlook.com") || mxJoined.includes("protection.outlook.com")) {
+      info.provider = "Microsoft 365 / Exchange Online";
+      info.recommendedSmtp = "smtp.office365.com:587";
+    } else if (info.mxRecords.length > 0) {
+      info.provider = `เซิร์ฟเวอร์อีเมลองค์กร (${info.mxRecords[0]})`;
+      info.recommendedSmtp = `mail.${domain}:587 หรือ ${info.mxRecords[0]}:587`;
     }
   } catch (_) {}
+  return info;
+}
 
-  candidates.push({ host: "smtp.gmail.com", port: 465, secure: true });
-  candidates.push({ host: "smtp.office365.com", port: 587, secure: false });
+async function resolveSmtpEndpoints(smtpHost, smtpPort, userEmail, mxInfo) {
+  const domain = String(userEmail || DEFAULT_SENDER_EMAIL).split("@")[1] || "thaichamber.or.th";
+  const hostClean = String(smtpHost || "auto").trim().toLowerCase();
+  const candidates = [];
+  const seen = new Set();
+
+  function addCandidate(host, port, secure) {
+    if (!host) return;
+    const key = `${host}:${port}`;
+    if (seen.has(key)) return;
+    seen.add(key);
+    candidates.push({ host, port, secure });
+  }
+
+  // If user specified custom host:port in smtpHost (e.g. "mail.thaichamber.or.th:587")
+  if (hostClean && hostClean !== "auto") {
+    let parsedHost = hostClean;
+    let parsedPort = Number(smtpPort) || 0;
+    if (hostClean.includes(":")) {
+      const parts = hostClean.split(":");
+      parsedHost = parts[0].trim();
+      parsedPort = Number(parts[1]) || parsedPort;
+    }
+    if (parsedHost === "smtp.gmail.com") {
+      addCandidate("smtp.gmail.com", 465, true);
+      addCandidate("smtp.gmail.com", 587, false);
+    } else if (parsedHost.includes("office365") || parsedHost.includes("outlook")) {
+      addCandidate(parsedHost, parsedPort || 587, false);
+    } else {
+      const p = parsedPort || 587;
+      addCandidate(parsedHost, p, p === 465);
+      if (!parsedPort) addCandidate(parsedHost, 465, true);
+    }
+  }
+
+  // Add MX-detected endpoints so even if user selected the wrong dropdown, we can auto-fallback or diagnose
+  const mxJoined = (mxInfo?.mxRecords || []).join(" ");
+  if (mxJoined.includes("outlook.com") || mxJoined.includes("protection.outlook.com")) {
+    addCandidate("smtp.office365.com", 587, false);
+  } else if (mxJoined.includes("google.com") || mxJoined.includes("googlemail.com")) {
+    addCandidate("smtp.gmail.com", 465, true);
+    addCandidate("smtp.gmail.com", 587, false);
+  } else if (mxInfo?.mxRecords?.length) {
+    addCandidate(`mail.${domain}`, 587, false);
+    addCandidate(`mail.${domain}`, 465, true);
+    addCandidate(`smtp.${domain}`, 587, false);
+    addCandidate(mxInfo.mxRecords[0], 587, false);
+  }
+
+  addCandidate("smtp.gmail.com", 465, true);
+  addCandidate("smtp.office365.com", 587, false);
   return candidates;
 }
 
@@ -101,7 +165,7 @@ function createSmtpSession(socket) {
 
   attach(socket);
 
-  function readResponse(timeoutMs = 12000) {
+  function readResponse(timeoutMs = 10000) {
     return new Promise((resolve, reject) => {
       const timer = setTimeout(() => {
         currentWaiter = null;
@@ -116,7 +180,10 @@ function createSmtpSession(socket) {
     sock.write(cmd + "\r\n");
     const res = await waitPromise;
     if (!expectedCodes.includes(res.code)) {
-      throw new Error(`SMTP Error (${res.code}): ${res.message}`);
+      const err = new Error(`SMTP Error (${res.code}): ${res.message}`);
+      err.smtpCode = res.code;
+      err.smtpMessage = res.message;
+      throw err;
     }
     return res;
   }
@@ -127,7 +194,7 @@ function createSmtpSession(socket) {
 async function sendViaSingleSmtpEndpoint(endpoint, auth, mail) {
   const { host, port, secure } = endpoint;
   let socket = await new Promise((resolve, reject) => {
-    const timer = setTimeout(() => reject(new Error(`Connection timeout to ${host}:${port}`)), 10000);
+    const timer = setTimeout(() => reject(new Error(`Connection timeout to ${host}:${port}`)), 8500);
     const conn = secure
       ? tls.connect({ host, port, servername: host, rejectUnauthorized: false }, () => {
           clearTimeout(timer);
@@ -165,13 +232,20 @@ async function sendViaSingleSmtpEndpoint(endpoint, auth, mail) {
       await session.sendCommand(socket, "EHLO tcc-it-system.local", [250]);
     }
 
-    await session.sendCommand(socket, "AUTH LOGIN", [334]);
-    await session.sendCommand(socket, Buffer.from(auth.user, "utf8").toString("base64"), [334]);
-    await session.sendCommand(
-      socket,
-      Buffer.from(auth.pass.replace(/\s+/g, ""), "utf8").toString("base64"),
-      [235]
-    );
+    const cleanPass = normalizeSmtpPassword(auth.pass);
+    // Try AUTH PLAIN first, fallback to AUTH LOGIN if needed
+    const plainToken = Buffer.from(`\u0000${auth.user}\u0000${cleanPass}`, "utf8").toString("base64");
+    try {
+      await session.sendCommand(socket, `AUTH PLAIN ${plainToken}`, [235]);
+    } catch (plainErr) {
+      if (plainErr.smtpCode === 504 || plainErr.smtpCode === 500 || plainErr.smtpCode === 502) {
+        await session.sendCommand(socket, "AUTH LOGIN", [334]);
+        await session.sendCommand(socket, Buffer.from(auth.user, "utf8").toString("base64"), [334]);
+        await session.sendCommand(socket, Buffer.from(cleanPass, "utf8").toString("base64"), [235]);
+      } else {
+        throw plainErr;
+      }
+    }
 
     if (mail.checkOnly) {
       try {
@@ -181,7 +255,17 @@ async function sendViaSingleSmtpEndpoint(endpoint, auth, mail) {
       return { ok: true, host, port };
     }
 
-    await session.sendCommand(socket, `MAIL FROM:<${auth.user}>`, [250]);
+    const envelopeFrom = mail.fromEmail || DEFAULT_SENDER_EMAIL;
+    try {
+      await session.sendCommand(socket, `MAIL FROM:<${envelopeFrom}>`, [250]);
+    } catch (fromErr) {
+      if (auth.user !== envelopeFrom) {
+        await session.sendCommand(socket, `MAIL FROM:<${auth.user}>`, [250]);
+      } else {
+        throw fromErr;
+      }
+    }
+
     for (const rcpt of mail.recipients) {
       await session.sendCommand(socket, `RCPT TO:<${rcpt}>`, [250, 251]);
     }
@@ -193,9 +277,9 @@ async function sendViaSingleSmtpEndpoint(endpoint, auth, mail) {
       .toString("base64")
       .replace(/(.{76})/g, "$1\r\n");
 
-    const fromHeader = `${encodeMimeWord(mail.senderName)} <${auth.user}>`;
+    const fromHeader = `${encodeMimeWord(mail.senderName)} <${envelopeFrom}>`;
     const toHeader = mail.recipients.join(", ");
-    const replyToHeader = mail.replyTo || auth.user;
+    const replyToHeader = mail.replyTo || envelopeFrom;
     const subjectHeader = encodeMimeWord(mail.subject);
     const msgId = `<${Date.now()}.${Math.random().toString(36).slice(2)}@thaichamber.or.th>`;
 
@@ -228,6 +312,46 @@ async function sendViaSingleSmtpEndpoint(endpoint, auth, mail) {
   }
 }
 
+async function diagnoseAppPasswordOwner(pass, mxInfo) {
+  const cleanPass = normalizeSmtpPassword(pass);
+  if (!cleanPass) return null;
+  // Only run quick diagnostic check on smtp.gmail.com if pass looks like a 16-char Google App Password
+  if (!/^[a-z0-9]{16}$/i.test(cleanPass)) return null;
+
+  const gmailEp = { host: "smtp.gmail.com", port: 465, secure: true };
+  // Check if the user accidentally generated the App Password while logged into tatitop07@gmail.com
+  try {
+    const checkBlocked = await sendViaSingleSmtpEndpoint(
+      gmailEp,
+      { user: "tatitop07@gmail.com", pass: cleanPass },
+      { checkOnly: true }
+    );
+    if (checkBlocked && checkBlocked.ok) {
+      return {
+        matchedAccount: "tatitop07@gmail.com",
+        blocked: true
+      };
+    }
+  } catch (_) {}
+
+  // Check if the App Password belongs to tatiphon.hi@thaichamber.or.th
+  try {
+    const checkTatiphon = await sendViaSingleSmtpEndpoint(
+      gmailEp,
+      { user: "tatiphon.hi@thaichamber.or.th", pass: cleanPass },
+      { checkOnly: true }
+    );
+    if (checkTatiphon && checkTatiphon.ok) {
+      return {
+        matchedAccount: "tatiphon.hi@thaichamber.or.th",
+        blocked: false
+      };
+    }
+  } catch (_) {}
+
+  return null;
+}
+
 module.exports = async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
@@ -241,14 +365,17 @@ module.exports = async function handler(req, res) {
   }
 
   const body = typeof req.body === "string" ? JSON.parse(req.body || "{}") : (req.body || {});
-  const smtpUser = String(body.smtpUser || body.senderEmail || body.senderAlias || process.env.SMTP_USER || DEFAULT_SENDER_EMAIL)
+  const senderEmail = String(body.senderEmail || body.senderAlias || DEFAULT_SENDER_EMAIL)
+    .trim()
+    .toLowerCase();
+  const smtpAuthUser = String(body.smtpAuthUser || body.smtpUser || process.env.SMTP_USER || senderEmail)
     .trim()
     .toLowerCase();
   const smtpPass = String(body.smtpPass || process.env.SMTP_PASS || "").trim();
   const smtpHost = String(body.smtpHost || process.env.SMTP_HOST || "auto").trim();
   const smtpPort = body.smtpPort || process.env.SMTP_PORT || "";
 
-  if (isBlockedEmail(smtpUser)) {
+  if (isBlockedEmail(senderEmail) || isBlockedEmail(smtpAuthUser)) {
     return res.status(400).json({
       status: "error",
       sent: false,
@@ -276,31 +403,38 @@ module.exports = async function handler(req, res) {
     });
   }
 
+  const domain = senderEmail.split("@")[1] || "thaichamber.or.th";
+  const mxInfo = await inspectDomainMailProvider(domain);
+
   if (!smtpPass) {
     return res.status(200).json({
       status: "error",
       sent: false,
       needsSmtpPassword: true,
-      senderEmail: smtpUser,
-      error: `ยังไม่ได้ตั้งค่ารหัสผ่าน / App Password สำหรับ ${smtpUser} (กรุณากรอกในช่องรหัสผ่าน SMTP สำหรับส่งอีเมล หรือตั้งค่า SMTP_PASS บน Server)`
+      senderEmail,
+      mxInfo,
+      error: `ยังไม่ได้ตั้งค่ารหัสผ่าน / App Password สำหรับ ${senderEmail} (ผู้ให้บริการอีเมลของ @${domain}: ${mxInfo.provider})`
     });
   }
 
-  const endpoints = await resolveSmtpEndpoints(smtpHost, smtpPort, smtpUser);
+  const endpoints = await resolveSmtpEndpoints(smtpHost, smtpPort, senderEmail, mxInfo);
   let lastError = null;
+  const triedEndpoints = [];
 
   for (const ep of endpoints) {
     try {
+      triedEndpoints.push(`${ep.host}:${ep.port}`);
       const result = await sendViaSingleSmtpEndpoint(
         ep,
-        { user: smtpUser, pass: smtpPass },
+        { user: smtpAuthUser, pass: smtpPass },
         {
           checkOnly,
+          fromEmail: senderEmail,
           recipients,
           subject: body.subject || "[TCC IT Notification]",
           body: body.body || body.summary || "",
           senderName: body.senderName || "TCC IT Service & Asset System",
-          replyTo: (!isBlockedEmail(body.replyTo) && body.replyTo) || smtpUser
+          replyTo: (!isBlockedEmail(body.replyTo) && body.replyTo) || senderEmail
         }
       );
       if (result.ok) {
@@ -308,12 +442,12 @@ module.exports = async function handler(req, res) {
           status: "success",
           sent: !checkOnly,
           mailAuthorized: true,
-          senderEmail: smtpUser,
-          smtpEndpoint: `${result.host}:${result.port}`,
-          sentTo: recipients,
-          message: checkOnly
-            ? `เชื่อมต่อเซิร์ฟเวอร์ SMTP (${result.host}:${result.port}) ของ ${smtpUser} สำเร็จ`
-            : `ส่งอีเมลจาก ${smtpUser} สำเร็จ`
+          senderEmail,
+          smtpAuthUser,
+          mxInfo,
+          method: `SMTP (${result.host}:${result.port})`,
+          recipients,
+          remainingQuota: null
         });
       }
     } catch (err) {
@@ -321,10 +455,70 @@ module.exports = async function handler(req, res) {
     }
   }
 
+  // If authentication failed with 535, run smart diagnosis to tell the user the exact cause
+  const rawErrMsg = lastError ? lastError.message : "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ SMTP ได้";
+  let friendlyError = `SMTP (${senderEmail}) ส่งไม่สำเร็จ: ${rawErrMsg}`;
+
+  if (rawErrMsg.includes("535") || rawErrMsg.toLowerCase().includes("badcredentials") || rawErrMsg.toLowerCase().includes("authentication")) {
+    const ownerDiag = await diagnoseAppPasswordOwner(smtpPass, mxInfo);
+    if (ownerDiag && ownerDiag.blocked) {
+      friendlyError =
+        `⛔ ตรวจพบว่ารหัส App Password ที่กรอกถูกสร้างมาจากบัญชี "${ownerDiag.matchedAccount}" (ไม่ใช่ของ ${senderEmail})! ` +
+        `เนื่องจากระบบบล็อกการใช้ ${ownerDiag.matchedAccount} ถาวร จึงไม่อนุญาตให้ใช้รหัสของบัญชีดังกล่าว — ` +
+        `กรุณาล็อกอินเข้าบัญชี ${senderEmail} โดยตรงเพื่อสร้างรหัส App Password ของ ${senderEmail} (ผู้ให้บริการโดเมน @${domain}: ${mxInfo.provider})`;
+    } else if (ownerDiag && !ownerDiag.blocked && ownerDiag.matchedAccount) {
+      try {
+        const autoEp = { host: "smtp.gmail.com", port: 465, secure: true };
+        const fallbackSend = await sendViaSingleSmtpEndpoint(
+          autoEp,
+          { user: ownerDiag.matchedAccount, pass: smtpPass },
+          {
+            checkOnly,
+            fromEmail: senderEmail,
+            recipients,
+            subject: body.subject || "[TCC IT Notification]",
+            body: body.body || body.summary || "",
+            senderName: body.senderName || "TCC IT Service & Asset System",
+            replyTo: (!isBlockedEmail(body.replyTo) && body.replyTo) || senderEmail
+          }
+        );
+        if (fallbackSend && fallbackSend.ok) {
+          return res.status(200).json({
+            status: "success",
+            sent: !checkOnly,
+            mailAuthorized: true,
+            senderEmail,
+            smtpAuthUser: ownerDiag.matchedAccount,
+            mxInfo,
+            method: `SMTP (smtp.gmail.com:465 • Auth: ${ownerDiag.matchedAccount})`,
+            recipients,
+            remainingQuota: null
+          });
+        }
+      } catch (_) {}
+      friendlyError =
+        `⚠️ ตรวจพบว่ารหัส App Password ที่กรอกเป็นของบัญชี "${ownerDiag.matchedAccount}" ไม่ใช่ของ "${senderEmail}" โดยตรง ` +
+        `กรุณาระบุช่อง "บัญชีที่ใช้ยืนยันตัวตน SMTP" เป็น ${ownerDiag.matchedAccount} หรือสร้าง App Password ใหม่จากในบัญชี ${senderEmail} โดยตรง`;
+    } else {
+      const mxHint = mxInfo.mxRecords.length
+        ? ` (ตรวจพบเซิร์ฟเวอร์อีเมลของ @${domain} คือ: ${mxInfo.provider} [${mxInfo.mxRecords.join(", ")}])`
+        : "";
+      friendlyError =
+        `❌ รหัสผ่าน หรือ App Password ไม่ตรงกับบัญชี ${smtpAuthUser}${mxHint} — ` +
+        `สาเหตุที่พบบ่อย: (1) เผลอสร้าง App Password ขณะเบราว์เซอร์ล็อกอินบัญชี Gmail อื่นอยู่ (ต้องล็อกอินเข้า ${senderEmail} ก่อนสร้าง App Password) ` +
+        `หรือ (2) หาก @${domain} ใช้ Microsoft 365 / Mail Server องค์กร ให้ใช้รหัสผ่านของอีเมล ${senderEmail} และเลือกผู้ให้บริการ SMTP ให้ตรงกับโดเมน`;
+    }
+  }
+
   return res.status(200).json({
     status: "error",
     sent: false,
-    senderEmail: smtpUser,
-    error: `SMTP (${smtpUser}) ส่งไม่สำเร็จ: ${lastError ? lastError.message : "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์อีเมลได้"}`
+    mailAuthorized: false,
+    senderEmail,
+    smtpAuthUser,
+    mxInfo,
+    triedEndpoints,
+    rawError: rawErrMsg,
+    error: friendlyError
   });
 };

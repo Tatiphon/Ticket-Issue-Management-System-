@@ -74,6 +74,32 @@
     .admin-hidden, .superadmin-hidden { display: none !important; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
     .animate-fadeIn { animation: fadeIn 0.2s ease-out forwards; }
+    /* iOS Safari / WebKit Date Input Overflow & Alignment Fix */
+    input[type="date"],
+    input[type="datetime-local"],
+    input[type="time"],
+    input[type="month"] {
+      -webkit-appearance: none;
+      appearance: none;
+      display: block;
+      width: 100% !important;
+      max-width: 100% !important;
+      min-width: 0 !important;
+      box-sizing: border-box !important;
+      text-align: left;
+    }
+    input[type="date"]::-webkit-date-and-time-value {
+      text-align: left;
+      margin: 0;
+      display: inline-block;
+      width: 100%;
+      min-width: 0;
+    }
+    input[type="date"]::-webkit-datetime-edit,
+    input[type="date"]::-webkit-datetime-edit-fields-wrapper {
+      padding: 0;
+      min-width: 0;
+    }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
@@ -583,8 +609,8 @@
           <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 xl:gap-6 items-stretch w-full">
             
             <!-- Left: Form -->
-            <div class="lg:col-span-8 bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6 flex flex-col justify-between w-full min-w-0">
-              <div>
+            <div class="lg:col-span-8 bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6 flex flex-col justify-between w-full min-w-0 overflow-hidden">
+              <div class="w-full min-w-0">
                 <div class="flex items-center justify-between gap-3 pb-4 border-b border-slate-100 mb-5">
                   <div class="flex items-center gap-2.5 min-w-0">
                     <span class="w-3 h-3 rounded-full bg-tcc-600 shrink-0"></span>
@@ -598,7 +624,7 @@
                   </span>
                 </div>
 
-                <form id="borrowForm" onsubmit="handleBorrowSubmit(event)" class="space-y-4">
+                <form id="borrowForm" onsubmit="handleBorrowSubmit(event)" class="space-y-4 w-full min-w-0">
                   
                   <!-- Multi-Item Selection Combobox -->
                   <div>
@@ -656,15 +682,15 @@
                   </div>
 
                   <!-- Borrower & Department -->
-                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
-                    <div class="flex flex-col justify-end min-w-0">
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end w-full min-w-0">
+                    <div class="flex flex-col justify-end min-w-0 w-full">
                       <label for="borrowerName" class="block text-xs font-bold text-slate-700 tracking-wide mb-1.5 leading-5 whitespace-nowrap truncate">
                         2. ชื่อ-นามสกุล ผู้ยืม <span class="text-rose-500">*</span>
                       </label>
                       <input type="text" id="borrowerName" list="userDatabaseNamesList" oninput="handleBorrowerUserAutoMatch('name')" onchange="handleBorrowerUserAutoMatch('name')" required placeholder="พิมพ์ชื่อ หรือเลือกจากฐานข้อมูล (จับคู่อัตโนมัติ)" class="w-full h-[42px] px-3.5 rounded-xl border border-slate-300 text-xs sm:text-sm text-slate-800 bg-white focus:ring-2 focus:ring-tcc-500 focus:border-tcc-500 outline-none transition">
                     </div>
 
-                    <div class="flex flex-col justify-end min-w-0">
+                    <div class="flex flex-col justify-end min-w-0 w-full">
                       <label for="borrowerDept" class="block text-xs font-bold text-slate-700 tracking-wide mb-1.5 leading-5 whitespace-nowrap truncate">
                         3. ฝ่าย / แผนกผู้ยืม <span class="text-rose-500">*</span>
                       </label>
@@ -675,26 +701,30 @@
                   </div>
 
                   <!-- Contact & Borrow/Return Dates -->
-                  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-                    <div class="flex flex-col justify-end min-w-0">
+                  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end w-full min-w-0">
+                    <div class="flex flex-col justify-end min-w-0 w-full">
                       <label for="borrowerContact" class="block text-xs font-bold text-slate-700 tracking-wide mb-1.5 leading-5 whitespace-nowrap truncate">
                         4. อีเมล <span class="text-rose-500">*</span>
                       </label>
                       <input type="text" id="borrowerContact" list="userDatabaseEmailsList" oninput="handleBorrowerUserAutoMatch('email')" onchange="handleBorrowerUserAutoMatch('email')" required placeholder="เช่น user@thaichamber.or.th" class="w-full h-[42px] px-3.5 rounded-xl border border-slate-300 text-xs sm:text-sm text-slate-800 bg-white focus:ring-2 focus:ring-tcc-500 focus:border-tcc-500 outline-none transition">
                     </div>
 
-                    <div class="flex flex-col justify-end min-w-0">
+                    <div class="flex flex-col justify-end min-w-0 w-full max-w-full overflow-hidden">
                       <label for="borrowStartDate" class="block text-xs font-bold text-slate-700 tracking-wide mb-1.5 leading-5 whitespace-nowrap truncate">
                         5. กำหนดวันที่ยืมเครื่อง <span class="text-rose-500">*</span>
                       </label>
-                      <input type="date" id="borrowStartDate" onchange="handleBorrowStartDateChange()" required class="w-full h-[42px] px-3.5 rounded-xl border border-slate-300 text-xs sm:text-sm text-slate-800 focus:ring-2 focus:ring-tcc-500 focus:border-tcc-500 outline-none bg-white transition">
+                      <div class="relative w-full max-w-full min-w-0 overflow-hidden">
+                        <input type="date" id="borrowStartDate" onchange="handleBorrowStartDateChange()" required class="block w-full max-w-full min-w-0 box-border appearance-none text-left h-[42px] px-3.5 rounded-xl border border-slate-300 text-xs sm:text-sm text-slate-800 focus:ring-2 focus:ring-tcc-500 focus:border-tcc-500 outline-none bg-white transition">
+                      </div>
                     </div>
 
-                    <div class="flex flex-col justify-end min-w-0">
+                    <div class="flex flex-col justify-end min-w-0 w-full max-w-full overflow-hidden">
                       <label for="expectedReturnDate" class="block text-xs font-bold text-slate-700 tracking-wide mb-1.5 leading-5 whitespace-nowrap truncate">
                         6. กำหนดวันที่ส่งคืน <span class="text-rose-500">*</span>
                       </label>
-                      <input type="date" id="expectedReturnDate" required class="w-full h-[42px] px-3.5 rounded-xl border border-slate-300 text-xs sm:text-sm text-slate-800 focus:ring-2 focus:ring-tcc-500 focus:border-tcc-500 outline-none bg-white transition">
+                      <div class="relative w-full max-w-full min-w-0 overflow-hidden">
+                        <input type="date" id="expectedReturnDate" required class="block w-full max-w-full min-w-0 box-border appearance-none text-left h-[42px] px-3.5 rounded-xl border border-slate-300 text-xs sm:text-sm text-slate-800 focus:ring-2 focus:ring-tcc-500 focus:border-tcc-500 outline-none bg-white transition">
+                      </div>
                     </div>
                   </div>
 
@@ -1167,14 +1197,18 @@
                 </div>
               </div>
 
-              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 text-xs">
-                <div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 text-xs w-full min-w-0">
+                <div class="min-w-0 w-full max-w-full overflow-hidden">
                   <label class="block text-[11px] font-semibold text-slate-500 mb-1">ตั้งแต่วันที่</label>
-                  <input type="date" id="hdReportStartDate" onchange="renderHelpdeskReport()" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-tcc-500 outline-none">
+                  <div class="relative w-full max-w-full min-w-0 overflow-hidden">
+                    <input type="date" id="hdReportStartDate" onchange="renderHelpdeskReport()" class="block w-full max-w-full min-w-0 box-border appearance-none text-left px-3 py-2 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-tcc-500 outline-none">
+                  </div>
                 </div>
-                <div>
+                <div class="min-w-0 w-full max-w-full overflow-hidden">
                   <label class="block text-[11px] font-semibold text-slate-500 mb-1">ถึงวันที่</label>
-                  <input type="date" id="hdReportEndDate" onchange="renderHelpdeskReport()" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-tcc-500 outline-none">
+                  <div class="relative w-full max-w-full min-w-0 overflow-hidden">
+                    <input type="date" id="hdReportEndDate" onchange="renderHelpdeskReport()" class="block w-full max-w-full min-w-0 box-border appearance-none text-left px-3 py-2 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-tcc-500 outline-none">
+                  </div>
                 </div>
                 <div>
                   <label class="block text-[11px] font-semibold text-slate-500 mb-1">หมวดหมู่ปัญหา</label>
@@ -1573,7 +1607,7 @@
                       </button>
 
                       <!-- Sync to Google Sheets -->
-                      <button type="button" 
+                      <button type="button" id="btnSyncAllRolesToSheet"
                               onclick="triggerExcelAction('syncSheet')" 
                               class="w-full text-left px-2.5 py-2 rounded-lg hover:bg-indigo-50 text-slate-700 hover:text-indigo-900 flex items-center gap-2.5 transition cursor-pointer group">
                         <div class="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0 group-hover:bg-indigo-200 transition">
@@ -1784,8 +1818,8 @@
 
                   <!-- Direct SMTP Credentials Box -->
                   <div id="cfgEmailSmtpWrapper" class="pt-2 border-t border-sky-200/80 space-y-2">
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                      <div>
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-2.5 items-end">
+                      <div class="lg:col-span-3">
                         <label class="block text-[11px] font-semibold text-slate-700 mb-1">ผู้ให้บริการ SMTP (Mail Server):</label>
                         <select id="cfgEmailSmtpHost" onchange="handleEmailConfigFieldChange()" class="w-full px-2.5 py-1.5 rounded-xl border border-sky-300 bg-white text-xs font-medium text-slate-800 outline-none focus:ring-2 focus:ring-tcc-500">
                           <option value="auto">ตรวจจับอัตโนมัติ (@thaichamber.or.th)</option>
@@ -1794,28 +1828,34 @@
                           <option value="mail.thaichamber.or.th">เซิร์ฟเวอร์องค์กร (mail.thaichamber.or.th:587)</option>
                         </select>
                       </div>
-                      <div>
+                      <div class="lg:col-span-4">
                         <label class="block text-[11px] font-semibold text-slate-700 mb-1">บัญชีที่ใช้ยืนยันตัวตน SMTP (Auth User):</label>
-                        <input type="email" id="cfgEmailSmtpAuthUser" list="smtpAuthUserSuggestions" onchange="handleEmailConfigFieldChange()" value="itsupport@thaichamber.or.th" placeholder="itsupport@thaichamber.or.th" class="w-full px-2.5 py-1.5 rounded-xl border border-sky-300 bg-white font-mono text-xs text-slate-800 outline-none focus:ring-2 focus:ring-tcc-500">
+                        <input type="email" id="cfgEmailSmtpAuthUser" list="smtpAuthUserSuggestions" autocomplete="username" oninput="handleEmailConfigFieldChange()" onchange="handleEmailConfigFieldChange()" value="itsupport@thaichamber.or.th" placeholder="itsupport@thaichamber.or.th" class="w-full px-2.5 py-1.5 rounded-xl border border-sky-300 bg-white font-mono text-xs text-slate-800 outline-none focus:ring-2 focus:ring-tcc-500">
                         <datalist id="smtpAuthUserSuggestions">
                           <option value="itsupport@thaichamber.or.th">อีเมลกลางฝ่ายไอที (ผู้ส่งหลัก)</option>
                           <option value="tatiphon.hi@thaichamber.or.th">Super Admin (@thaichamber.or.th)</option>
                         </datalist>
                       </div>
-                      <div>
-                        <label class="block text-[11px] font-semibold text-slate-700 mb-1">รหัสผ่าน / App Password ของบัญชีข้างต้น:</label>
-                        <div class="relative flex items-center gap-2">
-                          <div class="relative flex-1">
-                            <input type="password" id="cfgEmailSmtpPass" oninput="handleEmailConfigFieldChange()" placeholder="กรอกรหัสผ่าน หรือ App Password 16 หลัก..." class="w-full pl-3 pr-9 py-1.5 rounded-xl border border-sky-300 bg-white text-xs outline-none focus:ring-2 focus:ring-tcc-500">
-                            <button type="button" onclick="togglePasswordVisibility('cfgEmailSmtpPass', 'cfgSmtpPassEye')" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer">
+                      <div class="lg:col-span-5">
+                        <div class="flex items-center justify-between gap-1 mb-1">
+                          <label class="block text-[11px] font-semibold text-slate-700">รหัสผ่าน / App Password ของบัญชีข้างต้น:</label>
+                          <span id="smtpPassSavedStatusBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 shrink-0 whitespace-nowrap">ยังไม่บันทึกรหัสผ่าน</span>
+                        </div>
+                        <div class="relative flex items-center gap-1.5">
+                          <div class="relative flex-1 min-w-0">
+                            <input type="password" id="cfgEmailSmtpPass" autocomplete="current-password" oninput="handleEmailConfigFieldChange()" onchange="handleEmailConfigFieldChange()" placeholder="กรอกรหัสผ่าน หรือ App Password 16 หลัก..." class="w-full pl-3 pr-9 py-1.5 rounded-xl border border-sky-300 bg-white text-xs outline-none focus:ring-2 focus:ring-tcc-500">
+                            <button type="button" onclick="togglePasswordVisibility('cfgEmailSmtpPass', 'cfgSmtpPassEye')" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer" title="ดู/ซ่อนรหัสผ่าน">
                               <span id="cfgSmtpPassEye" class="text-xs">👁️</span>
                             </button>
                           </div>
+                          <button type="button" onclick="saveSmtpCredentialsAndRemember()" class="px-3 py-1.5 rounded-xl bg-tcc-600 hover:bg-tcc-700 active:bg-tcc-800 text-white text-xs font-bold shadow-xs transition shrink-0 whitespace-nowrap cursor-pointer">
+                            💾 บันทึกและจำค่า
+                          </button>
                         </div>
                       </div>
                     </div>
                     <div class="p-2 rounded-lg bg-amber-50/90 border border-amber-200 text-[11px] text-amber-900 leading-relaxed">
-                      💡 <b>ข้อควรระวังกรณีพบ Error <code>535-5.7.8 Username and Password not accepted</code>:</b> รหัส App Password 16 หลักของ Google ผูกกับบัญชีที่สร้างแบบ 1 ต่อ 1 — ตอนเปิดหน้าสร้าง App Password (<code>myaccount.google.com/apppasswords</code>) <b>ให้ตรวจดูรูปโปรไฟล์มุมขวาบนของ Google ว่าเป็นบัญชี <code>itsupport@thaichamber.or.th</code></b> (ไม่ใช่ <code>tatitop07@gmail.com</code>) หรือหากสร้าง App Password จากบัญชี <code>tatiphon.hi@thaichamber.or.th</code> ระบบจะตรวจจับและสลับบัญชี Auth ให้อัตโนมัติโดยยังคงส่งออกในชื่อ <code>itsupport@thaichamber.or.th</code>
+                      💡 <b>ระบบจะบันทึกและจำค่าบัญชีอีเมล + App Password ไว้ในระบบและฐานข้อมูลอัตโนมัติ</b> (ไม่ต้องกรอกใหม่เมื่อเปิดเว็บครั้งถัดไป) • ตอนเปิดหน้าสร้าง App Password (<code>myaccount.google.com/apppasswords</code>) <b>ให้ตรวจดูรูปโปรไฟล์มุมขวาบนของ Google ว่าเป็นบัญชี <code>itsupport@thaichamber.or.th</code></b> (ไม่ใช่ <code>tatitop07@gmail.com</code>)
                     </div>
                   </div>
 
@@ -2740,16 +2780,20 @@
             </select>
           </div>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
-          <div class="flex flex-col justify-end min-w-0">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end w-full min-w-0">
+          <div class="flex flex-col justify-end min-w-0 w-full max-w-full overflow-hidden">
             <label class="block font-semibold text-slate-700 mb-1 leading-4 whitespace-nowrap truncate">กำหนดวันที่ยืมเครื่อง</label>
-            <input type="date" id="editHistoryBorrowDate" class="w-full h-[40px] px-3 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-tcc-500 outline-none">
+            <div class="relative w-full max-w-full min-w-0 overflow-hidden">
+              <input type="date" id="editHistoryBorrowDate" class="block w-full max-w-full min-w-0 box-border appearance-none text-left h-[40px] px-3 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-tcc-500 outline-none">
+            </div>
           </div>
-          <div class="flex flex-col justify-end min-w-0">
+          <div class="flex flex-col justify-end min-w-0 w-full max-w-full overflow-hidden">
             <label class="block font-semibold text-slate-700 mb-1 leading-4 whitespace-nowrap truncate">กำหนดวันที่ส่งคืน</label>
-            <input type="date" id="editHistoryExpectedReturn" class="w-full h-[40px] px-3 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-tcc-500 outline-none">
+            <div class="relative w-full max-w-full min-w-0 overflow-hidden">
+              <input type="date" id="editHistoryExpectedReturn" class="block w-full max-w-full min-w-0 box-border appearance-none text-left h-[40px] px-3 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-tcc-500 outline-none">
+            </div>
           </div>
-          <div class="flex flex-col justify-end min-w-0">
+          <div class="flex flex-col justify-end min-w-0 w-full">
             <label class="block font-semibold text-slate-700 mb-1 leading-4 whitespace-nowrap truncate">วันที่ส่งคืนจริง (ถ้ามี)</label>
             <input type="text" id="editHistoryActualReturn" placeholder="เช่น 2026-10-29 16:00" class="w-full h-[40px] px-3 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-tcc-500 outline-none">
           </div>
@@ -3429,6 +3473,7 @@
     const STORAGE_KEY_EMAIL_CONFIG = "it_asset_email_config";
     const STORAGE_KEY_EMAIL_TEMPLATES = "it_asset_email_templates";
     const SESSION_KEY_SMTP_PASS = "it_asset_session_smtp_pass";
+    const STORAGE_KEY_SMTP_PASS = "it_asset_saved_smtp_pass";
 
     const PRIMARY_SENDER_EMAIL = "itsupport@thaichamber.or.th";
     const BLOCKED_NOTIFICATION_EMAILS = ["tatitop07@gmail.com"];
@@ -3450,6 +3495,7 @@
       smtpPort: "",
       smtpUser: PRIMARY_SENDER_EMAIL,
       smtpAuthUser: PRIMARY_SENDER_EMAIL,
+      smtpPass: "",
       webhookUrl: "/api/send-email",
       notifyRequester: true,
       notifyAssignedAgent: true,
@@ -3644,6 +3690,18 @@
         ];
       }
 
+      let savedPass = String(src.smtpPass || "").trim();
+      if (!savedPass) {
+        try {
+          savedPass = localStorage.getItem(STORAGE_KEY_SMTP_PASS) || sessionStorage.getItem(SESSION_KEY_SMTP_PASS) || "";
+        } catch (_) {}
+      } else {
+        try {
+          localStorage.setItem(STORAGE_KEY_SMTP_PASS, savedPass);
+          sessionStorage.setItem(SESSION_KEY_SMTP_PASS, savedPass);
+        } catch (_) {}
+      }
+
       const out = {
         ...DEFAULT_EMAIL_CONFIG,
         ...src,
@@ -3657,29 +3715,61 @@
         smtpPort: src.smtpPort ? Number(src.smtpPort) : "",
         smtpUser: effectiveSender,
         smtpAuthUser: effectiveAuthUser,
+        smtpPass: savedPass,
         webhookUrl: String(src.webhookUrl || "/api/send-email").trim() || "/api/send-email",
         recipients: recList,
         _migratedItSupportRec: true
       };
-      delete out.smtpPass;
       return out;
+    }
+
+    function normalizeAppPassInput(raw) {
+      const trimmed = String(raw || "").trim();
+      if (/^[a-z0-9]{4}(\s+[a-z0-9]{4}){3}$/i.test(trimmed)) {
+        return trimmed.replace(/\s+/g, "");
+      }
+      return trimmed;
     }
 
     function getSessionSmtpPass() {
       try {
         const el = document.getElementById("cfgEmailSmtpPass");
-        if (el && el.value.trim()) return el.value.trim();
-        return sessionStorage.getItem(SESSION_KEY_SMTP_PASS) || "";
+        if (el && el.value.trim()) return normalizeAppPassInput(el.value);
+        if (state.emailConfig && state.emailConfig.smtpPass && String(state.emailConfig.smtpPass).trim()) {
+          return normalizeAppPassInput(state.emailConfig.smtpPass);
+        }
+        return normalizeAppPassInput(localStorage.getItem(STORAGE_KEY_SMTP_PASS) || sessionStorage.getItem(SESSION_KEY_SMTP_PASS) || "");
       } catch (_) {
         return "";
       }
     }
 
+    function updateSmtpPassSavedBadge() {
+      const badge = document.getElementById("smtpPassSavedStatusBadge");
+      if (!badge) return;
+      const saved = getSessionSmtpPass();
+      const authUser = state.emailConfig?.smtpAuthUser || PRIMARY_SENDER_EMAIL;
+      if (saved) {
+        badge.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 shrink-0 whitespace-nowrap";
+        badge.innerText = `✓ จำค่ารหัสผ่านแล้ว (${authUser})`;
+      } else {
+        badge.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200 shrink-0 whitespace-nowrap";
+        badge.innerText = "⚠️ ยังไม่ได้บันทึกรหัสผ่าน";
+      }
+    }
+
     function setSessionSmtpPass(val) {
       try {
-        const clean = String(val || "").trim();
-        if (clean) sessionStorage.setItem(SESSION_KEY_SMTP_PASS, clean);
+        const clean = normalizeAppPassInput(val);
+        if (clean) {
+          localStorage.setItem(STORAGE_KEY_SMTP_PASS, clean);
+          sessionStorage.setItem(SESSION_KEY_SMTP_PASS, clean);
+          if (state.emailConfig) state.emailConfig.smtpPass = clean;
+          const el = document.getElementById("cfgEmailSmtpPass");
+          if (el && el.value.trim() && el.value !== clean) el.value = clean;
+        }
       } catch (_) {}
+      updateSmtpPassSavedBadge();
     }
 
     function getPreferredTestRecipientEmail() {
@@ -4067,8 +4157,30 @@
       } catch (e) {}
     }
 
+    async function saveSmtpCredentialsAndRemember() {
+      const passEl = document.getElementById("cfgEmailSmtpPass");
+      const authEl = document.getElementById("cfgEmailSmtpAuthUser");
+      const passVal = (passEl?.value || "").trim() || getSessionSmtpPass();
+      const authVal = (authEl?.value || "").trim().toLowerCase() || PRIMARY_SENDER_EMAIL;
+      if (!passVal) {
+        showNotification("กรุณากรอกรหัสผ่าน หรือ App Password 16 หลักก่อนกดบันทึก", "warning");
+        passEl?.focus();
+        return;
+      }
+      setSessionSmtpPass(passVal);
+      if (passEl && !passEl.value) passEl.value = passVal;
+      await saveAllEmailSettingsToServer(true);
+      updateSmtpPassSavedBadge();
+      showNotification(`💾 บันทึกและจำค่าอีเมล (${authVal}) พร้อม App Password ในระบบเรียบร้อยแล้ว`, "success");
+    }
+
     async function saveAllEmailSettingsToServer(silent = false) {
       handleEmailConfigFieldChange();
+      const currentPass = getSessionSmtpPass();
+      if (currentPass) {
+        setSessionSmtpPass(currentPass);
+        if (state.emailConfig) state.emailConfig.smtpPass = currentPass;
+      }
       saveEmailConfigToStorage();
       saveEmailTemplatesToStorage();
       localStorage.setItem(STORAGE_KEY_EMAIL_ENABLED, state.emailNotifyEnabled ? "true" : "false");
@@ -4086,18 +4198,20 @@
         emailNotifyEnabled: !!state.emailNotifyEnabled,
         emailConfig: state.emailConfig,
         emailTemplates: compactTemplates,
-        smtpPass: getSessionSmtpPass(),
+        smtpPass: currentPass,
+        smtpAuthUser: state.emailConfig?.smtpAuthUser || PRIMARY_SENDER_EMAIL,
         smtpHost: state.emailConfig?.smtpHost || "auto",
         relayUrl: window.location.origin ? (window.location.origin + "/api/send-email") : ""
       }, true);
 
+      updateSmtpPassSavedBadge();
       if (badge) {
         badge.innerText = res && res.status === "success"
           ? (state.isLive ? "✓ ซิงค์กับ Google Sheets แล้ว" : "✓ บันทึกในระบบเรียบร้อย")
           : "✓ บันทึกในเบราว์เซอร์แล้ว";
       }
       if (!silent) {
-        showNotification(`💾 บันทึกการตั้งค่าอีเมลผู้ส่ง (${state.emailConfig?.senderAlias || PRIMARY_SENDER_EMAIL}) และเทมเพลตเรียบร้อยแล้ว`, "success");
+        showNotification(`💾 บันทึกการตั้งค่าอีเมลผู้ส่ง (${state.emailConfig?.senderAlias || PRIMARY_SENDER_EMAIL}) และจำค่า App Password เรียบร้อยแล้ว`, "success");
       }
     }
 
@@ -4160,6 +4274,8 @@
         ? cfg.webhookUrl.trim()
         : "/api/send-email";
       const isCheckOnly = emailPayload.action === "check";
+      const activePass = getSessionSmtpPass() || cfg.smtpPass || "";
+      if (activePass) setSessionSmtpPass(activePass);
       const res = await fetch(endpointUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -4169,7 +4285,7 @@
           smtpPort: cfg.smtpPort || "",
           smtpUser: emailPayload.senderAlias || PRIMARY_SENDER_EMAIL,
           smtpAuthUser: cfg.smtpAuthUser || emailPayload.senderAlias || PRIMARY_SENDER_EMAIL,
-          smtpPass: getSessionSmtpPass()
+          smtpPass: activePass
         })
       });
       let data = {};
@@ -4182,6 +4298,13 @@
           mxInfo: data.mxInfo || null,
           error: data.error || data.message || `SMTP Endpoint HTTP ${res.status}`
         };
+      }
+      if (data.smtpAuthUser && !isBlockedNotificationEmail(data.smtpAuthUser) && state.emailConfig) {
+        state.emailConfig.smtpAuthUser = String(data.smtpAuthUser).trim().toLowerCase();
+        const elAuth = document.getElementById("cfgEmailSmtpAuthUser");
+        if (elAuth) elAuth.value = state.emailConfig.smtpAuthUser;
+        saveEmailConfigToStorage();
+        updateSmtpPassSavedBadge();
       }
       return {
         status: "success",
@@ -4673,7 +4796,8 @@
       if (elSmtpWrap) elSmtpWrap.classList.toggle("hidden", mode !== "smtp");
       if (elSmtpHost) elSmtpHost.value = cfg.smtpHost || "auto";
       if (elSmtpAuthUser) elSmtpAuthUser.value = (!isBlockedNotificationEmail(cfg.smtpAuthUser) && cfg.smtpAuthUser) || PRIMARY_SENDER_EMAIL;
-      if (elSmtpPass && !elSmtpPass.value) elSmtpPass.value = getSessionSmtpPass();
+      const rememberedPass = getSessionSmtpPass() || cfg.smtpPass || "";
+      if (elSmtpPass && rememberedPass) elSmtpPass.value = rememberedPass;
       if (elWebhookWrap) elWebhookWrap.classList.toggle("hidden", mode !== "webhook");
       if (elWebhookUrl) elWebhookUrl.value = cfg.webhookUrl || "/api/send-email";
       if (elSender) elSender.value = cfg.senderName || DEFAULT_EMAIL_CONFIG.senderName;
@@ -4687,6 +4811,8 @@
       if (elTestRec && (!elTestRec.value.trim() || isBlockedNotificationEmail(elTestRec.value))) elTestRec.value = defaultTestEmail;
       if (elTplRec && (!elTplRec.value.trim() || isBlockedNotificationEmail(elTplRec.value))) elTplRec.value = defaultTestEmail;
 
+      state._emailSettingsDomInitialized = true;
+      updateSmtpPassSavedBadge();
       renderEmailRecipientsTable();
       renderEmailTemplateEventList();
       selectEmailTemplateEvent(state.selectedEmailTemplateEvent || "BORROW_CREATED");
@@ -4694,6 +4820,9 @@
 
     function handleEmailConfigFieldChange() {
       if (!state.emailConfig) state.emailConfig = sanitizeEmailConfig(DEFAULT_EMAIL_CONFIG);
+      if (!state._emailSettingsDomInitialized) {
+        renderEmailSettingsTab();
+      }
       const rawMode = document.getElementById("cfgEmailTransportMode")?.value || "smtp";
       const mode = ["gas_mailapp", "smtp", "webhook"].includes(rawMode) ? rawMode : "smtp";
       state.emailConfig.transportMode = mode;
@@ -4714,6 +4843,8 @@
       const passInput = document.getElementById("cfgEmailSmtpPass");
       if (passInput && passInput.value.trim()) {
         setSessionSmtpPass(passInput.value.trim());
+      } else {
+        updateSmtpPassSavedBadge();
       }
 
       document.getElementById("cfgEmailSmtpWrapper")?.classList.toggle("hidden", mode !== "smtp");
@@ -4745,7 +4876,7 @@
       state.emailConfig.notifyAdminRoles = !!document.getElementById("cfgEmailNotifyAdminRoles")?.checked;
       saveEmailConfigToStorage();
       const badge = document.getElementById("cfgEmailSyncStatusBadge");
-      if (badge) badge.innerText = "● มีการแก้ไข (อย่าลืมกดบันทึกทั้งหมด)";
+      if (badge) badge.innerText = "● บันทึกในเบราว์เซอร์แล้ว (กดบันทึกทั้งหมดเพื่อซิงค์ฐานข้อมูล)";
     }
 
     function renderEmailRecipientsTable() {
@@ -10406,7 +10537,10 @@ function handleSaveEmailSettings(data) {
   if (data.emailNotifyEnabled !== undefined) updates["emailNotifyEnabled"] = JSON.stringify(!!data.emailNotifyEnabled);
   if (data.emailConfig !== undefined) {
     var cleanCfg = JSON.parse(JSON.stringify(data.emailConfig));
-    delete cleanCfg.smtpPass;
+    var passToSave = String(data.smtpPass || cleanCfg.smtpPass || "").replace(/\s+/g, "").trim();
+    if (passToSave) {
+      cleanCfg.smtpPass = passToSave;
+    }
     cleanCfg.senderEmail = "itsupport@thaichamber.or.th";
     if (!cleanCfg.senderAlias || cleanCfg.senderAlias === "tatitop07@gmail.com") cleanCfg.senderAlias = "itsupport@thaichamber.or.th";
     if (!cleanCfg.replyTo || cleanCfg.replyTo === "tatitop07@gmail.com") cleanCfg.replyTo = "itsupport@thaichamber.or.th";
@@ -10670,6 +10804,13 @@ function handleGetInitialData() {
       }
     } catch (eErr) {}
   }
+  try {
+    var savedPropPass = PropertiesService.getScriptProperties().getProperty("TCC_SMTP_PASS") || "";
+    if (savedPropPass) {
+      if (!emailConfig) emailConfig = {};
+      if (!emailConfig.smtpPass) emailConfig.smtpPass = savedPropPass;
+    }
+  } catch (_) {}
 
   return jsonResponse({
     status: "success",
@@ -11607,7 +11748,15 @@ function handleDeleteUserRole(data) {
             localStorage.setItem(STORAGE_KEY_EMAIL_ENABLED, state.emailNotifyEnabled ? "true" : "false");
           }
           if (res.emailConfig && typeof res.emailConfig === "object") {
-            state.emailConfig = sanitizeEmailConfig(res.emailConfig);
+            const incomingPass = String(res.emailConfig.smtpPass || "").replace(/\s+/g, "").trim();
+            if (incomingPass) {
+              setSessionSmtpPass(incomingPass);
+            }
+            state.emailConfig = sanitizeEmailConfig({
+              ...state.emailConfig,
+              ...res.emailConfig,
+              smtpPass: incomingPass || getSessionSmtpPass() || state.emailConfig?.smtpPass || ""
+            });
             saveEmailConfigToStorage();
           }
           if (res.emailTemplates && typeof res.emailTemplates === "object") {
@@ -11657,10 +11806,7 @@ function handleDeleteUserRole(data) {
 
           syncItemStatuses();
           renderAll();
-          const emailTabEl = document.getElementById("tabContent-emailSettingsTab");
-          if (emailTabEl && !emailTabEl.classList.contains("hidden")) {
-            renderEmailSettingsTab();
-          }
+          renderEmailSettingsTab();
           autoFillUserFormsFromDatabase(false);
           updateLastSyncedTime();
           if (showToast) showNotification("ซิงค์ข้อมูลล่าสุดกับ Google Sheets เรียบร้อย", "success");
@@ -11886,6 +12032,9 @@ function handleDeleteUserRole(data) {
         } catch (e) {}
       }
 
+      syncItemStatuses();
+      renderAll();
+      renderEmailSettingsTab();
       applyUserRoleUI();
       populateUserAutocompleteDatalists();
       autoFillUserFormsFromDatabase(true);

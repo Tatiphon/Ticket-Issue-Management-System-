@@ -29,15 +29,15 @@ function buildHtmlEmailBody(bodyText) {
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;");
   return (
-    '<div style="font-family: Sarabun, sans-serif; max-width: 620px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden;">' +
-    '<div style="background: linear-gradient(135deg, #003d73, #0284c7); color: #ffffff; padding: 18px 24px;">' +
-    '<h2 style="margin: 0; font-size: 18px;">หอการค้าไทย (TCC IT Asset &amp; Helpdesk Service)</h2>' +
-    '<p style="margin: 4px 0 0; font-size: 12px; opacity: 0.9;">ระบบแจ้งเตือนอัตโนมัติ ฝ่ายเทคโนโลยีสารสนเทศ (itsupport@thaichamber.or.th)</p>' +
+    '<div style="font-family: Sarabun, -apple-system, BlinkMacSystemFont, sans-serif; width: 100%; max-width: 620px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; box-sizing: border-box;">' +
+    '<div style="background: linear-gradient(135deg, #003d73, #0284c7); color: #ffffff; padding: 16px 20px; box-sizing: border-box;">' +
+    '<h2 style="margin: 0; font-size: 16px; line-height: 1.4; word-break: break-word;">หอการค้าไทย (TCC IT Asset &amp; Helpdesk Service)</h2>' +
+    '<p style="margin: 4px 0 0; font-size: 12px; line-height: 1.45; opacity: 0.92; word-break: break-word;">ระบบแจ้งเตือนอัตโนมัติ ฝ่ายเทคโนโลยีสารสนเทศ (itsupport@thaichamber.or.th)</p>' +
     "</div>" +
-    '<div style="padding: 20px 24px; background: #ffffff; color: #1e293b; font-size: 14px; line-height: 1.65; white-space: pre-line;">' +
+    '<div style="padding: 18px 20px; background: #ffffff; color: #1e293b; font-size: 14px; line-height: 1.65; white-space: pre-line; word-break: break-word; box-sizing: border-box;">' +
     escaped +
     "</div>" +
-    '<div style="padding: 12px 24px; background: #f8fafc; color: #64748b; font-size: 11px; border-top: 1px solid #e2e8f0;">' +
+    '<div style="padding: 12px 20px; background: #f8fafc; color: #64748b; font-size: 11px; line-height: 1.45; border-top: 1px solid #e2e8f0; word-break: break-word; box-sizing: border-box;">' +
     "อีเมลฉบับนี้ส่งอัตโนมัติจากศูนย์บริการไอที หอการค้าไทย (itsupport@thaichamber.or.th)" +
     "</div></div>"
   );

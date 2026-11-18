@@ -83,80 +83,84 @@
 
   <!-- Header Section -->
   <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm w-full">
-    <div class="w-full max-w-[1920px] mx-auto px-3 sm:px-5 lg:px-6 xl:px-8 py-2.5">
-      <div class="flex items-center justify-between gap-3">
+    <div class="w-full max-w-[1920px] mx-auto px-3 sm:px-5 lg:px-6 xl:px-8 py-2 sm:py-2.5">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3">
         
         <!-- Brand & Title -->
-        <div class="flex items-center gap-3 min-w-0">
-          <div class="w-10 h-12 shrink-0 drop-shadow flex items-center justify-center">
-            <img src="LOGO The Thai chamber of commerce_2.png" 
-                 onerror="applyTccLogo(this)"
-                 alt="โลโก้หอการค้าไทย" 
-                 class="tcc-logo-img w-full h-full object-contain" />
-          </div>
-          <div class="min-w-0">
-            <div class="flex items-center gap-2 flex-wrap">
-              <h1 class="text-base sm:text-lg font-bold text-slate-900 leading-tight">ศูนย์บริการเทคโนโลยีสารสนเทศ</h1>
-              <span id="roleBadge" class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-300">
-                รอเข้าสู่ระบบ
-              </span>
+        <div class="flex items-center justify-between sm:justify-start gap-2.5 min-w-0 w-full sm:w-auto sm:flex-1">
+          <div class="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
+            <div class="w-8 h-10 sm:w-10 sm:h-12 shrink-0 drop-shadow flex items-center justify-center">
+              <img src="LOGO The Thai chamber of commerce_2.png" 
+                   onerror="applyTccLogo(this)"
+                   alt="โลโก้หอการค้าไทย" 
+                   class="tcc-logo-img w-full h-full object-contain" />
             </div>
-            <p class="text-xs text-slate-500 flex items-center gap-1.5 mt-0.5">
-              <span class="text-tcc-700 font-semibold">ฝ่ายเทคโนโลยีสารสนเทศ หอการค้าไทย</span>
-              <span id="dbConnStatusWrapper" class="admin-only admin-hidden inline-flex items-center gap-1 text-[11px]">
-                <span class="text-slate-300">|</span>
-                <span id="connStatusDot" class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span id="connStatusText" class="truncate max-w-[130px] sm:max-w-none text-emerald-700 font-medium">เชื่อมต่อระบบ</span>
-                <span class="text-slate-300 hidden sm:inline">|</span>
-                <span id="lastSyncText" class="text-slate-400 hidden sm:inline"></span>
-              </span>
-            </p>
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center gap-2 min-w-0">
+                <h1 class="text-sm sm:text-base lg:text-lg font-bold text-slate-900 leading-tight truncate">ศูนย์บริการเทคโนโลยีสารสนเทศ</h1>
+                <span id="roleBadge" class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-300 shrink-0 whitespace-nowrap">
+                  รอเข้าสู่ระบบ
+                </span>
+              </div>
+              <p class="text-[11px] sm:text-xs text-slate-500 flex items-center gap-1.5 mt-0.5 min-w-0">
+                <span class="text-tcc-700 font-semibold truncate">ฝ่ายเทคโนโลยีสารสนเทศ หอการค้าไทย</span>
+                <span id="dbConnStatusWrapper" class="admin-only admin-hidden hidden md:inline-flex items-center gap-1 text-[11px] shrink-0 whitespace-nowrap">
+                  <span class="text-slate-300">|</span>
+                  <span id="connStatusDot" class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
+                  <span id="connStatusText" class="truncate max-w-[130px] lg:max-w-none text-emerald-700 font-medium">เชื่อมต่อระบบ</span>
+                  <span class="text-slate-300 hidden xl:inline">|</span>
+                  <span id="lastSyncText" class="text-slate-400 hidden xl:inline"></span>
+                </span>
+              </p>
+            </div>
           </div>
         </div>
 
         <!-- Right: Action & Profile Area -->
-        <div class="flex items-center gap-2 shrink-0">
-          <!-- Toggle Admin Sidebar Button (Desktop & Mobile) -->
-          <button id="btnToggleSidebar" onclick="toggleAdminSidebarMobile()" class="admin-only admin-hidden px-2.5 py-1.5 text-xs font-bold rounded-xl bg-tcc-50 hover:bg-tcc-100 text-tcc-700 border border-tcc-200 items-center gap-1.5 transition shadow-sm inline-flex" title="เปิด/ปิด เมนูด้านข้างแอดมิน">
-            <svg class="w-4 h-4 text-tcc-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg>
-            <span class="hidden sm:inline">เมนูจัดการระบบ</span>
-          </button>
+        <div class="flex items-center justify-between sm:justify-end gap-1.5 sm:gap-2 w-full sm:w-auto pt-1.5 sm:pt-0 border-t sm:border-t-0 border-slate-100 shrink-0">
+          <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <!-- Toggle Admin Sidebar Button (Desktop & Mobile) -->
+            <button id="btnToggleSidebar" onclick="toggleAdminSidebarMobile()" class="admin-only admin-hidden px-2.5 py-1.5 text-xs font-bold rounded-xl bg-tcc-50 hover:bg-tcc-100 text-tcc-700 border border-tcc-200 items-center gap-1.5 transition shadow-sm inline-flex shrink-0 whitespace-nowrap" title="เปิด/ปิด เมนูด้านข้างแอดมิน">
+              <svg class="w-4 h-4 text-tcc-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg>
+              <span class="hidden md:inline">เมนูจัดการระบบ</span>
+            </button>
 
-          <!-- Global Refresh -->
-          <button onclick="triggerManualReload()" class="p-1.5 sm:px-3 sm:py-1.5 text-xs font-semibold rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-700 flex items-center gap-1.5 transition active:scale-95 shadow-sm" title="รีเฟรชข้อมูลล่าสุด">
-            <svg id="reloadIcon" class="w-4 h-4 text-tcc-600 transition-transform shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-            </svg>
-            <span class="hidden sm:inline">รีเฟรช</span>
-          </button>
+            <!-- Global Refresh -->
+            <button onclick="triggerManualReload()" class="p-1.5 sm:px-3 sm:py-1.5 text-xs font-semibold rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-700 flex items-center gap-1.5 transition active:scale-95 shadow-sm shrink-0 whitespace-nowrap" title="รีเฟรชข้อมูลล่าสุด">
+              <svg id="reloadIcon" class="w-4 h-4 text-tcc-600 transition-transform shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+              </svg>
+              <span class="hidden md:inline">รีเฟรช</span>
+            </button>
 
-          <!-- Email Notification Center Button -->
-          <button onclick="openEmailLogModal()" class="p-1.5 sm:px-3 sm:py-1.5 text-xs font-semibold rounded-xl border border-sky-200 bg-sky-50/70 hover:bg-sky-100 text-sky-800 flex items-center gap-1.5 transition active:scale-95 shadow-sm relative" title="ศูนย์แจ้งเตือนอีเมลอัตโนมัติ (Email Notification Center)">
-            <span>📧</span>
-            <span class="hidden md:inline">แจ้งเตือนอีเมล</span>
-            <span id="headerEmailLogBadge" class="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-sky-600 text-white">0</span>
-          </button>
+            <!-- Email Notification Center Button -->
+            <button onclick="openEmailLogModal()" class="px-2 py-1.5 sm:px-3 sm:py-1.5 text-xs font-semibold rounded-xl border border-sky-200 bg-sky-50/70 hover:bg-sky-100 text-sky-800 flex items-center gap-1.5 transition active:scale-95 shadow-sm relative shrink-0 whitespace-nowrap" title="ศูนย์แจ้งเตือนอีเมลอัตโนมัติ (Email Notification Center)">
+              <span>📧</span>
+              <span class="hidden lg:inline">แจ้งเตือนอีเมล</span>
+              <span id="headerEmailLogBadge" class="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-sky-600 text-white">0</span>
+            </button>
 
-          <!-- Google Sheets Setup (Super Admin Only) -->
-          <button onclick="openSetupModal()" class="superadmin-only superadmin-hidden hidden lg:inline-flex px-3 py-1.5 text-xs font-semibold rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-700 items-center gap-1.5 transition shadow-sm">
-            <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-            <span>Google Sheets</span>
-          </button>
+            <!-- Google Sheets Setup (Super Admin Only) -->
+            <button onclick="openSetupModal()" class="superadmin-only superadmin-hidden hidden xl:inline-flex px-3 py-1.5 text-xs font-semibold rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-700 items-center gap-1.5 transition shadow-sm shrink-0 whitespace-nowrap">
+              <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+              <span>Google Sheets</span>
+            </button>
+          </div>
 
           <!-- Auth Status & Profile -->
-          <div id="authContainer" class="flex items-center gap-2 pl-2 border-l border-slate-200">
-            <button id="btnLoginModal" onclick="openLoginModal()" class="px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm transition">
+          <div id="authContainer" class="flex items-center gap-2 sm:pl-2 sm:border-l border-slate-200 min-w-0">
+            <button id="btnLoginModal" onclick="openLoginModal()" class="px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm transition shrink-0 whitespace-nowrap">
               <svg class="w-4 h-4 shrink-0 text-tcc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
               <span>เข้าสู่ระบบ</span>
             </button>
 
-            <div id="userProfilePill" class="hidden items-center gap-2 bg-slate-100 hover:bg-slate-200/80 p-1 pr-2.5 rounded-full border border-slate-200 transition">
-              <img id="userAvatarImg" src="" alt="User Avatar" class="w-7 h-7 rounded-full object-cover border border-slate-300 shrink-0">
-              <div class="flex flex-col text-left">
-                <span id="userDisplayName" class="text-xs font-bold text-slate-800 leading-tight truncate max-w-[120px] sm:max-w-[160px]">-</span>
-                <span id="userEmailSub" class="text-[9px] text-slate-500 leading-none truncate max-w-[120px] sm:max-w-[160px]">-</span>
+            <div id="userProfilePill" class="hidden items-center gap-2 bg-slate-100 hover:bg-slate-200/80 p-1 pr-2 sm:pr-2.5 rounded-full border border-slate-200 transition min-w-0 max-w-full">
+              <img id="userAvatarImg" src="" alt="User Avatar" class="w-6 h-6 sm:w-7 sm:h-7 rounded-full object-cover border border-slate-300 shrink-0">
+              <div class="flex flex-col text-left min-w-0">
+                <span id="userDisplayName" class="text-[11px] sm:text-xs font-bold text-slate-800 leading-tight truncate max-w-[135px] sm:max-w-[165px]">-</span>
+                <span id="userEmailSub" class="text-[9px] sm:text-[10px] text-slate-500 leading-none truncate max-w-[135px] sm:max-w-[165px] mt-0.5">-</span>
               </div>
-              <button onclick="handleSignOut()" class="p-1 text-slate-400 hover:text-rose-600 rounded-full transition" title="ออกจากระบบ">
+              <button onclick="handleSignOut()" class="p-1 text-slate-400 hover:text-rose-600 rounded-full transition shrink-0" title="ออกจากระบบ">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
               </button>
             </div>
@@ -168,7 +172,7 @@
   </header>
 
   <!-- Toast Notification Alert Box -->
-  <div id="toastContainer" class="fixed top-16 sm:top-20 right-3 sm:right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none px-2 sm:px-0"></div>
+  <div id="toastContainer" class="fixed top-20 sm:top-20 right-3 sm:right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none px-2 sm:px-0"></div>
 
   <!-- AUTH GATE SCREEN (Shown when logged out) -->
   <div id="authGateScreen" class="flex-1 flex items-center justify-center p-4 bg-gradient-to-b from-slate-50 to-sky-50/50">
@@ -181,7 +185,7 @@
       <h2 class="text-lg sm:text-xl font-bold text-slate-900">ศูนย์บริการเทคโนโลยีสารสนเทศ</h2>
       <p class="text-xs font-semibold text-tcc-700 mb-5">ฝ่ายเทคโนโลยีสารสนเทศ หอการค้าไทย</p>
 
-      <div class="p-5 bg-slate-50 rounded-2xl border border-slate-200 text-left mb-4 space-y-3.5">
+      <div class="p-5 bg-slate-50 rounded-2xl border border-slate-200 text-left space-y-3.5">
         <div class="flex items-center gap-2 text-xs font-bold text-slate-800 pb-2 border-b border-slate-200/70">
           <svg class="w-4 h-4 text-tcc-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
           <span>เข้าสู่ระบบด้วยชื่อผู้ใช้และรหัสผ่าน (User &amp; Password)</span>
@@ -218,28 +222,6 @@
             <span>เข้าสู่ระบบ (Sign In)</span>
           </button>
         </form>
-      </div>
-
-      <!-- Quick Role Test Switcher -->
-      <div class="text-left border-t border-slate-100 pt-3">
-        <span class="text-[11px] font-semibold text-slate-500 block mb-2">⚡ ทดสอบเข้าใช้งานด่วนตามสิทธิ์ (คลิกเพื่อเข้าสู่ระบบทันที):</span>
-        <div class="grid grid-cols-2 gap-1.5 text-[11px]">
-          <button type="button" onclick="loginDemoAccount('itsupport@thaichamber.or.th', 'admin1234')" class="px-2.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 rounded-xl font-semibold transition truncate text-left shadow-2xs">
-            👑 Super Admin (itsupport)
-          </button>
-          <button type="button" onclick="loginDemoAccount('tatiphon.hi@thaichamber.or.th', 'admin1234')" class="px-2.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 rounded-xl font-semibold transition truncate text-left shadow-2xs">
-            👑 Super Admin (tatiphon)
-          </button>
-          <button type="button" onclick="loginDemoAccount('wattanachai.mi@thaichamber.or.th', 'admin1234')" class="px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200 rounded-xl font-semibold transition truncate text-left shadow-2xs">
-            🛡️ Admin (wattanachai)
-          </button>
-          <button type="button" onclick="loginDemoAccount('supakon.su@thaichamber.or.th', 'admin1234')" class="px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200 rounded-xl font-semibold transition truncate text-left shadow-2xs">
-            🛡️ Admin (supakon)
-          </button>
-          <button type="button" onclick="loginDemoAccount('somchai.user@thaichamber.or.th', 'user1234')" class="col-span-2 px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-xl font-semibold transition text-center truncate shadow-2xs">
-            👤 พนักงานทั่วไป (somchai.user@thaichamber.or.th)
-          </button>
-        </div>
       </div>
     </div>
   </div>
@@ -377,8 +359,8 @@
       <div class="flex-1 min-w-0 w-full space-y-4">
         
         <!-- User Service Navbar -->
-        <div class="bg-white p-2 sm:p-2.5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between gap-3">
-          <div class="flex items-center gap-2.5 overflow-x-auto no-scrollbar flex-wrap sm:flex-nowrap w-full">
+        <div class="bg-white p-2 sm:p-2.5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between gap-2 sm:gap-3">
+          <div class="flex items-center gap-1.5 sm:gap-2.5 overflow-x-auto no-scrollbar flex-nowrap w-full">
             <!-- Mobile Toggle Button for Admin Sidebar -->
             <button type="button" onclick="toggleAdminSidebarMobile()" class="admin-only admin-hidden lg:hidden px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold flex items-center gap-1.5 shrink-0">
               <span>☰ เมนูแอดมิน</span>
@@ -5183,12 +5165,9 @@
       return true;
     }
 
-    function loginDemoAccount(email, password) {
-      const gateUser = document.getElementById("gateLoginEmailInput");
-      const gatePass = document.getElementById("gateLoginPasswordInput");
-      if (gateUser) gateUser.value = email;
-      if (gatePass) gatePass.value = password;
-      processUserLogin(email, password);
+    function loginDemoAccount() {
+      showNotification("⛔ ปิดระบบทดสอบเข้าใช้งานด่วนแล้ว กรุณากรอกชื่อผู้ใช้และรหัสผ่านเพื่อเข้าสู่ระบบ", "error");
+      return false;
     }
 
     function setCurrentUser(user) {
@@ -5251,16 +5230,16 @@
       if (roleBadge) {
         if (isSuperAdmin) {
           roleBadge.innerText = "👑 Super Admin";
-          roleBadge.className = "inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300";
+          roleBadge.className = "inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300 shrink-0 whitespace-nowrap";
         } else if (isAdmin) {
           roleBadge.innerText = "🛡️ Admin ไอที";
-          roleBadge.className = "inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800 border border-blue-300";
+          roleBadge.className = "inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800 border border-blue-300 shrink-0 whitespace-nowrap";
         } else if (isUser) {
           roleBadge.innerText = "ผู้ใช้งานระบบ";
-          roleBadge.className = "inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200";
+          roleBadge.className = "inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0 whitespace-nowrap";
         } else {
           roleBadge.innerText = "รอเข้าสู่ระบบ";
-          roleBadge.className = "inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-300";
+          roleBadge.className = "inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-300 shrink-0 whitespace-nowrap";
         }
       }
 
@@ -10263,15 +10242,15 @@ function sendNotificationEmailGAS(toList, subject, bodyText, senderName, replyTo
       return { ok: false, error: "ไม่พบอีเมลปลายทางที่ถูกต้อง (ระบบบล็อกการส่งหา tatitop07@gmail.com)", senderEmail: targetSender };
     }
     var dispName = senderName || "TCC IT Service & Asset System";
-    var htmlBody = '<div style="font-family: Sarabun, sans-serif; max-width: 620px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden;">' +
-      '<div style="background: linear-gradient(135deg, #003d73, #0284c7); color: #ffffff; padding: 18px 24px;">' +
-      '<h2 style="margin: 0; font-size: 18px;">หอการค้าไทย (TCC IT Asset & Helpdesk Service)</h2>' +
-      '<p style="margin: 4px 0 0; font-size: 12px; opacity: 0.9;">ระบบแจ้งเตือนอัตโนมัติ ฝ่ายเทคโนโลยีสารสนเทศ (' + targetSender + ')</p>' +
+    var htmlBody = '<div style="font-family: Sarabun, sans-serif; width: 100%; max-width: 620px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; box-sizing: border-box;">' +
+      '<div style="background: linear-gradient(135deg, #003d73, #0284c7); color: #ffffff; padding: 16px 20px; word-break: break-word;">' +
+      '<h2 style="margin: 0; font-size: 16px; line-height: 1.4;">หอการค้าไทย (TCC IT Asset & Helpdesk Service)</h2>' +
+      '<p style="margin: 4px 0 0; font-size: 12px; line-height: 1.4; opacity: 0.9;">ระบบแจ้งเตือนอัตโนมัติ ฝ่ายเทคโนโลยีสารสนเทศ (' + targetSender + ')</p>' +
       '</div>' +
-      '<div style="padding: 20px 24px; background: #ffffff; color: #1e293b; font-size: 14px; line-height: 1.65; white-space: pre-line;">' +
+      '<div style="padding: 18px 20px; background: #ffffff; color: #1e293b; font-size: 14px; line-height: 1.65; white-space: pre-line; word-break: break-word;">' +
       String(bodyText || "").replace(/</g, "&lt;").replace(/>/g, "&gt;") +
       '</div>' +
-      '<div style="padding: 12px 24px; background: #f8fafc; color: #64748b; font-size: 11px; border-top: 1px solid #e2e8f0;">' +
+      '<div style="padding: 12px 20px; background: #f8fafc; color: #64748b; font-size: 11px; line-height: 1.5; border-top: 1px solid #e2e8f0; word-break: break-word;">' +
       'อีเมลฉบับนี้ส่งอัตโนมัติจากระบบบริหารจัดการอุปกรณ์และแจ้งซ่อมไอที หอการค้าไทย (' + targetSender + ')' +
       '</div></div>';
 

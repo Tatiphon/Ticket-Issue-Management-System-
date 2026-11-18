@@ -692,8 +692,8 @@
                     </div>
                   </div>
 
-                  <!-- Contact & Return Date -->
-                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <!-- Contact & Borrow/Return Dates -->
+                  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
                       <label for="borrowerContact" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                         4. อีเมล (@thaichamber.or.th) หรือ เบอร์โทร <span class="text-rose-500">*</span>
@@ -702,17 +702,27 @@
                     </div>
 
                     <div>
+                      <div class="flex items-center justify-between mb-1.5">
+                        <label for="borrowStartDate" class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                          5. กำหนดวันที่ยืมเครื่อง (วันเริ่มต้น) <span class="text-rose-500">*</span>
+                        </label>
+                        <span class="text-[10px] font-semibold text-tcc-700 bg-tcc-50 px-1.5 py-0.5 rounded border border-tcc-200/70">วันนี้</span>
+                      </div>
+                      <input type="date" id="borrowStartDate" onchange="handleBorrowStartDateChange()" required class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-tcc-500 outline-none bg-white">
+                    </div>
+
+                    <div>
                       <label for="expectedReturnDate" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                        5. กำหนดวันที่ส่งคืน <span class="text-rose-500">*</span>
+                        6. กำหนดวันที่ส่งคืน <span class="text-rose-500">*</span>
                       </label>
-                      <input type="date" id="expectedReturnDate" required class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-tcc-500 outline-none">
+                      <input type="date" id="expectedReturnDate" required class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-tcc-500 outline-none bg-white">
                     </div>
                   </div>
 
                   <!-- Purpose -->
                   <div>
                     <label for="borrowPurpose" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                      6. วัตถุประสงค์ในการยืม / สถานที่ใช้งาน
+                      7. วัตถุประสงค์ในการยืม / สถานที่ใช้งาน
                     </label>
                     <textarea id="borrowPurpose" rows="2" placeholder="เช่น ใช้จัดประชุมคณะกรรมการ, สัมมนา WFH ชั่วคราว" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-tcc-500 outline-none"></textarea>
                   </div>
@@ -1109,13 +1119,15 @@
             </div>
 
             <!-- Table View -->
-            <div id="adminTicketTableView" class="hidden overflow-x-auto max-w-[888px] mx-auto rounded-xl border border-slate-200 bg-white shadow-2xs">
+            <div id="adminTicketTableView" class="hidden overflow-x-auto w-full rounded-xl border border-slate-200 bg-white shadow-2xs">
               <table id="adminTicketTableEl" class="w-full text-left text-xs whitespace-nowrap divide-y divide-slate-100">
                 <thead class="bg-slate-50 text-slate-600 uppercase font-bold text-[11px] border-b border-slate-200 whitespace-nowrap">
                   <tr>
                     <th class="py-2.5 px-2 whitespace-nowrap">รหัสเคส</th>
                     <th class="py-2.5 px-2 whitespace-nowrap">หัวข้อปัญหา</th>
                     <th class="py-2.5 px-2 whitespace-nowrap">ผู้แจ้ง / แผนก</th>
+                    <th class="py-2.5 px-2 whitespace-nowrap">วันที่เปิดเคส</th>
+                    <th class="py-2.5 px-2 whitespace-nowrap">วันที่ปิดเคส</th>
                     <th class="py-2.5 px-1.5 text-center whitespace-nowrap">ความสำคัญ</th>
                     <th class="py-2.5 px-1.5 text-center whitespace-nowrap">สถานะ</th>
                     <th class="py-2.5 px-2 whitespace-nowrap">ผู้รับผิดชอบ</th>
@@ -2107,14 +2119,26 @@
       </div>
 
       <div class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 text-xs">
-        <div class="flex flex-wrap items-center justify-between gap-2 p-3 rounded-2xl bg-slate-50 border border-slate-200">
-          <div class="flex items-center gap-2">
-            <span class="text-slate-500 font-medium">สถานะเคส:</span>
-            <span id="detailTicketStatusBadge" class="px-2.5 py-0.5 rounded-full text-xs font-bold"></span>
+        <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span class="text-slate-500 font-medium">สถานะเคส:</span>
+              <span id="detailTicketStatusBadge" class="px-2.5 py-0.5 rounded-full text-xs font-bold"></span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-slate-500 font-medium">กำหนด SLA:</span>
+              <span id="detailTicketSlaBadge" class="font-mono text-xs font-semibold"></span>
+            </div>
           </div>
-          <div class="flex items-center gap-2">
-            <span class="text-slate-500 font-medium">กำหนด SLA:</span>
-            <span id="detailTicketSlaBadge" class="font-mono text-xs font-semibold"></span>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 border-t border-slate-200/80 text-[11px]">
+            <div class="flex items-center gap-1.5">
+              <span class="text-slate-500 font-medium">📅 วันที่เปิดเคส:</span>
+              <span id="detailTicketCreatedAt" class="font-mono font-semibold text-slate-800">-</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="text-slate-500 font-medium">✅ วันที่ปิดเคส:</span>
+              <span id="detailTicketResolvedAt" class="font-mono font-semibold text-slate-600">-</span>
+            </div>
           </div>
         </div>
 
@@ -2194,6 +2218,17 @@
 
       <form id="ticketAdminActionForm" onsubmit="handleSaveTicketAdminAction(event)" class="space-y-3.5 text-xs">
         <input type="hidden" id="adminActionTicketId">
+
+        <div class="grid grid-cols-2 gap-2 p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-[11px]">
+          <div>
+            <span class="text-slate-500 block">📅 วันที่เปิดเคส</span>
+            <span id="adminActionCreatedAt" class="font-mono font-bold text-slate-800">-</span>
+          </div>
+          <div>
+            <span class="text-slate-500 block">✅ วันที่ปิดเคส</span>
+            <span id="adminActionResolvedAt" class="font-mono font-bold text-slate-600">-</span>
+          </div>
+        </div>
 
         <div>
           <label class="block font-semibold text-slate-700 mb-1">ปรับสถานะเคส (Status) *</label>
@@ -3888,6 +3923,15 @@
     }
 
     function autoFillUserFormsFromDatabase(forceOverwrite = false) {
+      const bStartEl = document.getElementById("borrowStartDate");
+      if (bStartEl && (forceOverwrite || !bStartEl.value)) {
+        bStartEl.value = getOffsetDate(0);
+        handleBorrowStartDateChange();
+      }
+      const bRetEl = document.getElementById("expectedReturnDate");
+      if (bRetEl && !bRetEl.value) {
+        setDefaultReturnDate();
+      }
       if (!state.currentUser) return;
       // Match current logged-in user against latest state.userRoles database
       const dbUser = findMatchedUserInDatabase(state.currentUser.email) || findMatchedUserInDatabase(state.currentUser.name);
@@ -6259,8 +6303,10 @@
                 ${attachBadge}
               </div>
               <p class="text-xs text-slate-500 line-clamp-1">${t.description}</p>
-              <div class="text-[11px] text-slate-400 flex items-center gap-3">
-                <span>เปิดเมื่อ: ${t.created_at}</span>
+              <div class="text-[11px] text-slate-400 flex flex-wrap items-center gap-x-3 gap-y-1">
+                <span>📅 วันที่เปิดเคส: <b class="font-mono text-slate-600">${t.created_at || '-'}</b></span>
+                <span>•</span>
+                <span>✅ วันที่ปิดเคส: ${t.resolved_at ? `<b class="font-mono text-emerald-700">${t.resolved_at}</b>` : '<span class="text-slate-400">รอดำเนินการ</span>'}</span>
                 <span>•</span>
                 <span>ผู้รับผิดชอบ: ${t.assigned_agent}</span>
               </div>
@@ -6353,6 +6399,10 @@
               if (t.priority === "High") pColor = "bg-amber-100 text-amber-800 border border-amber-300";
 
               const hasAttach = Boolean(t.attachment_name);
+              const isDone = (t.status === "Resolved" || t.status === "Closed") && Boolean(t.resolved_at);
+              const closedDateBadge = isDone || t.resolved_at
+                ? `<span class="font-mono font-bold text-emerald-700">${t.resolved_at}</span>`
+                : `<span class="text-slate-400">รอดำเนินการ</span>`;
               return `
                 <div onclick="openTicketDetailModal('${t.ticket_id}')" class="p-3 bg-white rounded-xl border border-slate-200 hover:border-tcc-400 cursor-pointer shadow-sm transition space-y-2">
                   <div class="flex items-center justify-between">
@@ -6364,6 +6414,16 @@
                   </div>
                   <h4 class="font-bold text-slate-900 text-xs line-clamp-2">${t.title}</h4>
                   ${t.system_name ? `<div class="text-[10px] font-semibold text-indigo-700 bg-indigo-50 border border-indigo-200 px-1.5 py-0.5 rounded truncate" title="${escapeQuotes(t.system_name)}">🌐 ${t.system_name}</div>` : ''}
+                  <div class="p-1.5 rounded-lg bg-slate-50 border border-slate-100 text-[10px] space-y-0.5">
+                    <div class="flex items-center justify-between gap-1 text-slate-600">
+                      <span class="font-semibold text-slate-500">📅 วันที่เปิดเคส:</span>
+                      <span class="font-mono font-semibold text-slate-700">${t.created_at || '-'}</span>
+                    </div>
+                    <div class="flex items-center justify-between gap-1">
+                      <span class="font-semibold text-slate-500">✅ วันที่ปิดเคส:</span>
+                      ${closedDateBadge}
+                    </div>
+                  </div>
                   <div class="text-[10px] text-slate-400 flex items-center justify-between pt-1 border-t border-slate-100">
                     <span class="truncate max-w-[100px]">${t.reporter_name}</span>
                     <button onclick="event.stopPropagation(); openTicketAdminActionModal('${t.ticket_id}')" class="text-tcc-600 hover:underline font-bold">จัดการ</button>
@@ -6380,15 +6440,20 @@
         tbody.innerHTML = filtered.map(t => {
           const agentShort = t.assigned_agent && t.assigned_agent.includes("@") ? t.assigned_agent.split("@")[0] : (t.assigned_agent || "-");
           const catOrSys = t.system_name ? `🌐 ${t.system_name}` : (t.category || "-");
+          const closedCellHtml = t.resolved_at
+            ? `<span class="text-emerald-700 font-semibold">${t.resolved_at}</span>`
+            : `<span class="font-sans text-slate-400">รอดำเนินการ</span>`;
           return `
           <tr class="hover:bg-slate-50 transition whitespace-nowrap">
-            <td class="py-2 px-2 font-mono font-bold text-[11px] text-slate-700 whitespace-nowrap" title="วันที่แจ้ง: ${escapeQuotes(t.created_at || '-')}">${t.ticket_id}</td>
+            <td class="py-2 px-2 font-mono font-bold text-[11px] text-slate-700 whitespace-nowrap" title="วันที่เปิดเคส: ${escapeQuotes(t.created_at || '-')}">${t.ticket_id}</td>
             <td class="py-2 px-2 font-medium text-slate-900 whitespace-nowrap">
               <div class="max-w-[140px] truncate" title="${escapeQuotes(t.title + ' (' + catOrSys + ')')}">${t.title}</div>
             </td>
             <td class="py-2 px-2 whitespace-nowrap">
               <div class="max-w-[110px] truncate text-slate-700" title="${escapeQuotes((t.reporter_name || '-') + ' • ' + (t.reporter_dept || '-'))}">${t.reporter_name || '-'} <span class="text-slate-400 text-[10px]">(${t.reporter_dept || '-'})</span></div>
             </td>
+            <td class="py-2 px-2 font-mono text-[11px] text-slate-700 whitespace-nowrap">${t.created_at || '-'}</td>
+            <td class="py-2 px-2 font-mono text-[11px] whitespace-nowrap">${closedCellHtml}</td>
             <td class="py-2 px-1.5 text-center whitespace-nowrap"><span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">${t.priority}</span></td>
             <td class="py-2 px-1.5 text-center font-bold text-[11px] whitespace-nowrap">${t.status}</td>
             <td class="py-2 px-2 text-[11px] text-slate-600 whitespace-nowrap">
@@ -6412,11 +6477,24 @@
       document.getElementById("detailTicketNumber").innerText = ticket.ticket_id;
       document.getElementById("detailTicketTitle").innerText = ticket.title;
       const sysInfo = ticket.system_name ? ` • ระบบ: ${ticket.system_name}` : ` • หมวด: ${ticket.category || '-'}`;
-      document.getElementById("detailTicketMeta").innerText = `ผู้แจ้ง: ${ticket.reporter_name} (${ticket.reporter_dept})${sysInfo} • สร้างเมื่อ: ${ticket.created_at}`;
+      const closedMeta = ticket.resolved_at ? ` • วันที่ปิดเคส: ${ticket.resolved_at}` : "";
+      document.getElementById("detailTicketMeta").innerText = `ผู้แจ้ง: ${ticket.reporter_name} (${ticket.reporter_dept})${sysInfo} • วันที่เปิดเคส: ${ticket.created_at || '-'}${closedMeta}`;
       document.getElementById("detailTicketDesc").innerText = ticket.description;
       document.getElementById("detailTicketPriorityBadge").innerText = ticket.priority;
       document.getElementById("detailTicketStatusBadge").innerText = ticket.status;
       document.getElementById("detailTicketSlaBadge").innerText = `${ticket.sla_target} น.`;
+      const detailCreatedEl = document.getElementById("detailTicketCreatedAt");
+      if (detailCreatedEl) detailCreatedEl.innerText = ticket.created_at || "-";
+      const detailResolvedEl = document.getElementById("detailTicketResolvedAt");
+      if (detailResolvedEl) {
+        if (ticket.resolved_at) {
+          detailResolvedEl.innerText = ticket.resolved_at;
+          detailResolvedEl.className = "font-mono font-bold text-emerald-700";
+        } else {
+          detailResolvedEl.innerText = "รอดำเนินการ";
+          detailResolvedEl.className = "font-sans font-medium text-slate-400";
+        }
+      }
 
       const attachBox = document.getElementById("detailAttachmentBox");
       const attachCont = document.getElementById("detailAttachmentContainer");
@@ -6578,6 +6656,18 @@
       document.getElementById("adminActionTicketId").value = ticket.ticket_id;
       document.getElementById("adminActionTicketNumber").innerText = `รหัสเคส: ${ticket.ticket_id} - ${ticket.title}`;
       document.getElementById("adminActionStatus").value = ticket.status;
+      const createdEl = document.getElementById("adminActionCreatedAt");
+      if (createdEl) createdEl.innerText = ticket.created_at || "-";
+      const resolvedEl = document.getElementById("adminActionResolvedAt");
+      if (resolvedEl) {
+        if (ticket.resolved_at) {
+          resolvedEl.innerText = ticket.resolved_at;
+          resolvedEl.className = "font-mono font-bold text-emerald-700";
+        } else {
+          resolvedEl.innerText = "รอดำเนินการ";
+          resolvedEl.className = "font-sans font-medium text-slate-400";
+        }
+      }
       const noteEl = document.getElementById("adminActionNote");
       if (noteEl) noteEl.value = "";
       const notifyChk = document.getElementById("adminActionNotifyEmail");
@@ -6606,8 +6696,12 @@
       const note = document.getElementById("adminActionNote").value.trim();
       const notifyEmail = document.getElementById("adminActionNotifyEmail")?.checked !== false;
 
-      if (ticket.status === "Resolved" && !ticket.resolved_at) {
-        ticket.resolved_at = getLocalTimestamp(0);
+      if (ticket.status === "Resolved" || ticket.status === "Closed") {
+        if (!ticket.resolved_at) {
+          ticket.resolved_at = getLocalTimestamp(0);
+        }
+      } else {
+        ticket.resolved_at = "";
       }
 
       if (note) {
@@ -8164,12 +8258,16 @@
       const notesVal = document.getElementById("borrowPurpose").value.trim();
       const notifyEmail = document.getElementById("borrowNotifyEmailCheckbox")?.checked !== false;
 
+      const bDate = document.getElementById("borrowStartDate")?.value || getOffsetDate(0);
+      const rDate = document.getElementById("expectedReturnDate").value;
+      if (rDate && bDate && rDate < bDate) {
+        return showNotification("กำหนดวันที่ส่งคืนต้องไม่น้อยกว่าวันที่ยืมเครื่อง (วันเริ่มต้น)", "warning");
+      }
+
       const btn = document.getElementById("btnSubmitBorrow");
       const spinner = document.getElementById("btnBorrowSpinner");
       btn.disabled = true; spinner.classList.remove("hidden");
 
-      const bDate = getOffsetDate(0);
-      const rDate = document.getElementById("expectedReturnDate").value;
       const createdTransIds = [];
       const borrowedItemNames = [];
 
@@ -9932,8 +10030,30 @@
     }
 
     function setDefaultReturnDate() {
+      const today = getOffsetDate(0);
+      const s = document.getElementById("borrowStartDate");
+      if (s) {
+        s.value = today;
+      }
       const d = document.getElementById("expectedReturnDate");
-      if (d) { d.min = getOffsetDate(0); d.value = getOffsetDate(3); }
+      if (d) {
+        d.min = s?.value || today;
+        d.value = getOffsetDate(3);
+      }
+    }
+
+    function handleBorrowStartDateChange() {
+      const today = getOffsetDate(0);
+      const s = document.getElementById("borrowStartDate");
+      const d = document.getElementById("expectedReturnDate");
+      const startVal = (s && s.value) ? s.value : today;
+      if (s && !s.value) s.value = today;
+      if (d) {
+        d.min = startVal;
+        if (!d.value || d.value < startVal) {
+          d.value = startVal;
+        }
+      }
     }
 
     function renderAll() {

@@ -238,8 +238,8 @@
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
               </span>
               <input type="password" id="gateLoginPasswordInput" required placeholder="กรอกรหัสผ่านของคุณ" class="w-full pl-9 pr-10 py-2.5 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-tcc-500 outline-none bg-white font-medium">
-              <button type="button" onclick="togglePasswordVisibility('gateLoginPasswordInput', 'gatePassToggleIcon')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer" title="ดู/ซ่อนรหัสผ่าน">
-                <span id="gatePassToggleIcon" class="text-xs">👁️</span>
+              <button type="button" onclick="togglePasswordVisibility('gateLoginPasswordInput', 'gatePassToggleIcon')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none focus-visible:text-tcc-600 active:scale-95 transition-colors cursor-pointer" title="ดูรหัสผ่าน" aria-label="ดู/ซ่อนรหัสผ่าน" aria-pressed="false">
+                <span id="gatePassToggleIcon" class="inline-flex items-center justify-center"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg></span>
               </button>
             </div>
           </div>
@@ -1844,8 +1844,8 @@
                         <div class="relative flex items-center gap-1.5">
                           <div class="relative flex-1 min-w-0">
                             <input type="password" id="cfgEmailSmtpPass" autocomplete="current-password" oninput="handleEmailConfigFieldChange()" onchange="handleEmailConfigFieldChange()" placeholder="กรอกรหัสผ่าน หรือ App Password 16 หลัก..." class="w-full pl-3 pr-9 py-1.5 rounded-xl border border-sky-300 bg-white text-xs outline-none focus:ring-2 focus:ring-tcc-500">
-                            <button type="button" onclick="togglePasswordVisibility('cfgEmailSmtpPass', 'cfgSmtpPassEye')" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer" title="ดู/ซ่อนรหัสผ่าน">
-                              <span id="cfgSmtpPassEye" class="text-xs">👁️</span>
+                            <button type="button" onclick="togglePasswordVisibility('cfgEmailSmtpPass', 'cfgSmtpPassEye')" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none focus-visible:text-tcc-600 active:scale-95 transition-colors cursor-pointer" title="ดูรหัสผ่าน" aria-label="ดู/ซ่อนรหัสผ่าน" aria-pressed="false">
+                              <span id="cfgSmtpPassEye" class="inline-flex items-center justify-center"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg></span>
                             </button>
                           </div>
                           <button type="button" onclick="saveSmtpCredentialsAndRemember()" class="px-3 py-1.5 rounded-xl bg-tcc-600 hover:bg-tcc-700 active:bg-tcc-800 text-white text-xs font-bold shadow-xs transition shrink-0 whitespace-nowrap cursor-pointer">
@@ -2107,8 +2107,8 @@
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
             </span>
             <input type="password" id="manualLoginPasswordInput" required placeholder="กรอกรหัสผ่านของคุณ" class="w-full pl-9 pr-10 py-2.5 rounded-xl border border-slate-300 outline-none focus:ring-2 focus:ring-tcc-500 text-xs font-medium">
-            <button type="button" onclick="togglePasswordVisibility('manualLoginPasswordInput', 'modalPassToggleIcon')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer" title="ดู/ซ่อนรหัสผ่าน">
-              <span id="modalPassToggleIcon" class="text-xs">👁️</span>
+            <button type="button" onclick="togglePasswordVisibility('manualLoginPasswordInput', 'modalPassToggleIcon')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none focus-visible:text-tcc-600 active:scale-95 transition-colors cursor-pointer" title="ดูรหัสผ่าน" aria-label="ดู/ซ่อนรหัสผ่าน" aria-pressed="false">
+              <span id="modalPassToggleIcon" class="inline-flex items-center justify-center"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg></span>
             </button>
           </div>
         </div>
@@ -2520,8 +2520,8 @@
           </div>
           <div class="relative">
             <input type="password" id="inputRolePassword" required placeholder="กำหนดรหัสผ่านเข้าใช้งาน" class="w-full pl-3 pr-10 py-2 rounded-xl border border-slate-300 font-mono text-xs outline-none focus:ring-2 focus:ring-tcc-500">
-            <button type="button" onclick="togglePasswordVisibility('inputRolePassword', 'roleModalPassToggleIcon')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer" title="ดู/ซ่อนรหัสผ่าน">
-              <span id="roleModalPassToggleIcon" class="text-xs">👁️</span>
+            <button type="button" onclick="togglePasswordVisibility('inputRolePassword', 'roleModalPassToggleIcon')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none focus-visible:text-tcc-600 active:scale-95 transition-colors cursor-pointer" title="ดูรหัสผ่าน" aria-label="ดู/ซ่อนรหัสผ่าน" aria-pressed="false">
+              <span id="roleModalPassToggleIcon" class="inline-flex items-center justify-center"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg></span>
             </button>
           </div>
         </div>
@@ -2920,7 +2920,11 @@
           <h3 class="font-bold text-slate-900">ตั้งค่าเชื่อมต่อ Google Sheets &amp; Apps Script</h3>
           <p class="text-[11px] text-slate-500">ระบบ Self-Healing สร้างแท็บตารางทั้งหมดให้อัตโนมัติ</p>
         </div>
-        <button onclick="closeSetupModal()" class="text-slate-400 hover:text-slate-600 font-bold">&times;</button>
+        <button type="button" onclick="closeSetupModal()" aria-label="ปิดหน้าต่าง" title="ปิดหน้าต่าง" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition cursor-pointer shrink-0">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
       </div>
 
       <div class="space-y-4 text-xs text-slate-700">
@@ -4548,7 +4552,7 @@
             return showEmailDiagnosticBox(
               boxId,
               "success",
-              `✅ <b>พร้อมส่งอีเมลผ่าน SMTP โดยตรง!</b><br>• <b>ผู้ส่ง (From):</b> <code>${targetSender}</code> (${checkRes.method || "SMTP"})<br>• <b>สถานะ:</b> บล็อกการใช้ <code>tatitop07@gmail.com</code> ถาวรทั้งส่งจริงและทดสอบ`
+              `✅ <b>พร้อมส่งอีเมลผ่าน SMTP โดยตรง!</b><br>• <b>ผู้ส่ง (From):</b> <code>${targetSender}</code> (${checkRes.method || "SMTP"})`
             );
           }
           return showEmailDiagnosticBox(
@@ -4685,7 +4689,7 @@
         notifyAdmins: false,
         notifyRequester: false,
         subject: `[TCC IT System] ทดสอบระบบแจ้งเตือนอีเมลอัตโนมัติ (${getLocalTimestamp(0)})`,
-        body: `เรียน ผู้ดูแลระบบฝ่ายเทคโนโลยีสารสนเทศ\n\nนี่คืออีเมลทดสอบจากระบบบริหารจัดการอุปกรณ์และ Helpdesk หอการค้าไทย\n• ผู้ส่ง (From): ${senderAddr}\n• ผู้รับทดสอบ (To): ${targetEmail}\n• เวลาที่ส่ง: ${getLocalTimestamp(0)}\n• สถานะ: ระบบส่งอีเมลอัตโนมัติพร้อมใช้งาน (ปิดกั้น tatitop07@gmail.com ถาวร)`,
+        body: `เรียน ผู้ดูแลระบบฝ่ายเทคโนโลยีสารสนเทศ\n\nนี่คืออีเมลทดสอบจากระบบบริหารจัดการอุปกรณ์และ Helpdesk หอการค้าไทย\n• ผู้ส่ง (From): ${senderAddr}\n• ผู้รับทดสอบ (To): ${targetEmail}\n• เวลาที่ส่ง: ${getLocalTimestamp(0)}\n• สถานะ: ระบบส่งอีเมลอัตโนมัติพร้อมใช้งาน`,
         summary: `ทดสอบส่งอีเมลแจ้งเตือนจาก ${senderAddr} ไปยัง: ${targetEmail}`
       });
 
@@ -5213,16 +5217,22 @@
     }
 
     /* AUTH & RBAC (Req 2 & Req 4: USER & PASS ONLY) */
+    const PASSWORD_EYE_SVG = `<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>`;
+    const PASSWORD_EYE_OFF_SVG = `<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88"/></svg>`;
+
     function togglePasswordVisibility(inputId, iconId) {
       const el = document.getElementById(inputId);
       const icon = document.getElementById(iconId);
       if (!el) return;
-      if (el.type === "password") {
-        el.type = "text";
-        if (icon) icon.innerText = "🙈";
-      } else {
-        el.type = "password";
-        if (icon) icon.innerText = "👁️";
+      const isHidden = el.type === "password";
+      el.type = isHidden ? "text" : "password";
+      if (icon) {
+        icon.innerHTML = isHidden ? PASSWORD_EYE_OFF_SVG : PASSWORD_EYE_SVG;
+      }
+      const btn = icon?.closest("button");
+      if (btn) {
+        btn.setAttribute("aria-pressed", String(isHidden));
+        btn.setAttribute("title", isHidden ? "ซ่อนรหัสผ่าน" : "ดูรหัสผ่าน");
       }
     }
 
@@ -5236,6 +5246,17 @@
       if (el) {
         el.value = pwd;
         el.type = "text";
+        if (inputId === "inputRolePassword") {
+          const icon = document.getElementById("roleModalPassToggleIcon");
+          if (icon) {
+            icon.innerHTML = PASSWORD_EYE_OFF_SVG;
+            const btn = icon.closest("button");
+            if (btn) {
+              btn.setAttribute("aria-pressed", "true");
+              btn.setAttribute("title", "ซ่อนรหัสผ่าน");
+            }
+          }
+        }
         showNotification(`สุ่มรหัสผ่านเรียบร้อย: ${pwd}`, "info");
       }
     }

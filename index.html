@@ -308,9 +308,12 @@
             <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
             <span>รายงานสรุปแจ้งซ่อม (Report)</span>
           </button>
-          <button type="button" onclick="switchTab('kbTab')" id="sidebarBtn-kbTab" class="admin-sidebar-btn w-full px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 text-slate-700 hover:bg-slate-100 transition">
-            <svg class="w-4 h-4 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
-            <span>คลังความรู้ไอที (KB)</span>
+          <button type="button" onclick="switchTab('kbTab')" id="sidebarBtn-kbTab" class="admin-sidebar-btn w-full px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-between text-slate-700 hover:bg-slate-100 transition">
+            <div class="flex items-center gap-2">
+              <svg class="w-4 h-4 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+              <span>คลังความรู้ไอที (KB)</span>
+            </div>
+            <span id="sidebarKbStatusBadge" class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">เปิด</span>
           </button>
           <button type="button" onclick="openTicketCategoryManageModal()" class="admin-sidebar-btn w-full px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 text-slate-700 hover:bg-slate-100 transition">
             <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
@@ -430,10 +433,10 @@
               </button>
             </div>
 
-            <div class="hidden sm:block w-px h-6 bg-slate-200 shrink-0"></div>
+            <div id="userNavKbDivider" class="hidden sm:block w-px h-6 bg-slate-200 shrink-0"></div>
 
             <!-- หมวดหมู่ที่ 3: คลังความรู้ -->
-            <div class="flex items-center shrink-0">
+            <div id="userNavKbWrapper" class="flex items-center shrink-0">
               <!-- 5. คลังความรู้ KB -->
               <button onclick="switchTab('kbTab')" id="tabBtn-kbTab" 
                       class="user-nav-btn px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shrink-0 text-slate-600 hover:bg-slate-100">
@@ -530,7 +533,7 @@
               </div>
             </div>
 
-            <!-- Charts Grid -->
+            <!-- Charts Grid: Monthly Borrowing & Monthly IT Helpdesk Tickets -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
               
               <!-- Chart 1: Monthly Asset Borrowing Bar Chart -->
@@ -550,24 +553,42 @@
                 </div>
               </div>
 
-              <!-- Chart 2: Helpdesk Category Breakdown & SLA Health -->
-              <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
-                <div>
-                  <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
-                    <div>
-                      <h3 class="font-bold text-slate-900 text-sm">สัดส่วนเคสแจ้งปัญหาตามหมวดหมู่งาน</h3>
-                      <p class="text-[11px] text-slate-400">จำแนกตามประเภทปัญหาเพื่อวางแผนบำรุงรักษาเชิงป้องกัน</p>
-                    </div>
-                    <span id="ticketTotalSummaryBadge" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700">รวม 0 เคส</span>
+              <!-- Chart 2: Monthly IT Helpdesk Ticket Bar Chart -->
+              <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4 gap-2 flex-wrap">
+                  <div>
+                    <h3 class="font-bold text-slate-900 text-sm">สถิติแจ้งซ่อมไอทีรายเดือน (ปีที่เลือก)</h3>
+                    <p class="text-[11px] text-slate-400">แท่งสีแดง: แจ้งซ่อมทั้งหมด (เคส) | แท่งสีเขียว: แก้ไข/ปิดเคสแล้ว (เคส)</p>
                   </div>
-                  <div id="categoryProgressContainer" class="space-y-3"></div>
+                  <div class="flex items-center gap-2.5 text-[11px] font-medium">
+                    <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-rose-500"></span> แจ้งซ่อม</span>
+                    <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-emerald-500"></span> ปิดเคส</span>
+                    <span id="monthlyTicketYearTotalBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200">0 เคส</span>
+                  </div>
                 </div>
-                <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-                  <span>สถานะ SLA เคสที่เปิดอยู่:</span>
-                  <span id="slaHealthIndicator" class="font-bold text-emerald-600">✓ ทุกเคสอยู่ในเกณฑ์ปกติ</span>
+                <div class="w-full overflow-x-auto pb-2">
+                  <div id="monthlyTicketChartBarsContainer" class="min-w-[500px] h-48 flex items-end justify-between gap-2 px-2 border-b border-slate-200"></div>
                 </div>
               </div>
 
+            </div>
+
+            <!-- Helpdesk Category Breakdown & SLA Health -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+                  <div>
+                    <h3 class="font-bold text-slate-900 text-sm">สัดส่วนเคสแจ้งปัญหาตามหมวดหมู่งาน</h3>
+                    <p class="text-[11px] text-slate-400">จำแนกตามประเภทปัญหาเพื่อวางแผนบำรุงรักษาเชิงป้องกัน</p>
+                  </div>
+                  <span id="ticketTotalSummaryBadge" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700">รวม 0 เคส</span>
+                </div>
+                <div id="categoryProgressContainer" class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3"></div>
+              </div>
+              <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                <span>สถานะ SLA เคสที่เปิดอยู่:</span>
+                <span id="slaHealthIndicator" class="font-bold text-emerald-600">✓ ทุกเคสอยู่ในเกณฑ์ปกติ</span>
+              </div>
             </div>
 
             <!-- Summary Tables Grid -->
@@ -1376,19 +1397,46 @@
           <div class="w-full bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 mb-4">
               <div>
-                <h2 class="text-base sm:text-lg font-bold text-slate-900">คลังความรู้และคู่มือไอที (Knowledge Base)</h2>
-                <p class="text-xs text-slate-500">รวบรวมวิธีแก้ปัญหาที่พบบ่อย สามารถดึงคำตอบไปตอบเคสผู้ใช้งานได้ทันที</p>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <h2 class="text-base sm:text-lg font-bold text-slate-900">คลังความรู้และคู่มือไอที (Knowledge Base)</h2>
+                  <span id="kbGlobalStatusBadge" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">🟢 เปิดใช้งาน</span>
+                </div>
+                <p class="text-xs text-slate-500 mt-0.5">รวบรวมวิธีแก้ปัญหาที่พบบ่อย สามารถดึงคำตอบไปตอบเคสผู้ใช้งานได้ทันที</p>
               </div>
-              <button onclick="openAddKbModal()" class="admin-only admin-hidden px-3.5 py-2 bg-tcc-600 hover:bg-tcc-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition">
-                <span>+ เพิ่มบทความแก้ปัญหา</span>
+              <div class="flex items-center gap-2.5 flex-wrap">
+                <!-- Admin Toggle: Enable / Disable Knowledge Base for Users -->
+                <label class="admin-only admin-hidden inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 cursor-pointer transition select-none" title="เปิดหรือปิดการแสดงเมนูคลังความรู้สำหรับผู้ใช้งานทั่วไป">
+                  <input type="checkbox" id="kbGlobalToggleInput" onchange="toggleKnowledgeBaseEnabled(this.checked)" checked class="sr-only peer">
+                  <div class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all relative peer-checked:bg-emerald-600"></div>
+                  <span id="kbGlobalToggleLabel" class="text-xs font-bold text-slate-700">เปิดใช้งานคลังความรู้</span>
+                </label>
+                <button onclick="openAddKbModal()" class="admin-only admin-hidden px-3.5 py-2 bg-tcc-600 hover:bg-tcc-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer">
+                  <span>+ เพิ่มบทความแก้ปัญหา</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Banner shown when Knowledge Base is disabled -->
+            <div id="kbDisabledNoticeBanner" class="hidden mb-4 p-3.5 rounded-2xl border border-amber-200 bg-amber-50/90 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs text-amber-900">
+              <div class="flex items-center gap-2">
+                <span class="text-base">🔒</span>
+                <div>
+                  <p class="font-bold">ขณะนี้คลังความรู้และคู่มือไอที (Knowledge Base) ถูกตั้งค่า "ปิดการแสดงผล" สำหรับผู้ใช้งานทั่วไป</p>
+                  <p class="text-[11px] text-amber-700">เมนู "คลังความรู้ (KB)" บนแถบผู้ใช้งานจะถูกซ่อนชั่วคราว แต่ผู้ดูแลระบบ (Admin) ยังคงสามารถจัดการและดึงคำตอบไปใช้ตอบเคสได้ตามปกติ</p>
+                </div>
+              </div>
+              <button type="button" onclick="toggleKnowledgeBaseEnabled(true)" class="admin-only admin-hidden px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shrink-0 transition cursor-pointer">
+                เปิดใช้งานทันที
               </button>
             </div>
 
-            <div class="mb-4">
-              <input type="text" id="kbSearchInput" onkeyup="renderKnowledgeBaseList()" placeholder="พิมพ์ค้นหาชื่อปัญหา, คีย์เวิร์ด หรือวิธีแก้ไข..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-tcc-500 outline-none">
-            </div>
+            <div id="kbSearchAndListWrapper">
+              <div class="mb-4">
+                <input type="text" id="kbSearchInput" onkeyup="renderKnowledgeBaseList()" placeholder="พิมพ์ค้นหาชื่อปัญหา, คีย์เวิร์ด หรือวิธีแก้ไข..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-tcc-500 outline-none">
+              </div>
 
-            <div id="kbListContainer" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+              <div id="kbListContainer" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+            </div>
           </div>
         </div>
 
@@ -3494,6 +3542,8 @@
     const STORAGE_KEY_EMAIL_TEMPLATES = "it_asset_email_templates";
     const SESSION_KEY_SMTP_PASS = "it_asset_session_smtp_pass";
     const STORAGE_KEY_SMTP_PASS = "it_asset_saved_smtp_pass";
+    const STORAGE_KEY_KB_ENABLED = "it_asset_kb_enabled";
+    const STORAGE_KEY_KB_DISABLED_IDS = "it_asset_kb_disabled_ids";
 
     const PRIMARY_SENDER_EMAIL = "itsupport@thaichamber.or.th";
     const BLOCKED_NOTIFICATION_EMAILS = ["tatitop07@gmail.com"];
@@ -3904,6 +3954,7 @@
       autoReloadTimer: null,
       currentUser: null,
       userRoles: loadSavedUserRoles(),
+      kbEnabled: localStorage.getItem(STORAGE_KEY_KB_ENABLED) !== "false",
       emailNotifyEnabled: localStorage.getItem(STORAGE_KEY_EMAIL_ENABLED) !== "false",
       emailConfig: loadSavedEmailConfig(),
       emailTemplates: loadSavedEmailTemplates(),
@@ -5513,6 +5564,7 @@
       const isSuper = role === "superadmin";
       const isAdmin = role === "admin" || isSuper;
 
+      if (tabId === "kbTab" && state.kbEnabled === false) return isAdmin;
       if (tabId === "rolesTab") return isSuper || isAdmin;
       const adminOnlyTabs = ["dashboardTab", "ticketAdminTab", "helpdeskReportTab", "returnTab", "inventoryTab", "historyTab", "emailSettingsTab"];
       if (adminOnlyTabs.includes(tabId)) return isAdmin;
@@ -5711,8 +5763,10 @@
       document.getElementById("kpiOverdueCount").innerText = overdueBorrows.length;
 
       const monthlyData = [];
+      const monthlyTicketData = [];
       for (let m = 0; m < 12; m++) {
         monthlyData.push({ monthIndex: m, monthName: THAI_MONTHS[m], users: new Set(), borrows: 0 });
+        monthlyTicketData.push({ monthIndex: m, monthName: THAI_MONTHS[m], total: 0, resolved: 0 });
       }
 
       state.allLogs.forEach(l => {
@@ -5728,6 +5782,25 @@
         }
       });
 
+      let yearTicketTotal = 0;
+      let yearTicketResolved = 0;
+      (state.tickets || []).forEach(t => {
+        const dStr = t.created_at ? String(t.created_at).split(' ')[0] : "";
+        if (!dStr) return;
+        const p = dStr.split('-');
+        if (p.length >= 2 && parseInt(p[0], 10) === selectedYear) {
+          const mIdx = parseInt(p[1], 10) - 1;
+          if (mIdx >= 0 && mIdx < 12) {
+            monthlyTicketData[mIdx].total += 1;
+            yearTicketTotal += 1;
+            if (t.status === "Resolved" || t.status === "Closed") {
+              monthlyTicketData[mIdx].resolved += 1;
+              yearTicketResolved += 1;
+            }
+          }
+        }
+      });
+
       const maxVal = Math.max(5, ...monthlyData.map(d => Math.max(d.users.size, d.borrows)));
       const chartBars = document.getElementById("monthlyChartBarsContainer");
       if (chartBars) {
@@ -5737,11 +5810,38 @@
           return `
             <div class="flex-1 flex flex-col items-center justify-end h-full">
               <div class="w-full flex items-end justify-center gap-1 h-36">
-                <div style="height: ${uH}%;" class="w-1/2 max-w-[14px] bg-tcc-600 rounded-t relative flex justify-center">
+                <div style="height: ${uH}%;" class="w-1/2 max-w-[14px] bg-tcc-600 rounded-t relative flex justify-center" title="${d.monthName}: ผู้ยืม ${d.users.size} คน">
                   ${d.users.size > 0 ? `<span class="text-[8px] text-white -mt-3.5 font-bold">${d.users.size}</span>` : ''}
                 </div>
-                <div style="height: ${bH}%;" class="w-1/2 max-w-[14px] bg-amber-400 rounded-t relative flex justify-center">
+                <div style="height: ${bH}%;" class="w-1/2 max-w-[14px] bg-amber-400 rounded-t relative flex justify-center" title="${d.monthName}: ยืม ${d.borrows} ครั้ง">
                   ${d.borrows > 0 ? `<span class="text-[8px] text-amber-950 -mt-3.5 font-bold">${d.borrows}</span>` : ''}
+                </div>
+              </div>
+              <span class="text-[10px] text-slate-500 mt-1">${d.monthName}</span>
+            </div>
+          `;
+        }).join("");
+      }
+
+      const ticketYearBadge = document.getElementById("monthlyTicketYearTotalBadge");
+      if (ticketYearBadge) {
+        ticketYearBadge.innerText = `รวม ${yearTicketTotal} เคส (ปิดแล้ว ${yearTicketResolved})`;
+      }
+
+      const maxTicketVal = Math.max(5, ...monthlyTicketData.map(d => Math.max(d.total, d.resolved)));
+      const ticketChartBars = document.getElementById("monthlyTicketChartBarsContainer");
+      if (ticketChartBars) {
+        ticketChartBars.innerHTML = monthlyTicketData.map(d => {
+          const tH = Math.max(Math.round((d.total / maxTicketVal) * 100), 5);
+          const rH = Math.max(Math.round((d.resolved / maxTicketVal) * 100), 5);
+          return `
+            <div class="flex-1 flex flex-col items-center justify-end h-full">
+              <div class="w-full flex items-end justify-center gap-1 h-36">
+                <div style="height: ${tH}%;" class="w-1/2 max-w-[14px] bg-rose-500 rounded-t relative flex justify-center" title="${d.monthName}: แจ้งซ่อม ${d.total} เคส">
+                  ${d.total > 0 ? `<span class="text-[8px] text-rose-700 -mt-3.5 font-bold">${d.total}</span>` : ''}
+                </div>
+                <div style="height: ${rH}%;" class="w-1/2 max-w-[14px] bg-emerald-500 rounded-t relative flex justify-center" title="${d.monthName}: แก้ไข/ปิดเคสแล้ว ${d.resolved} เคส">
+                  ${d.resolved > 0 ? `<span class="text-[8px] text-emerald-700 -mt-3.5 font-bold">${d.resolved}</span>` : ''}
                 </div>
               </div>
               <span class="text-[10px] text-slate-500 mt-1">${d.monthName}</span>
@@ -6308,31 +6408,29 @@
       const ticketNum = generateTicketId();
       const attachName = state.currentAttachmentName || "";
       const attachBase64 = state.currentAttachmentBase64 || "";
-
-      let driveFileId = "";
-      let driveViewUrl = "";
+      const reporterName = document.getElementById("ticketReporterName").value.trim();
+      const reporterDept = document.getElementById("ticketReporterDept").value.trim();
+      const reporterContact = document.getElementById("ticketReporterContact").value.trim();
+      const titleVal = document.getElementById("ticketTitle").value.trim();
+      const descVal = document.getElementById("ticketDescription").value.trim();
+      const nowTs = getLocalTimestamp(0);
 
       if (attachBase64 && attachName) {
         saveAttachmentToCache(ticketNum, attachName, attachBase64, "", "");
-        const driveRes = await uploadFileToGoogleDrive(attachBase64, `${ticketNum}_${attachName}`, "Tickets", ticketNum);
-        if (driveRes) {
-          driveFileId = driveRes.fileId || "";
-          driveViewUrl = driveRes.viewUrl || "";
-        }
       }
 
       const newTicket = {
         ticket_id: ticketNum,
-        title: document.getElementById("ticketTitle").value.trim(),
+        title: titleVal,
         category: categoryVal,
         system_name: systemNameVal,
         priority: priority,
         status: "Open",
-        reporter_name: document.getElementById("ticketReporterName").value.trim(),
-        reporter_dept: document.getElementById("ticketReporterDept").value.trim(),
-        reporter_contact: document.getElementById("ticketReporterContact").value.trim(),
-        description: document.getElementById("ticketDescription").value.trim(),
-        created_at: getLocalTimestamp(0),
+        reporter_name: reporterName,
+        reporter_dept: reporterDept,
+        reporter_contact: reporterContact,
+        description: descVal,
+        created_at: nowTs,
         sla_target: calculateSlaTarget(priority),
         assigned_agent: "ยังไม่มอบหมาย",
         resolved_at: "",
@@ -6340,27 +6438,39 @@
         csat_feedback: "",
         attachment_name: attachName,
         attachment_base64: attachBase64,
-        attachment_url: driveViewUrl,
-        drive_file_id: driveFileId,
+        attachment_url: "",
+        drive_file_id: "",
         comments: [
-          { sender: document.getElementById("ticketReporterName").value.trim(), message: "แจ้งเปิดเคสในระบบ", time: getLocalTimestamp(0), is_internal: false }
+          { sender: reporterName, message: "แจ้งเปิดเคสในระบบ", time: nowTs, is_internal: false }
         ]
       };
 
       const notifyTicketEmail = document.getElementById("ticketNotifyEmailCheckbox")?.checked !== false;
 
+      // Optimistic UI: update state, reset form, render, and switch tab immediately without waiting for network
       state.tickets.unshift(newTicket);
-      const createRes = await callAPI("createTicket", {
-        ticketData: newTicket,
-        driveFolderId: state.driveFolderId || "",
-        notifyEmail: notifyTicketEmail
-      });
-      if (createRes && (createRes.drive_view_url || createRes.drive_file_id || createRes.attachment_url)) {
-        newTicket.attachment_url = createRes.drive_view_url || createRes.attachment_url || newTicket.attachment_url;
-        newTicket.drive_file_id = createRes.drive_file_id || newTicket.drive_file_id;
-        saveAttachmentToCache(ticketNum, attachName, attachBase64, newTicket.attachment_url, newTicket.drive_file_id);
-      }
 
+      document.getElementById("createTicketForm")?.reset();
+      const tktNotifyChk = document.getElementById("ticketNotifyEmailCheckbox");
+      if (tktNotifyChk) tktNotifyChk.checked = state.emailNotifyEnabled !== false;
+      handleTicketCategoryChange(document.getElementById("ticketCategory")?.value || "");
+      clearTicketAttachment();
+
+      if (btn) btn.disabled = false;
+      if (spinner) spinner.classList.add("hidden");
+
+      autoFillUserFormsFromDatabase(true);
+      renderAll();
+      switchTab('myTicketsTab');
+
+      showNotification(
+        attachName
+          ? `เปิดเคส [${ticketNum}] เรียบร้อย (กำลังซิงค์ข้อมูลและไฟล์แนบในพื้นหลัง)`
+          : `เปิดเคส [${ticketNum}] เรียบร้อย บันทึกลงระบบแล้ว`,
+        "success"
+      );
+
+      // Fire email notification asynchronously in the background
       if (notifyTicketEmail) {
         sendSystemEmailNotification("TICKET_CREATED", {
           ticket_id: newTicket.ticket_id,
@@ -6378,25 +6488,35 @@
         });
       }
 
-      showNotification(
-        attachName
-          ? `เปิดเคส [${ticketNum}] พร้อมบันทึกรูปภาพแนบลง Google Drive เรียบร้อย`
-          : `เปิดเคส [${ticketNum}] เรียบร้อย บันทึกลงระบบแล้ว`,
-        "success"
-      );
-      document.getElementById("createTicketForm").reset();
-      const tktNotifyChk = document.getElementById("ticketNotifyEmailCheckbox");
-      if (tktNotifyChk) tktNotifyChk.checked = state.emailNotifyEnabled !== false;
-      handleTicketCategoryChange(document.getElementById("ticketCategory")?.value || "");
-      clearTicketAttachment();
+      // Sync ticket and attachment to Google Sheets & Google Drive in the background (single round-trip when supported)
+      (async () => {
+        try {
+          const createRes = await callAPI("createTicket", {
+            ticketData: newTicket,
+            driveFolderId: state.driveFolderId || "",
+            notifyEmail: notifyTicketEmail
+          }, true);
 
-      if (btn) btn.disabled = false;
-      if (spinner) spinner.classList.add("hidden");
-
-      autoFillUserFormsFromDatabase(true);
-
-      renderAll();
-      switchTab('myTicketsTab');
+          if (createRes && (createRes.drive_view_url || createRes.drive_file_id || createRes.attachment_url)) {
+            newTicket.attachment_url = createRes.drive_view_url || createRes.attachment_url || newTicket.attachment_url;
+            newTicket.drive_file_id = createRes.drive_file_id || newTicket.drive_file_id;
+            saveAttachmentToCache(ticketNum, attachName, attachBase64, newTicket.attachment_url, newTicket.drive_file_id);
+            renderMyTicketsList();
+            renderAdminTicketsView();
+          } else if (attachBase64 && attachName && !newTicket.drive_file_id) {
+            const driveRes = await uploadFileToGoogleDrive(attachBase64, `${ticketNum}_${attachName}`, "Tickets", ticketNum);
+            if (driveRes && (driveRes.fileId || driveRes.viewUrl)) {
+              newTicket.drive_file_id = driveRes.fileId || "";
+              newTicket.attachment_url = driveRes.viewUrl || "";
+              saveAttachmentToCache(ticketNum, attachName, attachBase64, newTicket.attachment_url, newTicket.drive_file_id);
+              renderMyTicketsList();
+              renderAdminTicketsView();
+            }
+          }
+        } catch (bgErr) {
+          console.warn("Background createTicket sync warning:", bgErr);
+        }
+      })();
     }
 
     function renderMyTicketsList() {
@@ -7018,18 +7138,157 @@
       }
     }
 
+    function getDisabledKbIds() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_KB_DISABLED_IDS);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) return parsed;
+        }
+      } catch (_) {}
+      return [];
+    }
+
+    function saveDisabledKbIds(ids) {
+      try {
+        localStorage.setItem(STORAGE_KEY_KB_DISABLED_IDS, JSON.stringify(Array.isArray(ids) ? ids : []));
+      } catch (_) {}
+    }
+
+    function isKbArticleEnabled(k) {
+      if (!k) return false;
+      if (k.enabled === false) return false;
+      const disabledIds = getDisabledKbIds();
+      return !disabledIds.includes(k.kb_id);
+    }
+
+    function applyKbFeatureVisibility() {
+      const enabled = state.kbEnabled !== false;
+      const user = state.currentUser;
+      const isAdmin = user && (user.role === "admin" || user.role === "superadmin");
+
+      const navDivider = document.getElementById("userNavKbDivider");
+      const navWrapper = document.getElementById("userNavKbWrapper");
+      if (navDivider) {
+        if (enabled) {
+          navDivider.classList.remove("hidden");
+          navDivider.classList.add("sm:block");
+        } else {
+          navDivider.classList.add("hidden");
+          navDivider.classList.remove("sm:block");
+        }
+      }
+      if (navWrapper) {
+        navWrapper.classList.toggle("hidden", !enabled);
+      }
+
+      const sidebarBadge = document.getElementById("sidebarKbStatusBadge");
+      if (sidebarBadge) {
+        sidebarBadge.innerText = enabled ? "เปิด" : "ปิด";
+        sidebarBadge.className = enabled
+          ? "px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800"
+          : "px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-200 text-slate-600";
+      }
+
+      const toggleInput = document.getElementById("kbGlobalToggleInput");
+      if (toggleInput) toggleInput.checked = enabled;
+
+      const toggleLabel = document.getElementById("kbGlobalToggleLabel");
+      if (toggleLabel) {
+        toggleLabel.innerText = enabled ? "เปิดใช้งานคลังความรู้" : "ปิดคลังความรู้ชั่วคราว";
+      }
+
+      const globalBadge = document.getElementById("kbGlobalStatusBadge");
+      if (globalBadge) {
+        globalBadge.innerText = enabled ? "🟢 เปิดใช้งาน" : "🔴 ปิดการแสดงผลชั่วคราว";
+        globalBadge.className = enabled
+          ? "px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200"
+          : "px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-100 text-rose-800 border border-rose-200";
+      }
+
+      const disabledBanner = document.getElementById("kbDisabledNoticeBanner");
+      if (disabledBanner) {
+        disabledBanner.classList.toggle("hidden", enabled);
+      }
+
+      const searchWrapper = document.getElementById("kbSearchAndListWrapper");
+      if (searchWrapper) {
+        searchWrapper.classList.toggle("hidden", !enabled && !isAdmin);
+      }
+    }
+
+    function toggleKnowledgeBaseEnabled(enabled) {
+      state.kbEnabled = !!enabled;
+      try {
+        localStorage.setItem(STORAGE_KEY_KB_ENABLED, state.kbEnabled ? "true" : "false");
+        if (state.emailConfig && typeof state.emailConfig === "object") {
+          state.emailConfig.kbEnabled = state.kbEnabled;
+          saveEmailConfigToStorage();
+        }
+      } catch (_) {}
+
+      applyKbFeatureVisibility();
+      renderKnowledgeBaseList();
+
+      showNotification(
+        state.kbEnabled
+          ? "เปิดใช้งานคลังความรู้และคู่มือไอที (Knowledge Base) สำหรับผู้ใช้งานแล้ว"
+          : "ปิดการแสดงผลคลังความรู้และคู่มือไอที (ซ่อนจากผู้ใช้งานทั่วไปแล้ว)",
+        state.kbEnabled ? "success" : "warning"
+      );
+
+      saveAllEmailSettingsToServer(true);
+    }
+
+    function toggleKbArticleEnabled(kbId) {
+      const article = state.knowledgeBase.find(k => k.kb_id === kbId);
+      if (!article) return;
+      const currentlyEnabled = isKbArticleEnabled(article);
+      const nextEnabled = !currentlyEnabled;
+      article.enabled = nextEnabled;
+
+      let disabledIds = getDisabledKbIds();
+      if (nextEnabled) {
+        disabledIds = disabledIds.filter(id => id !== kbId);
+      } else if (!disabledIds.includes(kbId)) {
+        disabledIds.push(kbId);
+      }
+      saveDisabledKbIds(disabledIds);
+
+      renderKnowledgeBaseList();
+      showNotification(
+        nextEnabled
+          ? `เปิดแสดงบทความ [${article.kb_id}] ${article.title} แล้ว`
+          : `ซ่อนบทความ [${article.kb_id}] ${article.title} จากผู้ใช้งานชั่วคราวแล้ว`,
+        nextEnabled ? "success" : "info"
+      );
+    }
+
     function renderKnowledgeBaseList() {
+      applyKbFeatureVisibility();
       const container = document.getElementById("kbListContainer");
       const q = (document.getElementById("kbSearchInput")?.value || "").toLowerCase().trim();
       if (!container) return;
 
-      const filtered = state.knowledgeBase.filter(k => !q || safeLower(k.title).includes(q) || safeLower(k.content).includes(q) || safeLower(k.category).includes(q));
+      const user = state.currentUser;
+      const isAdmin = user && (user.role === "admin" || user.role === "superadmin");
+
+      if (state.kbEnabled === false && !isAdmin) {
+        container.innerHTML = '<p class="text-xs text-slate-400 py-8 text-center col-span-full">ขณะนี้ระบบคลังความรู้และคู่มือไอทีปิดปรับปรุงชั่วคราว</p>';
+        return;
+      }
+
+      const filtered = state.knowledgeBase.filter(k => {
+        if (!isAdmin && !isKbArticleEnabled(k)) return false;
+        return !q || safeLower(k.title).includes(q) || safeLower(k.content).includes(q) || safeLower(k.category).includes(q);
+      });
       if (filtered.length === 0) {
-        container.innerHTML = '<p class="text-xs text-slate-400 py-8 text-center col-span-2">ไม่พบคู่มือที่ตรงกับคำค้นหา</p>';
+        container.innerHTML = '<p class="text-xs text-slate-400 py-8 text-center col-span-full">ไม่พบคู่มือที่ตรงกับคำค้นหา</p>';
         return;
       }
 
       container.innerHTML = filtered.map(k => {
+        const isArtEnabled = isKbArticleEnabled(k);
         let attachmentBadge = "";
         const info = resolveAttachmentInfo(k, "kb_id");
         if (info) {
@@ -7067,12 +7326,22 @@
             </div>
           `;
         }
+
+        const adminArticleToggle = isAdmin
+          ? `<button type="button" onclick="toggleKbArticleEnabled('${escapeQuotes(k.kb_id)}')" class="px-2 py-0.5 rounded-full text-[10px] font-bold border transition cursor-pointer ${isArtEnabled ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100' : 'bg-slate-100 text-slate-500 border-slate-300 hover:bg-slate-200'}" title="คลิกเพื่อเปิด/ปิดการแสดงบทความนี้">
+              ${isArtEnabled ? '● เปิดแสดง' : '○ ปิดซ่อน'}
+            </button>`
+          : "";
+
         return `
-          <div class="p-4 rounded-2xl border border-slate-200 bg-white hover:border-tcc-400 shadow-sm transition space-y-2.5 flex flex-col justify-between">
+          <div class="p-4 rounded-2xl border ${isArtEnabled ? 'border-slate-200 bg-white' : 'border-dashed border-slate-300 bg-slate-50/70 opacity-75'} hover:border-tcc-400 shadow-sm transition space-y-2.5 flex flex-col justify-between">
             <div class="space-y-2">
-              <div class="flex items-center justify-between">
+              <div class="flex items-center justify-between gap-1.5 flex-wrap">
                 <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-sky-100 text-sky-800">${k.category}</span>
-                <span class="font-mono text-[10px] text-slate-400">${k.kb_id}</span>
+                <div class="flex items-center gap-1.5">
+                  ${adminArticleToggle}
+                  <span class="font-mono text-[10px] text-slate-400">${k.kb_id}</span>
+                </div>
               </div>
               <h4 class="font-bold text-slate-900 text-sm leading-snug">${k.title}</h4>
               <p class="text-xs text-slate-600 leading-relaxed whitespace-pre-wrap">${k.content}</p>
@@ -7102,7 +7371,8 @@
         attachment_name: attachName,
         attachment_base64: attachBase64,
         attachment_url: "",
-        drive_file_id: ""
+        drive_file_id: "",
+        enabled: true
       };
 
       if (attachName && attachBase64) {
@@ -7139,12 +7409,17 @@
     function openKbQuickSelectModal() {
       const list = document.getElementById("quickKbOptionsList");
       if (!list) return;
-      list.innerHTML = state.knowledgeBase.map(k => `
-        <div onclick="selectKbAnswer('${escapeQuotes(k.content)}')" class="p-2.5 rounded-xl border border-slate-200 hover:bg-tcc-50 hover:border-tcc-400 cursor-pointer transition">
-          <p class="font-bold text-xs text-slate-900">${k.title}</p>
-          <p class="text-[11px] text-slate-500 line-clamp-2 mt-0.5">${k.content}</p>
-        </div>
-      `).join("");
+      const enabledArticles = state.knowledgeBase.filter(k => isKbArticleEnabled(k));
+      if (enabledArticles.length === 0) {
+        list.innerHTML = '<p class="text-xs text-slate-400 py-4 text-center">ไม่มีบทความคลังความรู้ที่เปิดใช้งานอยู่</p>';
+      } else {
+        list.innerHTML = enabledArticles.map(k => `
+          <div onclick="selectKbAnswer('${escapeQuotes(k.content)}')" class="p-2.5 rounded-xl border border-slate-200 hover:bg-tcc-50 hover:border-tcc-400 cursor-pointer transition">
+            <p class="font-bold text-xs text-slate-900">${k.title}</p>
+            <p class="text-[11px] text-slate-500 line-clamp-2 mt-0.5">${k.content}</p>
+          </div>
+        `).join("");
+      }
       document.getElementById("quickKbModal").classList.remove("hidden");
     }
     function closeKbQuickSelectModal() { document.getElementById("quickKbModal").classList.add("hidden"); }

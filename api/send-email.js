@@ -32,7 +32,7 @@ function buildHtmlEmailBody(bodyText) {
     '<div style="font-family: Sarabun, -apple-system, BlinkMacSystemFont, sans-serif; width: 100%; max-width: 620px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; box-sizing: border-box;">' +
     '<div style="background: linear-gradient(135deg, #003d73, #0284c7); color: #ffffff; padding: 16px 20px; box-sizing: border-box;">' +
     '<h2 style="margin: 0; font-size: 16px; line-height: 1.4; word-break: break-word;">หอการค้าไทย (TCC IT Asset &amp; Helpdesk Service)</h2>' +
-    '<p style="margin: 4px 0 0; font-size: 12px; line-height: 1.45; opacity: 0.92; word-break: break-word;">ระบบแจ้งเตือนอัตโนมัติ ฝ่ายเทคโนโลยีสารสนเทศ (itsupport@thaichamber.or.th)</p>' +
+    '<p style="margin: 4px 0 0; font-size: 12px; line-height: 1.45; opacity: 0.92; word-break: break-word;">ระบบแจ้งเตือนอัตโนมัติ ฝ่ายเทคโนโลยีสารสนเทศ</p>' +
     "</div>" +
     '<div style="padding: 18px 20px; background: #ffffff; color: #1e293b; font-size: 14px; line-height: 1.65; white-space: pre-line; word-break: break-word; box-sizing: border-box;">' +
     escaped +

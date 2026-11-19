@@ -1066,10 +1066,13 @@
             </div>
 
             <!-- Filters -->
-            <div class="grid grid-cols-1 sm:grid-cols-5 gap-2.5 text-xs">
-              <input type="text" id="adminTicketSearchInput" onkeyup="renderAdminTicketsView()" placeholder="ค้นหารหัส ITC, หัวข้อ, ผู้แจ้ง..." class="px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-tcc-500 outline-none">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-2.5 text-xs">
+              <input type="text" id="adminTicketSearchInput" onkeyup="renderAdminTicketsView()" placeholder="ค้นหารหัส ITC, หัวข้อ, ผู้แจ้ง, ระบบ..." class="px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-tcc-500 outline-none">
               <select id="adminTicketFilterCategory" onchange="renderAdminTicketsView()" class="px-3 py-2 rounded-xl border border-slate-300 bg-white">
                 <option value="">หมวดหมู่ทั้งหมด</option>
+              </select>
+              <select id="adminTicketFilterSystem" onchange="renderAdminTicketsView()" class="px-3 py-2 rounded-xl border border-slate-300 bg-white">
+                <option value="">ระบบสารสนเทศทั้งหมด</option>
               </select>
               <select id="adminTicketFilterPriority" onchange="renderAdminTicketsView()" class="px-3 py-2 rounded-xl border border-slate-300 bg-white">
                 <option value="">ทุกระดับความสำคัญ (น้อย → สูง)</option>
@@ -1146,6 +1149,7 @@
                   <tr>
                     <th class="py-2.5 px-2 whitespace-nowrap">รหัสเคส</th>
                     <th class="py-2.5 px-2 whitespace-nowrap">หัวข้อปัญหา</th>
+                    <th class="py-2.5 px-2 whitespace-nowrap">ชื่อระบบสารสนเทศ</th>
                     <th class="py-2.5 px-2 whitespace-nowrap">ผู้แจ้ง / แผนก</th>
                     <th class="py-2.5 px-2 whitespace-nowrap">วันที่เปิดเคส</th>
                     <th class="py-2.5 px-2 whitespace-nowrap">วันที่ปิดเคส</th>
@@ -6490,6 +6494,19 @@
         if (curCat && cats.includes(curCat)) catFilterEl.value = curCat;
       }
 
+      const sysFilterEl = document.getElementById("adminTicketFilterSystem");
+      if (sysFilterEl) {
+        const curSys = sysFilterEl.value;
+        const sysSet = new Set(state.internalSystems || INITIAL_DEMO_INTERNAL_SYSTEMS || []);
+        (state.tickets || []).forEach(t => {
+          const sn = String(t.system_name || "").trim();
+          if (sn) sysSet.add(sn);
+        });
+        const sysList = Array.from(sysSet);
+        sysFilterEl.innerHTML = '<option value="">ระบบสารสนเทศทั้งหมด</option>' + sysList.map(sn => `<option value="${escapeQuotes(sn)}">${sn}</option>`).join("");
+        if (curSys && sysSet.has(curSys)) sysFilterEl.value = curSys;
+      }
+
       const agentFilterEl = document.getElementById("adminTicketFilterAgent");
       if (agentFilterEl) {
         const curAgent = agentFilterEl.value;
@@ -6500,6 +6517,7 @@
 
       const q = (document.getElementById("adminTicketSearchInput")?.value || "").toLowerCase().trim();
       const cat = document.getElementById("adminTicketFilterCategory")?.value;
+      const sys = document.getElementById("adminTicketFilterSystem")?.value;
       const p = document.getElementById("adminTicketFilterPriority")?.value;
       const a = document.getElementById("adminTicketFilterAgent")?.value;
       const s = document.getElementById("adminTicketFilterSla")?.value;
@@ -6508,12 +6526,13 @@
       const filtered = state.tickets.filter(t => {
         const matchQ = !q || safeLower(t.ticket_id).includes(q) || safeLower(t.title).includes(q) || safeLower(t.reporter_name).includes(q) || safeLower(t.reporter_dept).includes(q) || safeLower(t.system_name).includes(q);
         const matchCat = !cat || t.category === cat;
+        const matchSys = !sys || String(t.system_name || "").trim() === sys;
         const matchP = !p || t.priority === p;
         const matchA = !a || safeLower(t.assigned_agent).includes(a.toLowerCase());
         let matchS = true;
         if (s === "breached") matchS = t.sla_target < nowTs && t.status !== "Resolved" && t.status !== "Closed";
         if (s === "on_track") matchS = t.sla_target >= nowTs || t.status === "Resolved" || t.status === "Closed";
-        return matchQ && matchCat && matchP && matchA && matchS;
+        return matchQ && matchCat && matchSys && matchP && matchA && matchS;
       });
 
       const badge = document.getElementById("tabBadgeAdminTickets") || document.getElementById("sidebarBadgeTickets");
@@ -6580,6 +6599,9 @@
         tbody.innerHTML = filtered.map(t => {
           const agentShort = t.assigned_agent && t.assigned_agent.includes("@") ? t.assigned_agent.split("@")[0] : (t.assigned_agent || "-");
           const catOrSys = t.system_name ? `🌐 ${t.system_name}` : (t.category || "-");
+          const sysCellHtml = t.system_name
+            ? `<span class="inline-block max-w-[140px] xl:max-w-[200px] truncate px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200/80 font-semibold text-[10px]" title="${escapeQuotes(t.system_name)}">🌐 ${t.system_name}</span>`
+            : `<span class="text-slate-400">-</span>`;
           const closedCellHtml = t.resolved_at
             ? `<span class="text-emerald-700 font-semibold">${t.resolved_at}</span>`
             : `<span class="font-sans text-slate-400">รอดำเนินการ</span>`;
@@ -6589,6 +6611,7 @@
             <td class="py-2 px-2 font-medium text-slate-900 whitespace-nowrap">
               <div class="max-w-[140px] xl:max-w-[240px] 2xl:max-w-[340px] truncate" title="${escapeQuotes(t.title + ' (' + catOrSys + ')')}">${t.title}</div>
             </td>
+            <td class="py-2 px-2 whitespace-nowrap">${sysCellHtml}</td>
             <td class="py-2 px-2 whitespace-nowrap">
               <div class="max-w-[110px] xl:max-w-[180px] 2xl:max-w-[260px] truncate text-slate-700" title="${escapeQuotes((t.reporter_name || '-') + ' • ' + (t.reporter_dept || '-'))}">${t.reporter_name || '-'} <span class="text-slate-400 text-[10px]">(${t.reporter_dept || '-'})</span></div>
             </td>

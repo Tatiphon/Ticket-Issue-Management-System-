@@ -6809,6 +6809,95 @@
       }
     }
 
+    const STORAGE_KEY_TICKET_RICH_CACHE = "it_asset_ticket_rich_cache";
+
+    function loadTicketRichCacheMap() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_TICKET_RICH_CACHE);
+        return raw ? JSON.parse(raw) : {};
+      } catch (_) {
+        return {};
+      }
+    }
+
+    function saveTicketRichCache(ticket) {
+      if (!ticket || !ticket.ticket_id) return;
+      try {
+        const map = loadTicketRichCacheMap();
+        const atts = Array.isArray(ticket.attachments)
+          ? ticket.attachments.map(a => ({
+              name: a.name || "",
+              mime: a.mime || "",
+              url: a.url || "",
+              drive_file_id: a.drive_file_id || "",
+              base64: (!a.drive_file_id && a.base64 && String(a.base64).length < 200000) ? a.base64 : ""
+            }))
+          : [];
+        const safeComments = Array.isArray(ticket.comments)
+          ? ticket.comments.map(c => ({
+              sender: c.sender || "",
+              message: c.message || "",
+              message_html: (c.message_html && String(c.message_html).length < 200000) ? c.message_html : "",
+              time: c.time || "",
+              edited_at: c.edited_at || "",
+              is_internal: !!c.is_internal,
+              attachments: Array.isArray(c.attachments)
+                ? c.attachments.map(ca => ({
+                    name: ca.name || "",
+                    mime: ca.mime || "",
+                    url: ca.url || "",
+                    drive_file_id: ca.drive_file_id || "",
+                    base64: (!ca.drive_file_id && ca.base64 && String(ca.base64).length < 150000) ? ca.base64 : ""
+                  }))
+                : []
+            }))
+          : [];
+        map[ticket.ticket_id] = {
+          description: ticket.description || "",
+          description_html: (ticket.description_html && String(ticket.description_html).length < 300000) ? ticket.description_html : "",
+          attachments: atts,
+          comments: safeComments,
+          updated_at: Date.now()
+        };
+        const keys = Object.keys(map);
+        if (keys.length > 40) {
+          keys.sort((a, b) => (map[a].updated_at || 0) - (map[b].updated_at || 0));
+          keys.slice(0, keys.length - 40).forEach(k => delete map[k]);
+        }
+        localStorage.setItem(STORAGE_KEY_TICKET_RICH_CACHE, JSON.stringify(map));
+      } catch (_) {}
+    }
+
+    function getTicketRichCache(ticketId) {
+      if (!ticketId) return null;
+      const map = loadTicketRichCacheMap();
+      return map[ticketId] || null;
+    }
+
+    async function replaceInlineImagesWithDriveUrls(rawHtml, prefix, refId) {
+      const html = String(rawHtml || "");
+      if (!html || !/data:image\//i.test(html)) return html;
+      const doc = new DOMParser().parseFromString(html, "text/html");
+      const imgs = Array.from(doc.querySelectorAll("img"));
+      for (let i = 0; i < imgs.length; i++) {
+        const img = imgs[i];
+        const src = img.getAttribute("src") || "";
+        if (src.startsWith("data:image/")) {
+          const extMatch = src.match(/^data:image\/([a-zA-Z0-9+]+);/i);
+          const ext = extMatch ? extMatch[1].replace("jpeg", "jpg") : "png";
+          const fileName = `${prefix}_IMG_${i + 1}.${ext}`;
+          try {
+            const driveRes = await uploadFileToGoogleDrive(src, fileName, "Tickets", refId);
+            const fileId = driveRes?.fileId || "";
+            if (fileId && !String(fileId).startsWith("DRV_")) {
+              img.setAttribute("src", `https://drive.google.com/thumbnail?id=${fileId}&sz=w1200`);
+            }
+          } catch (_) {}
+        }
+      }
+      return doc.body.innerHTML;
+    }
+
     async function handleCreateTicketSubmit(e) {
       e.preventDefault();
       if (!state.currentUser) {
@@ -6894,8 +6983,9 @@
 
       const notifyTicketEmail = document.getElementById("ticketNotifyEmailCheckbox")?.checked !== false;
 
-      // Optimistic UI: update state, reset form, render, and switch tab immediately without waiting for network
+      // Optimistic UI: update state, cache rich content, reset form, render, and switch tab immediately
       state.tickets.unshift(newTicket);
+      saveTicketRichCache(newTicket);
 
       document.getElementById("createTicketForm")?.reset();
       const descEditorEl = document.getElementById("ticketDescriptionEditor");
@@ -6937,26 +7027,13 @@
         });
       }
 
-      // Sync ticket and all attachments to Google Sheets & Google Drive in the background
+      // Sync inline images, attachments, and ticket to Google Drive & Google Sheets in the background
       (async () => {
         try {
-          const createRes = await callAPI("createTicket", {
-            ticketData: newTicket,
-            driveFolderId: state.driveFolderId || "",
-            notifyEmail: notifyTicketEmail
-          }, true);
-
-          if (createRes && (createRes.drive_view_url || createRes.drive_file_id || createRes.attachment_url)) {
-            newTicket.attachment_url = createRes.drive_view_url || createRes.attachment_url || newTicket.attachment_url;
-            newTicket.drive_file_id = createRes.drive_file_id || newTicket.drive_file_id;
-            if (firstAttach) {
-              firstAttach.url = newTicket.attachment_url;
-              firstAttach.drive_file_id = newTicket.drive_file_id;
-              saveAttachmentToCache(ticketNum, attachName, attachBase64, newTicket.attachment_url, newTicket.drive_file_id);
-            }
+          if (newTicket.description_html && /data:image\//i.test(newTicket.description_html)) {
+            newTicket.description_html = await replaceInlineImagesWithDriveUrls(newTicket.description_html, `${ticketNum}_DESC`, ticketNum);
           }
 
-          // Upload any remaining attachments (or primary if GAS didn't upload it)
           for (let i = 0; i < draftAttachments.length; i++) {
             const att = draftAttachments[i];
             if (att.base64 && att.name && !att.drive_file_id) {
@@ -6973,6 +7050,36 @@
             }
           }
 
+          const compactAttachments = draftAttachments.map(a => ({
+            name: a.name || "",
+            mime: a.mime || "",
+            url: a.url || "",
+            drive_file_id: a.drive_file_id || ""
+          }));
+
+          const ticketPayload = {
+            ...newTicket,
+            attachment_base64: newTicket.drive_file_id ? "" : newTicket.attachment_base64,
+            attachments: compactAttachments
+          };
+
+          const createRes = await callAPI("createTicket", {
+            ticketData: ticketPayload,
+            driveFolderId: state.driveFolderId || "",
+            notifyEmail: notifyTicketEmail
+          }, true);
+
+          if (createRes && (createRes.drive_view_url || createRes.drive_file_id || createRes.attachment_url)) {
+            newTicket.attachment_url = createRes.drive_view_url || createRes.attachment_url || newTicket.attachment_url;
+            newTicket.drive_file_id = createRes.drive_file_id || newTicket.drive_file_id;
+            if (firstAttach) {
+              firstAttach.url = newTicket.attachment_url;
+              firstAttach.drive_file_id = newTicket.drive_file_id;
+              saveAttachmentToCache(ticketNum, attachName, attachBase64, newTicket.attachment_url, newTicket.drive_file_id);
+            }
+          }
+
+          saveTicketRichCache(newTicket);
           renderMyTicketsList();
           renderAdminTicketsView();
         } catch (bgErr) {
@@ -7589,12 +7696,25 @@
       comment.message_html = editorData.html;
       comment.edited_at = getLocalTimestamp(0);
       state.editingCommentIndex = null;
+      saveTicketRichCache(ticket);
       renderTicketComments(ticket);
       showNotification("แก้ไขข้อความสนทนาเรียบร้อยแล้ว", "success");
 
+      if (comment.message_html && /data:image\//i.test(comment.message_html)) {
+        comment.message_html = await replaceInlineImagesWithDriveUrls(comment.message_html, `${ticket.ticket_id}_EDIT_${commentIdx}_${Date.now()}`, ticket.ticket_id);
+        saveTicketRichCache(ticket);
+      }
+
+      const compactComments = ticket.comments.map(c => ({
+        ...c,
+        attachments: Array.isArray(c.attachments)
+          ? c.attachments.map(a => ({ name: a.name || "", mime: a.mime || "", url: a.url || "", drive_file_id: a.drive_file_id || "" }))
+          : []
+      }));
+
       await callAPI("updateTicket", {
         ticketId: ticket.ticket_id,
-        updates: { comments: ticket.comments },
+        updates: { comments: compactComments },
         notifyEmail: false
       }, true);
     }
@@ -7629,6 +7749,7 @@
       if (input) input.innerHTML = "";
       state.editingCommentIndex = null;
       clearReplyAttachments();
+      saveTicketRichCache(ticket);
       renderTicketComments(ticket);
       showNotification("ส่งข้อความตอบกลับแล้ว", "success");
 
@@ -7647,6 +7768,9 @@
 
       (async () => {
         try {
+          if (newComment.message_html && /data:image\//i.test(newComment.message_html)) {
+            newComment.message_html = await replaceInlineImagesWithDriveUrls(newComment.message_html, `${ticket.ticket_id}_REPLY_${Date.now()}`, ticket.ticket_id);
+          }
           for (let i = 0; i < attachments.length; i++) {
             const att = attachments[i];
             if (att.base64 && att.name && !att.drive_file_id) {
@@ -7657,9 +7781,16 @@
               }
             }
           }
+          saveTicketRichCache(ticket);
+          const compactComments = ticket.comments.map(c => ({
+            ...c,
+            attachments: Array.isArray(c.attachments)
+              ? c.attachments.map(a => ({ name: a.name || "", mime: a.mime || "", url: a.url || "", drive_file_id: a.drive_file_id || "" }))
+              : []
+          }));
           await callAPI("updateTicket", {
             ticketId: ticket.ticket_id,
-            updates: { comments: ticket.comments },
+            updates: { comments: compactComments },
             notifyEmail: !isInternal
           }, true);
         } catch (bgErr) {
@@ -11823,10 +11954,11 @@ function handleGetInitialData() {
     ["ระบบอื่นๆ (ระบุในรายละเอียด)"]
   ]);
 
-  getOrCreateSheet(ss, "Tickets", ["Ticket ID", "Title", "Category", "Priority", "Status", "Reporter Name", "Reporter Dept", "Reporter Contact", "Description", "Created At", "SLA Target", "Assigned Agent", "Resolved At", "CSAT Score", "CSAT Feedback", "Attachment Name", "Comments JSON", "Attachment URL", "Drive File ID", "System Name"], [
-    ["ITC-2026-10-25-0001", "หน้าจอโน้ตบุ๊กกระพริบดับบางจังหวะ", "ฮาร์ดแวร์ / เครื่องคอมพิวเตอร์ / จอภาพ", "High", "In Progress", "สมชาย ใจดี", "ฝ่ายการเงินและการบัญชี", "somchai.user@thaichamber.or.th", "เวลาขยับบานพับหน้าจอ ภาพจะกระพริบ", "2026-10-25 10:00", "2026-10-25 14:00", "wattanachai.mi@thaichamber.or.th", "", 0, "", "error_screen.png", JSON.stringify([{ sender: "สมชาย ใจดี", message: "แจ้งเปิดเคสครับ", time: "2026-10-25 10:00", is_internal: false }]), "", "", ""],
-    ["ITC-2026-10-27-0002", "ไม่สามารถเชื่อมต่อสัญญาณ Wi-Fi ได้", "ระบบเครือข่าย / อินเทอร์เน็ต / Wi-Fi / VPN", "Critical", "Open", "สุวิมล แสงทอง", "ฝ่ายสมาชิกสัมพันธ์และการบริการ", "suwimon@thaichamber.or.th", "แจ้งเตือน Can't connect to this network", "2026-10-27 11:30", "2026-10-27 13:30", "supakon.su@thaichamber.or.th", "", 0, "", "", JSON.stringify([{ sender: "สุวิมล แสงทอง", message: "รบกวนช่วยตรวจสอบหน่อยค่ะ", time: "2026-10-27 11:30", is_internal: false }]), "", "", ""]
+  var ticketsSheet = getOrCreateSheet(ss, "Tickets", ["Ticket ID", "Title", "Category", "Priority", "Status", "Reporter Name", "Reporter Dept", "Reporter Contact", "Description", "Created At", "SLA Target", "Assigned Agent", "Resolved At", "CSAT Score", "CSAT Feedback", "Attachment Name", "Comments JSON", "Attachment URL", "Drive File ID", "System Name", "Description HTML", "Attachments JSON"], [
+    ["ITC-2026-10-25-0001", "หน้าจอโน้ตบุ๊กกระพริบดับบางจังหวะ", "ฮาร์ดแวร์ / เครื่องคอมพิวเตอร์ / จอภาพ", "High", "In Progress", "สมชาย ใจดี", "ฝ่ายการเงินและการบัญชี", "somchai.user@thaichamber.or.th", "เวลาขยับบานพับหน้าจอ ภาพจะกระพริบ", "2026-10-25 10:00", "2026-10-25 14:00", "wattanachai.mi@thaichamber.or.th", "", 0, "", "error_screen.png", JSON.stringify([{ sender: "สมชาย ใจดี", message: "แจ้งเปิดเคสครับ", time: "2026-10-25 10:00", is_internal: false }]), "", "", "", "", "[]"],
+    ["ITC-2026-10-27-0002", "ไม่สามารถเชื่อมต่อสัญญาณ Wi-Fi ได้", "ระบบเครือข่าย / อินเทอร์เน็ต / Wi-Fi / VPN", "Critical", "Open", "สุวิมล แสงทอง", "ฝ่ายสมาชิกสัมพันธ์และการบริการ", "suwimon@thaichamber.or.th", "แจ้งเตือน Can't connect to this network", "2026-10-27 11:30", "2026-10-27 13:30", "supakon.su@thaichamber.or.th", "", 0, "", "", JSON.stringify([{ sender: "สุวิมล แสงทอง", message: "รบกวนช่วยตรวจสอบหน่อยค่ะ", time: "2026-10-27 11:30", is_internal: false }]), "", "", "", "", "[]"]
   ]);
+  ensureTicketsSchema(ticketsSheet);
 
   getOrCreateSheet(ss, "KnowledgeBase", ["KB ID", "Category", "Title", "Content", "Doc URL", "Attachment Name", "Attachment Base64", "Attachment URL", "Drive File ID"], [
     ["KB-001", "ระบบเครือข่าย / อินเทอร์เน็ต / Wi-Fi / VPN", "วิธีเชื่อมต่อ VPN หอการค้าไทยจากภายนอกสำนักงาน", "1. เปิดโปรแกรม FortiClient VPN\\n2. ใส่ Remote Gateway: vpn.thaichamber.or.th\\n3. ใส่ Username และ Password อีเมลองค์กร\\n4. รอระบบยืนยันตัวตน OTP ทางโทรศัพท์", "", "", "", "", ""],
@@ -11954,6 +12086,8 @@ function handleGetInitialData() {
     if (ticketData[t][0]) {
       var comms = [];
       try { comms = JSON.parse(ticketData[t][16] || "[]"); } catch(e) {}
+      var atts = [];
+      try { atts = JSON.parse(ticketData[t][21] || "[]"); } catch(e) {}
       tickets.push({
         ticket_id: String(ticketData[t][0]),
         title: String(ticketData[t][1]),
@@ -11974,7 +12108,9 @@ function handleGetInitialData() {
         comments: comms,
         attachment_url: String(ticketData[t][17] || ""),
         drive_file_id: String(ticketData[t][18] || ""),
-        system_name: String(ticketData[t][19] || "")
+        system_name: String(ticketData[t][19] || ""),
+        description_html: String(ticketData[t][20] || ""),
+        attachments: Array.isArray(atts) ? atts : []
       });
     }
   }
@@ -12112,36 +12248,101 @@ function handleUploadFileToDrive(data) {
   });
 }
 
+function ensureTicketsSchema(sheet) {
+  if (!sheet) return;
+  try {
+    var lastCol = Math.max(sheet.getLastColumn(), 22);
+    var headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+    if (!String(headers[19] || "").trim()) sheet.getRange(1, 20).setValue("System Name");
+    if (!String(headers[20] || "").trim()) sheet.getRange(1, 21).setValue("Description HTML");
+    if (!String(headers[21] || "").trim()) sheet.getRange(1, 22).setValue("Attachments JSON");
+  } catch (e) {}
+}
+
+function uploadInlineImagesInHtmlGAS(html, prefix, folderId) {
+  var raw = String(html || "");
+  if (!raw) return "";
+  var idx = 0;
+  var out = raw.replace(/src=(["'])(data:image\\\/([^;]+);base64,([^"']+))\\1/gi, function(match, quote, fullDataUrl, ext, b64) {
+    idx++;
+    try {
+      var safeExt = String(ext || "png").split("+")[0].replace(/[^a-zA-Z0-9]/g, "") || "png";
+      var saved = saveBase64FileToDrive(fullDataUrl, (prefix || "INLINE") + "_img_" + idx + "." + safeExt, folderId || "", "Tickets");
+      if (saved && saved.fileId) {
+        return 'src="https://drive.google.com/thumbnail?id=' + saved.fileId + '&sz=w1200"';
+      }
+    } catch (e) {}
+    return match;
+  });
+  if (out.length > 49000) {
+    out = out.replace(/src=(["'])data:image\\\/[^"']+\\1/gi, 'src=""');
+  }
+  if (out.length > 49000) {
+    out = out.substring(0, 49000);
+  }
+  return out;
+}
+
 function handleCreateTicket(data) {
   var ss = getSpreadsheet();
   var sheet = ss.getSheetByName("Tickets");
+  ensureTicketsSchema(sheet);
   var t = data.ticketData;
+  var folderId = data.driveFolderId || data.folderId || "";
   var attUrl = t.attachment_url || "";
   var driveId = t.drive_file_id || "";
   if (!driveId && t.attachment_base64) {
     try {
-      var saved = saveBase64FileToDrive(t.attachment_base64, (t.ticket_id || "TKT") + "_" + (t.attachment_name || "image.png"), data.driveFolderId || data.folderId || "", "Tickets");
+      var saved = saveBase64FileToDrive(t.attachment_base64, (t.ticket_id || "TKT") + "_" + (t.attachment_name || "image.png"), folderId, "Tickets");
       if (saved) {
         driveId = saved.fileId;
         attUrl = saved.viewUrl;
       }
     } catch (e) {}
   }
+  var descHtml = uploadInlineImagesInHtmlGAS(t.description_html || "", t.ticket_id || "TKT", folderId);
+  var attachmentsList = Array.isArray(t.attachments) ? t.attachments.map(function(att, aIdx) {
+    var item = Object.assign ? Object.assign({}, att) : JSON.parse(JSON.stringify(att));
+    if (!item.driveFileId && !item.driveUrl && item.base64) {
+      try {
+        var savedAtt = saveBase64FileToDrive(item.base64, (t.ticket_id || "TKT") + "_att_" + (aIdx + 1) + "_" + (item.name || "file"), folderId, "Tickets");
+        if (savedAtt) {
+          item.driveFileId = savedAtt.fileId;
+          item.driveUrl = savedAtt.viewUrl;
+        }
+      } catch (e) {}
+    }
+    if (item.driveFileId || item.driveUrl) delete item.base64;
+    return item;
+  }) : [];
+  var attachmentsJson = JSON.stringify(attachmentsList);
+  if (attachmentsJson.length > 49000) {
+    attachmentsJson = JSON.stringify(attachmentsList.map(function(att) {
+      return { name: att.name || "", size: att.size || 0, type: att.type || "", driveUrl: att.driveUrl || "", driveFileId: att.driveFileId || "" };
+    }));
+  }
+  var commentsList = Array.isArray(t.comments) ? t.comments.map(function(c, cIdx) {
+    var cm = JSON.parse(JSON.stringify(c));
+    if (cm.message_html) cm.message_html = uploadInlineImagesInHtmlGAS(cm.message_html, (t.ticket_id || "TKT") + "_C" + (cIdx + 1), folderId);
+    return cm;
+  }) : [];
   sheet.appendRow([
     t.ticket_id, t.title, t.category, t.priority, t.status,
     t.reporter_name, t.reporter_dept, t.reporter_contact, t.description,
     t.created_at, t.sla_target, t.assigned_agent, t.resolved_at,
-    t.csat_score, t.csat_feedback, t.attachment_name, JSON.stringify(t.comments || []),
-    attUrl, driveId, t.system_name || ""
+    t.csat_score, t.csat_feedback, t.attachment_name, JSON.stringify(commentsList),
+    attUrl, driveId, t.system_name || "", descHtml, attachmentsJson
   ]);
   SpreadsheetApp.flush();
-  return jsonResponse({ status: "success", message: "สร้างเคสเรียบร้อย", attachment_url: attUrl, drive_file_id: driveId });
+  return jsonResponse({ status: "success", message: "สร้างเคสเรียบร้อย", attachment_url: attUrl, drive_file_id: driveId, description_html: descHtml, attachments: attachmentsList });
 }
 
 function handleUpdateTicket(data) {
   var ss = getSpreadsheet();
   var sheet = ss.getSheetByName("Tickets");
+  ensureTicketsSchema(sheet);
   var tid = String(data.ticketId).trim().toLowerCase();
+  var folderId = data.driveFolderId || data.folderId || "";
   var values = sheet.getDataRange().getValues();
   for (var i = 1; i < values.length; i++) {
     if (String(values[i][0]).trim().toLowerCase() === tid) {
@@ -12152,9 +12353,52 @@ function handleUpdateTicket(data) {
       if (u.resolved_at !== undefined) sheet.getRange(row, 13).setValue(u.resolved_at);
       if (u.csat_score !== undefined) sheet.getRange(row, 14).setValue(u.csat_score);
       if (u.csat_feedback !== undefined) sheet.getRange(row, 15).setValue(u.csat_feedback);
-      if (u.comments !== undefined) sheet.getRange(row, 17).setValue(JSON.stringify(u.comments));
+      if (u.comments !== undefined) {
+        var processedComments = Array.isArray(u.comments) ? u.comments.map(function(c, cIdx) {
+          var cm = JSON.parse(JSON.stringify(c));
+          if (cm.message_html) {
+            cm.message_html = uploadInlineImagesInHtmlGAS(cm.message_html, (data.ticketId || "TKT") + "_C" + (cIdx + 1), folderId);
+          }
+          if (Array.isArray(cm.attachments)) {
+            cm.attachments = cm.attachments.map(function(att) {
+              var a = JSON.parse(JSON.stringify(att));
+              if (a.driveFileId || a.driveUrl) delete a.base64;
+              return a;
+            });
+          }
+          return cm;
+        }) : u.comments;
+        var commentsStr = JSON.stringify(processedComments);
+        if (commentsStr.length <= 49000) {
+          sheet.getRange(row, 17).setValue(commentsStr);
+        } else {
+          var strippedComments = Array.isArray(processedComments) ? processedComments.map(function(c) {
+            var cm = JSON.parse(JSON.stringify(c));
+            if (Array.isArray(cm.attachments)) {
+              cm.attachments = cm.attachments.map(function(att) {
+                return { name: att.name || "", size: att.size || 0, type: att.type || "", driveUrl: att.driveUrl || "", driveFileId: att.driveFileId || "" };
+              });
+            }
+            return cm;
+          }) : processedComments;
+          sheet.getRange(row, 17).setValue(JSON.stringify(strippedComments).substring(0, 49000));
+        }
+      }
       if (u.attachment_url !== undefined) sheet.getRange(row, 18).setValue(u.attachment_url);
       if (u.drive_file_id !== undefined) sheet.getRange(row, 19).setValue(u.drive_file_id);
+      if (u.system_name !== undefined) sheet.getRange(row, 20).setValue(u.system_name);
+      if (u.description_html !== undefined) {
+        sheet.getRange(row, 21).setValue(uploadInlineImagesInHtmlGAS(u.description_html, data.ticketId || "TKT", folderId));
+      }
+      if (u.attachments !== undefined) {
+        var attJson = JSON.stringify(u.attachments);
+        if (attJson.length > 49000 && Array.isArray(u.attachments)) {
+          attJson = JSON.stringify(u.attachments.map(function(att) {
+            return { name: att.name || "", size: att.size || 0, type: att.type || "", driveUrl: att.driveUrl || "", driveFileId: att.driveFileId || "" };
+          }));
+        }
+        sheet.getRange(row, 22).setValue(attJson.substring(0, 49000));
+      }
       break;
     }
   }
@@ -13011,6 +13255,7 @@ function handleDeleteUserRole(data) {
           if (Array.isArray(res.activeBorrows)) state.activeBorrows = res.activeBorrows;
           if (Array.isArray(res.allLogs)) state.allLogs = res.allLogs;
           if (Array.isArray(res.tickets) && res.tickets.length > 0) {
+            const prevTicketsMap = new Map((state.tickets || []).map(pt => [String(pt.ticket_id || '').trim().toLowerCase(), pt]));
             state.tickets = res.tickets.map(t => {
               const cached = getAttachmentFromCache(t.ticket_id);
               if (cached) {
@@ -13018,6 +13263,39 @@ function handleDeleteUserRole(data) {
                 if (!t.attachment_base64 && cached.base64) t.attachment_base64 = cached.base64;
                 if (!t.attachment_url && cached.driveUrl) t.attachment_url = cached.driveUrl;
                 if (!t.drive_file_id && cached.driveFileId) t.drive_file_id = cached.driveFileId;
+              }
+              const prevT = prevTicketsMap.get(String(t.ticket_id || '').trim().toLowerCase());
+              const richCached = typeof getTicketRichCache === 'function' ? getTicketRichCache(t.ticket_id) : null;
+              if (!t.description_html) {
+                if (prevT && prevT.description_html) t.description_html = prevT.description_html;
+                else if (richCached && richCached.description_html) t.description_html = richCached.description_html;
+              }
+              if (!Array.isArray(t.attachments) || t.attachments.length === 0) {
+                if (prevT && Array.isArray(prevT.attachments) && prevT.attachments.length > 0) t.attachments = prevT.attachments;
+                else if (richCached && Array.isArray(richCached.attachments) && richCached.attachments.length > 0) t.attachments = richCached.attachments;
+              }
+              const fallbackComments = (prevT && Array.isArray(prevT.comments) && prevT.comments.length > 0)
+                ? prevT.comments
+                : (richCached && Array.isArray(richCached.comments) ? richCached.comments : null);
+              if (fallbackComments) {
+                if (!Array.isArray(t.comments) || t.comments.length === 0) {
+                  t.comments = fallbackComments;
+                } else {
+                  t.comments = t.comments.map((cm, idx) => {
+                    const fc = fallbackComments[idx];
+                    if (fc && String(fc.sender || '') === String(cm.sender || '')) {
+                      if (!cm.message_html && fc.message_html) cm.message_html = fc.message_html;
+                      if ((!Array.isArray(cm.attachments) || cm.attachments.length === 0) && Array.isArray(fc.attachments) && fc.attachments.length > 0) {
+                        cm.attachments = fc.attachments;
+                      }
+                      if (!cm.edited_at && fc.edited_at) {
+                        cm.edited_at = fc.edited_at;
+                        if (fc.message) cm.message = fc.message;
+                      }
+                    }
+                    return cm;
+                  });
+                }
               }
               return t;
             });

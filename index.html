@@ -100,6 +100,24 @@
       padding: 0;
       min-width: 0;
     }
+    .rich-editor-content:empty:before {
+      content: attr(data-placeholder);
+      color: #94a3b8;
+      pointer-events: none;
+      display: block;
+    }
+    .rich-editor-content img,
+    .rich-display-content img {
+      max-width: 100%;
+      max-height: 280px;
+      border-radius: 0.75rem;
+      border: 1px solid #cbd5e1;
+      margin: 0.4rem 0;
+      display: inline-block;
+      cursor: zoom-in;
+      object-fit: contain;
+      background: #ffffff;
+    }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
@@ -926,10 +944,45 @@
               </div>
 
               <div>
-                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                  รายละเอียดของปัญหา (Description) <span class="text-rose-500">*</span>
-                </label>
-                <textarea id="ticketDescription" rows="3" required placeholder="อธิบายขั้นตอนที่เกิดปัญหา หมายเลขเครื่อง หรือข้อความ Error ที่ปรากฏ..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-tcc-500 text-xs sm:text-sm"></textarea>
+                <div class="flex items-center justify-between mb-1.5 gap-2 flex-wrap">
+                  <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    รายละเอียดของปัญหา (Description) <span class="text-rose-500">*</span>
+                  </label>
+                  <span class="text-[11px] text-slate-500">พิมพ์ข้อความ, จัดตัวหนา/ขีดเส้นใต้/สี, หรือ <kbd class="px-1.5 py-0.5 bg-slate-100 border border-slate-200 rounded text-[10px] font-mono">Ctrl+V</kbd> วางรูปภาพในกล่องได้เลย</span>
+                </div>
+                <div class="rounded-2xl border border-slate-300 bg-white overflow-hidden focus-within:ring-2 focus-within:ring-tcc-500 focus-within:border-tcc-500 transition">
+                  <!-- Formatting & Image Toolbar -->
+                  <div class="px-3 py-2 bg-slate-50 border-b border-slate-200 flex items-center gap-1.5 flex-wrap">
+                    <button type="button" onmousedown="event.preventDefault(); execRichCmd('ticketDescriptionEditor', 'bold')" class="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-slate-800 font-extrabold text-xs shadow-2xs cursor-pointer" title="ตัวหนา (Bold)">B</button>
+                    <button type="button" onmousedown="event.preventDefault(); execRichCmd('ticketDescriptionEditor', 'underline')" class="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-slate-800 underline font-semibold text-xs shadow-2xs cursor-pointer" title="ขีดเส้นใต้ (Underline)">U</button>
+                    <div class="w-px h-5 bg-slate-200 mx-0.5"></div>
+                    <span class="text-[11px] text-slate-500 font-semibold">สี:</span>
+                    <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('ticketDescriptionEditor', '#0f172a')" class="w-5 h-5 rounded-full bg-slate-900 border border-slate-300 hover:scale-110 transition cursor-pointer" title="สีดำ"></button>
+                    <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('ticketDescriptionEditor', '#dc2626')" class="w-5 h-5 rounded-full bg-red-600 border border-slate-300 hover:scale-110 transition cursor-pointer" title="สีแดง"></button>
+                    <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('ticketDescriptionEditor', '#0284c7')" class="w-5 h-5 rounded-full bg-sky-600 border border-slate-300 hover:scale-110 transition cursor-pointer" title="สีน้ำเงิน"></button>
+                    <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('ticketDescriptionEditor', '#059669')" class="w-5 h-5 rounded-full bg-emerald-600 border border-slate-300 hover:scale-110 transition cursor-pointer" title="สีเขียว"></button>
+                    <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('ticketDescriptionEditor', '#d97706')" class="w-5 h-5 rounded-full bg-amber-600 border border-slate-300 hover:scale-110 transition cursor-pointer" title="สีส้ม"></button>
+                    <label class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-[11px] font-semibold text-slate-700 cursor-pointer" title="เลือกสีอิสระ">
+                      <span>🎨</span>
+                      <input type="color" value="#0f172a" onchange="applyRichTextColor('ticketDescriptionEditor', this.value)" class="w-4 h-4 p-0 border-0 bg-transparent cursor-pointer">
+                    </label>
+                    <div class="w-px h-5 bg-slate-200 mx-0.5"></div>
+                    <input type="file" id="ticketDescInlineImageInput" multiple accept="image/*" onchange="handleRichEditorImagePick(this, 'ticketDescriptionEditor')" class="hidden">
+                    <label for="ticketDescInlineImageInput" class="px-2.5 py-1 rounded-lg bg-tcc-50 hover:bg-tcc-100 border border-tcc-200 text-tcc-700 font-bold text-xs flex items-center gap-1 cursor-pointer transition" title="แทรกรูปภาพลงในกล่องรายละเอียด">
+                      <span>🖼️ แทรกรูปในข้อความ</span>
+                    </label>
+                    <button type="button" onmousedown="event.preventDefault(); execRichCmd('ticketDescriptionEditor', 'removeFormat')" class="px-2 py-1 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-slate-500 text-[11px] cursor-pointer ml-auto" title="ล้างการจัดรูปแบบ">ล้างรูปแบบ</button>
+                  </div>
+                  <!-- Editable Rich Text Area -->
+                  <div id="ticketDescriptionEditor"
+                       contenteditable="true"
+                       onpaste="handleRichEditorPaste(event, 'ticketDescriptionEditor')"
+                       ondrop="handleRichEditorDrop(event, 'ticketDescriptionEditor')"
+                       ondragover="event.preventDefault()"
+                       data-placeholder="อธิบายขั้นตอนที่เกิดปัญหา หมายเลขเครื่อง ข้อความ Error หรือวางรูปภาพหน้าจอ (Ctrl+V) ลงในช่องนี้ได้เลย..."
+                       class="rich-editor-content w-full min-h-[180px] max-h-[380px] overflow-y-auto p-4 text-sm text-slate-800 leading-relaxed outline-none bg-white"></div>
+                </div>
+                <textarea id="ticketDescription" class="hidden" aria-hidden="true"></textarea>
               </div>
 
               <!-- File Attachment (Supports Multiple Images/Files Preview + Auto Save to Google Drive) -->
@@ -2257,7 +2310,7 @@
 
         <div>
           <span class="font-bold text-slate-800 block mb-1.5">รายละเอียดปัญหา:</span>
-          <div id="detailTicketDesc" class="p-3.5 bg-white rounded-xl border border-slate-200 text-slate-700 leading-relaxed whitespace-pre-wrap"></div>
+          <div id="detailTicketDesc" onclick="handleRichDisplayImageClick(event)" class="rich-display-content p-4 bg-white rounded-xl border border-slate-200 text-slate-700 text-xs sm:text-sm leading-relaxed whitespace-pre-wrap break-words"></div>
         </div>
 
         <div id="detailAttachmentBox" class="hidden">
@@ -2292,11 +2345,11 @@
         <!-- Comments Thread -->
         <div class="border-t border-slate-100 pt-3">
           <span class="font-bold text-slate-800 block mb-2">ข้อความสนทนาและการตอบกลับ:</span>
-          <div id="ticketCommentsList" class="space-y-2.5 max-h-[42vh] overflow-y-auto pr-1"></div>
+          <div id="ticketCommentsList" onclick="handleRichDisplayImageClick(event)" class="space-y-2.5 max-h-[42vh] overflow-y-auto pr-1"></div>
         </div>
       </div>
 
-      <!-- Footer Reply Box (Supports Multi-Image Attachments & Auto-Expanding Scrollable Textarea) -->
+      <!-- Footer Reply Box (Rich Text & Inline Image Editor + Multi-File Attachments) -->
       <div class="p-3.5 sm:p-4 border-t border-slate-100 bg-slate-50 shrink-0 space-y-2">
         <div id="adminChatOptions" class="admin-only admin-hidden flex items-center justify-between text-xs gap-2 flex-wrap">
           <label class="flex items-center gap-1.5 text-amber-900 font-semibold cursor-pointer">
@@ -2311,16 +2364,48 @@
         <!-- Preview area for multiple reply image attachments -->
         <div id="replyAttachmentsPreview" class="hidden flex-wrap items-center gap-2 p-2 rounded-xl bg-white border border-slate-200"></div>
 
-        <form onsubmit="handleSendTicketComment(event)" class="flex items-end gap-2">
-          <input type="file" id="replyAttachmentInput" multiple accept="image/*,.pdf,.txt,.doc,.docx" onchange="handleReplyFilesSelect(this)" class="hidden">
-          <label for="replyAttachmentInput" class="px-3 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 font-semibold text-xs flex items-center gap-1.5 cursor-pointer shrink-0 transition" title="แนบรูปภาพหรือไฟล์ (เลือกได้มากกว่า 1 ภาพ)">
-            <span>🖼️</span>
-            <span class="hidden sm:inline">แนบรูป/ไฟล์</span>
-          </label>
-          <textarea id="replyMessageInput" rows="1" oninput="autoResizeReplyTextarea(this)" onkeydown="handleReplyTextareaKeydown(event)" placeholder="พิมพ์ข้อความตอบกลับ... (กด Enter เพื่อส่ง, Shift+Enter ขึ้นบรรทัดใหม่)" class="flex-1 px-3.5 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm bg-white focus:ring-2 focus:ring-tcc-500 outline-none resize-none leading-relaxed max-h-40 overflow-y-auto" style="min-height: 38px;"></textarea>
-          <button type="submit" class="px-4 sm:px-5 py-2 bg-tcc-600 hover:bg-tcc-700 text-white rounded-xl font-bold text-xs sm:text-sm shadow-sm shrink-0 cursor-pointer">
-            ส่ง
-          </button>
+        <form onsubmit="handleSendTicketComment(event)" class="space-y-2">
+          <div class="rounded-2xl border border-slate-300 bg-white overflow-hidden focus-within:ring-2 focus-within:ring-tcc-500 focus-within:border-tcc-500 transition">
+            <!-- Reply Formatting & Image Toolbar -->
+            <div class="px-2.5 py-1.5 bg-slate-50 border-b border-slate-200 flex items-center gap-1.5 flex-wrap">
+              <button type="button" onmousedown="event.preventDefault(); execRichCmd('replyMessageInput', 'bold')" class="px-2 py-0.5 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-slate-800 font-extrabold text-xs shadow-2xs cursor-pointer" title="ตัวหนา (Bold)">B</button>
+              <button type="button" onmousedown="event.preventDefault(); execRichCmd('replyMessageInput', 'underline')" class="px-2 py-0.5 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-slate-800 underline font-semibold text-xs shadow-2xs cursor-pointer" title="ขีดเส้นใต้ (Underline)">U</button>
+              <div class="w-px h-4 bg-slate-200 mx-0.5"></div>
+              <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('replyMessageInput', '#0f172a')" class="w-4 h-4 rounded-full bg-slate-900 border border-slate-300 hover:scale-110 transition cursor-pointer" title="สีดำ"></button>
+              <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('replyMessageInput', '#dc2626')" class="w-4 h-4 rounded-full bg-red-600 border border-slate-300 hover:scale-110 transition cursor-pointer" title="สีแดง"></button>
+              <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('replyMessageInput', '#0284c7')" class="w-4 h-4 rounded-full bg-sky-600 border border-slate-300 hover:scale-110 transition cursor-pointer" title="สีน้ำเงิน"></button>
+              <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('replyMessageInput', '#059669')" class="w-4 h-4 rounded-full bg-emerald-600 border border-slate-300 hover:scale-110 transition cursor-pointer" title="สีเขียว"></button>
+              <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('replyMessageInput', '#d97706')" class="w-4 h-4 rounded-full bg-amber-600 border border-slate-300 hover:scale-110 transition cursor-pointer" title="สีส้ม"></button>
+              <label class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-[10px] font-semibold text-slate-700 cursor-pointer" title="เลือกสีอิสระ">
+                <span>🎨</span>
+                <input type="color" value="#0f172a" onchange="applyRichTextColor('replyMessageInput', this.value)" class="w-3.5 h-3.5 p-0 border-0 bg-transparent cursor-pointer">
+              </label>
+              <div class="w-px h-4 bg-slate-200 mx-0.5"></div>
+              <input type="file" id="replyInlineImageInput" multiple accept="image/*" onchange="handleRichEditorImagePick(this, 'replyMessageInput')" class="hidden">
+              <label for="replyInlineImageInput" class="px-2 py-0.5 rounded-lg bg-tcc-50 hover:bg-tcc-100 border border-tcc-200 text-tcc-700 font-bold text-[11px] flex items-center gap-1 cursor-pointer transition" title="แทรกรูปภาพในกล่องข้อความ">
+                <span>🖼️ แทรกรูป</span>
+              </label>
+              <input type="file" id="replyAttachmentInput" multiple accept="image/*,.pdf,.txt,.doc,.docx" onchange="handleReplyFilesSelect(this)" class="hidden">
+              <label for="replyAttachmentInput" class="px-2 py-0.5 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 font-semibold text-[11px] flex items-center gap-1 cursor-pointer transition" title="แนบไฟล์เพิ่มเติม (เลือกได้มากกว่า 1 ไฟล์)">
+                <span>📎 แนบไฟล์</span>
+              </label>
+              <button type="button" onmousedown="event.preventDefault(); execRichCmd('replyMessageInput', 'removeFormat')" class="px-1.5 py-0.5 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-slate-500 text-[10px] cursor-pointer ml-auto" title="ล้างการจัดรูปแบบ">ล้างรูปแบบ</button>
+            </div>
+            <!-- Editable Rich Text Reply Box -->
+            <div class="flex items-end gap-2 p-2">
+              <div id="replyMessageInput"
+                   contenteditable="true"
+                   onpaste="handleRichEditorPaste(event, 'replyMessageInput')"
+                   ondrop="handleRichEditorDrop(event, 'replyMessageInput')"
+                   ondragover="event.preventDefault()"
+                   onkeydown="handleReplyTextareaKeydown(event)"
+                   data-placeholder="พิมพ์ข้อความตอบกลับ, จัดตัวหนา/ขีดเส้นใต้/สี หรือวางรูปภาพ (Ctrl+V) ได้เลย... (Enter ส่ง, Shift+Enter ขึ้นบรรทัดใหม่)"
+                   class="rich-editor-content flex-1 min-h-[76px] max-h-[220px] overflow-y-auto px-2.5 py-1.5 text-xs sm:text-sm text-slate-800 leading-relaxed outline-none bg-white"></div>
+              <button type="submit" class="px-4 sm:px-5 py-2.5 bg-tcc-600 hover:bg-tcc-700 text-white rounded-xl font-bold text-xs sm:text-sm shadow-sm shrink-0 cursor-pointer">
+                ส่ง
+              </button>
+            </div>
+          </div>
         </form>
       </div>
     </div>
@@ -6567,6 +6652,145 @@
       }
     }
 
+    function sanitizeRichHtml(rawHtml) {
+      const html = String(rawHtml || "");
+      if (!html.trim()) return "";
+      const doc = new DOMParser().parseFromString(html, "text/html");
+      const allowedTags = new Set(["B", "STRONG", "U", "I", "EM", "BR", "P", "DIV", "SPAN", "FONT", "IMG", "UL", "OL", "LI"]);
+      const cleanNode = (node) => {
+        if (node.nodeType === 3) return; // Text node
+        if (node.nodeType !== 1) {
+          node.remove();
+          return;
+        }
+        const tag = node.tagName.toUpperCase();
+        if (!allowedTags.has(tag)) {
+          const text = document.createTextNode(node.textContent || "");
+          node.replaceWith(text);
+          return;
+        }
+        // Strip unsafe attributes
+        Array.from(node.attributes).forEach(attr => {
+          const name = attr.name.toLowerCase();
+          if (tag === "IMG" && (name === "src" || name === "alt")) {
+            if (name === "src" && !/^data:image\/|^https?:\/\//i.test(attr.value)) {
+              node.removeAttribute("src");
+            }
+          } else if (tag === "FONT" && name === "color") {
+            // keep color
+          } else if (name === "style") {
+            const colorMatch = attr.value.match(/(?:^|;)\s*color\s*:\s*([^;]+)/i);
+            const fwMatch = attr.value.match(/(?:^|;)\s*font-weight\s*:\s*([^;]+)/i);
+            const tdMatch = attr.value.match(/(?:^|;)\s*text-decoration(?:-line)?\s*:\s*([^;]+)/i);
+            const parts = [];
+            if (colorMatch) parts.push(`color: ${colorMatch[1].trim()}`);
+            if (fwMatch) parts.push(`font-weight: ${fwMatch[1].trim()}`);
+            if (tdMatch) parts.push(`text-decoration: ${tdMatch[1].trim()}`);
+            if (parts.length > 0) node.setAttribute("style", parts.join("; "));
+            else node.removeAttribute("style");
+          } else {
+            node.removeAttribute(attr.name);
+          }
+        });
+        Array.from(node.childNodes).forEach(cleanNode);
+      };
+      Array.from(doc.body.childNodes).forEach(cleanNode);
+      return doc.body.innerHTML.trim();
+    }
+
+    function getRichEditorData(editorId) {
+      const el = document.getElementById(editorId);
+      if (!el) return { html: "", text: "", hasImages: false };
+      const html = sanitizeRichHtml(el.innerHTML);
+      const text = (el.innerText || "").trim();
+      const hasImages = /<img\b/i.test(html);
+      return { html, text, hasImages };
+    }
+
+    function execRichCmd(editorId, cmd, value = null) {
+      const el = document.getElementById(editorId);
+      if (!el) return;
+      el.focus();
+      try {
+        document.execCommand("styleWithCSS", false, true);
+        document.execCommand(cmd, false, value);
+      } catch (_) {}
+    }
+
+    function applyRichTextColor(editorId, colorHex) {
+      const el = document.getElementById(editorId);
+      if (!el) return;
+      el.focus();
+      try {
+        document.execCommand("styleWithCSS", false, true);
+        document.execCommand("foreColor", false, colorHex);
+      } catch (_) {}
+    }
+
+    function insertImageFileIntoRichEditor(editorId, file) {
+      const el = document.getElementById(editorId);
+      if (!el || !file || !file.type || !file.type.startsWith("image/")) return;
+      readAndPrepareAttachmentFile(file, (dataUrl, fileName) => {
+        el.focus();
+        const safeAlt = escapeQuotes(fileName || "image");
+        const imgHtml = `<img src="${dataUrl}" alt="${safeAlt}" />&nbsp;`;
+        try {
+          const sel = window.getSelection();
+          if (sel && sel.rangeCount > 0 && el.contains(sel.getRangeAt(0).commonAncestorContainer)) {
+            document.execCommand("insertHTML", false, imgHtml);
+          } else {
+            el.insertAdjacentHTML("beforeend", (el.innerHTML.trim() ? "<br>" : "") + imgHtml);
+          }
+        } catch (_) {
+          el.insertAdjacentHTML("beforeend", (el.innerHTML.trim() ? "<br>" : "") + imgHtml);
+        }
+      });
+    }
+
+    function handleRichEditorPaste(e, editorId) {
+      const items = Array.from(e.clipboardData?.items || []);
+      const imageItems = items.filter(it => it.kind === "file" && it.type && it.type.startsWith("image/"));
+      if (imageItems.length > 0) {
+        e.preventDefault();
+        imageItems.forEach(it => {
+          const file = it.getAsFile();
+          if (file) insertImageFileIntoRichEditor(editorId, file);
+        });
+      }
+    }
+
+    function handleRichEditorDrop(e, editorId) {
+      const files = Array.from(e.dataTransfer?.files || []).filter(f => f.type && f.type.startsWith("image/"));
+      if (files.length > 0) {
+        e.preventDefault();
+        e.stopPropagation();
+        files.forEach(f => insertImageFileIntoRichEditor(editorId, f));
+      }
+    }
+
+    function handleRichEditorImagePick(input, editorId) {
+      const files = Array.from(input?.files || []);
+      if (files.length === 0) return;
+      files.forEach(f => insertImageFileIntoRichEditor(editorId, f));
+      if (input && "value" in input) {
+        try { input.value = ""; } catch (_) {}
+      }
+    }
+
+    function handleRichDisplayImageClick(e) {
+      const target = e.target;
+      if (target && target.tagName && target.tagName.toUpperCase() === "IMG" && target.src) {
+        openAttachmentPreviewModal({
+          refId: "INLINE-IMG",
+          name: target.alt || "รูปภาพประกอบ",
+          isImage: true,
+          displaySrc: target.src,
+          base64: target.src.startsWith("data:") ? target.src : "",
+          driveViewUrl: ""
+        });
+      }
+    }
+
     async function handleCreateTicketSubmit(e) {
       e.preventDefault();
       if (!state.currentUser) {
@@ -6582,6 +6806,14 @@
 
       if (isInternalSystemCategory(categoryVal) && !systemNameVal) {
         return showNotification("กรุณาเลือกชื่อระบบสารสนเทศภายใน / เว็บไซต์ ที่พบปัญหา", "warning");
+      }
+
+      const descEditorData = getRichEditorData("ticketDescriptionEditor");
+      const fallbackDesc = (document.getElementById("ticketDescription")?.value || "").trim();
+      const descText = descEditorData.text || fallbackDesc || (descEditorData.hasImages ? "(แนบรูปภาพในรายละเอียด)" : "");
+      if (!descText && !descEditorData.hasImages) {
+        document.getElementById("ticketDescriptionEditor")?.focus();
+        return showNotification("กรุณากรอกรายละเอียดของปัญหา หรือวางรูปภาพประกอบ", "warning");
       }
 
       const btn = document.getElementById("btnSubmitTicket");
@@ -6604,7 +6836,8 @@
       const reporterDept = document.getElementById("ticketReporterDept").value.trim();
       const reporterContact = document.getElementById("ticketReporterContact").value.trim();
       const titleVal = document.getElementById("ticketTitle").value.trim();
-      const descVal = document.getElementById("ticketDescription").value.trim();
+      const descVal = descText;
+      const descHtmlVal = descEditorData.html || "";
       const nowTs = getLocalTimestamp(0);
 
       draftAttachments.forEach(att => {
@@ -6624,6 +6857,7 @@
         reporter_dept: reporterDept,
         reporter_contact: reporterContact,
         description: descVal,
+        description_html: descHtmlVal,
         created_at: nowTs,
         sla_target: calculateSlaTarget(priority),
         assigned_agent: "ยังไม่มอบหมาย",
@@ -6646,6 +6880,8 @@
       state.tickets.unshift(newTicket);
 
       document.getElementById("createTicketForm")?.reset();
+      const descEditorEl = document.getElementById("ticketDescriptionEditor");
+      if (descEditorEl) descEditorEl.innerHTML = "";
       const tktNotifyChk = document.getElementById("ticketNotifyEmailCheckbox");
       if (tktNotifyChk) tktNotifyChk.checked = state.emailNotifyEnabled !== false;
       handleTicketCategoryChange(document.getElementById("ticketCategory")?.value || "");
@@ -6966,14 +7202,24 @@
       const ticket = state.tickets.find(t => t.ticket_id === ticketId);
       if (!ticket) return;
       state.activeDetailTicketId = ticketId;
+      state.editingCommentIndex = null;
       clearReplyAttachments();
+      const replyEditor = document.getElementById("replyMessageInput");
+      if (replyEditor) replyEditor.innerHTML = "";
 
       document.getElementById("detailTicketNumber").innerText = ticket.ticket_id;
       document.getElementById("detailTicketTitle").innerText = ticket.title;
       const sysInfo = ticket.system_name ? ` • ระบบ: ${ticket.system_name}` : ` • หมวด: ${ticket.category || '-'}`;
       const closedMeta = ticket.resolved_at ? ` • วันที่ปิดเคส: ${ticket.resolved_at}` : "";
       document.getElementById("detailTicketMeta").innerText = `ผู้แจ้ง: ${ticket.reporter_name} (${ticket.reporter_dept})${sysInfo} • วันที่เปิดเคส: ${ticket.created_at || '-'}${closedMeta}`;
-      document.getElementById("detailTicketDesc").innerText = ticket.description;
+      const descEl = document.getElementById("detailTicketDesc");
+      if (descEl) {
+        if (ticket.description_html) {
+          descEl.innerHTML = sanitizeRichHtml(ticket.description_html);
+        } else {
+          descEl.innerText = ticket.description || "-";
+        }
+      }
       document.getElementById("detailTicketPriorityBadge").innerText = ticket.priority;
       document.getElementById("detailTicketStatusBadge").innerText = ticket.status;
       document.getElementById("detailTicketSlaBadge").innerText = `${ticket.sla_target} น.`;
@@ -7244,26 +7490,40 @@
             </div>
             ${isEditing ? `
               <div class="space-y-2 mt-1.5">
-                <textarea id="editCommentTextarea-${cIdx}" rows="2" oninput="autoResizeReplyTextarea(this)" class="w-full px-3 py-2 rounded-xl border border-tcc-400 bg-white text-xs sm:text-sm focus:ring-2 focus:ring-tcc-500 outline-none resize-none leading-relaxed max-h-44 overflow-y-auto">${c.message || ''}</textarea>
+                <div class="rounded-xl border border-tcc-400 bg-white overflow-hidden">
+                  <div class="px-2 py-1 bg-slate-50 border-b border-slate-200 flex items-center gap-1 flex-wrap">
+                    <button type="button" onmousedown="event.preventDefault(); execRichCmd('editCommentEditor-${cIdx}', 'bold')" class="px-2 py-0.5 rounded bg-white hover:bg-slate-100 border border-slate-200 font-extrabold text-[11px] cursor-pointer" title="ตัวหนา">B</button>
+                    <button type="button" onmousedown="event.preventDefault(); execRichCmd('editCommentEditor-${cIdx}', 'underline')" class="px-2 py-0.5 rounded bg-white hover:bg-slate-100 border border-slate-200 underline font-semibold text-[11px] cursor-pointer" title="ขีดเส้นใต้">U</button>
+                    <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('editCommentEditor-${cIdx}', '#0f172a')" class="w-4 h-4 rounded-full bg-slate-900 border border-slate-300 cursor-pointer" title="สีดำ"></button>
+                    <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('editCommentEditor-${cIdx}', '#dc2626')" class="w-4 h-4 rounded-full bg-red-600 border border-slate-300 cursor-pointer" title="สีแดง"></button>
+                    <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('editCommentEditor-${cIdx}', '#0284c7')" class="w-4 h-4 rounded-full bg-sky-600 border border-slate-300 cursor-pointer" title="สีน้ำเงิน"></button>
+                    <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('editCommentEditor-${cIdx}', '#059669')" class="w-4 h-4 rounded-full bg-emerald-600 border border-slate-300 cursor-pointer" title="สีเขียว"></button>
+                    <input type="file" id="editCommentImgInput-${cIdx}" multiple accept="image/*" onchange="handleRichEditorImagePick(this, 'editCommentEditor-${cIdx}')" class="hidden">
+                    <label for="editCommentImgInput-${cIdx}" class="px-2 py-0.5 rounded bg-tcc-50 hover:bg-tcc-100 border border-tcc-200 text-tcc-700 font-bold text-[10px] cursor-pointer">🖼️ แทรกรูป</label>
+                  </div>
+                  <div id="editCommentEditor-${cIdx}"
+                       contenteditable="true"
+                       onpaste="handleRichEditorPaste(event, 'editCommentEditor-${cIdx}')"
+                       ondrop="handleRichEditorDrop(event, 'editCommentEditor-${cIdx}')"
+                       ondragover="event.preventDefault()"
+                       class="rich-editor-content w-full min-h-[70px] max-h-52 overflow-y-auto px-3 py-2 text-xs sm:text-sm text-slate-800 leading-relaxed outline-none bg-white">${c.message_html ? sanitizeRichHtml(c.message_html) : (c.message ? String(c.message).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>") : "")}</div>
+                </div>
                 <div class="flex items-center justify-end gap-1.5">
                   <button type="button" onclick="cancelEditTicketComment()" class="px-3 py-1 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold text-xs cursor-pointer">ยกเลิก</button>
                   <button type="button" onclick="saveEditedTicketComment(${cIdx})" class="px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs cursor-pointer">💾 บันทึก</button>
                 </div>
               </div>
-            ` : (c.message ? `<p class="text-slate-700 whitespace-pre-wrap break-words">${c.message}</p>` : '')}
+            ` : (c.message_html
+                ? `<div class="rich-display-content text-slate-700 whitespace-pre-wrap break-words leading-relaxed">${sanitizeRichHtml(c.message_html)}</div>`
+                : (c.message ? `<p class="text-slate-700 whitespace-pre-wrap break-words">${c.message}</p>` : ''))}
             ${attsHtml}
           </div>
         `;
       }).join("");
-
-      if (typeof state.editingCommentIndex === "number") {
-        const editEl = document.getElementById(`editCommentTextarea-${state.editingCommentIndex}`);
-        if (editEl) autoResizeReplyTextarea(editEl);
-      }
     }
 
     function autoResizeReplyTextarea(el) {
-      if (!el) return;
+      if (!el || el.isContentEditable) return;
       el.style.height = "auto";
       const maxH = 160;
       const nextH = Math.min(el.scrollHeight, maxH);
@@ -7285,11 +7545,9 @@
       if (!ticket || !Array.isArray(ticket.comments) || !ticket.comments[commentIdx]) return;
       state.editingCommentIndex = commentIdx;
       renderTicketComments(ticket);
-      const editEl = document.getElementById(`editCommentTextarea-${commentIdx}`);
+      const editEl = document.getElementById(`editCommentEditor-${commentIdx}`);
       if (editEl) {
-        autoResizeReplyTextarea(editEl);
         editEl.focus();
-        editEl.setSelectionRange(editEl.value.length, editEl.value.length);
       }
     }
 
@@ -7304,13 +7562,13 @@
       if (!state.activeDetailTicketId) return;
       const ticket = state.tickets.find(t => t.ticket_id === state.activeDetailTicketId);
       if (!ticket || !Array.isArray(ticket.comments) || !ticket.comments[commentIdx]) return;
-      const editEl = document.getElementById(`editCommentTextarea-${commentIdx}`);
-      const newMsg = (editEl?.value || "").trim();
+      const editorData = getRichEditorData(`editCommentEditor-${commentIdx}`);
       const comment = ticket.comments[commentIdx];
-      if (!newMsg && (!Array.isArray(comment.attachments) || comment.attachments.length === 0)) {
-        return showNotification("กรุณากรอกข้อความก่อนบันทึก", "warning");
+      if (!editorData.text && !editorData.hasImages && (!Array.isArray(comment.attachments) || comment.attachments.length === 0)) {
+        return showNotification("กรุณากรอกข้อความหรือวางรูปภาพก่อนบันทึก", "warning");
       }
-      comment.message = newMsg;
+      comment.message = editorData.text || (editorData.hasImages ? "(แนบรูปภาพในข้อความ)" : "");
+      comment.message_html = editorData.html;
       comment.edited_at = getLocalTimestamp(0);
       state.editingCommentIndex = null;
       renderTicketComments(ticket);
@@ -7326,11 +7584,12 @@
     function handleSendTicketComment(e) {
       e.preventDefault();
       const input = document.getElementById("replyMessageInput");
-      const msg = input.value.trim();
+      const editorData = getRichEditorData("replyMessageInput");
+      const msg = editorData.text;
       const attachments = Array.isArray(state.replyAttachments)
         ? state.replyAttachments.map(a => ({ name: a.name, base64: a.base64, mime: a.mime || "", url: a.url || "", drive_file_id: a.drive_file_id || "" }))
         : [];
-      if ((!msg && attachments.length === 0) || !state.activeDetailTicketId) return;
+      if ((!msg && !editorData.hasImages && attachments.length === 0) || !state.activeDetailTicketId) return;
 
       const ticket = state.tickets.find(t => t.ticket_id === state.activeDetailTicketId);
       if (!ticket) return;
@@ -7340,7 +7599,8 @@
 
       const newComment = {
         sender: senderName,
-        message: msg || (attachments.length > 0 ? `(แนบไฟล์/รูปภาพ ${attachments.length} รายการ)` : ""),
+        message: msg || (editorData.hasImages ? "(แนบรูปภาพในข้อความ)" : (attachments.length > 0 ? `(แนบไฟล์/รูปภาพ ${attachments.length} รายการ)` : "")),
+        message_html: editorData.html || "",
         time: getLocalTimestamp(0),
         is_internal: isInternal,
         attachments: attachments
@@ -7348,8 +7608,7 @@
 
       (ticket.comments = Array.isArray(ticket.comments) ? ticket.comments : []).push(newComment);
 
-      input.value = "";
-      autoResizeReplyTextarea(input);
+      if (input) input.innerHTML = "";
       state.editingCommentIndex = null;
       clearReplyAttachments();
       renderTicketComments(ticket);
@@ -7920,8 +8179,13 @@
     function selectKbAnswer(text) {
       const input = document.getElementById("replyMessageInput");
       if (input) {
-        input.value = text;
-        autoResizeReplyTextarea(input);
+        if (input.isContentEditable) {
+          input.innerText = text;
+          input.focus();
+        } else {
+          input.value = text;
+          autoResizeReplyTextarea(input);
+        }
       }
       closeKbQuickSelectModal();
     }

@@ -3302,6 +3302,7 @@
     const STORAGE_KEY_USER = "it_asset_logged_user";
     const STORAGE_KEY_ROLES = "it_asset_custom_user_roles";
     const STORAGE_KEY_INTERNAL_SYSTEMS = "it_asset_internal_systems";
+    const STORAGE_KEY_TICKET_CATEGORIES = "it_asset_ticket_categories";
     const STORAGE_KEY_DRIVE_FOLDER = "it_asset_drive_folder_id";
     const STORAGE_KEY_ATTACHMENTS = "it_asset_attachments_cache";
     const PROD_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxEj-79eHal39qVlnENM2GxRTn5C1TVXYjE8IxehEKXokpOHh5VtfHCbuc7_PSr4xO0/exec";
@@ -3485,6 +3486,23 @@
         } catch (e) {}
       }
       return [...INITIAL_DEMO_INTERNAL_SYSTEMS];
+    }
+
+    function loadSavedTicketCategories() {
+      const saved = localStorage.getItem(STORAGE_KEY_TICKET_CATEGORIES);
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        } catch (e) {}
+      }
+      return [...INITIAL_DEMO_TICKET_CATEGORIES];
+    }
+
+    function saveTicketCategoriesToStorage() {
+      try {
+        localStorage.setItem(STORAGE_KEY_TICKET_CATEGORIES, JSON.stringify(state.ticketCategories || []));
+      } catch (e) {}
     }
 
     const INITIAL_DEMO_DEPTS = [
@@ -4061,7 +4079,7 @@
       tickets: JSON.parse(JSON.stringify(INITIAL_DEMO_TICKETS)),
       knowledgeBase: JSON.parse(JSON.stringify(INITIAL_DEMO_KB)),
       categories: [...INITIAL_DEMO_CATEGORIES],
-      ticketCategories: [...INITIAL_DEMO_TICKET_CATEGORIES],
+      ticketCategories: loadSavedTicketCategories(),
       internalSystems: loadSavedInternalSystems(),
       departments: [...INITIAL_DEMO_DEPTS],
       driveFolderId: localStorage.getItem(STORAGE_KEY_DRIVE_FOLDER) || "",
@@ -8732,21 +8750,43 @@
         return;
       }
       container.innerHTML = systems.map((sys, idx) => `
-        <div class="flex items-center justify-between px-3 py-2.5 text-xs hover:bg-slate-50 transition">
+        <div class="flex items-center justify-between px-3 py-2.5 text-xs hover:bg-slate-50 transition gap-2">
           <div class="flex items-center gap-2 min-w-0 pr-2">
+            <span class="font-mono text-[11px] font-bold text-slate-400 w-5 text-right shrink-0">${idx + 1}.</span>
             <span class="w-2 h-2 rounded-full bg-indigo-500 shrink-0"></span>
-            <span class="font-semibold text-slate-800 truncate">${sys}</span>
+            <span class="font-semibold text-slate-800 truncate" title="${escapeQuotes(sys)}">${sys}</span>
           </div>
-          <div class="flex items-center gap-1.5 shrink-0">
-            <button type="button" onclick="handleEditInternalSystem(${idx})" class="p-1.5 text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-indigo-50 transition" title="แก้ไขชื่อระบบ">
+          <div class="flex items-center gap-1 shrink-0">
+            <button type="button" onclick="moveInternalSystemOrder(${idx}, -1)" ${idx === 0 ? 'disabled' : ''} class="px-1.5 py-1 rounded-lg border border-slate-200 text-[11px] font-bold ${idx === 0 ? 'text-slate-300 cursor-not-allowed' : 'text-slate-600 hover:bg-slate-100 hover:text-indigo-700 cursor-pointer'} transition" title="เลื่อนขึ้น">
+              ⬆️
+            </button>
+            <button type="button" onclick="moveInternalSystemOrder(${idx}, 1)" ${idx === systems.length - 1 ? 'disabled' : ''} class="px-1.5 py-1 rounded-lg border border-slate-200 text-[11px] font-bold ${idx === systems.length - 1 ? 'text-slate-300 cursor-not-allowed' : 'text-slate-600 hover:bg-slate-100 hover:text-indigo-700 cursor-pointer'} transition" title="เลื่อนลง">
+              ⬇️
+            </button>
+            <button type="button" onclick="handleEditInternalSystem(${idx})" class="p-1.5 text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-indigo-50 transition cursor-pointer" title="แก้ไขชื่อระบบ">
               ✏️
             </button>
-            <button type="button" onclick="handleDeleteInternalSystem(${idx})" class="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition" title="ลบชื่อระบบ">
+            <button type="button" onclick="handleDeleteInternalSystem(${idx})" class="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition cursor-pointer" title="ลบชื่อระบบ">
               🗑️
             </button>
           </div>
         </div>
       `).join("");
+    }
+
+    function moveInternalSystemOrder(idx, dir) {
+      const systems = state.internalSystems || [];
+      const targetIdx = idx + dir;
+      if (targetIdx < 0 || targetIdx >= systems.length) return;
+      const temp = systems[idx];
+      systems[idx] = systems[targetIdx];
+      systems[targetIdx] = temp;
+      saveInternalSystemsToStorage();
+      renderInternalSystemSelects();
+      renderInternalSystemManagementList();
+      renderAll();
+      showNotification("จัดเรียงลำดับชื่อระบบสารสนเทศเรียบร้อย", "success");
+      callAPI("saveInternalSystemsOrder", { systemsList: [...systems] }, true);
     }
 
     function handleAddNewInternalSystem(e) {
@@ -8764,9 +8804,9 @@
       saveInternalSystemsToStorage();
       renderInternalSystemSelects();
       renderInternalSystemManagementList();
-      renderHelpdeskReport();
+      renderAll();
       showNotification(`เพิ่มระบบ "${val}" เรียบร้อย`, "success");
-      callAPI("addInternalSystem", { systemName: val }, true);
+      callAPI("addInternalSystem", { systemName: val, systemsList: [...state.internalSystems] }, true);
     }
 
     function handleEditInternalSystem(idx) {
@@ -8787,7 +8827,7 @@
         renderInternalSystemManagementList();
         renderAll();
         showNotification(`แก้ไขชื่อระบบเป็น "${val}" เรียบร้อย`, "success");
-        callAPI("updateInternalSystem", { oldName: current, newName: val }, true);
+        callAPI("updateInternalSystem", { oldName: current, newName: val, systemsList: [...state.internalSystems] }, true);
       }
     }
 
@@ -8799,9 +8839,9 @@
       saveInternalSystemsToStorage();
       renderInternalSystemSelects();
       renderInternalSystemManagementList();
-      renderHelpdeskReport();
+      renderAll();
       showNotification(`ลบชื่อระบบ "${current}" เรียบร้อย`, "info");
-      callAPI("deleteInternalSystem", { systemName: current }, true);
+      callAPI("deleteInternalSystem", { systemName: current, systemsList: [...state.internalSystems] }, true);
     }
 
     /* HELPDESK SUMMARY REPORT & EXPORT FUNCTIONS */
@@ -9307,21 +9347,43 @@
         return;
       }
       container.innerHTML = cats.map((cat, idx) => `
-        <div class="flex items-center justify-between px-3 py-2.5 text-xs hover:bg-slate-50 transition">
-          <div class="flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-purple-500"></span>
-            <span class="font-semibold text-slate-800">${cat}</span>
+        <div class="flex items-center justify-between px-3 py-2.5 text-xs hover:bg-slate-50 transition gap-2">
+          <div class="flex items-center gap-2 min-w-0 pr-2">
+            <span class="font-mono text-[11px] font-bold text-slate-400 w-5 text-right shrink-0">${idx + 1}.</span>
+            <span class="w-2 h-2 rounded-full bg-purple-500 shrink-0"></span>
+            <span class="font-semibold text-slate-800 truncate" title="${escapeQuotes(cat)}">${cat}</span>
           </div>
-          <div class="flex items-center gap-1.5">
-            <button type="button" onclick="handleEditTicketCategory(${idx})" class="p-1.5 text-slate-500 hover:text-purple-600 rounded-lg hover:bg-purple-50 transition" title="แก้ไข">
+          <div class="flex items-center gap-1 shrink-0">
+            <button type="button" onclick="moveTicketCategoryOrder(${idx}, -1)" ${idx === 0 ? 'disabled' : ''} class="px-1.5 py-1 rounded-lg border border-slate-200 text-[11px] font-bold ${idx === 0 ? 'text-slate-300 cursor-not-allowed' : 'text-slate-600 hover:bg-slate-100 hover:text-purple-700 cursor-pointer'} transition" title="เลื่อนขึ้น">
+              ⬆️
+            </button>
+            <button type="button" onclick="moveTicketCategoryOrder(${idx}, 1)" ${idx === cats.length - 1 ? 'disabled' : ''} class="px-1.5 py-1 rounded-lg border border-slate-200 text-[11px] font-bold ${idx === cats.length - 1 ? 'text-slate-300 cursor-not-allowed' : 'text-slate-600 hover:bg-slate-100 hover:text-purple-700 cursor-pointer'} transition" title="เลื่อนลง">
+              ⬇️
+            </button>
+            <button type="button" onclick="handleEditTicketCategory(${idx})" class="p-1.5 text-slate-500 hover:text-purple-600 rounded-lg hover:bg-purple-50 transition cursor-pointer" title="แก้ไข">
               ✏️
             </button>
-            <button type="button" onclick="handleDeleteTicketCategory(${idx})" class="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition" title="ลบ">
+            <button type="button" onclick="handleDeleteTicketCategory(${idx})" class="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition cursor-pointer" title="ลบ">
               🗑️
             </button>
           </div>
         </div>
       `).join("");
+    }
+
+    function moveTicketCategoryOrder(idx, dir) {
+      const cats = state.ticketCategories || [];
+      const targetIdx = idx + dir;
+      if (targetIdx < 0 || targetIdx >= cats.length) return;
+      const temp = cats[idx];
+      cats[idx] = cats[targetIdx];
+      cats[targetIdx] = temp;
+      saveTicketCategoriesToStorage();
+      renderTicketCategorySelects();
+      renderTicketCategoryManagementList();
+      renderAll();
+      showNotification("จัดเรียงลำดับหมวดหมู่ปัญหาเรียบร้อย", "success");
+      callAPI("saveTicketCategoriesOrder", { categoriesList: [...cats] }, true);
     }
 
     function handleAddNewTicketCategory(e) {
@@ -9335,10 +9397,12 @@
       }
       state.ticketCategories.push(val);
       input.value = "";
+      saveTicketCategoriesToStorage();
       renderTicketCategorySelects();
       renderTicketCategoryManagementList();
+      renderAll();
       showNotification(`เพิ่มหมวดหมู่ "${val}" เรียบร้อย`, "success");
-      callAPI("addTicketCategory", { categoryName: val }, true);
+      callAPI("addTicketCategory", { categoryName: val, categoriesList: [...state.ticketCategories] }, true);
     }
 
     function handleEditTicketCategory(idx) {
@@ -9348,10 +9412,12 @@
       if (updated && updated.trim() && updated.trim() !== current) {
         const val = updated.trim();
         state.ticketCategories[idx] = val;
+        saveTicketCategoriesToStorage();
         renderTicketCategorySelects();
         renderTicketCategoryManagementList();
+        renderAll();
         showNotification(`แก้ไขหมวดหมู่เป็น "${val}" เรียบร้อย`, "success");
-        callAPI("updateTicketCategory", { oldName: current, newName: val }, true);
+        callAPI("updateTicketCategory", { oldName: current, newName: val, categoriesList: [...state.ticketCategories] }, true);
       }
     }
 
@@ -9360,10 +9426,12 @@
       if (!current) return;
       if (!confirm(`คุณต้องการลบหมวดหมู่ "${current}" ใช่หรือไม่?`)) return;
       state.ticketCategories.splice(idx, 1);
+      saveTicketCategoriesToStorage();
       renderTicketCategorySelects();
       renderTicketCategoryManagementList();
+      renderAll();
       showNotification(`ลบหมวดหมู่ "${current}" เรียบร้อย`, "info");
-      callAPI("deleteTicketCategory", { categoryName: current }, true);
+      callAPI("deleteTicketCategory", { categoryName: current, categoriesList: [...state.ticketCategories] }, true);
     }
 
     /* QUICK AVAILABLE LIST */
@@ -11361,6 +11429,11 @@ function doPost(e) {
       case "addTicketCategory": return handleAddTicketCategory(data);
       case "updateTicketCategory": return handleUpdateTicketCategory(data);
       case "deleteTicketCategory": return handleDeleteTicketCategory(data);
+      case "saveTicketCategoriesOrder": return handleSaveTicketCategoriesOrder(data);
+      case "addInternalSystem": return handleAddInternalSystem(data);
+      case "updateInternalSystem": return handleUpdateInternalSystem(data);
+      case "deleteInternalSystem": return handleDeleteInternalSystem(data);
+      case "saveInternalSystemsOrder": return handleSaveInternalSystemsOrder(data);
       case "saveUserRole": return handleSaveUserRole(data);
       case "saveUserRolesBatch": return handleSaveUserRolesBatch(data);
       case "deleteUserRole": return handleDeleteUserRole(data);
@@ -11738,6 +11811,18 @@ function handleGetInitialData() {
     ["งานบริการไอทีอื่นๆ"]
   ]);
 
+  getOrCreateSheet(ss, "InternalSystems", ["System Name"], [
+    ["ระบบเว็บไซต์หลักหอการค้าไทย (thaichamber.or.th)"],
+    ["ระบบทะเบียนสมาชิกหอการค้าไทย (TCC Member)"],
+    ["ระบบสารบรรณอิเล็กทรอนิกส์ (e-Document / e-Office)"],
+    ["ระบบทรัพยากรบุคคล / ลางานออนไลน์ (HRIS / ESS)"],
+    ["ระบบบัญชีการเงินและงบประมาณ (ERP / SAP)"],
+    ["ระบบออกหนังสือรับรองถิ่นกำเนิดสินค้า (CO Online)"],
+    ["ระบบจองห้องประชุมและยานพาหนะ"],
+    ["ระบบอินทราเน็ตภายใน (TCC Intranet)"],
+    ["ระบบอื่นๆ (ระบุในรายละเอียด)"]
+  ]);
+
   getOrCreateSheet(ss, "Tickets", ["Ticket ID", "Title", "Category", "Priority", "Status", "Reporter Name", "Reporter Dept", "Reporter Contact", "Description", "Created At", "SLA Target", "Assigned Agent", "Resolved At", "CSAT Score", "CSAT Feedback", "Attachment Name", "Comments JSON", "Attachment URL", "Drive File ID", "System Name"], [
     ["ITC-2026-10-25-0001", "หน้าจอโน้ตบุ๊กกระพริบดับบางจังหวะ", "ฮาร์ดแวร์ / เครื่องคอมพิวเตอร์ / จอภาพ", "High", "In Progress", "สมชาย ใจดี", "ฝ่ายการเงินและการบัญชี", "somchai.user@thaichamber.or.th", "เวลาขยับบานพับหน้าจอ ภาพจะกระพริบ", "2026-10-25 10:00", "2026-10-25 14:00", "wattanachai.mi@thaichamber.or.th", "", 0, "", "error_screen.png", JSON.stringify([{ sender: "สมชาย ใจดี", message: "แจ้งเปิดเคสครับ", time: "2026-10-25 10:00", is_internal: false }]), "", "", ""],
     ["ITC-2026-10-27-0002", "ไม่สามารถเชื่อมต่อสัญญาณ Wi-Fi ได้", "ระบบเครือข่าย / อินเทอร์เน็ต / Wi-Fi / VPN", "Critical", "Open", "สุวิมล แสงทอง", "ฝ่ายสมาชิกสัมพันธ์และการบริการ", "suwimon@thaichamber.or.th", "แจ้งเตือน Can't connect to this network", "2026-10-27 11:30", "2026-10-27 13:30", "supakon.su@thaichamber.or.th", "", 0, "", "", JSON.stringify([{ sender: "สุวิมล แสงทอง", message: "รบกวนช่วยตรวจสอบหน่อยค่ะ", time: "2026-10-27 11:30", is_internal: false }]), "", "", ""]
@@ -11854,6 +11939,15 @@ function handleGetInitialData() {
     }
   }
 
+  var intSysSheet = ss.getSheetByName("InternalSystems");
+  var internalSystems = [];
+  if (intSysSheet) {
+    var isData = intSysSheet.getDataRange().getValues();
+    for (var isIdx = 1; isIdx < isData.length; isIdx++) {
+      if (isData[isIdx][0]) internalSystems.push(String(isData[isIdx][0]));
+    }
+  }
+
   var ticketData = ss.getSheetByName("Tickets").getDataRange().getValues();
   var tickets = [];
   for (var t = 1; t < ticketData.length; t++) {
@@ -11939,6 +12033,7 @@ function handleGetInitialData() {
     departments: departments,
     userRoles: userRoles,
     ticketCategories: ticketCategories,
+    internalSystems: internalSystems,
     tickets: tickets,
     knowledgeBase: knowledgeBase,
     emailNotifyEnabled: emailNotifyEnabled,
@@ -12271,6 +12366,86 @@ function handleDeleteTicketCategory(data) {
   }
   SpreadsheetApp.flush();
   return jsonResponse({ status: "success", message: "ลบหมวดหมู่เรียบร้อย" });
+}
+
+function handleSaveTicketCategoriesOrder(data) {
+  var ss = getSpreadsheet();
+  var sheet = getOrCreateSheet(ss, "TicketCategories", ["Category Name"], []);
+  var list = Array.isArray(data.categoriesList) ? data.categoriesList : [];
+  if (sheet.getLastRow() > 1) {
+    sheet.getRange(2, 1, sheet.getLastRow() - 1, 1).clearContent();
+  }
+  if (list.length > 0) {
+    var rows = list.map(function(item) { return [String(item || "").trim()]; }).filter(function(r) { return r[0] !== ""; });
+    if (rows.length > 0) {
+      sheet.getRange(2, 1, rows.length, 1).setValues(rows);
+    }
+  }
+  SpreadsheetApp.flush();
+  return jsonResponse({ status: "success", message: "บันทึกลำดับหมวดหมู่ปัญหาเรียบร้อย" });
+}
+
+function handleSaveInternalSystemsOrder(data) {
+  var ss = getSpreadsheet();
+  var sheet = getOrCreateSheet(ss, "InternalSystems", ["System Name"], []);
+  var list = Array.isArray(data.systemsList) ? data.systemsList : [];
+  if (sheet.getLastRow() > 1) {
+    sheet.getRange(2, 1, sheet.getLastRow() - 1, 1).clearContent();
+  }
+  if (list.length > 0) {
+    var rows = list.map(function(item) { return [String(item || "").trim()]; }).filter(function(r) { return r[0] !== ""; });
+    if (rows.length > 0) {
+      sheet.getRange(2, 1, rows.length, 1).setValues(rows);
+    }
+  }
+  SpreadsheetApp.flush();
+  return jsonResponse({ status: "success", message: "บันทึกลำดับชื่อระบบสารสนเทศเรียบร้อย" });
+}
+
+function handleAddInternalSystem(data) {
+  if (Array.isArray(data.systemsList) && data.systemsList.length > 0) {
+    return handleSaveInternalSystemsOrder(data);
+  }
+  var ss = getSpreadsheet();
+  var sheet = getOrCreateSheet(ss, "InternalSystems", ["System Name"], []);
+  sheet.appendRow([data.systemName]);
+  SpreadsheetApp.flush();
+  return jsonResponse({ status: "success", message: "เพิ่มชื่อระบบสารสนเทศเรียบร้อย" });
+}
+
+function handleUpdateInternalSystem(data) {
+  if (Array.isArray(data.systemsList) && data.systemsList.length > 0) {
+    handleSaveInternalSystemsOrder(data);
+  } else {
+    var ss = getSpreadsheet();
+    var sheet = getOrCreateSheet(ss, "InternalSystems", ["System Name"], []);
+    var values = sheet.getDataRange().getValues();
+    for (var i = 1; i < values.length; i++) {
+      if (String(values[i][0]).trim().toLowerCase() === String(data.oldName).trim().toLowerCase()) {
+        sheet.getRange(i + 1, 1).setValue(data.newName);
+        break;
+      }
+    }
+    SpreadsheetApp.flush();
+  }
+  return jsonResponse({ status: "success", message: "แก้ไขชื่อระบบสารสนเทศเรียบร้อย" });
+}
+
+function handleDeleteInternalSystem(data) {
+  if (Array.isArray(data.systemsList)) {
+    return handleSaveInternalSystemsOrder(data);
+  }
+  var ss = getSpreadsheet();
+  var sheet = getOrCreateSheet(ss, "InternalSystems", ["System Name"], []);
+  var values = sheet.getDataRange().getValues();
+  for (var i = 1; i < values.length; i++) {
+    if (String(values[i][0]).trim().toLowerCase() === String(data.systemName).trim().toLowerCase()) {
+      sheet.deleteRow(i + 1);
+      break;
+    }
+  }
+  SpreadsheetApp.flush();
+  return jsonResponse({ status: "success", message: "ลบชื่อระบบสารสนเทศเรียบร้อย" });
 }
 
 function handleAddItem(data) {
@@ -12792,6 +12967,11 @@ function handleDeleteUserRole(data) {
             case "addTicketCategory":
             case "updateTicketCategory":
             case "deleteTicketCategory":
+            case "saveTicketCategoriesOrder":
+            case "addInternalSystem":
+            case "updateInternalSystem":
+            case "deleteInternalSystem":
+            case "saveInternalSystemsOrder":
             case "saveKbArticle":
             case "deleteKbArticle": {
               resolve({ status: "success", message: "ดำเนินการเรียบร้อย (จำลอง)" });
@@ -12855,7 +13035,10 @@ function handleDeleteUserRole(data) {
             });
           }
           if (Array.isArray(res.categories) && res.categories.length > 0) state.categories = res.categories;
-          if (Array.isArray(res.ticketCategories) && res.ticketCategories.length > 0) state.ticketCategories = res.ticketCategories;
+          if (Array.isArray(res.ticketCategories) && res.ticketCategories.length > 0) {
+            state.ticketCategories = res.ticketCategories;
+            saveTicketCategoriesToStorage();
+          }
           if (Array.isArray(res.internalSystems) && res.internalSystems.length > 0) {
             state.internalSystems = res.internalSystems;
             saveInternalSystemsToStorage();

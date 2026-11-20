@@ -932,11 +932,11 @@
                 <textarea id="ticketDescription" rows="3" required placeholder="อธิบายขั้นตอนที่เกิดปัญหา หมายเลขเครื่อง หรือข้อความ Error ที่ปรากฏ..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-tcc-500 text-xs sm:text-sm"></textarea>
               </div>
 
-              <!-- File Attachment (Supports Image Preview + Auto Save to Google Drive) -->
+              <!-- File Attachment (Supports Multiple Images/Files Preview + Auto Save to Google Drive) -->
               <div>
-                <div class="flex items-center justify-between mb-1.5">
+                <div class="flex items-center justify-between mb-1.5 gap-2 flex-wrap">
                   <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
-                    แนบรูปภาพหรือเอกสาร (ภาพหน้าจอ Error, เอกสารประกอบ)
+                    แนบรูปภาพหรือเอกสาร (เลือกได้มากกว่า 1 ไฟล์/ภาพ)
                   </label>
                   <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
                     <span>☁️</span>
@@ -944,33 +944,21 @@
                   </span>
                 </div>
                 <div id="ticketFileDropZone" class="border-2 border-dashed border-slate-200 hover:border-tcc-400 rounded-2xl p-4 text-center bg-slate-50 transition cursor-pointer">
-                  <input type="file" id="ticketFileInput" onchange="handleTicketFileSelect(this)" accept="image/*,.pdf,.txt,.doc,.docx" class="hidden">
+                  <input type="file" id="ticketFileInput" multiple onchange="handleTicketFileSelect(this)" accept="image/*,.pdf,.txt,.doc,.docx" class="hidden">
                   <label for="ticketFileInput" class="cursor-pointer flex flex-col items-center justify-center gap-1">
                     <svg class="w-6 h-6 text-tcc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                    <span class="text-xs font-bold text-tcc-700">คลิกเลือกรูปภาพ/ไฟล์ หรือลากไฟล์มาวางที่นี่</span>
-                    <span class="text-[10px] text-slate-400">รองรับภาพ PNG, JPG, GIF, WEBP หรือ PDF (ไม่เกิน 5MB) • บันทึกลง Google Drive อัตโนมัติ</span>
+                    <span class="text-xs font-bold text-tcc-700">คลิกเลือกรูปภาพ/ไฟล์ (เลือกหลายไฟล์พร้อมกันได้) หรือลากไฟล์มาวางที่นี่</span>
+                    <span class="text-[10px] text-slate-400">รองรับภาพ PNG, JPG, GIF, WEBP หรือ PDF (ไฟล์ละไม่เกิน 10MB) • กดเลือกเพิ่มได้เรื่อยๆ</span>
                   </label>
-                  <div id="ticketFilePreviewContainer" class="hidden mt-3 p-3 bg-white rounded-xl border border-slate-200 flex-col gap-2.5 text-xs max-w-md mx-auto shadow-2xs">
-                    <div id="ticketFileThumbWrapper" class="hidden relative group rounded-lg overflow-hidden border border-slate-200 bg-slate-100 max-h-48 flex items-center justify-center">
-                      <img id="ticketFileThumbImg" src="" alt="ตัวอย่างรูปภาพแนบ" onclick="previewCurrentDraftAttachment('ticket')" class="max-h-44 w-auto object-contain cursor-zoom-in mx-auto transition group-hover:scale-[1.02]">
-                    </div>
-                    <div class="flex items-center justify-between gap-2 w-full">
-                      <div class="flex items-center gap-2 min-w-0">
-                        <span class="text-base shrink-0">🖼️</span>
-                        <div class="text-left min-w-0">
-                          <span id="ticketFileNameLabel" class="truncate block text-slate-800 font-bold"></span>
-                          <span id="ticketFileSizeLabel" class="text-[10px] text-emerald-600 font-medium block">พร้อมอัปโหลดลง Google Drive</span>
-                        </div>
-                      </div>
-                      <div class="flex items-center gap-1.5 shrink-0">
-                        <button type="button" onclick="previewCurrentDraftAttachment('ticket')" class="px-2.5 py-1 rounded-lg bg-tcc-50 hover:bg-tcc-100 text-tcc-700 font-bold text-[11px] transition">
-                          🔍 ดูรูป
-                        </button>
-                        <button type="button" onclick="clearTicketAttachment()" class="px-2 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-[11px] transition" title="ลบไฟล์แนบ">
-                          ✕
-                        </button>
+                  <div id="ticketFilePreviewContainer" class="hidden mt-3 p-3 bg-white rounded-xl border border-slate-200 flex-col gap-2.5 text-xs w-full shadow-2xs text-left">
+                    <div class="flex items-center justify-between gap-2 pb-2 border-b border-slate-100">
+                      <span id="ticketFileCountBadge" class="font-bold text-tcc-700 text-xs">แนบแล้ว 0 ไฟล์</span>
+                      <div class="flex items-center gap-2">
+                        <label for="ticketFileInput" class="px-2.5 py-1 rounded-lg bg-tcc-50 hover:bg-tcc-100 text-tcc-700 font-bold text-[11px] cursor-pointer transition">+ เพิ่มไฟล์/รูป</label>
+                        <button type="button" onclick="clearTicketAttachment()" class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-[11px] transition">ล้างทั้งหมด</button>
                       </div>
                     </div>
+                    <div id="ticketFilePreviewGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5"></div>
                   </div>
                 </div>
               </div>
@@ -2184,25 +2172,25 @@
     </div>
   </div>
 
-  <!-- MODAL: TICKET DETAIL & CONVERSATION -->
-  <div id="ticketDetailModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4 hidden">
-    <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[92vh] flex flex-col shadow-2xl border border-slate-100 animate-fadeIn overflow-hidden">
-      <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/80 shrink-0">
-        <div class="flex items-center gap-2.5">
-          <span id="detailTicketPriorityBadge" class="px-2 py-0.5 rounded text-[10px] font-bold"></span>
-          <div>
-            <div class="flex items-center gap-2">
-              <span id="detailTicketNumber" class="font-mono text-xs font-bold text-slate-500"></span>
-              <h3 id="detailTicketTitle" class="font-bold text-slate-900 text-sm sm:text-base leading-tight truncate max-w-xs sm:max-w-md"></h3>
+  <!-- MODAL: TICKET DETAIL & CONVERSATION (Expanded Responsive Size + Inline Admin Management + Multi-Image Reply) -->
+  <div id="ticketDetailModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4 lg:p-6 hidden">
+    <div class="bg-white rounded-3xl max-w-5xl xl:max-w-6xl w-[96vw] sm:w-full max-h-[94vh] flex flex-col shadow-2xl border border-slate-100 animate-fadeIn overflow-hidden">
+      <div class="px-4 sm:px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/80 shrink-0 gap-3">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <span id="detailTicketPriorityBadge" class="px-2.5 py-0.5 rounded text-xs font-bold shrink-0"></span>
+          <div class="min-w-0">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span id="detailTicketNumber" class="font-mono text-xs sm:text-sm font-bold text-slate-500 shrink-0"></span>
+              <h3 id="detailTicketTitle" class="font-bold text-slate-900 text-sm sm:text-base lg:text-lg leading-tight break-words"></h3>
             </div>
-            <p id="detailTicketMeta" class="text-[11px] text-slate-400 mt-0.5"></p>
+            <p id="detailTicketMeta" class="text-[11px] sm:text-xs text-slate-500 mt-0.5"></p>
           </div>
         </div>
-        <button onclick="closeTicketDetailModal()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-full hover:bg-slate-100">✕</button>
+        <button onclick="closeTicketDetailModal()" class="text-slate-400 hover:text-slate-600 p-2 rounded-full hover:bg-slate-200/70 transition shrink-0 text-base leading-none" title="ปิดหน้าต่าง">✕</button>
       </div>
 
-      <div class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 text-xs">
-        <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+      <div class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 text-xs sm:text-sm">
+        <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5">
           <div class="flex flex-wrap items-center justify-between gap-2">
             <div class="flex items-center gap-2">
               <span class="text-slate-500 font-medium">สถานะเคส:</span>
@@ -2213,7 +2201,7 @@
               <span id="detailTicketSlaBadge" class="font-mono text-xs font-semibold"></span>
             </div>
           </div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 border-t border-slate-200/80 text-[11px]">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 border-t border-slate-200/80 text-xs">
             <div class="flex items-center gap-1.5">
               <span class="text-slate-500 font-medium">📅 วันที่เปิดเคส:</span>
               <span id="detailTicketCreatedAt" class="font-mono font-semibold text-slate-800">-</span>
@@ -2225,21 +2213,63 @@
           </div>
         </div>
 
+        <!-- Inline Admin Management Section (Allows managing ticket directly from Kanban / Table View Detail Popup) -->
+        <div id="detailAdminManageSection" class="admin-only admin-hidden p-4 rounded-2xl border border-tcc-200 bg-gradient-to-br from-sky-50/70 via-white to-emerald-50/40 space-y-3">
+          <div class="flex items-center justify-between gap-2 flex-wrap">
+            <h4 class="font-bold text-slate-900 text-xs sm:text-sm flex items-center gap-1.5">
+              <span>🛠️</span>
+              <span>จัดการและมอบหมายเคส (Admin Quick Manage)</span>
+            </h4>
+            <span class="text-[11px] font-semibold text-tcc-700 bg-tcc-50 px-2.5 py-0.5 rounded-full border border-tcc-200">บันทึกได้ทันทีจากหน้านี้</span>
+          </div>
+          <form id="detailAdminManageForm" onsubmit="handleSaveTicketDetailAdminAction(event)" class="space-y-3 text-xs">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div>
+                <label class="block font-semibold text-slate-700 mb-1">ปรับสถานะเคส (Status)</label>
+                <select id="detailAdminStatus" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white font-semibold focus:ring-2 focus:ring-tcc-500 outline-none">
+                  <option value="Open">Open (รอรับเรื่อง)</option>
+                  <option value="In Progress">In Progress (กำลังดำเนินการ)</option>
+                  <option value="Pending User">Pending User (รอข้อมูลจากผู้ใช้)</option>
+                  <option value="Resolved">Resolved (แก้ไขเสร็จสิ้นแล้ว)</option>
+                  <option value="Closed">Closed (ปิดเคสอย่างเป็นทางการ)</option>
+                </select>
+              </div>
+              <div>
+                <label class="block font-semibold text-slate-700 mb-1">มอบหมายเจ้าหน้าที่รับผิดชอบ (Agent)</label>
+                <select id="detailAdminAgent" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-tcc-500 outline-none"></select>
+              </div>
+              <div>
+                <label class="block font-semibold text-slate-700 mb-1">บันทึกการแก้ไข / แจ้งผู้ใช้</label>
+                <input type="text" id="detailAdminNote" placeholder="ระบุสิ่งที่แก้ไข หรือความคืบหน้า..." class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-tcc-500 outline-none">
+              </div>
+            </div>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-1">
+              <label class="flex items-center gap-2 cursor-pointer select-none text-emerald-900 font-semibold text-xs">
+                <input type="checkbox" id="detailAdminNotifyEmail" checked class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 cursor-pointer">
+                <span>📧 ส่งอีเมลแจ้งเตือนอัปเดตสถานะอัตโนมัติ</span>
+              </label>
+              <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-sm transition cursor-pointer shrink-0">
+                💾 บันทึกการจัดการเคส
+              </button>
+            </div>
+          </form>
+        </div>
+
         <div>
-          <span class="font-bold text-slate-800 block mb-1">รายละเอียดปัญหา:</span>
-          <div id="detailTicketDesc" class="p-3 bg-white rounded-xl border border-slate-200 text-slate-700 leading-relaxed whitespace-pre-wrap"></div>
+          <span class="font-bold text-slate-800 block mb-1.5">รายละเอียดปัญหา:</span>
+          <div id="detailTicketDesc" class="p-3.5 bg-white rounded-xl border border-slate-200 text-slate-700 leading-relaxed whitespace-pre-wrap"></div>
         </div>
 
         <div id="detailAttachmentBox" class="hidden">
-          <span class="font-bold text-slate-800 block mb-1">ไฟล์แนบ:</span>
-          <div id="detailAttachmentContainer" class="p-2.5 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between"></div>
+          <span class="font-bold text-slate-800 block mb-1.5">ไฟล์แนบ:</span>
+          <div id="detailAttachmentContainer" class="p-3 bg-slate-50 rounded-xl border border-slate-200"></div>
         </div>
 
         <!-- CSAT Rating Widget -->
         <div id="detailCsatBox" class="hidden p-4 rounded-2xl border border-amber-200 bg-amber-50/50 space-y-2">
           <div class="flex items-center justify-between">
-            <span class="font-bold text-amber-900 text-xs">⭐ การประเมินความพึงพอใจการให้บริการ (CSAT)</span>
-            <span id="detailCsatStatusLabel" class="text-[11px] text-amber-700 font-medium"></span>
+            <span class="font-bold text-amber-900 text-xs sm:text-sm">⭐ การประเมินความพึงพอใจการให้บริการ (CSAT)</span>
+            <span id="detailCsatStatusLabel" class="text-xs text-amber-700 font-medium"></span>
           </div>
           <div id="detailCsatActionArea" class="space-y-2">
             <div class="flex items-center gap-2">
@@ -2262,13 +2292,13 @@
         <!-- Comments Thread -->
         <div class="border-t border-slate-100 pt-3">
           <span class="font-bold text-slate-800 block mb-2">ข้อความสนทนาและการตอบกลับ:</span>
-          <div id="ticketCommentsList" class="space-y-2.5 max-h-56 overflow-y-auto pr-1"></div>
+          <div id="ticketCommentsList" class="space-y-2.5 max-h-72 overflow-y-auto pr-1"></div>
         </div>
       </div>
 
-      <!-- Footer Reply Box -->
-      <div class="p-3.5 border-t border-slate-100 bg-slate-50 shrink-0 space-y-2">
-        <div id="adminChatOptions" class="admin-only admin-hidden flex items-center justify-between text-xs">
+      <!-- Footer Reply Box (Supports Multi-Image Attachments) -->
+      <div class="p-3.5 sm:p-4 border-t border-slate-100 bg-slate-50 shrink-0 space-y-2">
+        <div id="adminChatOptions" class="admin-only admin-hidden flex items-center justify-between text-xs gap-2 flex-wrap">
           <label class="flex items-center gap-1.5 text-amber-900 font-semibold cursor-pointer">
             <input type="checkbox" id="replyIsInternal" class="rounded text-amber-600">
             <span>🔒 บันทึกเป็น Internal Note (เฉพาะทีมไอที)</span>
@@ -2278,9 +2308,17 @@
           </button>
         </div>
 
-        <form onsubmit="handleSendTicketComment(event)" class="flex gap-2">
-          <input type="text" id="replyMessageInput" required placeholder="พิมพ์ข้อความตอบกลับ..." class="flex-1 px-3.5 py-2 rounded-xl border border-slate-300 text-xs bg-white focus:ring-2 focus:ring-tcc-500 outline-none">
-          <button type="submit" class="px-4 py-2 bg-tcc-600 hover:bg-tcc-700 text-white rounded-xl font-bold text-xs shadow-sm">
+        <!-- Preview area for multiple reply image attachments -->
+        <div id="replyAttachmentsPreview" class="hidden flex-wrap items-center gap-2 p-2 rounded-xl bg-white border border-slate-200"></div>
+
+        <form onsubmit="handleSendTicketComment(event)" class="flex items-center gap-2">
+          <input type="file" id="replyAttachmentInput" multiple accept="image/*,.pdf,.txt,.doc,.docx" onchange="handleReplyFilesSelect(this)" class="hidden">
+          <label for="replyAttachmentInput" class="px-3 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 font-semibold text-xs flex items-center gap-1.5 cursor-pointer shrink-0 transition" title="แนบรูปภาพหรือไฟล์ (เลือกได้มากกว่า 1 ภาพ)">
+            <span>🖼️</span>
+            <span class="hidden sm:inline">แนบรูป/ไฟล์</span>
+          </label>
+          <input type="text" id="replyMessageInput" placeholder="พิมพ์ข้อความตอบกลับ (หรือแนบรูปภาพประกอบ)..." class="flex-1 px-3.5 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm bg-white focus:ring-2 focus:ring-tcc-500 outline-none">
+          <button type="submit" class="px-4 sm:px-5 py-2 bg-tcc-600 hover:bg-tcc-700 text-white rounded-xl font-bold text-xs sm:text-sm shadow-sm shrink-0 cursor-pointer">
             ส่ง
           </button>
         </form>
@@ -2288,21 +2326,26 @@
     </div>
   </div>
 
-  <!-- MODAL: ADMIN TICKET ACTION -->
-  <div id="ticketAdminActionModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 animate-fadeIn">
-      <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
-        <div>
-          <h3 class="font-bold text-slate-900 text-sm">จัดการและมอบหมายเคส</h3>
-          <p id="adminActionTicketNumber" class="text-[11px] text-slate-500 font-mono"></p>
+  <!-- MODAL: ADMIN TICKET ACTION (Expanded Responsive Size) -->
+  <div id="ticketAdminActionModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4 lg:p-6 hidden">
+    <div class="bg-white rounded-3xl max-w-2xl lg:max-w-3xl w-[95vw] sm:w-full max-h-[92vh] overflow-y-auto p-5 sm:p-6 lg:p-8 shadow-2xl border border-slate-100 animate-fadeIn">
+      <div class="flex items-center justify-between pb-3.5 border-b border-slate-100 mb-4 gap-3">
+        <div class="min-w-0">
+          <h3 class="font-bold text-slate-900 text-base sm:text-lg">จัดการและมอบหมายเคส</h3>
+          <p id="adminActionTicketNumber" class="text-xs text-slate-500 font-mono mt-0.5 truncate"></p>
         </div>
-        <button onclick="closeTicketAdminActionModal()" class="text-slate-400 hover:text-slate-600">✕</button>
+        <div class="flex items-center gap-2 shrink-0">
+          <button type="button" onclick="const tid = document.getElementById('adminActionTicketId')?.value; closeTicketAdminActionModal(); if (tid) openTicketDetailModal(tid);" class="px-3 py-1.5 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 text-xs font-bold transition cursor-pointer">
+            💬 ดูรายละเอียด / สนทนา
+          </button>
+          <button onclick="closeTicketAdminActionModal()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-full hover:bg-slate-100 text-base leading-none">✕</button>
+        </div>
       </div>
 
-      <form id="ticketAdminActionForm" onsubmit="handleSaveTicketAdminAction(event)" class="space-y-3.5 text-xs">
+      <form id="ticketAdminActionForm" onsubmit="handleSaveTicketAdminAction(event)" class="space-y-4 text-xs sm:text-sm">
         <input type="hidden" id="adminActionTicketId">
 
-        <div class="grid grid-cols-2 gap-2 p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-[11px]">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
           <div>
             <span class="text-slate-500 block">📅 วันที่เปิดเคส</span>
             <span id="adminActionCreatedAt" class="font-mono font-bold text-slate-800">-</span>
@@ -2313,37 +2356,39 @@
           </div>
         </div>
 
-        <div>
-          <label class="block font-semibold text-slate-700 mb-1">ปรับสถานะเคส (Status) *</label>
-          <select id="adminActionStatus" required class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white font-semibold">
-            <option value="Open">Open (รอรับเรื่อง)</option>
-            <option value="In Progress">In Progress (กำลังดำเนินการ)</option>
-            <option value="Pending User">Pending User (รอข้อมูลจากผู้ใช้)</option>
-            <option value="Resolved">Resolved (แก้ไขเสร็จสิ้นแล้ว)</option>
-            <option value="Closed">Closed (ปิดเคสอย่างเป็นทางการ)</option>
-          </select>
-        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">ปรับสถานะเคส (Status) *</label>
+            <select id="adminActionStatus" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white font-semibold focus:ring-2 focus:ring-tcc-500 outline-none">
+              <option value="Open">Open (รอรับเรื่อง)</option>
+              <option value="In Progress">In Progress (กำลังดำเนินการ)</option>
+              <option value="Pending User">Pending User (รอข้อมูลจากผู้ใช้)</option>
+              <option value="Resolved">Resolved (แก้ไขเสร็จสิ้นแล้ว)</option>
+              <option value="Closed">Closed (ปิดเคสอย่างเป็นทางการ)</option>
+            </select>
+          </div>
 
-        <div>
-          <label class="block font-semibold text-slate-700 mb-1">มอบหมายเจ้าหน้าที่รับผิดชอบ (Agent)</label>
-          <select id="adminActionAgent" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white"></select>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">มอบหมายเจ้าหน้าที่รับผิดชอบ (Agent)</label>
+            <select id="adminActionAgent" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-tcc-500 outline-none"></select>
+          </div>
         </div>
 
         <div>
           <label class="block font-semibold text-slate-700 mb-1">บันทึกช่วยจำ / ข้อความแจ้งผู้ใช้</label>
-          <textarea id="adminActionNote" rows="2" placeholder="ระบุสิ่งที่แก้ไข หรือความคืบหน้า..." class="w-full px-3 py-2 rounded-xl border border-slate-300"></textarea>
+          <textarea id="adminActionNote" rows="3" placeholder="ระบุสิ่งที่แก้ไข หรือความคืบหน้า..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-tcc-500 outline-none"></textarea>
         </div>
 
-        <div class="p-2.5 bg-emerald-50/70 border border-emerald-200 rounded-xl">
-          <label class="flex items-center gap-2 cursor-pointer select-none text-emerald-900 font-semibold">
+        <div class="p-3 bg-emerald-50/70 border border-emerald-200 rounded-xl">
+          <label class="flex items-center gap-2 cursor-pointer select-none text-emerald-900 font-semibold text-xs sm:text-sm">
             <input type="checkbox" id="adminActionNotifyEmail" checked class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 cursor-pointer">
             <span>📧 ส่งอีเมลแจ้งเตือนการอัปเดตสถานะเคสให้ผู้แจ้งและผู้รับผิดชอบอัตโนมัติ</span>
           </label>
         </div>
 
-        <div class="pt-3 flex justify-end gap-2 border-t border-slate-100">
-          <button type="button" onclick="closeTicketAdminActionModal()" class="px-4 py-2 rounded-xl text-slate-600 hover:bg-slate-100 font-semibold">ยกเลิก</button>
-          <button type="submit" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-sm">บันทึก</button>
+        <div class="pt-3 flex justify-end gap-2.5 border-t border-slate-100">
+          <button type="button" onclick="closeTicketAdminActionModal()" class="px-5 py-2.5 rounded-xl text-slate-600 hover:bg-slate-100 font-semibold">ยกเลิก</button>
+          <button type="submit" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-sm cursor-pointer">บันทึก</button>
         </div>
       </form>
     </div>
@@ -3944,6 +3989,8 @@
       currentAttachmentBase64: "",
       currentAttachmentName: "",
       currentAttachmentMime: "",
+      currentAttachments: [],
+      replyAttachments: [],
       currentKbAttachmentBase64: "",
       currentKbAttachmentName: "",
       currentKbAttachmentMime: "",
@@ -6268,15 +6315,81 @@
       }
     }
 
-    function previewCurrentDraftAttachment(mode = "ticket") {
+    function resolveTicketAttachmentsList(ticket) {
+      if (!ticket) return [];
+      const refId = ticket.ticket_id || "";
+      const list = [];
+      const seenNames = new Set();
+
+      const normalizeEntry = (att, idx) => {
+        if (!att) return null;
+        const rawName = att.name || att.attachment_name || "";
+        const cached = getAttachmentFromCache(refId, rawName);
+        const name = rawName || cached?.name || (att.url || att.attachment_url ? `ไฟล์แนบ ${idx + 1}` : "");
+        const base64 = att.base64 || att.attachment_base64 || cached?.base64 || "";
+        const rawDriveUrl = att.url || att.attachment_url || cached?.driveUrl || "";
+        const driveFileId = att.drive_file_id || cached?.driveFileId || extractDriveFileIdFromUrl(rawDriveUrl);
+        if (!name && !base64 && !rawDriveUrl && !driveFileId) return null;
+        const isSimulatedDriveId = String(driveFileId || "").startsWith("DRV_");
+        const driveViewUrl = driveFileId
+          ? `https://drive.google.com/file/d/${driveFileId}/view`
+          : (rawDriveUrl && rawDriveUrl.startsWith("http") ? rawDriveUrl : "");
+        const driveThumbUrl = (driveFileId && !isSimulatedDriveId)
+          ? `https://drive.google.com/thumbnail?id=${driveFileId}&sz=w1200`
+          : "";
+        const driveDirectUrl = (driveFileId && !isSimulatedDriveId)
+          ? `https://drive.google.com/uc?export=download&id=${driveFileId}`
+          : "";
+        const isImg = isImageAttachment(name, base64 || driveThumbUrl || rawDriveUrl);
+        let displaySrc = base64 || driveThumbUrl || rawDriveUrl;
+        if (!displaySrc && isImg) {
+          displaySrc = generateFallbackDiagnosticImage(name, ticket.title || "", refId);
+        }
+        return {
+          refId,
+          name: name || `attachment_${idx + 1}`,
+          isImage: isImg,
+          displaySrc,
+          base64,
+          driveFileId,
+          driveViewUrl,
+          driveDirectUrl
+        };
+      };
+
+      if (Array.isArray(ticket.attachments) && ticket.attachments.length > 0) {
+        ticket.attachments.forEach((att, idx) => {
+          const norm = normalizeEntry(att, idx);
+          if (norm) {
+            list.push(norm);
+            seenNames.add(norm.name);
+          }
+        });
+      }
+
+      const legacy = resolveAttachmentInfo(ticket, "ticket_id");
+      if (legacy && !seenNames.has(legacy.name) && (list.length === 0 || (legacy.base64 && !list.some(x => x.base64 === legacy.base64)))) {
+        list.unshift(legacy);
+      }
+
+      return list;
+    }
+
+    function previewCurrentDraftAttachment(mode = "ticket", idx = 0) {
       if (mode === "ticket") {
-        if (!state.currentAttachmentBase64 && !state.currentAttachmentName) return;
+        const list = Array.isArray(state.currentAttachments) && state.currentAttachments.length > 0
+          ? state.currentAttachments
+          : (state.currentAttachmentBase64 || state.currentAttachmentName
+              ? [{ name: state.currentAttachmentName, base64: state.currentAttachmentBase64 }]
+              : []);
+        const item = list[idx] || list[0];
+        if (!item) return;
         openAttachmentPreviewModal({
           refId: "DRAFT-TICKET",
-          name: state.currentAttachmentName || "ตัวอย่างรูปภาพแนบ",
-          isImage: isImageAttachment(state.currentAttachmentName, state.currentAttachmentBase64),
-          displaySrc: state.currentAttachmentBase64,
-          base64: state.currentAttachmentBase64,
+          name: item.name || "ตัวอย่างรูปภาพแนบ",
+          isImage: isImageAttachment(item.name, item.base64),
+          displaySrc: item.base64,
+          base64: item.base64,
           driveViewUrl: ""
         });
       } else {
@@ -6292,12 +6405,34 @@
       }
     }
 
-    function openTicketAttachmentPreview(ticketId) {
+    function openTicketAttachmentPreview(ticketId, index = 0) {
       const ticket = state.tickets.find(t => t.ticket_id === ticketId);
       if (!ticket) return;
-      const info = resolveAttachmentInfo(ticket, "ticket_id");
+      const list = resolveTicketAttachmentsList(ticket);
+      const info = list[index] || list[0];
       if (!info) return showNotification("เคสนี้ไม่มีไฟล์แนบ", "info");
       openAttachmentPreviewModal(info);
+    }
+
+    function openCommentAttachmentPreview(ticketId, commentIdx, attachIdx = 0) {
+      const ticket = state.tickets.find(t => t.ticket_id === ticketId);
+      if (!ticket || !Array.isArray(ticket.comments)) return;
+      const comment = ticket.comments[commentIdx];
+      if (!comment || !Array.isArray(comment.attachments)) return;
+      const att = comment.attachments[attachIdx];
+      if (!att) return;
+      const name = att.name || `reply_file_${attachIdx + 1}`;
+      const displaySrc = att.base64 || att.url || "";
+      openAttachmentPreviewModal({
+        refId: `${ticketId}-C${commentIdx}`,
+        name,
+        isImage: isImageAttachment(name, displaySrc),
+        displaySrc,
+        base64: att.base64 || "",
+        driveFileId: att.drive_file_id || "",
+        driveViewUrl: att.url || "",
+        driveDirectUrl: ""
+      });
     }
 
     function openKbAttachmentPreview(kbId) {
@@ -6317,49 +6452,99 @@
       return getLocalTimestamp(hours);
     }
 
+    function syncLegacySingleAttachmentFromDraft() {
+      const first = (state.currentAttachments || [])[0] || null;
+      state.currentAttachmentName = first ? first.name : "";
+      state.currentAttachmentBase64 = first ? first.base64 : "";
+      state.currentAttachmentMime = first ? first.mime : "";
+    }
+
+    function renderTicketDraftAttachments() {
+      const container = document.getElementById("ticketFilePreviewContainer");
+      const grid = document.getElementById("ticketFilePreviewGrid");
+      const badge = document.getElementById("ticketFileCountBadge");
+      const list = state.currentAttachments || [];
+
+      if (!container || !grid) return;
+      if (list.length === 0) {
+        container.classList.add("hidden");
+        container.classList.remove("flex");
+        grid.innerHTML = "";
+        if (badge) badge.innerText = "แนบแล้ว 0 ไฟล์";
+        return;
+      }
+
+      container.classList.remove("hidden");
+      container.classList.add("flex");
+      if (badge) badge.innerText = `แนบแล้ว ${list.length} ไฟล์/รูปภาพ`;
+
+      grid.innerHTML = list.map((item, idx) => {
+        const isImg = isImageAttachment(item.name, item.base64);
+        return `
+          <div class="p-2.5 rounded-xl border border-slate-200 bg-slate-50/70 flex flex-col justify-between gap-2">
+            ${isImg ? `
+              <div onclick="previewCurrentDraftAttachment('ticket', ${idx})" class="relative group rounded-lg overflow-hidden border border-slate-200 bg-white h-28 flex items-center justify-center cursor-zoom-in">
+                <img src="${item.base64}" alt="${escapeQuotes(item.name)}" class="max-h-28 w-auto object-contain transition group-hover:scale-[1.03]" />
+              </div>
+            ` : `
+              <div class="h-28 rounded-lg border border-slate-200 bg-white flex flex-col items-center justify-center text-slate-500 p-2">
+                <span class="text-2xl">📎</span>
+                <span class="text-[10px] mt-1 truncate max-w-full font-medium">${item.name}</span>
+              </div>
+            `}
+            <div class="flex items-center justify-between gap-1.5">
+              <div class="min-w-0">
+                <span class="block font-bold text-slate-800 truncate text-[11px]" title="${escapeQuotes(item.name)}">${item.name}</span>
+                <span class="block text-[10px] text-emerald-600">${item.size ? (item.size / 1024).toFixed(1) + ' KB' : 'พร้อมอัปโหลด'}</span>
+              </div>
+              <div class="flex items-center gap-1 shrink-0">
+                <button type="button" onclick="previewCurrentDraftAttachment('ticket', ${idx})" class="px-2 py-1 rounded-lg bg-tcc-50 hover:bg-tcc-100 text-tcc-700 font-bold text-[10px] transition" title="ดูตัวอย่าง">🔍</button>
+                <button type="button" onclick="removeTicketDraftAttachment(${idx})" class="px-2 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-[10px] transition" title="ลบไฟล์นี้">✕</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function removeTicketDraftAttachment(idx) {
+      if (!Array.isArray(state.currentAttachments)) state.currentAttachments = [];
+      state.currentAttachments.splice(idx, 1);
+      syncLegacySingleAttachmentFromDraft();
+      renderTicketDraftAttachments();
+    }
+
     function handleTicketFileSelect(input) {
-      const file = input?.files?.[0] || input?.target?.files?.[0];
-      if (!file) return;
-      readAndPrepareAttachmentFile(file, (dataUrl, fileName, mimeType, origSize) => {
-        state.currentAttachmentName = fileName;
-        state.currentAttachmentBase64 = dataUrl;
-        state.currentAttachmentMime = mimeType;
+      const files = Array.from(input?.files || input?.target?.files || []);
+      if (files.length === 0) return;
+      if (!Array.isArray(state.currentAttachments)) state.currentAttachments = [];
 
-        const nameLabel = document.getElementById("ticketFileNameLabel");
-        const sizeLabel = document.getElementById("ticketFileSizeLabel");
-        const container = document.getElementById("ticketFilePreviewContainer");
-        const thumbWrap = document.getElementById("ticketFileThumbWrapper");
-        const thumbImg = document.getElementById("ticketFileThumbImg");
-
-        if (nameLabel) nameLabel.innerText = fileName;
-        if (sizeLabel) sizeLabel.innerText = `ขนาด ${(origSize / 1024).toFixed(1)} KB • พร้อมบันทึกลง Google Drive`;
-        if (container) {
-          container.classList.remove("hidden");
-          container.classList.add("flex");
-        }
-        if (thumbWrap && thumbImg) {
-          if (isImageAttachment(fileName, dataUrl)) {
-            thumbImg.src = dataUrl;
-            thumbWrap.classList.remove("hidden");
-          } else {
-            thumbImg.src = "";
-            thumbWrap.classList.add("hidden");
-          }
-        }
+      files.forEach(file => {
+        readAndPrepareAttachmentFile(file, (dataUrl, fileName, mimeType, origSize) => {
+          state.currentAttachments.push({
+            name: fileName,
+            base64: dataUrl,
+            mime: mimeType,
+            size: origSize
+          });
+          syncLegacySingleAttachmentFromDraft();
+          renderTicketDraftAttachments();
+        });
       });
+
+      if (input && "value" in input) {
+        try { input.value = ""; } catch (_) {}
+      }
     }
 
     function clearTicketAttachment() {
+      state.currentAttachments = [];
       state.currentAttachmentName = "";
       state.currentAttachmentBase64 = "";
       state.currentAttachmentMime = "";
       const input = document.getElementById("ticketFileInput");
       if (input) input.value = "";
-      const thumbImg = document.getElementById("ticketFileThumbImg");
-      if (thumbImg) thumbImg.src = "";
-      document.getElementById("ticketFileThumbWrapper")?.classList.add("hidden");
-      document.getElementById("ticketFilePreviewContainer")?.classList.add("hidden");
-      document.getElementById("ticketFilePreviewContainer")?.classList.remove("flex");
+      renderTicketDraftAttachments();
     }
 
     function isInternalSystemCategory(cat) {
@@ -6406,8 +6591,15 @@
 
       const priority = document.getElementById("ticketPriority").value;
       const ticketNum = generateTicketId();
-      const attachName = state.currentAttachmentName || "";
-      const attachBase64 = state.currentAttachmentBase64 || "";
+      const draftAttachments = (state.currentAttachments && state.currentAttachments.length > 0)
+        ? state.currentAttachments.map(a => ({ name: a.name, base64: a.base64, mime: a.mime || "", url: "", drive_file_id: "" }))
+        : ((state.currentAttachmentBase64 && state.currentAttachmentName)
+            ? [{ name: state.currentAttachmentName, base64: state.currentAttachmentBase64, mime: state.currentAttachmentMime || "", url: "", drive_file_id: "" }]
+            : []);
+
+      const firstAttach = draftAttachments[0] || null;
+      const attachName = firstAttach ? firstAttach.name : "";
+      const attachBase64 = firstAttach ? firstAttach.base64 : "";
       const reporterName = document.getElementById("ticketReporterName").value.trim();
       const reporterDept = document.getElementById("ticketReporterDept").value.trim();
       const reporterContact = document.getElementById("ticketReporterContact").value.trim();
@@ -6415,9 +6607,11 @@
       const descVal = document.getElementById("ticketDescription").value.trim();
       const nowTs = getLocalTimestamp(0);
 
-      if (attachBase64 && attachName) {
-        saveAttachmentToCache(ticketNum, attachName, attachBase64, "", "");
-      }
+      draftAttachments.forEach(att => {
+        if (att.base64 && att.name) {
+          saveAttachmentToCache(ticketNum, att.name, att.base64, "", "");
+        }
+      });
 
       const newTicket = {
         ticket_id: ticketNum,
@@ -6440,6 +6634,7 @@
         attachment_base64: attachBase64,
         attachment_url: "",
         drive_file_id: "",
+        attachments: draftAttachments,
         comments: [
           { sender: reporterName, message: "แจ้งเปิดเคสในระบบ", time: nowTs, is_internal: false }
         ]
@@ -6464,8 +6659,8 @@
       switchTab('myTicketsTab');
 
       showNotification(
-        attachName
-          ? `เปิดเคส [${ticketNum}] เรียบร้อย (กำลังซิงค์ข้อมูลและไฟล์แนบในพื้นหลัง)`
+        draftAttachments.length > 0
+          ? `เปิดเคส [${ticketNum}] พร้อมไฟล์แนบ ${draftAttachments.length} ไฟล์เรียบร้อย (กำลังซิงค์ในพื้นหลัง)`
           : `เปิดเคส [${ticketNum}] เรียบร้อย บันทึกลงระบบแล้ว`,
         "success"
       );
@@ -6488,7 +6683,7 @@
         });
       }
 
-      // Sync ticket and attachment to Google Sheets & Google Drive in the background (single round-trip when supported)
+      // Sync ticket and all attachments to Google Sheets & Google Drive in the background
       (async () => {
         try {
           const createRes = await callAPI("createTicket", {
@@ -6500,19 +6695,32 @@
           if (createRes && (createRes.drive_view_url || createRes.drive_file_id || createRes.attachment_url)) {
             newTicket.attachment_url = createRes.drive_view_url || createRes.attachment_url || newTicket.attachment_url;
             newTicket.drive_file_id = createRes.drive_file_id || newTicket.drive_file_id;
-            saveAttachmentToCache(ticketNum, attachName, attachBase64, newTicket.attachment_url, newTicket.drive_file_id);
-            renderMyTicketsList();
-            renderAdminTicketsView();
-          } else if (attachBase64 && attachName && !newTicket.drive_file_id) {
-            const driveRes = await uploadFileToGoogleDrive(attachBase64, `${ticketNum}_${attachName}`, "Tickets", ticketNum);
-            if (driveRes && (driveRes.fileId || driveRes.viewUrl)) {
-              newTicket.drive_file_id = driveRes.fileId || "";
-              newTicket.attachment_url = driveRes.viewUrl || "";
+            if (firstAttach) {
+              firstAttach.url = newTicket.attachment_url;
+              firstAttach.drive_file_id = newTicket.drive_file_id;
               saveAttachmentToCache(ticketNum, attachName, attachBase64, newTicket.attachment_url, newTicket.drive_file_id);
-              renderMyTicketsList();
-              renderAdminTicketsView();
             }
           }
+
+          // Upload any remaining attachments (or primary if GAS didn't upload it)
+          for (let i = 0; i < draftAttachments.length; i++) {
+            const att = draftAttachments[i];
+            if (att.base64 && att.name && !att.drive_file_id) {
+              const driveRes = await uploadFileToGoogleDrive(att.base64, `${ticketNum}_${i + 1}_${att.name}`, "Tickets", ticketNum);
+              if (driveRes && (driveRes.fileId || driveRes.viewUrl)) {
+                att.drive_file_id = driveRes.fileId || "";
+                att.url = driveRes.viewUrl || "";
+                if (i === 0 && !newTicket.drive_file_id) {
+                  newTicket.drive_file_id = att.drive_file_id;
+                  newTicket.attachment_url = att.url;
+                }
+                saveAttachmentToCache(ticketNum, att.name, att.base64, att.url, att.drive_file_id);
+              }
+            }
+          }
+
+          renderMyTicketsList();
+          renderAdminTicketsView();
         } catch (bgErr) {
           console.warn("Background createTicket sync warning:", bgErr);
         }
@@ -6552,8 +6760,9 @@
         const sysBadge = t.system_name
           ? `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">🌐 ${t.system_name}</span>`
           : "";
-        const attachBadge = (t.attachment_name || t.attachment_url || t.attachment_base64)
-          ? `<button type="button" onclick="event.stopPropagation(); openTicketAttachmentPreview('${escapeQuotes(t.ticket_id)}')" class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 transition">🖼️ ดูรูปแนบ</button>`
+        const attachList = resolveTicketAttachmentsList(t);
+        const attachBadge = attachList.length > 0
+          ? `<button type="button" onclick="event.stopPropagation(); openTicketAttachmentPreview('${escapeQuotes(t.ticket_id)}', 0)" class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 transition">🖼️ ${attachList.length > 1 ? attachList.length + ' รูปแนบ' : 'ดูรูปแนบ'}</button>`
           : "";
 
         return `
@@ -6677,7 +6886,8 @@
               if (t.priority === "Critical") pColor = "bg-rose-100 text-rose-800 border border-rose-300";
               if (t.priority === "High") pColor = "bg-amber-100 text-amber-800 border border-amber-300";
 
-              const hasAttach = Boolean(t.attachment_name);
+              const attachList = resolveTicketAttachmentsList(t);
+              const hasAttach = attachList.length > 0;
               const isDone = (t.status === "Resolved" || t.status === "Closed") && Boolean(t.resolved_at);
               const closedDateBadge = isDone || t.resolved_at
                 ? `<span class="font-mono font-bold text-emerald-700">${t.resolved_at}</span>`
@@ -6687,7 +6897,7 @@
                   <div class="flex items-center justify-between">
                     <span class="font-mono text-[11px] font-bold text-slate-500">${t.ticket_id}</span>
                     <div class="flex items-center gap-1">
-                      ${hasAttach ? `<button type="button" onclick="event.stopPropagation(); openTicketAttachmentPreview('${t.ticket_id}')" title="คลิกเพื่อดูรูปภาพแนบ: ${escapeQuotes(t.attachment_name)}" class="text-[10px] px-1.5 py-0.5 rounded bg-sky-50 text-sky-700 border border-sky-200 hover:bg-sky-100 font-bold">🖼️ รูป</button>` : ''}
+                      ${hasAttach ? `<button type="button" onclick="event.stopPropagation(); openTicketAttachmentPreview('${t.ticket_id}', 0)" title="คลิกเพื่อดูไฟล์แนบ (${attachList.length} รายการ)" class="text-[10px] px-1.5 py-0.5 rounded bg-sky-50 text-sky-700 border border-sky-200 hover:bg-sky-100 font-bold">🖼️ ${attachList.length > 1 ? attachList.length + ' รูป' : 'รูป'}</button>` : ''}
                       <span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${pColor}">${t.priority}</span>
                     </div>
                   </div>
@@ -6705,7 +6915,7 @@
                   </div>
                   <div class="text-[10px] text-slate-400 flex items-center justify-between pt-1 border-t border-slate-100">
                     <span class="truncate max-w-[100px]">${t.reporter_name}</span>
-                    <button onclick="event.stopPropagation(); openTicketAdminActionModal('${t.ticket_id}')" class="text-tcc-600 hover:underline font-bold">จัดการ</button>
+                    <button onclick="event.stopPropagation(); openTicketDetailModal('${t.ticket_id}')" class="text-tcc-600 hover:underline font-bold">ดู / จัดการ</button>
                   </div>
                 </div>
               `;
@@ -6726,8 +6936,8 @@
             ? `<span class="text-emerald-700 font-semibold">${t.resolved_at}</span>`
             : `<span class="font-sans text-slate-400">รอดำเนินการ</span>`;
           return `
-          <tr class="hover:bg-slate-50 transition whitespace-nowrap">
-            <td class="py-2 px-2 font-mono font-bold text-[11px] text-slate-700 whitespace-nowrap" title="วันที่เปิดเคส: ${escapeQuotes(t.created_at || '-')}">${t.ticket_id}</td>
+          <tr onclick="openTicketDetailModal('${t.ticket_id}')" class="hover:bg-sky-50/70 cursor-pointer transition whitespace-nowrap" title="คลิกเพื่อดูรายละเอียดและจัดการเคส">
+            <td class="py-2 px-2 font-mono font-bold text-[11px] text-tcc-700 whitespace-nowrap" title="วันที่เปิดเคส: ${escapeQuotes(t.created_at || '-')}">${t.ticket_id}</td>
             <td class="py-2 px-2 font-medium text-slate-900 whitespace-nowrap">
               <div class="max-w-[140px] xl:max-w-[240px] 2xl:max-w-[340px] truncate" title="${escapeQuotes(t.title + ' (' + catOrSys + ')')}">${t.title}</div>
             </td>
@@ -6744,7 +6954,7 @@
             </td>
             <td class="py-2 px-1.5 text-center text-[10px] whitespace-nowrap">${t.sla_target < nowTs ? '<span class="text-rose-600 font-bold">⚠️ หลุด</span>' : '<span class="text-emerald-700 font-semibold">✓ ปกติ</span>'}</td>
             <td class="py-2 px-2 text-center whitespace-nowrap">
-              <button onclick="openTicketAdminActionModal('${t.ticket_id}')" class="px-2 py-0.5 bg-tcc-50 text-tcc-700 hover:bg-tcc-100 rounded-lg font-bold text-[11px]">จัดการ</button>
+              <button type="button" onclick="event.stopPropagation(); openTicketAdminActionModal('${t.ticket_id}')" class="px-2.5 py-1 bg-tcc-50 text-tcc-700 hover:bg-tcc-100 rounded-lg font-bold text-[11px] border border-tcc-200/70 transition cursor-pointer">จัดการ</button>
             </td>
           </tr>
         `;
@@ -6756,6 +6966,7 @@
       const ticket = state.tickets.find(t => t.ticket_id === ticketId);
       if (!ticket) return;
       state.activeDetailTicketId = ticketId;
+      clearReplyAttachments();
 
       document.getElementById("detailTicketNumber").innerText = ticket.ticket_id;
       document.getElementById("detailTicketTitle").innerText = ticket.title;
@@ -6779,37 +6990,59 @@
         }
       }
 
+      // Populate inline Admin Quick Manage controls
+      const detailStatusSel = document.getElementById("detailAdminStatus");
+      if (detailStatusSel) detailStatusSel.value = ticket.status;
+      const detailAgentSel = document.getElementById("detailAdminAgent");
+      if (detailAgentSel) {
+        const admins = (state.userRoles || []).filter(r => r.role === "admin" || r.role === "superadmin");
+        detailAgentSel.innerHTML = '<option value="ยังไม่มอบหมาย">-- ยังไม่มอบหมาย --</option>' +
+          admins.map(a => `<option value="${escapeQuotes(a.email)}" ${safeLower(ticket.assigned_agent).includes(safeLower(a.email)) ? 'selected' : ''}>${a.name} (${a.email})</option>`).join("");
+      }
+      const detailNoteInp = document.getElementById("detailAdminNote");
+      if (detailNoteInp) detailNoteInp.value = "";
+      const detailNotifyChk = document.getElementById("detailAdminNotifyEmail");
+      if (detailNotifyChk) detailNotifyChk.checked = state.emailNotifyEnabled !== false;
+
       const attachBox = document.getElementById("detailAttachmentBox");
       const attachCont = document.getElementById("detailAttachmentContainer");
-      const attachInfo = resolveAttachmentInfo(ticket, "ticket_id");
-      if (attachInfo) {
+      const attachList = resolveTicketAttachmentsList(ticket);
+      if (attachList.length > 0) {
         attachBox.classList.remove("hidden");
         attachCont.className = "p-3 rounded-xl border border-slate-200 bg-slate-50/70 space-y-2.5 text-xs";
-        const fallbackImgSrc = generateFallbackDiagnosticImage(attachInfo.name, ticket.title, ticket.ticket_id);
-        const thumbHtml = attachInfo.isImage && attachInfo.displaySrc
-          ? `<div onclick="openTicketAttachmentPreview('${escapeQuotes(ticket.ticket_id)}')" class="relative group cursor-pointer rounded-xl overflow-hidden border border-slate-200 bg-white max-h-56 flex items-center justify-center p-1.5 hover:border-tcc-400 transition">
-              <img src="${attachInfo.displaySrc}" alt="${escapeQuotes(attachInfo.name)}" class="max-h-52 w-auto object-contain rounded-lg" onerror="this.onerror=null; this.src='${fallbackImgSrc}';" />
-              <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
-                <span class="px-3 py-1.5 rounded-xl bg-white text-slate-900 font-bold text-xs shadow-lg">🔍 คลิกเพื่อขยายดูรูปภาพขนาดเต็ม</span>
-              </div>
-            </div>`
-          : "";
-        const driveBadge = attachInfo.driveViewUrl
-          ? `<a href="${attachInfo.driveViewUrl}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 font-bold text-[11px] inline-flex items-center gap-1 transition">☁️ เปิดใน Google Drive ↗</a>`
-          : `<span class="px-2 py-1 rounded-lg bg-slate-100 text-slate-600 font-medium text-[10px]">💾 บันทึกในระบบ</span>`;
         attachCont.innerHTML = `
-          ${thumbHtml}
-          <div class="flex flex-wrap items-center justify-between gap-2">
-            <div class="flex items-center gap-2 min-w-0">
-              <span class="text-base">${attachInfo.isImage ? '🖼️' : '📎'}</span>
-              <span class="font-bold text-slate-800 truncate max-w-[240px]" title="${escapeQuotes(attachInfo.name)}">${attachInfo.name}</span>
-            </div>
-            <div class="flex items-center gap-1.5 flex-wrap">
-              <button type="button" onclick="openTicketAttachmentPreview('${escapeQuotes(ticket.ticket_id)}')" class="px-2.5 py-1.5 rounded-lg bg-tcc-600 hover:bg-tcc-700 text-white font-bold text-[11px] inline-flex items-center gap-1 shadow-xs transition">
-                🔍 เปิดดูไฟล์แนบ
-              </button>
-              ${driveBadge}
-            </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            ${attachList.map((attachInfo, idx) => {
+              const fallbackImgSrc = generateFallbackDiagnosticImage(attachInfo.name, ticket.title, ticket.ticket_id);
+              const thumbHtml = attachInfo.isImage && attachInfo.displaySrc
+                ? `<div onclick="openTicketAttachmentPreview('${escapeQuotes(ticket.ticket_id)}', ${idx})" class="relative group cursor-pointer rounded-xl overflow-hidden border border-slate-200 bg-white h-40 flex items-center justify-center p-1 hover:border-tcc-400 transition">
+                    <img src="${attachInfo.displaySrc}" alt="${escapeQuotes(attachInfo.name)}" class="max-h-36 w-auto object-contain rounded-lg" onerror="this.onerror=null; this.src='${fallbackImgSrc}';" />
+                    <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                      <span class="px-2.5 py-1 rounded-xl bg-white text-slate-900 font-bold text-[11px] shadow-lg">🔍 ขยายดูเต็มจอ</span>
+                    </div>
+                  </div>`
+                : `<div onclick="openTicketAttachmentPreview('${escapeQuotes(ticket.ticket_id)}', ${idx})" class="cursor-pointer rounded-xl border border-slate-200 bg-white h-40 flex flex-col items-center justify-center p-3 hover:border-tcc-400 transition">
+                    <span class="text-3xl">📎</span>
+                    <span class="text-[11px] font-semibold text-slate-600 mt-1.5 truncate max-w-full">${attachInfo.name}</span>
+                  </div>`;
+              const driveBadge = attachInfo.driveViewUrl
+                ? `<a href="${attachInfo.driveViewUrl}" target="_blank" rel="noopener noreferrer" class="px-2 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 font-bold text-[10px] inline-flex items-center gap-1 transition">☁️ Drive ↗</a>`
+                : `<span class="px-2 py-1 rounded-lg bg-slate-100 text-slate-600 font-medium text-[10px]">💾 ในระบบ</span>`;
+              return `
+                <div class="p-2.5 rounded-xl bg-white border border-slate-200 space-y-2 flex flex-col justify-between">
+                  ${thumbHtml}
+                  <div class="flex items-center justify-between gap-2">
+                    <span class="font-bold text-slate-800 truncate text-[11px]" title="${escapeQuotes(attachInfo.name)}">${attachInfo.isImage ? '🖼️' : '📎'} ${attachInfo.name}</span>
+                  </div>
+                  <div class="flex items-center justify-between gap-1.5 flex-wrap">
+                    <button type="button" onclick="openTicketAttachmentPreview('${escapeQuotes(ticket.ticket_id)}', ${idx})" class="px-2.5 py-1 rounded-lg bg-tcc-600 hover:bg-tcc-700 text-white font-bold text-[10px] inline-flex items-center gap-1 shadow-xs transition">
+                      🔍 เปิดดูไฟล์
+                    </button>
+                    ${driveBadge}
+                  </div>
+                </div>
+              `;
+            }).join("")}
           </div>
         `;
       } else {
@@ -6837,29 +7070,181 @@
 
     function closeTicketDetailModal() {
       state.activeDetailTicketId = null;
+      clearReplyAttachments();
       document.getElementById("ticketDetailModal").classList.add("hidden");
+    }
+
+    async function handleSaveTicketDetailAdminAction(e) {
+      e.preventDefault();
+      if (!state.activeDetailTicketId) return;
+      const ticket = state.tickets.find(t => t.ticket_id === state.activeDetailTicketId);
+      if (!ticket) return;
+
+      ticket.status = document.getElementById("detailAdminStatus").value;
+      ticket.assigned_agent = document.getElementById("detailAdminAgent").value;
+      const note = document.getElementById("detailAdminNote")?.value.trim() || "";
+      const notifyEmail = document.getElementById("detailAdminNotifyEmail")?.checked !== false;
+
+      if (ticket.status === "Resolved" || ticket.status === "Closed") {
+        if (!ticket.resolved_at) {
+          ticket.resolved_at = getLocalTimestamp(0);
+        }
+      } else {
+        ticket.resolved_at = "";
+      }
+
+      if (note) {
+        (ticket.comments = Array.isArray(ticket.comments) ? ticket.comments : []).push({
+          sender: state.currentUser ? state.currentUser.name : "Admin",
+          message: `[อัปเดตสถานะเป็น ${ticket.status}] ${note}`,
+          time: getLocalTimestamp(0),
+          is_internal: false
+        });
+      }
+
+      showNotification(`บันทึกการจัดการเคส [${ticket.ticket_id}] สำเร็จ`, "success");
+      openTicketDetailModal(ticket.ticket_id);
+      renderAll();
+
+      if (notifyEmail) {
+        sendSystemEmailNotification("TICKET_UPDATED", {
+          ticket_id: ticket.ticket_id,
+          title: ticket.title,
+          status: ticket.status,
+          assigned_agent: ticket.assigned_agent,
+          reporter_name: ticket.reporter_name,
+          reporter_contact: ticket.reporter_contact,
+          resolved_at: ticket.resolved_at,
+          note: note
+        });
+      }
+
+      await callAPI("updateTicket", {
+        ticketId: ticket.ticket_id,
+        updates: {
+          status: ticket.status,
+          assigned_agent: ticket.assigned_agent,
+          resolved_at: ticket.resolved_at,
+          comments: ticket.comments
+        },
+        notifyEmail: notifyEmail
+      }, true);
+    }
+
+    function renderReplyAttachmentsPreview() {
+      const container = document.getElementById("replyAttachmentsPreview");
+      const list = state.replyAttachments || [];
+      if (!container) return;
+      if (list.length === 0) {
+        container.classList.add("hidden");
+        container.classList.remove("flex");
+        container.innerHTML = "";
+        return;
+      }
+      container.classList.remove("hidden");
+      container.classList.add("flex");
+      container.innerHTML = list.map((att, idx) => {
+        const isImg = isImageAttachment(att.name, att.base64);
+        return `
+          <div class="relative group flex items-center gap-1.5 p-1.5 pr-2 rounded-xl border border-slate-200 bg-slate-50 text-[11px]">
+            ${isImg
+              ? `<img src="${att.base64}" alt="${escapeQuotes(att.name)}" class="w-10 h-10 object-cover rounded-lg border border-slate-200 shrink-0" />`
+              : `<span class="w-10 h-10 rounded-lg bg-slate-200 flex items-center justify-center text-base shrink-0">📎</span>`}
+            <span class="max-w-[110px] truncate font-semibold text-slate-700" title="${escapeQuotes(att.name)}">${att.name}</span>
+            <button type="button" onclick="removeReplyAttachment(${idx})" class="ml-1 w-5 h-5 rounded-full bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold text-[10px] flex items-center justify-center shrink-0 cursor-pointer" title="ลบรูป/ไฟล์นี้">✕</button>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function handleReplyFilesSelect(input) {
+      const files = Array.from(input?.files || input?.target?.files || []);
+      if (files.length === 0) return;
+      if (!Array.isArray(state.replyAttachments)) state.replyAttachments = [];
+
+      files.forEach(file => {
+        readAndPrepareAttachmentFile(file, (dataUrl, fileName, mimeType, origSize) => {
+          state.replyAttachments.push({
+            name: fileName,
+            base64: dataUrl,
+            mime: mimeType,
+            size: origSize,
+            url: "",
+            drive_file_id: ""
+          });
+          renderReplyAttachmentsPreview();
+        });
+      });
+
+      if (input && "value" in input) {
+        try { input.value = ""; } catch (_) {}
+      }
+    }
+
+    function removeReplyAttachment(idx) {
+      if (!Array.isArray(state.replyAttachments)) state.replyAttachments = [];
+      state.replyAttachments.splice(idx, 1);
+      renderReplyAttachmentsPreview();
+    }
+
+    function clearReplyAttachments() {
+      state.replyAttachments = [];
+      const input = document.getElementById("replyAttachmentInput");
+      if (input) input.value = "";
+      renderReplyAttachmentsPreview();
     }
 
     function renderTicketComments(ticket) {
       const container = document.getElementById("ticketCommentsList");
       if (!container) return;
       if (!Array.isArray(ticket.comments)) ticket.comments = [];
-      container.innerHTML = ticket.comments.map(c => `
-        <div class="p-2.5 rounded-xl text-xs ${c.is_internal ? 'bg-amber-50 border border-amber-200' : 'bg-slate-50 border border-slate-200'}">
-          <div class="flex items-center justify-between mb-1">
-            <span class="font-bold ${c.is_internal ? 'text-amber-900' : 'text-slate-800'}">${c.sender} ${c.is_internal ? '(🔒 บันทึกภายใน)' : ''}</span>
-            <span class="text-[10px] text-slate-400">${c.time}</span>
+      container.innerHTML = ticket.comments.map((c, cIdx) => {
+        const atts = Array.isArray(c.attachments) ? c.attachments : [];
+        const attsHtml = atts.length > 0
+          ? `<div class="mt-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+              ${atts.map((att, aIdx) => {
+                const src = att.base64 || att.url || "";
+                const isImg = isImageAttachment(att.name || "", src);
+                if (isImg && src) {
+                  return `
+                    <div onclick="openCommentAttachmentPreview('${escapeQuotes(ticket.ticket_id)}', ${cIdx}, ${aIdx})" class="group relative rounded-xl overflow-hidden border border-slate-200 bg-white h-24 flex items-center justify-center cursor-zoom-in hover:border-tcc-400 transition">
+                      <img src="${src}" alt="${escapeQuotes(att.name || 'image')}" class="max-h-24 w-auto object-contain" />
+                      <div class="absolute inset-0 bg-slate-900/35 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                        <span class="px-2 py-0.5 rounded bg-white text-slate-900 text-[10px] font-bold">🔍 ดูรูป</span>
+                      </div>
+                    </div>
+                  `;
+                }
+                return `
+                  <div onclick="openCommentAttachmentPreview('${escapeQuotes(ticket.ticket_id)}', ${cIdx}, ${aIdx})" class="p-2 rounded-xl border border-slate-200 bg-white flex items-center gap-1.5 cursor-pointer hover:border-tcc-400 transition text-[11px]">
+                    <span>📎</span>
+                    <span class="truncate font-semibold text-slate-700">${att.name || 'ไฟล์แนบ'}</span>
+                  </div>
+                `;
+              }).join("")}
+            </div>`
+          : "";
+        return `
+          <div class="p-3 rounded-xl text-xs sm:text-sm ${c.is_internal ? 'bg-amber-50 border border-amber-200' : 'bg-slate-50 border border-slate-200'}">
+            <div class="flex items-center justify-between mb-1">
+              <span class="font-bold ${c.is_internal ? 'text-amber-900' : 'text-slate-800'}">${c.sender} ${c.is_internal ? '(🔒 บันทึกภายใน)' : ''}</span>
+              <span class="text-[11px] text-slate-400">${c.time}</span>
+            </div>
+            ${c.message ? `<p class="text-slate-700 whitespace-pre-wrap">${c.message}</p>` : ''}
+            ${attsHtml}
           </div>
-          <p class="text-slate-700 whitespace-pre-wrap">${c.message}</p>
-        </div>
-      `).join("");
+        `;
+      }).join("");
     }
 
     function handleSendTicketComment(e) {
       e.preventDefault();
       const input = document.getElementById("replyMessageInput");
       const msg = input.value.trim();
-      if (!msg || !state.activeDetailTicketId) return;
+      const attachments = Array.isArray(state.replyAttachments)
+        ? state.replyAttachments.map(a => ({ name: a.name, base64: a.base64, mime: a.mime || "", url: a.url || "", drive_file_id: a.drive_file_id || "" }))
+        : [];
+      if ((!msg && attachments.length === 0) || !state.activeDetailTicketId) return;
 
       const ticket = state.tickets.find(t => t.ticket_id === state.activeDetailTicketId);
       if (!ticket) return;
@@ -6867,14 +7252,18 @@
       const isInternal = document.getElementById("replyIsInternal")?.checked || false;
       const senderName = state.currentUser ? state.currentUser.name : "ผู้ใช้งาน";
 
-      (ticket.comments = Array.isArray(ticket.comments) ? ticket.comments : []).push({
+      const newComment = {
         sender: senderName,
-        message: msg,
+        message: msg || (attachments.length > 0 ? `(แนบไฟล์/รูปภาพ ${attachments.length} รายการ)` : ""),
         time: getLocalTimestamp(0),
-        is_internal: isInternal
-      });
+        is_internal: isInternal,
+        attachments: attachments
+      };
+
+      (ticket.comments = Array.isArray(ticket.comments) ? ticket.comments : []).push(newComment);
 
       input.value = "";
+      clearReplyAttachments();
       renderTicketComments(ticket);
       showNotification("ส่งข้อความตอบกลับแล้ว", "success");
 
@@ -6887,15 +7276,31 @@
           reporter_contact: ticket.reporter_contact,
           assigned_agent: ticket.assigned_agent,
           sender: senderName,
-          message: msg
+          message: newComment.message
         });
       }
 
-      callAPI("updateTicket", {
-        ticketId: ticket.ticket_id,
-        updates: { comments: ticket.comments },
-        notifyEmail: !isInternal
-      }, true);
+      (async () => {
+        try {
+          for (let i = 0; i < attachments.length; i++) {
+            const att = attachments[i];
+            if (att.base64 && att.name && !att.drive_file_id) {
+              const driveRes = await uploadFileToGoogleDrive(att.base64, `${ticket.ticket_id}_REPLY_${Date.now()}_${i + 1}_${att.name}`, "Tickets", ticket.ticket_id);
+              if (driveRes && (driveRes.fileId || driveRes.viewUrl)) {
+                att.drive_file_id = driveRes.fileId || "";
+                att.url = driveRes.viewUrl || "";
+              }
+            }
+          }
+          await callAPI("updateTicket", {
+            ticketId: ticket.ticket_id,
+            updates: { comments: ticket.comments },
+            notifyEmail: !isInternal
+          }, true);
+        } catch (bgErr) {
+          console.warn("Background reply attachment sync warning:", bgErr);
+        }
+      })();
     }
 
     function setCsatStar(n) {

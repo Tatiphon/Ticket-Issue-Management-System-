@@ -2276,7 +2276,7 @@
             <span class="text-[11px] font-semibold text-tcc-700 bg-tcc-50 px-2.5 py-0.5 rounded-full border border-tcc-200">บันทึกได้ทันทีจากหน้านี้</span>
           </div>
           <form id="detailAdminManageForm" onsubmit="handleSaveTicketDetailAdminAction(event)" class="space-y-3 text-xs">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label class="block font-semibold text-slate-700 mb-1">ปรับสถานะเคส (Status)</label>
                 <select id="detailAdminStatus" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white font-semibold focus:ring-2 focus:ring-tcc-500 outline-none">
@@ -2291,10 +2291,43 @@
                 <label class="block font-semibold text-slate-700 mb-1">มอบหมายเจ้าหน้าที่รับผิดชอบ (Agent)</label>
                 <select id="detailAdminAgent" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-tcc-500 outline-none"></select>
               </div>
-              <div>
-                <label class="block font-semibold text-slate-700 mb-1">บันทึกการแก้ไข / แจ้งผู้ใช้</label>
-                <input type="text" id="detailAdminNote" placeholder="ระบุสิ่งที่แก้ไข หรือความคืบหน้า..." class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-tcc-500 outline-none">
+            </div>
+            <div>
+              <div class="flex items-center justify-between mb-1.5 gap-2 flex-wrap">
+                <label class="block font-semibold text-slate-700">บันทึกการแก้ไข / แจ้งผู้ใช้</label>
+                <span class="text-[11px] text-slate-500">พิมพ์ข้อความ, จัดตัวหนา/ขีดเส้นใต้/สี, หรือ <kbd class="px-1.5 py-0.5 bg-white border border-slate-200 rounded text-[10px] font-mono">Ctrl+V</kbd> วางรูปภาพในกล่องได้เลย</span>
               </div>
+              <div class="rounded-2xl border border-slate-300 bg-white overflow-hidden focus-within:ring-2 focus-within:ring-tcc-500 focus-within:border-tcc-500 transition">
+                <div class="px-3 py-2 bg-slate-50 border-b border-slate-200 flex items-center gap-1.5 flex-wrap">
+                  <button type="button" onmousedown="event.preventDefault(); execRichCmd('detailAdminNoteEditor', 'bold')" class="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-slate-800 font-extrabold text-xs shadow-2xs cursor-pointer" title="ตัวหนา (Bold)">B</button>
+                  <button type="button" onmousedown="event.preventDefault(); execRichCmd('detailAdminNoteEditor', 'underline')" class="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-slate-800 underline font-semibold text-xs shadow-2xs cursor-pointer" title="ขีดเส้นใต้ (Underline)">U</button>
+                  <div class="w-px h-5 bg-slate-200 mx-0.5"></div>
+                  <span class="text-[11px] text-slate-500 font-semibold">สี:</span>
+                  <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('detailAdminNoteEditor', '#0f172a')" class="w-5 h-5 rounded-full bg-slate-900 border border-slate-300 hover:scale-110 transition cursor-pointer" title="สีดำ"></button>
+                  <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('detailAdminNoteEditor', '#dc2626')" class="w-5 h-5 rounded-full bg-red-600 border border-slate-300 hover:scale-110 transition cursor-pointer" title="สีแดง"></button>
+                  <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('detailAdminNoteEditor', '#0284c7')" class="w-5 h-5 rounded-full bg-sky-600 border border-slate-300 hover:scale-110 transition cursor-pointer" title="สีน้ำเงิน"></button>
+                  <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('detailAdminNoteEditor', '#059669')" class="w-5 h-5 rounded-full bg-emerald-600 border border-slate-300 hover:scale-110 transition cursor-pointer" title="สีเขียว"></button>
+                  <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('detailAdminNoteEditor', '#d97706')" class="w-5 h-5 rounded-full bg-amber-600 border border-slate-300 hover:scale-110 transition cursor-pointer" title="สีส้ม"></button>
+                  <label class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-[11px] font-semibold text-slate-700 cursor-pointer" title="เลือกสีอิสระ">
+                    <span>🎨</span>
+                    <input type="color" value="#0f172a" onchange="applyRichTextColor('detailAdminNoteEditor', this.value)" class="w-4 h-4 p-0 border-0 bg-transparent cursor-pointer">
+                  </label>
+                  <div class="w-px h-5 bg-slate-200 mx-0.5"></div>
+                  <input type="file" id="detailAdminNoteImageInput" multiple accept="image/*" onchange="handleRichEditorImagePick(this, 'detailAdminNoteEditor')" class="hidden">
+                  <label for="detailAdminNoteImageInput" class="px-2.5 py-1 rounded-lg bg-tcc-50 hover:bg-tcc-100 border border-tcc-200 text-tcc-700 font-bold text-xs flex items-center gap-1 cursor-pointer transition" title="แทรกรูปภาพลงในกล่องข้อความ">
+                    <span>🖼️ แทรกรูปในข้อความ</span>
+                  </label>
+                  <button type="button" onmousedown="event.preventDefault(); execRichCmd('detailAdminNoteEditor', 'removeFormat')" class="px-2 py-1 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-slate-500 text-[11px] cursor-pointer ml-auto" title="ล้างการจัดรูปแบบ">ล้างรูปแบบ</button>
+                </div>
+                <div id="detailAdminNoteEditor"
+                     contenteditable="true"
+                     onpaste="handleRichEditorPaste(event, 'detailAdminNoteEditor')"
+                     ondrop="handleRichEditorDrop(event, 'detailAdminNoteEditor')"
+                     ondragover="event.preventDefault()"
+                     data-placeholder="ระบุสิ่งที่แก้ไข ความคืบหน้า วิธีแก้ไขปัญหา หรือวางรูปภาพประกอบ (Ctrl+V) เพื่อแจ้งผู้ใช้..."
+                     class="rich-editor-content w-full min-h-[140px] max-h-[300px] overflow-y-auto p-3.5 text-xs sm:text-sm text-slate-800 leading-relaxed outline-none bg-white"></div>
+              </div>
+              <input type="hidden" id="detailAdminNote" value="">
             </div>
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-1">
               <label class="flex items-center gap-2 cursor-pointer select-none text-emerald-900 font-semibold text-xs">
@@ -2460,8 +2493,41 @@
         </div>
 
         <div>
-          <label class="block font-semibold text-slate-700 mb-1">บันทึกช่วยจำ / ข้อความแจ้งผู้ใช้</label>
-          <textarea id="adminActionNote" rows="3" placeholder="ระบุสิ่งที่แก้ไข หรือความคืบหน้า..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-tcc-500 outline-none"></textarea>
+          <div class="flex items-center justify-between mb-1.5 gap-2 flex-wrap">
+            <label class="block font-semibold text-slate-700">บันทึกการแก้ไข / แจ้งผู้ใช้</label>
+            <span class="text-[11px] text-slate-500">พิมพ์ข้อความ, จัดตัวหนา/ขีดเส้นใต้/สี, หรือ <kbd class="px-1.5 py-0.5 bg-slate-100 border border-slate-200 rounded text-[10px] font-mono">Ctrl+V</kbd> วางรูปภาพในกล่องได้เลย</span>
+          </div>
+          <div class="rounded-2xl border border-slate-300 bg-white overflow-hidden focus-within:ring-2 focus-within:ring-tcc-500 focus-within:border-tcc-500 transition">
+            <div class="px-3 py-2 bg-slate-50 border-b border-slate-200 flex items-center gap-1.5 flex-wrap">
+              <button type="button" onmousedown="event.preventDefault(); execRichCmd('adminActionNoteEditor', 'bold')" class="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-slate-800 font-extrabold text-xs shadow-2xs cursor-pointer" title="ตัวหนา (Bold)">B</button>
+              <button type="button" onmousedown="event.preventDefault(); execRichCmd('adminActionNoteEditor', 'underline')" class="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-slate-800 underline font-semibold text-xs shadow-2xs cursor-pointer" title="ขีดเส้นใต้ (Underline)">U</button>
+              <div class="w-px h-5 bg-slate-200 mx-0.5"></div>
+              <span class="text-[11px] text-slate-500 font-semibold">สี:</span>
+              <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('adminActionNoteEditor', '#0f172a')" class="w-5 h-5 rounded-full bg-slate-900 border border-slate-300 hover:scale-110 transition cursor-pointer" title="สีดำ"></button>
+              <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('adminActionNoteEditor', '#dc2626')" class="w-5 h-5 rounded-full bg-red-600 border border-slate-300 hover:scale-110 transition cursor-pointer" title="สีแดง"></button>
+              <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('adminActionNoteEditor', '#0284c7')" class="w-5 h-5 rounded-full bg-sky-600 border border-slate-300 hover:scale-110 transition cursor-pointer" title="สีน้ำเงิน"></button>
+              <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('adminActionNoteEditor', '#059669')" class="w-5 h-5 rounded-full bg-emerald-600 border border-slate-300 hover:scale-110 transition cursor-pointer" title="สีเขียว"></button>
+              <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('adminActionNoteEditor', '#d97706')" class="w-5 h-5 rounded-full bg-amber-600 border border-slate-300 hover:scale-110 transition cursor-pointer" title="สีส้ม"></button>
+              <label class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-[11px] font-semibold text-slate-700 cursor-pointer" title="เลือกสีอิสระ">
+                <span>🎨</span>
+                <input type="color" value="#0f172a" onchange="applyRichTextColor('adminActionNoteEditor', this.value)" class="w-4 h-4 p-0 border-0 bg-transparent cursor-pointer">
+              </label>
+              <div class="w-px h-5 bg-slate-200 mx-0.5"></div>
+              <input type="file" id="adminActionNoteImageInput" multiple accept="image/*" onchange="handleRichEditorImagePick(this, 'adminActionNoteEditor')" class="hidden">
+              <label for="adminActionNoteImageInput" class="px-2.5 py-1 rounded-lg bg-tcc-50 hover:bg-tcc-100 border border-tcc-200 text-tcc-700 font-bold text-xs flex items-center gap-1 cursor-pointer transition" title="แทรกรูปภาพลงในกล่องข้อความ">
+                <span>🖼️ แทรกรูปในข้อความ</span>
+              </label>
+              <button type="button" onmousedown="event.preventDefault(); execRichCmd('adminActionNoteEditor', 'removeFormat')" class="px-2 py-1 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-slate-500 text-[11px] cursor-pointer ml-auto" title="ล้างการจัดรูปแบบ">ล้างรูปแบบ</button>
+            </div>
+            <div id="adminActionNoteEditor"
+                 contenteditable="true"
+                 onpaste="handleRichEditorPaste(event, 'adminActionNoteEditor')"
+                 ondrop="handleRichEditorDrop(event, 'adminActionNoteEditor')"
+                 ondragover="event.preventDefault()"
+                 data-placeholder="ระบุสิ่งที่แก้ไข ความคืบหน้า วิธีแก้ไขปัญหา หรือวางรูปภาพประกอบ (Ctrl+V) เพื่อแจ้งผู้ใช้..."
+                 class="rich-editor-content w-full min-h-[150px] max-h-[300px] overflow-y-auto p-3.5 text-xs sm:text-sm text-slate-800 leading-relaxed outline-none bg-white"></div>
+          </div>
+          <input type="hidden" id="adminActionNote" value="">
         </div>
 
         <div class="p-3 bg-emerald-50/70 border border-emerald-200 rounded-xl">
@@ -4559,9 +4625,10 @@
 
       if (cfg.notifyRequester !== false && details.notifyRequester !== false) {
         const contactCandidate = details.borrower_contact || details.contact || details.reporter_contact || details.userContact || "";
+        const fallbackEmailCandidate = details.userEmail || details.email || "";
         const nameCandidate = details.borrower_name || details.borrowerName || details.reporter_name || details.reporterName || details.userName || "";
-        if (contactCandidate || nameCandidate) {
-          const userMail = resolveUserEmailAddress(contactCandidate, nameCandidate);
+        if (contactCandidate || fallbackEmailCandidate || nameCandidate) {
+          const userMail = resolveUserEmailAddress(contactCandidate, nameCandidate) || resolveUserEmailAddress(fallbackEmailCandidate, nameCandidate);
           if (userMail && !isBlockedNotificationEmail(userMail)) recipientsSet.add(userMail);
         }
       }
@@ -4649,6 +4716,12 @@
         try {
           if (cfg.transportMode === "smtp" || (cfg.transportMode === "webhook" && cfg.webhookUrl)) {
             apiRes = await sendViaBuiltInSmtpEndpoint(emailPayload, cfg);
+            if ((!apiRes || !apiRes.sent) && state.isLive) {
+              const gasFallbackRes = await callAPI("sendEmailNotification", emailPayload, true);
+              if (gasFallbackRes && !gasFallbackRes.simulated && gasFallbackRes.status === "success" && gasFallbackRes.sent && !isBlockedNotificationEmail(gasFallbackRes.senderEmail)) {
+                apiRes = gasFallbackRes;
+              }
+            }
           } else {
             // Pre-flight check on live GAS to prevent older Code.gs from falling back to tatitop07@gmail.com
             let gasBlockedReason = "";
@@ -7021,6 +7094,7 @@
           reporter_name: newTicket.reporter_name,
           reporter_dept: newTicket.reporter_dept,
           reporter_contact: newTicket.reporter_contact,
+          userEmail: state.currentUser?.email || "",
           description: newTicket.description,
           sla_target: newTicket.sla_target,
           assigned_agent: newTicket.assigned_agent
@@ -7372,6 +7446,8 @@
       }
       const detailNoteInp = document.getElementById("detailAdminNote");
       if (detailNoteInp) detailNoteInp.value = "";
+      const detailNoteEditor = document.getElementById("detailAdminNoteEditor");
+      if (detailNoteEditor) detailNoteEditor.innerHTML = "";
       const detailNotifyChk = document.getElementById("detailAdminNotifyEmail");
       if (detailNotifyChk) detailNotifyChk.checked = state.emailNotifyEnabled !== false;
 
@@ -7453,7 +7529,10 @@
 
       ticket.status = document.getElementById("detailAdminStatus").value;
       ticket.assigned_agent = document.getElementById("detailAdminAgent").value;
-      const note = document.getElementById("detailAdminNote")?.value.trim() || "";
+      const noteData = getRichEditorData("detailAdminNoteEditor");
+      const fallbackNote = document.getElementById("detailAdminNote")?.value.trim() || "";
+      const note = noteData.text || fallbackNote || (noteData.hasImages ? "(แนบรูปภาพประกอบ)" : "");
+      let rawNoteHtml = noteData.html || "";
       const notifyEmail = document.getElementById("detailAdminNotifyEmail")?.checked !== false;
 
       if (ticket.status === "Resolved" || ticket.status === "Closed") {
@@ -7464,15 +7543,20 @@
         ticket.resolved_at = "";
       }
 
-      if (note) {
-        (ticket.comments = Array.isArray(ticket.comments) ? ticket.comments : []).push({
+      let addedComment = null;
+      if (note || noteData.hasImages) {
+        const statusPrefixHtml = `<div><strong style="color:#0369a1">[อัปเดตสถานะเป็น ${ticket.status}]</strong></div>`;
+        addedComment = {
           sender: state.currentUser ? state.currentUser.name : "Admin",
           message: `[อัปเดตสถานะเป็น ${ticket.status}] ${note}`,
+          message_html: rawNoteHtml ? `${statusPrefixHtml}${rawNoteHtml}` : "",
           time: getLocalTimestamp(0),
           is_internal: false
-        });
+        };
+        (ticket.comments = Array.isArray(ticket.comments) ? ticket.comments : []).push(addedComment);
       }
 
+      saveTicketRichCache(ticket);
       showNotification(`บันทึกการจัดการเคส [${ticket.ticket_id}] สำเร็จ`, "success");
       openTicketDetailModal(ticket.ticket_id);
       renderAll();
@@ -7490,13 +7574,26 @@
         });
       }
 
+      if (addedComment && addedComment.message_html && /data:image\//i.test(addedComment.message_html)) {
+        addedComment.message_html = await replaceInlineImagesWithDriveUrls(addedComment.message_html, `${ticket.ticket_id}_ADMIN_NOTE`, ticket.ticket_id);
+        saveTicketRichCache(ticket);
+      }
+
+      const compactComments = (ticket.comments || []).map(c => ({
+        ...c,
+        attachments: Array.isArray(c.attachments)
+          ? c.attachments.map(a => ({ name: a.name || "", mime: a.mime || "", url: a.url || "", drive_file_id: a.drive_file_id || "" }))
+          : undefined
+      }));
+
       await callAPI("updateTicket", {
         ticketId: ticket.ticket_id,
+        driveFolderId: state.driveFolderId || "",
         updates: {
           status: ticket.status,
           assigned_agent: ticket.assigned_agent,
           resolved_at: ticket.resolved_at,
-          comments: ticket.comments
+          comments: compactComments
         },
         notifyEmail: notifyEmail
       }, true);
@@ -7854,6 +7951,8 @@
       }
       const noteEl = document.getElementById("adminActionNote");
       if (noteEl) noteEl.value = "";
+      const noteEditorEl = document.getElementById("adminActionNoteEditor");
+      if (noteEditorEl) noteEditorEl.innerHTML = "";
       const notifyChk = document.getElementById("adminActionNotifyEmail");
       if (notifyChk) notifyChk.checked = state.emailNotifyEnabled !== false;
 
@@ -7877,7 +7976,10 @@
 
       ticket.status = document.getElementById("adminActionStatus").value;
       ticket.assigned_agent = document.getElementById("adminActionAgent").value;
-      const note = document.getElementById("adminActionNote").value.trim();
+      const noteData = getRichEditorData("adminActionNoteEditor");
+      const fallbackNote = document.getElementById("adminActionNote")?.value.trim() || "";
+      const note = noteData.text || fallbackNote || (noteData.hasImages ? "(แนบรูปภาพประกอบ)" : "");
+      const rawNoteHtml = noteData.html || "";
       const notifyEmail = document.getElementById("adminActionNotifyEmail")?.checked !== false;
 
       if (ticket.status === "Resolved" || ticket.status === "Closed") {
@@ -7888,15 +7990,20 @@
         ticket.resolved_at = "";
       }
 
-      if (note) {
-        (ticket.comments = Array.isArray(ticket.comments) ? ticket.comments : []).push({
+      let addedComment = null;
+      if (note || noteData.hasImages) {
+        const statusPrefixHtml = `<div><strong style="color:#0369a1">[อัปเดตสถานะเป็น ${ticket.status}]</strong></div>`;
+        addedComment = {
           sender: state.currentUser ? state.currentUser.name : "Admin",
           message: `[อัปเดตสถานะเป็น ${ticket.status}] ${note}`,
+          message_html: rawNoteHtml ? `${statusPrefixHtml}${rawNoteHtml}` : "",
           time: getLocalTimestamp(0),
           is_internal: false
-        });
+        };
+        (ticket.comments = Array.isArray(ticket.comments) ? ticket.comments : []).push(addedComment);
       }
 
+      saveTicketRichCache(ticket);
       closeTicketAdminActionModal();
       showNotification(`บันทึกการจัดการเคส [${ticket.ticket_id}] สำเร็จ`, "success");
       renderAll();
@@ -7914,13 +8021,26 @@
         });
       }
 
+      if (addedComment && addedComment.message_html && /data:image\//i.test(addedComment.message_html)) {
+        addedComment.message_html = await replaceInlineImagesWithDriveUrls(addedComment.message_html, `${ticket.ticket_id}_ADMIN_NOTE`, ticket.ticket_id);
+        saveTicketRichCache(ticket);
+      }
+
+      const compactComments = (ticket.comments || []).map(c => ({
+        ...c,
+        attachments: Array.isArray(c.attachments)
+          ? c.attachments.map(a => ({ name: a.name || "", mime: a.mime || "", url: a.url || "", drive_file_id: a.drive_file_id || "" }))
+          : undefined
+      }));
+
       await callAPI("updateTicket", {
         ticketId: ticket.ticket_id,
+        driveFolderId: state.driveFolderId || "",
         updates: {
           status: ticket.status,
           assigned_agent: ticket.assigned_agent,
           resolved_at: ticket.resolved_at,
-          comments: ticket.comments
+          comments: compactComments
         },
         notifyEmail: notifyEmail
       }, true);

@@ -143,16 +143,16 @@
         </div>
 
         <!-- Right: Action & Profile Area -->
-        <div class="flex items-center justify-between sm:justify-end gap-1.5 sm:gap-2 w-full sm:w-auto pt-1.5 sm:pt-0 border-t sm:border-t-0 border-slate-100 shrink-0">
+        <div class="flex items-center justify-between sm:justify-end gap-1.5 sm:gap-2.5 w-full sm:w-auto pt-1.5 sm:pt-0 border-t sm:border-t-0 border-slate-100 shrink-0">
           <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <!-- Toggle Admin Sidebar Button (Desktop & Mobile) -->
-            <button id="btnToggleSidebar" onclick="toggleAdminSidebarMobile()" class="admin-only admin-hidden px-2.5 py-1.5 text-xs font-bold rounded-xl bg-tcc-50 hover:bg-tcc-100 text-tcc-700 border border-tcc-200 items-center gap-1.5 transition shadow-sm inline-flex shrink-0 whitespace-nowrap" title="เปิด/ปิด เมนูด้านข้างแอดมิน">
+            <button id="btnToggleSidebar" onclick="toggleAdminSidebarMobile()" class="admin-only admin-hidden px-3 py-2 text-[13px] sm:text-sm font-bold rounded-xl bg-tcc-50 hover:bg-tcc-100 text-tcc-700 border border-tcc-200 items-center gap-1.5 transition shadow-sm inline-flex shrink-0 whitespace-nowrap" title="เปิด/ปิด เมนูด้านข้างแอดมิน">
               <svg class="w-4 h-4 text-tcc-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg>
               <span class="hidden md:inline">เมนูจัดการระบบ</span>
             </button>
 
             <!-- Global Refresh -->
-            <button onclick="triggerManualReload()" class="p-1.5 sm:px-3 sm:py-1.5 text-xs font-semibold rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-700 flex items-center gap-1.5 transition active:scale-95 shadow-sm shrink-0 whitespace-nowrap" title="รีเฟรชข้อมูลล่าสุด">
+            <button onclick="triggerManualReload()" class="p-2 sm:px-3.5 sm:py-2 text-[13px] sm:text-sm font-semibold rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-700 flex items-center gap-1.5 transition active:scale-95 shadow-sm shrink-0 whitespace-nowrap" title="รีเฟรชข้อมูลล่าสุด">
               <svg id="reloadIcon" class="w-4 h-4 text-tcc-600 transition-transform shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
               </svg>
@@ -160,34 +160,34 @@
             </button>
 
             <!-- Email Notification Center Button -->
-            <button onclick="openEmailLogModal()" class="px-2 py-1.5 sm:px-3 sm:py-1.5 text-xs font-semibold rounded-xl border border-sky-200 bg-sky-50/70 hover:bg-sky-100 text-sky-800 flex items-center gap-1.5 transition active:scale-95 shadow-sm relative shrink-0 whitespace-nowrap" title="ศูนย์แจ้งเตือนอีเมลอัตโนมัติ (Email Notification Center)">
+            <button onclick="openEmailLogModal()" class="px-2.5 py-2 sm:px-3.5 sm:py-2 text-[13px] sm:text-sm font-semibold rounded-xl border border-sky-200 bg-sky-50/70 hover:bg-sky-100 text-sky-800 flex items-center gap-1.5 transition active:scale-95 shadow-sm relative shrink-0 whitespace-nowrap" title="ศูนย์แจ้งเตือนอีเมลอัตโนมัติ (Email Notification Center)">
               <span>📧</span>
               <span class="hidden lg:inline">แจ้งเตือนอีเมล</span>
-              <span id="headerEmailLogBadge" class="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-sky-600 text-white">0</span>
+              <span id="headerEmailLogBadge" class="px-1.5 py-0.2 rounded-full text-[11px] font-bold bg-sky-600 text-white">0</span>
             </button>
 
             <!-- Google Sheets Setup (Super Admin Only) -->
-            <button onclick="openSetupModal()" class="superadmin-only superadmin-hidden hidden xl:inline-flex px-3 py-1.5 text-xs font-semibold rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-700 items-center gap-1.5 transition shadow-sm shrink-0 whitespace-nowrap">
+            <button onclick="openSetupModal()" class="superadmin-only superadmin-hidden hidden xl:inline-flex px-3.5 py-2 text-[13px] sm:text-sm font-semibold rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-700 items-center gap-1.5 transition shadow-sm shrink-0 whitespace-nowrap">
               <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
               <span>Google Sheets</span>
             </button>
           </div>
 
           <!-- Auth Status & Profile -->
-          <div id="authContainer" class="flex items-center gap-2 sm:pl-2 sm:border-l border-slate-200 min-w-0">
-            <button id="btnLoginModal" onclick="openLoginModal()" class="px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm transition shrink-0 whitespace-nowrap">
+          <div id="authContainer" class="flex items-center gap-2 sm:pl-2.5 sm:border-l border-slate-200 min-w-0">
+            <button id="btnLoginModal" onclick="openLoginModal()" class="px-3.5 py-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 rounded-xl text-[13px] sm:text-sm font-semibold flex items-center gap-1.5 shadow-sm transition shrink-0 whitespace-nowrap">
               <svg class="w-4 h-4 shrink-0 text-tcc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
               <span>เข้าสู่ระบบ</span>
             </button>
 
-            <div id="userProfilePill" class="hidden items-center gap-2 bg-slate-100 hover:bg-slate-200/80 p-1 pr-2 sm:pr-2.5 rounded-full border border-slate-200 transition min-w-0 max-w-full">
-              <img id="userAvatarImg" src="" alt="User Avatar" class="w-6 h-6 sm:w-7 sm:h-7 rounded-full object-cover border border-slate-300 shrink-0">
+            <div id="userProfilePill" class="hidden items-center gap-2 bg-slate-100 hover:bg-slate-200/80 p-1.5 pr-2.5 sm:pr-3 rounded-full border border-slate-200 transition min-w-0 max-w-full">
+              <img id="userAvatarImg" src="" alt="User Avatar" class="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover border border-slate-300 shrink-0">
               <div class="flex flex-col text-left min-w-0">
-                <span id="userDisplayName" class="text-[11px] sm:text-xs font-bold text-slate-800 leading-tight truncate max-w-[135px] sm:max-w-[165px]">-</span>
-                <span id="userEmailSub" class="text-[9px] sm:text-[10px] text-slate-500 leading-none truncate max-w-[135px] sm:max-w-[165px] mt-0.5">-</span>
+                <span id="userDisplayName" class="text-xs sm:text-[13px] font-bold text-slate-800 leading-tight truncate max-w-[140px] sm:max-w-[175px]">-</span>
+                <span id="userEmailSub" class="text-[10px] sm:text-[11px] text-slate-500 leading-none truncate max-w-[140px] sm:max-w-[175px] mt-0.5">-</span>
               </div>
               <button onclick="handleSignOut()" class="p-1 text-slate-400 hover:text-rose-600 rounded-full transition shrink-0" title="ออกจากระบบ">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
               </button>
             </div>
           </div>
@@ -261,32 +261,32 @@
       <!-- ============================================================== -->
       <!-- LEFT SIDEBAR: ADMIN MANAGEMENT SYSTEM (เมนูด้านข้างฝั่งซ้ายมือ) -->
       <!-- ============================================================== -->
-      <aside id="adminSidebar" class="admin-only admin-hidden w-full lg:w-64 xl:w-72 shrink-0 bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-4 lg:sticky lg:top-20 transition-all">
+      <aside id="adminSidebar" class="admin-only admin-hidden w-full lg:w-72 xl:w-80 shrink-0 bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-4 lg:sticky lg:top-20 transition-all">
         
         <!-- Sidebar Brand & Identity -->
         <div class="pb-3 border-b border-slate-100 flex items-center justify-between">
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2.5">
             <div class="w-8 h-10 shrink-0 drop-shadow flex items-center justify-center">
               <img src="LOGO The Thai chamber of commerce_2.png" 
                    onerror="applyTccLogo(this)" 
                    alt="โลโก้หอการค้าไทย" class="tcc-logo-img w-full h-full object-contain" />
             </div>
             <div>
-              <h3 class="text-xs font-bold text-slate-900 leading-tight">เมนูจัดการระบบ</h3>
-              <span id="sidebarRoleLabel" class="text-[10px] text-tcc-700 font-semibold">IT Admin Console</span>
+              <h3 class="text-sm font-bold text-slate-900 leading-tight">เมนูจัดการระบบ</h3>
+              <span id="sidebarRoleLabel" class="text-xs text-tcc-700 font-semibold">IT Admin Console</span>
             </div>
           </div>
-          <button type="button" onclick="toggleAdminSidebarMobile()" class="lg:hidden p-1 text-slate-400 hover:text-slate-600 rounded-lg">
+          <button type="button" onclick="toggleAdminSidebarMobile()" class="lg:hidden p-1.5 text-slate-400 hover:text-slate-600 rounded-lg text-sm">
             ✕
           </button>
         </div>
 
         <!-- Section 1: แดชบอร์ดและรายงาน -->
         <div class="space-y-1">
-          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2">ภาพรวม &amp; สถิติ</span>
-          <button type="button" onclick="switchTab('dashboardTab')" id="sidebarBtn-dashboardTab" class="admin-sidebar-btn w-full px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-between text-slate-700 hover:bg-slate-100 transition">
-            <div class="flex items-center gap-2">
-              <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+          <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-2.5 block mb-1">ภาพรวม &amp; สถิติ</span>
+          <button type="button" onclick="switchTab('dashboardTab')" id="sidebarBtn-dashboardTab" class="admin-sidebar-btn w-full px-3.5 py-2.5 rounded-xl text-[13px] sm:text-sm font-semibold flex items-center justify-between text-slate-700 hover:bg-slate-100 transition">
+            <div class="flex items-center gap-2.5">
+              <svg class="w-[18px] h-[18px] text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
               <span>ศูนย์รวมแดชบอร์ด &amp; SLA</span>
             </div>
           </button>
@@ -294,88 +294,88 @@
 
         <!-- Section 2: งานบริการไอที (IT Helpdesk) -->
         <div class="space-y-1">
-          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2">งานบริการไอที (Helpdesk)</span>
-          <button type="button" onclick="switchTab('ticketAdminTab')" id="sidebarBtn-ticketAdminTab" class="admin-sidebar-btn w-full px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-between text-slate-700 hover:bg-slate-100 transition">
-            <div class="flex items-center gap-2">
-              <svg class="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"/></svg>
+          <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-2.5 block mb-1">งานบริการไอที (Helpdesk)</span>
+          <button type="button" onclick="switchTab('ticketAdminTab')" id="sidebarBtn-ticketAdminTab" class="admin-sidebar-btn w-full px-3.5 py-2.5 rounded-xl text-[13px] sm:text-sm font-semibold flex items-center justify-between text-slate-700 hover:bg-slate-100 transition">
+            <div class="flex items-center gap-2.5">
+              <svg class="w-[18px] h-[18px] text-rose-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"/></svg>
               <span>กระดานบริหารเคส</span>
             </div>
-            <span id="sidebarBadgeTickets" class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700">0</span>
+            <span id="sidebarBadgeTickets" class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-rose-100 text-rose-700">0</span>
             <span id="tabBadgeAdminTickets" class="hidden">0</span>
             <span id="badgeActiveTicketsCat" class="hidden">0</span>
           </button>
-          <button type="button" onclick="switchTab('helpdeskReportTab')" id="sidebarBtn-helpdeskReportTab" class="admin-sidebar-btn w-full px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 text-slate-700 hover:bg-slate-100 transition">
-            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          <button type="button" onclick="switchTab('helpdeskReportTab')" id="sidebarBtn-helpdeskReportTab" class="admin-sidebar-btn w-full px-3.5 py-2.5 rounded-xl text-[13px] sm:text-sm font-semibold flex items-center gap-2.5 text-slate-700 hover:bg-slate-100 transition">
+            <svg class="w-[18px] h-[18px] text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
             <span>รายงานสรุปแจ้งซ่อม (Report)</span>
           </button>
-          <button type="button" onclick="switchTab('kbTab')" id="sidebarBtn-kbTab" class="admin-sidebar-btn w-full px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-between text-slate-700 hover:bg-slate-100 transition">
-            <div class="flex items-center gap-2">
-              <svg class="w-4 h-4 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+          <button type="button" onclick="switchTab('kbTab')" id="sidebarBtn-kbTab" class="admin-sidebar-btn w-full px-3.5 py-2.5 rounded-xl text-[13px] sm:text-sm font-semibold flex items-center justify-between text-slate-700 hover:bg-slate-100 transition">
+            <div class="flex items-center gap-2.5">
+              <svg class="w-[18px] h-[18px] text-sky-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
               <span>คลังความรู้ไอที (KB)</span>
             </div>
-            <span id="sidebarKbStatusBadge" class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">เปิด</span>
+            <span id="sidebarKbStatusBadge" class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">เปิด</span>
           </button>
-          <button type="button" onclick="openTicketCategoryManageModal()" class="admin-sidebar-btn w-full px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 text-slate-700 hover:bg-slate-100 transition">
-            <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+          <button type="button" onclick="openTicketCategoryManageModal()" class="admin-sidebar-btn w-full px-3.5 py-2.5 rounded-xl text-[13px] sm:text-sm font-semibold flex items-center gap-2.5 text-slate-700 hover:bg-slate-100 transition">
+            <svg class="w-[18px] h-[18px] text-purple-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
             <span>จัดการหมวดหมู่ปัญหา</span>
           </button>
-          <button type="button" onclick="openInternalSystemManageModal()" class="admin-sidebar-btn w-full px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 text-slate-700 hover:bg-slate-100 transition">
-            <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+          <button type="button" onclick="openInternalSystemManageModal()" class="admin-sidebar-btn w-full px-3.5 py-2.5 rounded-xl text-[13px] sm:text-sm font-semibold flex items-center gap-2.5 text-slate-700 hover:bg-slate-100 transition">
+            <svg class="w-[18px] h-[18px] text-indigo-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
             <span>จัดการชื่อระบบสารสนเทศ</span>
           </button>
         </div>
 
         <!-- Section 3: บริหารคลังอุปกรณ์และพัสดุ (IT Assets) -->
         <div class="space-y-1">
-          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2">คลังอุปกรณ์ &amp; ยืม-คืน</span>
-          <button type="button" onclick="switchTab('returnTab')" id="sidebarBtn-returnTab" class="admin-sidebar-btn w-full px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-between text-slate-700 hover:bg-slate-100 transition">
-            <div class="flex items-center gap-2">
-              <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+          <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-2.5 block mb-1">คลังอุปกรณ์ &amp; ยืม-คืน</span>
+          <button type="button" onclick="switchTab('returnTab')" id="sidebarBtn-returnTab" class="admin-sidebar-btn w-full px-3.5 py-2.5 rounded-xl text-[13px] sm:text-sm font-semibold flex items-center justify-between text-slate-700 hover:bg-slate-100 transition">
+            <div class="flex items-center gap-2.5">
+              <svg class="w-[18px] h-[18px] text-amber-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
               <span>รายการรอรับคืน</span>
             </div>
-            <span id="sidebarBadgeReturns" class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">0</span>
+            <span id="sidebarBadgeReturns" class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800">0</span>
           </button>
-          <button type="button" onclick="switchTab('inventoryTab')" id="sidebarBtn-inventoryTab" class="admin-sidebar-btn w-full px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 text-slate-700 hover:bg-slate-100 transition">
-            <svg class="w-4 h-4 text-tcc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+          <button type="button" onclick="switchTab('inventoryTab')" id="sidebarBtn-inventoryTab" class="admin-sidebar-btn w-full px-3.5 py-2.5 rounded-xl text-[13px] sm:text-sm font-semibold flex items-center gap-2.5 text-slate-700 hover:bg-slate-100 transition">
+            <svg class="w-[18px] h-[18px] text-tcc-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
             <span>ทะเบียนคลังอุปกรณ์</span>
           </button>
-          <button type="button" onclick="switchTab('historyTab')" id="sidebarBtn-historyTab" class="admin-sidebar-btn w-full px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-between text-slate-700 hover:bg-slate-100 transition">
-            <div class="flex items-center gap-2">
-              <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          <button type="button" onclick="switchTab('historyTab')" id="sidebarBtn-historyTab" class="admin-sidebar-btn w-full px-3.5 py-2.5 rounded-xl text-[13px] sm:text-sm font-semibold flex items-center justify-between text-slate-700 hover:bg-slate-100 transition">
+            <div class="flex items-center gap-2.5">
+              <svg class="w-[18px] h-[18px] text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
               <span>ประวัติยืม-คืนหลังบ้าน</span>
             </div>
-            <span id="sidebarBadgeHistory" class="px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600">0</span>
+            <span id="sidebarBadgeHistory" class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-600">0</span>
           </button>
         </div>
 
         <!-- Section 4: การตั้งค่าระบบ & สิทธิ์ -->
         <div class="space-y-1">
-          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2">การตั้งค่าระบบ</span>
-          <button type="button" onclick="switchTab('rolesTab')" id="sidebarBtn-rolesTab" class="admin-sidebar-btn superadmin-only superadmin-hidden w-full px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 text-slate-700 hover:bg-slate-100 transition">
-            <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+          <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-2.5 block mb-1">การตั้งค่าระบบ</span>
+          <button type="button" onclick="switchTab('rolesTab')" id="sidebarBtn-rolesTab" class="admin-sidebar-btn superadmin-only superadmin-hidden w-full px-3.5 py-2.5 rounded-xl text-[13px] sm:text-sm font-semibold flex items-center gap-2.5 text-slate-700 hover:bg-slate-100 transition">
+            <svg class="w-[18px] h-[18px] text-amber-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
             <span>จัดการสิทธิ์ผู้ใช้งาน</span>
           </button>
-          <button type="button" onclick="switchTab('emailSettingsTab')" id="sidebarBtn-emailSettingsTab" class="admin-sidebar-btn w-full px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 text-slate-700 hover:bg-slate-100 transition">
-            <svg class="w-4 h-4 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+          <button type="button" onclick="switchTab('emailSettingsTab')" id="sidebarBtn-emailSettingsTab" class="admin-sidebar-btn w-full px-3.5 py-2.5 rounded-xl text-[13px] sm:text-sm font-semibold flex items-center gap-2.5 text-slate-700 hover:bg-slate-100 transition">
+            <svg class="w-[18px] h-[18px] text-sky-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
             <span>จัดการอีเมล &amp; ข้อความแจ้งเตือน</span>
           </button>
-          <button type="button" onclick="openDeptManagementModal()" class="w-full px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 text-slate-700 hover:bg-slate-100 transition">
-            <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+          <button type="button" onclick="openDeptManagementModal()" class="w-full px-3.5 py-2.5 rounded-xl text-[13px] sm:text-sm font-semibold flex items-center gap-2.5 text-slate-700 hover:bg-slate-100 transition">
+            <svg class="w-[18px] h-[18px] text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
             <span>จัดการฝ่าย / แผนก</span>
           </button>
-          <button type="button" onclick="openAddItemModal()" class="w-full px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 text-slate-700 hover:bg-slate-100 transition">
-            <svg class="w-4 h-4 text-tcc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          <button type="button" onclick="openAddItemModal()" class="w-full px-3.5 py-2.5 rounded-xl text-[13px] sm:text-sm font-semibold flex items-center gap-2.5 text-slate-700 hover:bg-slate-100 transition">
+            <svg class="w-[18px] h-[18px] text-tcc-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
             <span>เพิ่มอุปกรณ์เข้าคลัง</span>
           </button>
-          <button type="button" onclick="openSetupModal()" class="superadmin-only superadmin-hidden w-full px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 text-slate-700 hover:bg-slate-100 transition">
-            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          <button type="button" onclick="openSetupModal()" class="superadmin-only superadmin-hidden w-full px-3.5 py-2.5 rounded-xl text-[13px] sm:text-sm font-semibold flex items-center gap-2.5 text-slate-700 hover:bg-slate-100 transition">
+            <svg class="w-[18px] h-[18px] text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
             <span>Google Sheets &amp; Apps Script</span>
           </button>
         </div>
 
         <!-- Section 5: ทางลัดสลับมุมมอง -->
         <div class="pt-3 border-t border-slate-100">
-          <button type="button" onclick="switchTab('borrowTab')" class="w-full px-3 py-2 rounded-xl text-xs font-bold text-tcc-700 bg-tcc-50 hover:bg-tcc-100 border border-tcc-200 transition flex items-center justify-center gap-1.5">
+          <button type="button" onclick="switchTab('borrowTab')" class="w-full px-3.5 py-2.5 rounded-xl text-[13px] sm:text-sm font-bold text-tcc-700 bg-tcc-50 hover:bg-tcc-100 border border-tcc-200 transition flex items-center justify-center gap-1.5">
             <span>🔄 สลับไปมุมมองผู้ใช้งาน</span>
           </button>
         </div>
@@ -391,7 +391,7 @@
         <div class="bg-white p-2 sm:p-2.5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between gap-2 sm:gap-3">
           <div class="flex items-center gap-1.5 sm:gap-2.5 overflow-x-auto no-scrollbar flex-nowrap w-full">
             <!-- Mobile Toggle Button for Admin Sidebar -->
-            <button type="button" onclick="toggleAdminSidebarMobile()" class="admin-only admin-hidden lg:hidden px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold flex items-center gap-1.5 shrink-0">
+            <button type="button" onclick="toggleAdminSidebarMobile()" class="admin-only admin-hidden lg:hidden px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-[13px] sm:text-sm font-bold flex items-center gap-1.5 shrink-0">
               <span>☰ เมนูแอดมิน</span>
             </button>
 
@@ -399,47 +399,47 @@
             <div class="flex items-center gap-1.5 p-1 bg-slate-100/80 rounded-2xl border border-slate-200/70 shrink-0">
               <!-- 1. ยืมอุปกรณ์ไอที -->
               <button onclick="switchTab('borrowTab')" id="tabBtn-borrowTab" 
-                      class="user-nav-btn px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 bg-tcc-600 text-white shadow-md ring-2 ring-tcc-600/20">
+                      class="user-nav-btn px-4 py-2.5 rounded-xl text-[13px] sm:text-sm font-bold transition flex items-center gap-2 shrink-0 bg-tcc-600 text-white shadow-md ring-2 ring-tcc-600/20">
                 <span>📝</span>
                 <span>ยืมอุปกรณ์ไอที</span>
               </button>
 
               <!-- 2. แจ้งซ่อมไอที (เปิดเคส) -->
               <button onclick="switchTab('ticketCreateTab')" id="tabBtn-ticketCreateTab" 
-                      class="user-nav-btn px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 bg-white text-rose-700 border border-rose-200/70 hover:bg-rose-50 shadow-2xs">
+                      class="user-nav-btn px-4 py-2.5 rounded-xl text-[13px] sm:text-sm font-bold transition flex items-center gap-2 shrink-0 bg-white text-rose-700 border border-rose-200/70 hover:bg-rose-50 shadow-2xs">
                 <span>🛠️</span>
                 <span>แจ้งซ่อมไอที (เปิดเคส)</span>
               </button>
             </div>
 
-            <div class="hidden sm:block w-px h-6 bg-slate-200 shrink-0"></div>
+            <div class="hidden sm:block w-px h-7 bg-slate-200 shrink-0"></div>
 
             <!-- หมวดหมู่ที่ 2: ติดตามสถานะของฉัน (Personal Tracking - อยู่ใกล้กัน) -->
             <div class="flex items-center gap-1.5 p-1 bg-slate-50 rounded-2xl border border-slate-200/60 shrink-0">
               <!-- 3. ของที่ฉันยืม -->
               <button onclick="switchTab('myBorrowsTab')" id="tabBtn-myBorrowsTab" 
-                      class="user-nav-btn px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shrink-0 text-slate-600 hover:bg-white hover:text-slate-900">
+                      class="user-nav-btn px-4 py-2.5 rounded-xl text-[13px] sm:text-sm font-semibold transition flex items-center gap-2 shrink-0 text-slate-600 hover:bg-white hover:text-slate-900">
                 <span>📋</span>
                 <span>ของที่ฉันยืม</span>
-                <span id="tabBadgeMyBorrows" class="px-1.5 py-0.2 rounded-full text-[10px] bg-slate-200 text-slate-700 font-bold">0</span>
+                <span id="tabBadgeMyBorrows" class="px-2 py-0.2 rounded-full text-xs bg-slate-200 text-slate-700 font-bold">0</span>
               </button>
 
               <!-- 4. ติดตามเคสของฉัน -->
               <button onclick="switchTab('myTicketsTab')" id="tabBtn-myTicketsTab" 
-                      class="user-nav-btn px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shrink-0 text-slate-600 hover:bg-white hover:text-slate-900">
+                      class="user-nav-btn px-4 py-2.5 rounded-xl text-[13px] sm:text-sm font-semibold transition flex items-center gap-2 shrink-0 text-slate-600 hover:bg-white hover:text-slate-900">
                 <span>📬</span>
                 <span>ติดตามเคสของฉัน</span>
-                <span id="tabBadgeMyTickets" class="px-1.5 py-0.2 rounded-full text-[10px] bg-slate-200 text-slate-700 font-bold">0</span>
+                <span id="tabBadgeMyTickets" class="px-2 py-0.2 rounded-full text-xs bg-slate-200 text-slate-700 font-bold">0</span>
               </button>
             </div>
 
-            <div id="userNavKbDivider" class="hidden sm:block w-px h-6 bg-slate-200 shrink-0"></div>
+            <div id="userNavKbDivider" class="hidden sm:block w-px h-7 bg-slate-200 shrink-0"></div>
 
             <!-- หมวดหมู่ที่ 3: คลังความรู้ -->
             <div id="userNavKbWrapper" class="flex items-center shrink-0">
               <!-- 5. คลังความรู้ KB -->
               <button onclick="switchTab('kbTab')" id="tabBtn-kbTab" 
-                      class="user-nav-btn px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shrink-0 text-slate-600 hover:bg-slate-100">
+                      class="user-nav-btn px-4 py-2.5 rounded-xl text-[13px] sm:text-sm font-semibold transition flex items-center gap-2 shrink-0 text-slate-600 hover:bg-slate-100">
                 <span>💡</span>
                 <span>คลังความรู้ (KB)</span>
               </button>
@@ -5642,17 +5642,17 @@
       const badgeMyBorrows = document.getElementById("tabBadgeMyBorrows");
       if (badgeMyBorrows) {
         if (tabId === "myBorrowsTab") {
-          badgeMyBorrows.className = "px-1.5 py-0.2 rounded-full text-[10px] bg-white/20 text-white font-bold";
+          badgeMyBorrows.className = "px-2 py-0.2 rounded-full text-xs bg-white/20 text-white font-bold";
         } else {
-          badgeMyBorrows.className = "px-1.5 py-0.2 rounded-full text-[10px] bg-slate-200 text-slate-700 font-bold";
+          badgeMyBorrows.className = "px-2 py-0.2 rounded-full text-xs bg-slate-200 text-slate-700 font-bold";
         }
       }
       const badgeMyTickets = document.getElementById("tabBadgeMyTickets");
       if (badgeMyTickets) {
         if (tabId === "myTicketsTab") {
-          badgeMyTickets.className = "px-1.5 py-0.2 rounded-full text-[10px] bg-white/20 text-white font-bold";
+          badgeMyTickets.className = "px-2 py-0.2 rounded-full text-xs bg-white/20 text-white font-bold";
         } else {
-          badgeMyTickets.className = "px-1.5 py-0.2 rounded-full text-[10px] bg-slate-200 text-slate-700 font-bold";
+          badgeMyTickets.className = "px-2 py-0.2 rounded-full text-xs bg-slate-200 text-slate-700 font-bold";
         }
       }
 

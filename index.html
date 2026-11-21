@@ -1987,15 +1987,15 @@
 
                 <div class="flex flex-wrap items-center gap-4 pt-1 text-[11px]">
                   <label class="flex items-center gap-1.5 cursor-pointer font-medium text-slate-700">
-                    <input type="checkbox" id="cfgEmailNotifyRequester" onchange="handleEmailConfigFieldChange()" class="w-3.5 h-3.5 rounded text-tcc-600 cursor-pointer">
+                    <input type="checkbox" id="cfgEmailNotifyRequester" checked onchange="handleEmailConfigFieldChange(true)" class="w-3.5 h-3.5 rounded text-tcc-600 cursor-pointer">
                     <span>ส่งแจ้งผู้ยืมอุปกรณ์ / ผู้เปิดเคสอัตโนมัติ</span>
                   </label>
                   <label class="flex items-center gap-1.5 cursor-pointer font-medium text-slate-700">
-                    <input type="checkbox" id="cfgEmailNotifyAssignedAgent" onchange="handleEmailConfigFieldChange()" class="w-3.5 h-3.5 rounded text-tcc-600 cursor-pointer">
+                    <input type="checkbox" id="cfgEmailNotifyAssignedAgent" checked onchange="handleEmailConfigFieldChange(true)" class="w-3.5 h-3.5 rounded text-tcc-600 cursor-pointer">
                     <span>ส่งแจ้งเจ้าหน้าที่ผู้รับผิดชอบเคส (Assigned Agent)</span>
                   </label>
                   <label class="flex items-center gap-1.5 cursor-pointer font-medium text-slate-700">
-                    <input type="checkbox" id="cfgEmailNotifyAdminRoles" onchange="handleEmailConfigFieldChange()" class="w-3.5 h-3.5 rounded text-tcc-600 cursor-pointer">
+                    <input type="checkbox" id="cfgEmailNotifyAdminRoles" checked onchange="handleEmailConfigFieldChange(true)" class="w-3.5 h-3.5 rounded text-tcc-600 cursor-pointer">
                     <span>รวมอีเมล Admin/Super Admin ของ @thaichamber.or.th อัตโนมัติ (ยกเว้น tatitop07@gmail.com)</span>
                   </label>
                 </div>
@@ -3986,9 +3986,14 @@
         } catch (_) {}
       }
 
+      const hasExplicitNotifyPrefs = src._notifyPrefsExplicit === true;
       const out = {
         ...DEFAULT_EMAIL_CONFIG,
         ...src,
+        notifyRequester: hasExplicitNotifyPrefs ? (src.notifyRequester !== false) : true,
+        notifyAssignedAgent: hasExplicitNotifyPrefs ? (src.notifyAssignedAgent !== false) : true,
+        notifyAdminRoles: hasExplicitNotifyPrefs ? (src.notifyAdminRoles !== false) : true,
+        _notifyPrefsExplicit: hasExplicitNotifyPrefs,
         transportMode: mode,
         senderName: String(src.senderName || DEFAULT_EMAIL_CONFIG.senderName).trim() || DEFAULT_EMAIL_CONFIG.senderName,
         senderEmail: effectiveSender,
@@ -5127,7 +5132,7 @@
       selectEmailTemplateEvent(state.selectedEmailTemplateEvent || "BORROW_CREATED");
     }
 
-    function handleEmailConfigFieldChange() {
+    function handleEmailConfigFieldChange(explicitNotifyToggle = false) {
       if (!state.emailConfig) state.emailConfig = sanitizeEmailConfig(DEFAULT_EMAIL_CONFIG);
       if (!state._emailSettingsDomInitialized) {
         renderEmailSettingsTab();
@@ -5180,9 +5185,18 @@
       state.emailConfig.senderEmail = aliasVal;
       state.emailConfig.senderAlias = aliasVal;
       state.emailConfig.replyTo = replyVal;
-      state.emailConfig.notifyRequester = !!document.getElementById("cfgEmailNotifyRequester")?.checked;
-      state.emailConfig.notifyAssignedAgent = !!document.getElementById("cfgEmailNotifyAssignedAgent")?.checked;
-      state.emailConfig.notifyAdminRoles = !!document.getElementById("cfgEmailNotifyAdminRoles")?.checked;
+      if (explicitNotifyToggle === true) {
+        state.emailConfig._notifyPrefsExplicit = true;
+      }
+      if (state.emailConfig._notifyPrefsExplicit === true) {
+        state.emailConfig.notifyRequester = !!document.getElementById("cfgEmailNotifyRequester")?.checked;
+        state.emailConfig.notifyAssignedAgent = !!document.getElementById("cfgEmailNotifyAssignedAgent")?.checked;
+        state.emailConfig.notifyAdminRoles = !!document.getElementById("cfgEmailNotifyAdminRoles")?.checked;
+      } else {
+        state.emailConfig.notifyRequester = true;
+        state.emailConfig.notifyAssignedAgent = true;
+        state.emailConfig.notifyAdminRoles = true;
+      }
       saveEmailConfigToStorage();
       const badge = document.getElementById("cfgEmailSyncStatusBadge");
       if (badge) badge.innerText = "● บันทึกในเบราว์เซอร์แล้ว (กดบันทึกทั้งหมดเพื่อซิงค์ฐานข้อมูล)";
@@ -12005,6 +12019,11 @@ function handleSaveEmailSettings(data) {
     cleanCfg.senderEmail = "itsupport@thaichamber.or.th";
     if (!cleanCfg.senderAlias || cleanCfg.senderAlias === "tatitop07@gmail.com") cleanCfg.senderAlias = "itsupport@thaichamber.or.th";
     if (!cleanCfg.replyTo || cleanCfg.replyTo === "tatitop07@gmail.com") cleanCfg.replyTo = "itsupport@thaichamber.or.th";
+    if (cleanCfg._notifyPrefsExplicit !== true) {
+      cleanCfg.notifyRequester = true;
+      cleanCfg.notifyAssignedAgent = true;
+      cleanCfg.notifyAdminRoles = true;
+    }
     updates["emailConfig"] = JSON.stringify(cleanCfg);
   }
   if (data.emailTemplates !== undefined) updates["emailTemplates"] = JSON.stringify(data.emailTemplates);

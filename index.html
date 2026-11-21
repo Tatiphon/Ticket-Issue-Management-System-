@@ -3413,8 +3413,17 @@
       };
     }
 
+    function normalizeEmailDomainTypos(rawEmail) {
+      const clean = String(rawEmail || "").trim();
+      if (!clean || !clean.includes("@")) return clean;
+      return clean
+        .replace(/@thaichamber\.ro\.th$/i, "@thaichamber.or.th")
+        .replace(/@thaichamber\.ot\.th$/i, "@thaichamber.or.th")
+        .replace(/@thaichamber\.or\.ht$/i, "@thaichamber.or.th");
+    }
+
     function normalizeUserRole(u = {}) {
-      const email = String(u.email || "").trim();
+      const email = normalizeEmailDomainTypos(String(u.email || "").trim());
       const rawFull = u.name || [u.first_name, u.last_name].filter(Boolean).join(" ") || (email ? email.split("@")[0] : "");
       const parsed = splitFullName(rawFull, u.first_name, u.last_name);
       return {
@@ -4396,15 +4405,15 @@
     let lastFocusedTemplateFieldId = "tplBodyInput";
 
     function resolveUserEmailAddress(contactOrName, fallbackName = "") {
-      const raw = String(contactOrName || "").trim();
+      const raw = normalizeEmailDomainTypos(String(contactOrName || "").trim());
       const emailMatch = raw.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
       if (emailMatch) {
-        const candidate = emailMatch[0].toLowerCase();
+        const candidate = normalizeEmailDomainTypos(emailMatch[0].toLowerCase());
         return isBlockedNotificationEmail(candidate) ? "" : candidate;
       }
       const matched = findMatchedUserInDatabase(raw) || findMatchedUserInDatabase(fallbackName);
       if (matched && matched.email && matched.email.includes("@")) {
-        const candidate = matched.email.trim().toLowerCase();
+        const candidate = normalizeEmailDomainTypos(matched.email.trim().toLowerCase());
         return isBlockedNotificationEmail(candidate) ? "" : candidate;
       }
       return "";
@@ -11829,14 +11838,20 @@ function sendNotificationEmailGAS(toList, subject, bodyText, senderName, replyTo
 
   try {
     var valid = [];
+    var fixDomainTypo = function(em) {
+      return String(em || "").trim().toLowerCase()
+        .replace(/@thaichamber\\.ro\\.th$/i, "@thaichamber.or.th")
+        .replace(/@thaichamber\\.ot\\.th$/i, "@thaichamber.or.th")
+        .replace(/@thaichamber\\.or\\.ht$/i, "@thaichamber.or.th");
+    };
     if (Array.isArray(toList)) {
       toList.forEach(function(e) {
-        var clean = String(e || "").trim().toLowerCase();
+        var clean = fixDomainTypo(e);
         if (clean && clean.indexOf("@") !== -1 && !isBlockedGasEmail(clean) && valid.indexOf(clean) === -1) valid.push(clean);
       });
     } else if (typeof toList === "string") {
       toList.split(",").forEach(function(e) {
-        var clean = String(e || "").trim().toLowerCase();
+        var clean = fixDomainTypo(e);
         if (clean && clean.indexOf("@") !== -1 && !isBlockedGasEmail(clean) && valid.indexOf(clean) === -1) valid.push(clean);
       });
     }

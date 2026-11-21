@@ -389,7 +389,14 @@ module.exports = async function handler(req, res) {
   const recipients = Array.from(
     new Set(
       rawTo
-        .map((r) => String(r || "").trim().toLowerCase())
+        .map((r) =>
+          String(r || "")
+            .trim()
+            .toLowerCase()
+            .replace(/@thaichamber\.ro\.th$/i, "@thaichamber.or.th")
+            .replace(/@thaichamber\.ot\.th$/i, "@thaichamber.or.th")
+            .replace(/@thaichamber\.or\.ht$/i, "@thaichamber.or.th")
+        )
         .filter((r) => r.includes("@") && !isBlockedEmail(r))
     )
   );

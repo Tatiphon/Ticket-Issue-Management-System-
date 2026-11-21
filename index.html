@@ -4715,11 +4715,26 @@
 
         try {
           if (cfg.transportMode === "smtp" || (cfg.transportMode === "webhook" && cfg.webhookUrl)) {
-            apiRes = await sendViaBuiltInSmtpEndpoint(emailPayload, cfg);
-            if ((!apiRes || !apiRes.sent) && state.isLive) {
-              const gasFallbackRes = await callAPI("sendEmailNotification", emailPayload, true);
-              if (gasFallbackRes && !gasFallbackRes.simulated && gasFallbackRes.status === "success" && gasFallbackRes.sent && !isBlockedNotificationEmail(gasFallbackRes.senderEmail)) {
-                apiRes = gasFallbackRes;
+            // ผู้ใช้ใหม่ยังไม่มีรหัส SMTP ในเบราว์เซอร์ -> ส่งผ่าน Google Apps Script (ใช้รหัสที่ Admin บันทึกไว้ฝั่งเซิร์ฟเวอร์) ก่อน
+            const hasLocalSmtpPass = !!(getSessionSmtpPass() || cfg.smtpPass);
+            if (!hasLocalSmtpPass && state.isLive) {
+              const gasFirstRes = await callAPI("sendEmailNotification", emailPayload, true);
+              if (gasFirstRes && !gasFirstRes.simulated && gasFirstRes.status === "success" && gasFirstRes.sent && !isBlockedNotificationEmail(gasFirstRes.senderEmail)) {
+                apiRes = gasFirstRes;
+              } else {
+                apiRes = {
+                  status: "error",
+                  sent: false,
+                  error: (gasFirstRes && (gasFirstRes.error || gasFirstRes.message)) || "ยังไม่ได้ตั้งค่ารหัสผ่าน SMTP บนเซิร์ฟเวอร์ (Admin ต้องกด 'บันทึกการตั้งค่าอีเมล' พร้อม App Password หนึ่งครั้ง และ Deploy Apps Script เวอร์ชันล่าสุด)"
+                };
+              }
+            } else {
+              apiRes = await sendViaBuiltInSmtpEndpoint(emailPayload, cfg);
+              if ((!apiRes || !apiRes.sent) && state.isLive) {
+                const gasFallbackRes = await callAPI("sendEmailNotification", emailPayload, true);
+                if (gasFallbackRes && !gasFallbackRes.simulated && gasFallbackRes.status === "success" && gasFallbackRes.sent && !isBlockedNotificationEmail(gasFallbackRes.senderEmail)) {
+                  apiRes = gasFallbackRes;
+                }
               }
             }
           } else {
@@ -11862,6 +11877,7 @@ function sendNotificationEmailGAS(toList, subject, bodyText, senderName, replyTo
     }
 
     // Fallback to Server-Side SMTP Relay if configured in ScriptProperties
+    var relayFailMsg = "";
     try {
       var props = PropertiesService.getScriptProperties();
       var savedPass = props.getProperty("TCC_SMTP_PASS") || "";
@@ -11888,6 +11904,9 @@ function sendNotificationEmailGAS(toList, subject, bodyText, senderName, replyTo
         if (relayJson && relayJson.status === "success" && relayJson.sent) {
           return { ok: true, senderEmail: targetSender, remainingQuota: null, method: "SMTP Relay", sentTo: valid };
         }
+        relayFailMsg = (relayJson && (relayJson.error || relayJson.message)) || ("Relay HTTP " + fetchRes.getResponseCode());
+      } else {
+        relayFailMsg = !savedPass ? "ยังไม่ได้บันทึก SMTP App Password ใน Apps Script (Admin ต้องกดบันทึกการตั้งค่าอีเมลใหม่)" : "ไม่พบ Relay URL";
       }
     } catch (relayErr) {
       Logger.log("Relay error: " + relayErr);
@@ -11897,7 +11916,7 @@ function sendNotificationEmailGAS(toList, subject, bodyText, senderName, replyTo
       ok: false,
       blockedSender: ownerEmail || "tatitop07@gmail.com",
       senderEmail: targetSender,
-      error: "ระบบระงับการส่งจาก " + (ownerEmail || "tatitop07@gmail.com") + " (ต้องส่งจาก " + targetSender + " เท่านั้น กรุณาตั้งค่า Send mail as หรือใช้โหมด SMTP)"
+      error: (relayFailMsg ? relayFailMsg + " | " : "") + "ระบบระงับการส่งจาก " + (ownerEmail || "tatitop07@gmail.com") + " (ต้องส่งจาก " + targetSender + " เท่านั้น กรุณาตั้งค่า Send mail as หรือใช้โหมด SMTP)"
     };
   } catch (err) {
     Logger.log("Email error: " + err);

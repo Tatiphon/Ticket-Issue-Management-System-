@@ -5682,6 +5682,7 @@
 
       if (user) {
         autoFillUserFormsFromDatabase(true);
+        refreshData(false);
       }
       const targetTab = getTargetTabFromUrl() || 'borrowTab';
       switchTab(targetTab);
@@ -7232,6 +7233,28 @@
       })();
     }
 
+    function normalizeDepartmentForComparison(dept) {
+      return String(dept || "")
+        .trim()
+        .toLowerCase()
+        .replace(/^\d+\s*[.)-]?\s*/, "")
+        .replace(/\s+/g, " ");
+    }
+
+    function isSameDepartmentName(deptA, deptB) {
+      const a = normalizeDepartmentForComparison(deptA);
+      const b = normalizeDepartmentForComparison(deptB);
+      if (!a || !b) return false;
+      return a === b;
+    }
+
+    function getCurrentUserEffectiveDept(user) {
+      if (!user) return "";
+      if (user.dept && String(user.dept).trim()) return String(user.dept).trim();
+      const matched = findMatchedUserInDatabase(user.email) || findMatchedUserInDatabase(user.name);
+      return matched && matched.dept ? String(matched.dept).trim() : "";
+    }
+
     function renderMyTicketsList() {
       const container = document.getElementById("myTicketsListContainer");
       const badge = document.getElementById("tabBadgeMyTickets");
@@ -7239,20 +7262,31 @@
 
       const user = state.currentUser;
       const filterStatus = document.getElementById("filterMyTicketStatus")?.value;
-      const uEmail = (user?.email || "").toLowerCase().trim();
+      const uEmail = normalizeEmailDomainTypos(user?.email || "").toLowerCase().trim();
       const uName = (user?.name || "").trim();
+      const uDept = getCurrentUserEffectiveDept(user);
+
+      const subtextEl = document.getElementById("myTicketsDeptSubtext");
+      if (subtextEl) {
+        subtextEl.innerHTML = uDept
+          ? `ตรวจสอบความคืบหน้า พูดคุยสอบถาม และช่วยกันติดตามสถานะเคสของคุณและเพื่อนร่วมสังกัด <b class="text-tcc-700">${uDept}</b>`
+          : `ตรวจสอบความคืบหน้า พูดคุยสอบถาม และช่วยกันติดตามสถานะเคสภายในฝ่าย/แผนกเดียวกัน`;
+      }
+
       const myTickets = state.tickets.filter(t => {
-        const contact = String(t.reporter_contact || "").toLowerCase();
+        const contact = normalizeEmailDomainTypos(t.reporter_contact || "").toLowerCase();
         const repName = String(t.reporter_name || "");
+        const repDept = String(t.reporter_dept || "").trim();
         const isMine = !!user && ((uEmail && contact.includes(uEmail)) || (uName && repName.includes(uName)));
+        const isSameDept = !!user && !!uDept && isSameDepartmentName(uDept, repDept);
         const matchStatus = !filterStatus || t.status === filterStatus;
-        return isMine && matchStatus;
+        return (isMine || isSameDept) && matchStatus;
       });
 
       if (badge) badge.innerText = myTickets.length;
 
       if (myTickets.length === 0) {
-        container.innerHTML = '<p class="text-xs text-slate-400 py-10 text-center">ไม่พบเคสแจ้งปัญหาของคุณ 🎉</p>';
+        container.innerHTML = '<p class="text-xs text-slate-400 py-10 text-center">ไม่พบเคสแจ้งปัญหาของคุณหรือในฝ่าย/แผนกเดียวกัน 🎉</p>';
         return;
       }
 
@@ -7261,6 +7295,13 @@
         if (t.status === "In Progress") statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800">กำลังดำเนินการ</span>`;
         if (t.status === "Resolved") statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">แก้ไขเสร็จแล้ว</span>`;
         if (t.status === "Closed") statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-200 text-slate-700">ปิดเคสแล้ว</span>`;
+
+        const contact = normalizeEmailDomainTypos(t.reporter_contact || "").toLowerCase();
+        const repName = String(t.reporter_name || "");
+        const isDirectMine = !!user && ((uEmail && contact.includes(uEmail)) || (uName && repName.includes(uName)));
+        const ownerBadge = isDirectMine
+          ? `<span class="px-2 py-0.2 rounded-full text-[10px] font-bold bg-tcc-50 text-tcc-700 border border-tcc-200">ของฉัน</span>`
+          : `<span class="px-2 py-0.2 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">ร่วมฝ่าย (${t.reporter_name || '-'})</span>`;
 
         const sysBadge = t.system_name
           ? `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">🌐 ${t.system_name}</span>`
@@ -7276,6 +7317,7 @@
               <div class="flex flex-wrap items-center gap-2">
                 <span class="font-mono font-bold text-xs text-slate-500">${t.ticket_id}</span>
                 <span class="font-bold text-slate-900 text-sm">${t.title}</span>
+                ${ownerBadge}
                 <span class="px-2 py-0.2 rounded text-[10px] font-semibold bg-slate-100 text-slate-600">${t.category}</span>
                 ${sysBadge}
                 ${attachBadge}
@@ -9945,7 +9987,7 @@
 
       const user = state.currentUser;
       const q = (document.getElementById("searchMyBorrowsInput")?.value || "").toLowerCase().trim();
-      const uEmail = (user?.email || "").toLowerCase().trim();
+      const uEmail = normalizeEmailDomainTypos(user?.email || "").toLowerCase().trim();
       const uName = (user?.name || "").trim();
       const uDept = getCurrentUserEffectiveDept(user);
 
@@ -9957,7 +9999,7 @@
       }
 
       const myBorrows = state.activeBorrows.filter(b => {
-        const contact = String(b.borrower_contact || "").toLowerCase();
+        const contact = normalizeEmailDomainTypos(b.borrower_contact || "").toLowerCase();
         const bName = String(b.borrower_name || "");
         const bDept = String(b.borrower_dept || "").trim();
         const isMine = !!user && ((uEmail && contact.includes(uEmail)) || (uName && bName.includes(uName)));
@@ -13700,6 +13742,7 @@ function handleDeleteUserRole(data) {
           }
 
           syncItemStatuses();
+          populateUserAutocompleteDatalists();
           renderAll();
           renderEmailSettingsTab();
           autoFillUserFormsFromDatabase(false);
@@ -13712,6 +13755,46 @@ function handleDeleteUserRole(data) {
         state.isRefreshing = false;
         reloadIcons.forEach(icon => icon.classList.remove("animate-spin"));
       }
+    }
+
+    function isUserActivelyEditingModal() {
+      const modalIds = [
+        "editItemModal",
+        "addItemModal",
+        "ticketAdminActionModal",
+        "roleModal",
+        "editHistoryModal",
+        "deptManageModal",
+        "addKbModal"
+      ];
+      return modalIds.some(id => {
+        const el = document.getElementById(id);
+        return el && !el.classList.contains("hidden");
+      });
+    }
+
+    function startRealtimeAutoSync() {
+      if (state.autoReloadTimer) {
+        clearInterval(state.autoReloadTimer);
+      }
+      // Poll Supabase every 20 seconds when tab is visible and no edit modal is open
+      state.autoReloadTimer = setInterval(() => {
+        if (document.visibilityState === "visible" && !state.useDemoMode && !state.isRefreshing && !isUserActivelyEditingModal()) {
+          refreshData(false);
+        }
+      }, 20000);
+
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible" && !state.useDemoMode && !state.isRefreshing) {
+          refreshData(false);
+        }
+      });
+
+      window.addEventListener("focus", () => {
+        if (!state.useDemoMode && !state.isRefreshing && !isUserActivelyEditingModal()) {
+          refreshData(false);
+        }
+      });
     }
 
     function filterActiveBorrows() {
@@ -13936,7 +14019,10 @@ function handleDeleteUserRole(data) {
       updateEmailLogBadges();
       const initialTab = getTargetTabFromUrl() || 'borrowTab';
       switchTab(initialTab);
-      setTimeout(() => refreshData(false), 500);
+
+      // Fetch latest database records immediately on load and start real-time auto-sync
+      refreshData(false);
+      startRealtimeAutoSync();
 
       const dropZone = document.getElementById("ticketFileDropZone");
       if (dropZone) {
@@ -13974,11 +14060,6 @@ function handleDeleteUserRole(data) {
           }
         }
       });
-    });
-  </script>
-</body>
-</html>
-
     });
   </script>
 </body>

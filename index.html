@@ -307,6 +307,17 @@
 
   <!-- MAIN APP CONTAINER -->
   <main id="mainAppContainer" class="hidden w-full max-w-[1920px] mx-auto px-3 sm:px-5 lg:px-6 xl:px-8 py-4 sm:py-6 flex-1">
+    <!-- DATABASE INITIAL LOADING BANNER -->
+    <div id="dbInitialLoadingBanner" class="mb-4 p-3.5 px-4 rounded-2xl bg-sky-50 border border-sky-200 flex items-center justify-between gap-3 shadow-xs animate-pulse">
+      <div class="flex items-center gap-3 min-w-0">
+        <div class="w-5 h-5 border-2 border-tcc-600 border-t-transparent rounded-full animate-spin shrink-0"></div>
+        <div class="min-w-0">
+          <p class="text-xs sm:text-sm font-bold text-tcc-900 truncate">กำลังซิงค์ข้อมูลล่าสุดจากฐานข้อมูลกลาง (Supabase Database)...</p>
+          <p class="text-[11px] text-sky-700 truncate">กรุณารอสักครู่ ระบบกำลังดึงข้อมูลอุปกรณ์ รายการยืม-คืน เคสแจ้งซ่อม และรายชื่อผู้ใช้งานจริงจากฐานข้อมูล</p>
+        </div>
+      </div>
+      <span class="hidden sm:inline-flex px-2.5 py-1 rounded-full bg-white text-tcc-700 border border-sky-200 text-[11px] font-bold shrink-0">Loading Database...</span>
+    </div>
     
     <!-- MAIN LAYOUT: LEFT ADMIN SIDEBAR + RIGHT CONTENT AREA -->
     <div class="flex flex-col lg:flex-row gap-4 xl:gap-6 items-start w-full">
@@ -4144,6 +4155,7 @@
           if (Array.isArray(parsed)) return parsed;
         }
       } catch (e) {}
+      if (!initialDemoMode) return [];
       return [
         {
           id: "EML-INIT-1",
@@ -4172,15 +4184,16 @@
       webAppUrl: initialUrl,
       useDemoMode: initialDemoMode,
       isLive: !initialDemoMode,
-      items: JSON.parse(JSON.stringify(INITIAL_DEMO_ITEMS)),
-      activeBorrows: getInitialDemoBorrows(),
-      allLogs: getInitialDemoLogs(),
-      tickets: JSON.parse(JSON.stringify(INITIAL_DEMO_TICKETS)),
-      knowledgeBase: JSON.parse(JSON.stringify(INITIAL_DEMO_KB)),
-      categories: [...INITIAL_DEMO_CATEGORIES],
-      ticketCategories: loadSavedTicketCategories(),
-      internalSystems: loadSavedInternalSystems(),
-      departments: [...INITIAL_DEMO_DEPTS],
+      isInitialLoading: !initialDemoMode,
+      items: initialDemoMode ? JSON.parse(JSON.stringify(INITIAL_DEMO_ITEMS)) : [],
+      activeBorrows: initialDemoMode ? getInitialDemoBorrows() : [],
+      allLogs: initialDemoMode ? getInitialDemoLogs() : [],
+      tickets: initialDemoMode ? JSON.parse(JSON.stringify(INITIAL_DEMO_TICKETS)) : [],
+      knowledgeBase: initialDemoMode ? JSON.parse(JSON.stringify(INITIAL_DEMO_KB)) : [],
+      categories: initialDemoMode ? [...INITIAL_DEMO_CATEGORIES] : [],
+      ticketCategories: initialDemoMode ? loadSavedTicketCategories() : [],
+      internalSystems: initialDemoMode ? loadSavedInternalSystems() : [],
+      departments: initialDemoMode ? [...INITIAL_DEMO_DEPTS] : [],
       driveFolderId: localStorage.getItem(STORAGE_KEY_DRIVE_FOLDER) || "",
       selectedBorrowItems: [],
       selectedReturnTransIds: [],
@@ -4202,7 +4215,7 @@
       isRefreshing: false,
       autoReloadTimer: null,
       currentUser: null,
-      userRoles: loadSavedUserRoles(),
+      userRoles: initialDemoMode ? loadSavedUserRoles() : mergeWithBuiltinRoles([]),
       kbEnabled: localStorage.getItem(STORAGE_KEY_KB_ENABLED) !== "false",
       emailNotifyEnabled: localStorage.getItem(STORAGE_KEY_EMAIL_ENABLED) !== "false",
       emailConfig: loadSavedEmailConfig(),
@@ -4210,6 +4223,39 @@
       selectedEmailTemplateEvent: "BORROW_CREATED",
       emailLogs: loadSavedEmailLogs()
     };
+
+    function getDatabaseLoadingBlockHtml(message = "กำลังโหลดข้อมูลจากฐานข้อมูล...") {
+      return `
+        <div class="py-10 px-4 flex flex-col items-center justify-center gap-2.5 text-center">
+          <div class="w-7 h-7 border-3 border-tcc-600 border-t-transparent rounded-full animate-spin"></div>
+          <p class="text-xs font-bold text-tcc-800">${message}</p>
+          <p class="text-[11px] text-slate-400">กำลังซิงค์ข้อมูลจริงจากฐานข้อมูลกลาง Supabase...</p>
+        </div>
+      `;
+    }
+
+    function getDatabaseLoadingRowHtml(colspan = 6, message = "กำลังโหลดข้อมูลจากฐานข้อมูล...") {
+      return `
+        <tr>
+          <td colspan="${colspan}" class="py-10 px-4 text-center">
+            <div class="inline-flex flex-col items-center justify-center gap-2">
+              <div class="w-6 h-6 border-2 border-tcc-600 border-t-transparent rounded-full animate-spin"></div>
+              <span class="text-xs font-bold text-tcc-800">${message}</span>
+            </div>
+          </td>
+        </tr>
+      `;
+    }
+
+    function updateInitialLoadingBannerVisibility() {
+      const banner = document.getElementById("dbInitialLoadingBanner");
+      if (!banner) return;
+      if (state.isInitialLoading) {
+        banner.classList.remove("hidden");
+      } else {
+        banner.classList.add("hidden");
+      }
+    }
 
     /* ============================================================================
      * REQUIREMENT 1: DATABASE USER AUTO-MATCHING (ชื่อ - อีเมล - ฝ่าย/แผนก อัตโนมัติ)
@@ -6003,6 +6049,24 @@
         }
       }
 
+      if (state.isInitialLoading) {
+        ["kpiActiveTickets", "kpiSlaComplianceRate", "kpiMttrHours", "kpiCsatAverage", "kpiCurrentActiveBorrows", "kpiOverdueCount"].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.innerText = "...";
+        });
+        const kpiCsatCount = document.getElementById("kpiCsatCount");
+        if (kpiCsatCount) kpiCsatCount.innerText = "กำลังโหลดข้อมูล...";
+        const kpiTotalItemsSub = document.getElementById("kpiTotalItemsSub");
+        if (kpiTotalItemsSub) kpiTotalItemsSub.innerText = "กำลังโหลดข้อมูล...";
+        const catContainer = document.getElementById("categoryProgressContainer");
+        if (catContainer) catContainer.innerHTML = getDatabaseLoadingBlockHtml("กำลังโหลดสถิติหมวดหมู่เคสแจ้งซ่อม...");
+        const topDeptTbody = document.getElementById("topDeptTableBody");
+        if (topDeptTbody) topDeptTbody.innerHTML = getDatabaseLoadingRowHtml(3, "กำลังโหลดสถิติฝ่าย/แผนก...");
+        const watchlistContainer = document.getElementById("slaWatchlistContainer");
+        if (watchlistContainer) watchlistContainer.innerHTML = getDatabaseLoadingBlockHtml("กำลังโหลดรายการเฝ้าระวัง SLA...");
+        return;
+      }
+
       const selectedYear = yearSelect ? parseInt(yearSelect.value, 10) : currentYear;
 
       const activeTickets = state.tickets.filter(t => t.status === "Open" || t.status === "In Progress");
@@ -7491,6 +7555,12 @@
       const badge = document.getElementById("tabBadgeMyTickets");
       if (!container) return;
 
+      if (state.isInitialLoading) {
+        if (badge) badge.innerText = "...";
+        container.innerHTML = getDatabaseLoadingBlockHtml("กำลังโหลดรายการเคสแจ้งซ่อมของคุณและฝ่าย/แผนก...");
+        return;
+      }
+
       const user = state.currentUser;
       const filterStatus = document.getElementById("filterMyTicketStatus")?.value;
       const uEmail = normalizeEmailDomainTypos(user?.email || "").toLowerCase().trim();
@@ -7596,7 +7666,7 @@
       const catFilterEl = document.getElementById("adminTicketFilterCategory");
       if (catFilterEl) {
         const curCat = catFilterEl.value;
-        const cats = state.ticketCategories || INITIAL_DEMO_TICKET_CATEGORIES;
+        const cats = state.ticketCategories || [];
         catFilterEl.innerHTML = '<option value="">หมวดหมู่ทั้งหมด</option>' + cats.map(c => `<option value="${escapeQuotes(c)}">${c}</option>`).join("");
         if (curCat && cats.includes(curCat)) catFilterEl.value = curCat;
       }
@@ -7604,7 +7674,7 @@
       const sysFilterEl = document.getElementById("adminTicketFilterSystem");
       if (sysFilterEl) {
         const curSys = sysFilterEl.value;
-        const sysSet = new Set(state.internalSystems || INITIAL_DEMO_INTERNAL_SYSTEMS || []);
+        const sysSet = new Set(state.internalSystems || []);
         (state.tickets || []).forEach(t => {
           const sn = String(t.system_name || "").trim();
           if (sn) sysSet.add(sn);
@@ -7620,6 +7690,23 @@
         const admins = (state.userRoles || []).filter(r => r.role === "admin" || r.role === "superadmin");
         agentFilterEl.innerHTML = '<option value="">เจ้าหน้าที่ทั้งหมด</option>' + admins.map(a => `<option value="${escapeQuotes(a.email)}">${a.name} (${a.email})</option>`).join("") + '<option value="ยังไม่มอบหมาย">ยังไม่มอบหมาย</option>';
         if (curAgent) agentFilterEl.value = curAgent;
+      }
+
+      const columns = ["Open", "InProgress", "PendingUser", "Resolved", "Closed"];
+      const statusMap = { Open: "Open", InProgress: "In Progress", PendingUser: "Pending User", Resolved: "Resolved", Closed: "Closed" };
+      const badge = document.getElementById("tabBadgeAdminTickets") || document.getElementById("sidebarBadgeTickets");
+      const tbody = document.getElementById("adminTicketTableBody");
+
+      if (state.isInitialLoading) {
+        if (badge) badge.innerText = "...";
+        columns.forEach(col => {
+          const countEl = document.getElementById(`kanbanCount-${col}`);
+          if (countEl) countEl.innerText = "...";
+          const colEl = document.getElementById(`kanbanColumn-${col}`);
+          if (colEl) colEl.innerHTML = getDatabaseLoadingBlockHtml("กำลังโหลดเคส...");
+        });
+        if (tbody) tbody.innerHTML = getDatabaseLoadingRowHtml(11, "กำลังโหลดข้อมูลเคสแจ้งซ่อมจากฐานข้อมูล...");
+        return;
       }
 
       const q = (document.getElementById("adminTicketSearchInput")?.value || "").toLowerCase().trim();
@@ -7642,11 +7729,7 @@
         return matchQ && matchCat && matchSys && matchP && matchA && matchS;
       });
 
-      const badge = document.getElementById("tabBadgeAdminTickets") || document.getElementById("sidebarBadgeTickets");
       if (badge) badge.innerText = filtered.length;
-
-      const columns = ["Open", "InProgress", "PendingUser", "Resolved", "Closed"];
-      const statusMap = { Open: "Open", InProgress: "In Progress", PendingUser: "Pending User", Resolved: "Resolved", Closed: "Closed" };
 
       columns.forEach(col => {
         const realStatus = statusMap[col];
@@ -7702,9 +7785,11 @@
         }
       });
 
-      const tbody = document.getElementById("adminTicketTableBody");
       if (tbody) {
-        tbody.innerHTML = filtered.map(t => {
+        if (filtered.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="11" class="py-8 text-center text-slate-400 text-xs">ไม่พบรายการเคสแจ้งซ่อมที่ตรงกับเงื่อนไข</td></tr>';
+        } else {
+          tbody.innerHTML = filtered.map(t => {
           const agentShort = t.assigned_agent && t.assigned_agent.includes("@") ? t.assigned_agent.split("@")[0] : (t.assigned_agent || "-");
           const catOrSys = t.system_name ? `🌐 ${t.system_name}` : (t.category || "-");
           const sysCellHtml = t.system_name
@@ -7736,7 +7821,8 @@
             </td>
           </tr>
         `;
-        }).join("");
+          }).join("");
+        }
       }
     }
 
@@ -8639,6 +8725,11 @@
       const q = (document.getElementById("kbSearchInput")?.value || "").toLowerCase().trim();
       if (!container) return;
 
+      if (state.isInitialLoading) {
+        container.innerHTML = `<div class="col-span-full">${getDatabaseLoadingBlockHtml("กำลังโหลดบทความคลังความรู้ไอทีจากฐานข้อมูล...")}</div>`;
+        return;
+      }
+
       const user = state.currentUser;
       const isAdmin = user && (user.role === "admin" || user.role === "superadmin");
 
@@ -8793,6 +8884,11 @@
     function openKbQuickSelectModal() {
       const list = document.getElementById("quickKbOptionsList");
       if (!list) return;
+      if (state.isInitialLoading) {
+        list.innerHTML = getDatabaseLoadingBlockHtml("กำลังโหลดบทความคลังความรู้...");
+        document.getElementById("quickKbModal").classList.remove("hidden");
+        return;
+      }
       const enabledArticles = state.knowledgeBase.filter(k => isKbArticleEnabled(k));
       if (enabledArticles.length === 0) {
         list.innerHTML = '<p class="text-xs text-slate-400 py-4 text-center">ไม่มีบทความคลังความรู้ที่เปิดใช้งานอยู่</p>';
@@ -9151,6 +9247,11 @@
       const container = document.getElementById("searchableItemOptionsContainer");
       if (!container) return;
 
+      if (state.isInitialLoading) {
+        container.innerHTML = getDatabaseLoadingBlockHtml("กำลังโหลดรายการอุปกรณ์จากฐานข้อมูล...");
+        return;
+      }
+
       const avail = state.items.filter(i => isItemAvailable(i) && !state.selectedBorrowItems.includes(i.item_id));
       const filtered = avail.filter(i => !q || safeLower(i.item_id).includes(q) || safeLower(i.item_name).includes(q) || safeLower(i.category).includes(q));
 
@@ -9248,7 +9349,10 @@
       const roleDepts = (state.userRoles || []).map(u => stripDepartmentNumberPrefix(u.dept || "")).filter(Boolean);
       const mergedDepts = Array.from(new Set([...baseDepts, ...roleDepts]));
 
-      const optionsHtml = ['<option value="">-- กรุณาเลือกฝ่าย / แผนก --</option>']
+      const placeholderText = (state.isInitialLoading && mergedDepts.length === 0)
+        ? "⏳ กำลังโหลดรายชื่อฝ่าย / แผนกจากฐานข้อมูล..."
+        : "-- กรุณาเลือกฝ่าย / แผนก --";
+      const optionsHtml = [`<option value="">${placeholderText}</option>`]
         .concat(mergedDepts.map(d => `<option value="${escapeQuotes(d)}">${d}</option>`))
         .join('');
 
@@ -9292,31 +9396,42 @@
     }
 
     function renderTicketCategorySelects() {
-      const cats = state.ticketCategories || INITIAL_DEMO_TICKET_CATEGORIES;
+      const cats = Array.isArray(state.ticketCategories) ? state.ticketCategories : [];
       const tktCat = document.getElementById("ticketCategory");
       if (tktCat) {
         const cur = tktCat.value;
-        tktCat.innerHTML = cats.map(c => `<option value="${escapeQuotes(c)}">${c}</option>`).join('');
-        if (cur && cats.includes(cur)) tktCat.value = cur;
+        if (state.isInitialLoading && cats.length === 0) {
+          tktCat.innerHTML = '<option value="">⏳ กำลังโหลดหมวดหมู่ปัญหาจากฐานข้อมูล...</option>';
+        } else {
+          tktCat.innerHTML = '<option value="">-- เลือกหมวดหมู่งาน --</option>' + cats.map(c => `<option value="${escapeQuotes(c)}">${c}</option>`).join('');
+          if (cur && cats.includes(cur)) tktCat.value = cur;
+        }
         handleTicketCategoryChange(tktCat.value);
       }
 
       const kbCat = document.getElementById("inputKbCategory");
       if (kbCat) {
         const cur = kbCat.value;
-        kbCat.innerHTML = cats.map(c => `<option value="${escapeQuotes(c)}">${c}</option>`).join('');
-        if (cur && cats.includes(cur)) kbCat.value = cur;
+        if (state.isInitialLoading && cats.length === 0) {
+          kbCat.innerHTML = '<option value="">⏳ กำลังโหลดหมวดหมู่จากฐานข้อมูล...</option>';
+        } else {
+          kbCat.innerHTML = cats.map(c => `<option value="${escapeQuotes(c)}">${c}</option>`).join('');
+          if (cur && cats.includes(cur)) kbCat.value = cur;
+        }
       }
 
       renderInternalSystemSelects();
     }
 
     function renderInternalSystemSelects() {
-      const systems = state.internalSystems || INITIAL_DEMO_INTERNAL_SYSTEMS;
+      const systems = Array.isArray(state.internalSystems) ? state.internalSystems : [];
       const sysEl = document.getElementById("ticketSystemName");
       if (sysEl) {
         const cur = sysEl.value;
-        sysEl.innerHTML = '<option value="">-- กรุณาเลือกชื่อระบบสารสนเทศ / เว็บไซต์ --</option>' +
+        const placeholder = (state.isInitialLoading && systems.length === 0)
+          ? "⏳ กำลังโหลดรายชื่อระบบสารสนเทศจากฐานข้อมูล..."
+          : "-- กรุณาเลือกชื่อระบบสารสนเทศ / เว็บไซต์ --";
+        sysEl.innerHTML = `<option value="">${placeholder}</option>` +
           systems.map(s => `<option value="${escapeQuotes(s)}">${s}</option>`).join('');
         if (cur && systems.includes(cur)) sysEl.value = cur;
       }
@@ -9562,6 +9677,25 @@
 
     function renderHelpdeskReport() {
       populateHelpdeskReportFilterOptions();
+      if (state.isInitialLoading) {
+        const countBadge = document.getElementById("hdReportFilterCountBadge");
+        if (countBadge) countBadge.innerText = "กำลังโหลด...";
+        ["hdKpiTotal", "hdKpiResolved", "hdKpiActive", "hdKpiSlaRate", "hdKpiCsat"].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.innerText = "...";
+        });
+        ["hdKpiResolvedRate", "hdKpiOpenSub", "hdKpiSlaBreached", "hdKpiCsatCount"].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.innerText = "กำลังโหลดข้อมูล...";
+        });
+        ["hdSummaryByCategoryBody", "hdSummaryByPriorityBody", "hdSummaryByDeptBody", "hdSummaryByAgentBody"].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.innerHTML = getDatabaseLoadingBlockHtml("กำลังโหลดข้อมูลสรุปจากฐานข้อมูล...");
+        });
+        const tbody = document.getElementById("hdReportTableBody");
+        if (tbody) tbody.innerHTML = getDatabaseLoadingRowHtml(8, "กำลังโหลดข้อมูลรายงานแจ้งซ่อมจากฐานข้อมูล...");
+        return;
+      }
       const filtered = getFilteredHelpdeskReportTickets();
       const nowTs = getLocalTimestamp(0);
 
@@ -10049,10 +10183,16 @@
     function renderQuickAvailableList() {
       const container = document.getElementById("quickAvailableContainer");
       const pillsContainer = document.getElementById("quickAvailableCategoryPills");
+      const countEl = document.getElementById("quickAvailableCount");
+      if (state.isInitialLoading) {
+        if (countEl) countEl.innerText = "กำลังโหลด...";
+        if (pillsContainer) pillsContainer.innerHTML = "";
+        if (container) container.innerHTML = getDatabaseLoadingBlockHtml("กำลังโหลดรายการอุปกรณ์ที่ว่างพร้อมยืมจากฐานข้อมูล...");
+        return;
+      }
       const q = (document.getElementById("quickAvailableSearch")?.value || "").toLowerCase().trim();
       const avail = state.items.filter(i => isItemAvailable(i));
 
-      const countEl = document.getElementById("quickAvailableCount");
       if (countEl) countEl.innerText = `${avail.length} ชิ้น`;
 
       if (pillsContainer) {
@@ -10215,6 +10355,11 @@
       const tbody = document.getElementById("myBorrowsTableBody");
       const badge = document.getElementById("tabBadgeMyBorrows");
       if (!tbody) return;
+      if (state.isInitialLoading) {
+        if (badge) badge.innerText = "...";
+        tbody.innerHTML = getDatabaseLoadingRowHtml(6, "กำลังโหลดรายการยืมอุปกรณ์จากฐานข้อมูล...");
+        return;
+      }
 
       const user = state.currentUser;
       const q = (document.getElementById("searchMyBorrowsInput")?.value || "").toLowerCase().trim();
@@ -10290,6 +10435,10 @@
       const tbody = document.getElementById("returnTableBody");
       const today = getOffsetDate(0);
       if (!tbody) return;
+      if (state.isInitialLoading) {
+        tbody.innerHTML = getDatabaseLoadingRowHtml(8, "กำลังโหลดรายการค้างส่งคืนจากฐานข้อมูล...");
+        return;
+      }
 
       if (list.length === 0) {
         tbody.innerHTML = '<tr><td colspan="8" class="py-8 text-center text-slate-400 text-xs">ไม่มีรายการค้างส่งคืน 🎉</td></tr>';
@@ -10439,6 +10588,14 @@
       const list = filteredList || state.items;
       const tbody = document.getElementById("inventoryTableBody");
       if (!tbody) return;
+      if (state.isInitialLoading) {
+        tbody.innerHTML = getDatabaseLoadingRowHtml(6, "กำลังโหลดคลังอุปกรณ์จากฐานข้อมูล...");
+        return;
+      }
+      if (list.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="py-8 text-center text-slate-400 text-xs">ไม่พบรายการอุปกรณ์ในคลัง</td></tr>';
+        return;
+      }
       tbody.innerHTML = list.map(item => {
         const imgInfo = resolveItemImageInfo(item);
         return `
@@ -10542,6 +10699,10 @@
 
       const tbody = document.getElementById("historyTableBody");
       if (!tbody) return;
+      if (state.isInitialLoading) {
+        tbody.innerHTML = getDatabaseLoadingRowHtml(9, "กำลังโหลดประวัติการยืม-คืนจากฐานข้อมูล...");
+        return;
+      }
       if (list.length === 0) {
         tbody.innerHTML = '<tr><td colspan="9" class="py-8 text-center text-slate-400 text-xs">ไม่พบบันทึกประวัติการยืม-คืน</td></tr>';
         return;
@@ -10648,6 +10809,11 @@
       const list = filteredList !== null ? filteredList : state.userRoles;
       const tbody = document.getElementById("rolesTableBody");
       const countBadge = document.getElementById("roleCountBadge");
+      if (state.isInitialLoading) {
+        if (countBadge) countBadge.innerText = "กำลังโหลด...";
+        if (tbody) tbody.innerHTML = getDatabaseLoadingRowHtml(8, "กำลังโหลดรายชื่อผู้ใช้งานและสิทธิ์จากฐานข้อมูล...");
+        return;
+      }
       if (countBadge) {
         countBadge.innerText = `แสดง ${list.length} จาก ${state.userRoles.length} คน`;
       }
@@ -11980,6 +12146,7 @@
     }
 
     function renderAll() {
+      updateInitialLoadingBannerVisibility();
       syncItemStatuses();
       renderDepartmentSelects();
       renderTicketCategorySelects();
@@ -11999,18 +12166,20 @@
 
       const aiSel = document.getElementById("aiBorrowSelect");
       if (aiSel) {
-        aiSel.innerHTML = '<option value="">-- เลือกรายการยืมเพื่อร่างทวงของ --</option>' + state.activeBorrows.map(b => `<option value="${b.trans_id}">${b.borrower_name} ยืม [${b.item_id}] (กำหนดส่ง: ${b.expected_return})</option>`).join("");
+        aiSel.innerHTML = state.isInitialLoading
+          ? '<option value="">กำลังโหลดรายการยืมจากฐานข้อมูล...</option>'
+          : '<option value="">-- เลือกรายการยืมเพื่อร่างทวงของ --</option>' + state.activeBorrows.map(b => `<option value="${b.trans_id}">${b.borrower_name} ยืม [${b.item_id}] (กำหนดส่ง: ${b.expected_return})</option>`).join("");
       }
 
       const activeTickets = state.tickets.filter(t => t.status === "Open" || t.status === "In Progress");
       const sidebarBadgeTickets = document.getElementById("sidebarBadgeTickets");
-      if (sidebarBadgeTickets) sidebarBadgeTickets.innerText = activeTickets.length;
+      if (sidebarBadgeTickets) sidebarBadgeTickets.innerText = state.isInitialLoading ? "..." : activeTickets.length;
 
       const sidebarBadgeReturns = document.getElementById("sidebarBadgeReturns");
-      if (sidebarBadgeReturns) sidebarBadgeReturns.innerText = state.activeBorrows.length;
+      if (sidebarBadgeReturns) sidebarBadgeReturns.innerText = state.isInitialLoading ? "..." : state.activeBorrows.length;
 
       const sidebarBadgeHistory = document.getElementById("sidebarBadgeHistory");
-      if (sidebarBadgeHistory) sidebarBadgeHistory.innerText = state.allLogs.length;
+      if (sidebarBadgeHistory) sidebarBadgeHistory.innerText = state.isInitialLoading ? "..." : state.allLogs.length;
 
       const sidebarRoleLabel = document.getElementById("sidebarRoleLabel");
       if (sidebarRoleLabel && state.currentUser) {
@@ -13524,8 +13693,19 @@ function handleDeleteUserRole(data) {
     function useLiveSupabaseMode() {
       state.useDemoMode = false;
       state.isLive = true;
+      state.isInitialLoading = true;
+      state.items = [];
+      state.activeBorrows = [];
+      state.allLogs = [];
+      state.tickets = [];
+      state.knowledgeBase = [];
+      state.categories = [];
+      state.ticketCategories = [];
+      state.internalSystems = [];
+      state.departments = [];
       localStorage.setItem(STORAGE_KEY_DEMO_MODE, "false");
       closeSetupModal();
+      renderAll();
       showNotification("เปิดใช้งานโหมดเชื่อมต่อฐานข้อมูล Supabase (Live) แล้ว กำลังโหลดข้อมูล...", "success");
       triggerManualReload();
     }
@@ -13533,8 +13713,19 @@ function handleDeleteUserRole(data) {
     function resetToDemoMode() {
       state.useDemoMode = true;
       state.isLive = false;
+      state.isInitialLoading = false;
+      state.items = JSON.parse(JSON.stringify(INITIAL_DEMO_ITEMS));
+      state.activeBorrows = JSON.parse(JSON.stringify(INITIAL_DEMO_BORROWS));
+      state.allLogs = JSON.parse(JSON.stringify(INITIAL_DEMO_LOGS));
+      state.tickets = JSON.parse(JSON.stringify(INITIAL_DEMO_TICKETS));
+      state.knowledgeBase = JSON.parse(JSON.stringify(INITIAL_DEMO_KB));
+      state.categories = [...INITIAL_DEMO_CATEGORIES];
+      state.ticketCategories = [...INITIAL_DEMO_TICKET_CATEGORIES];
+      state.internalSystems = [...INITIAL_DEMO_INTERNAL_SYSTEMS];
+      state.departments = [...INITIAL_DEMO_DEPARTMENTS];
       localStorage.setItem(STORAGE_KEY_DEMO_MODE, "true");
       closeSetupModal();
+      renderAll();
       showNotification("สลับใช้งานโหมดจำลอง (Demo Mode) เรียบร้อย", "info");
       triggerManualReload();
     }
@@ -13832,7 +14023,8 @@ function handleDeleteUserRole(data) {
       try {
         const res = await callAPI("getInitialData", {}, !showToast);
         if (res && res.status === "success") {
-          if (Array.isArray(res.items) && res.items.length > 0) {
+          state.isInitialLoading = false;
+          if (Array.isArray(res.items)) {
             state.items = res.items.map(item => {
               const cached = getAttachmentFromCache(item.item_id);
               if (cached) {
@@ -13846,7 +14038,7 @@ function handleDeleteUserRole(data) {
           }
           if (Array.isArray(res.activeBorrows)) state.activeBorrows = res.activeBorrows;
           if (Array.isArray(res.allLogs)) state.allLogs = res.allLogs;
-          if (Array.isArray(res.tickets) && res.tickets.length > 0) {
+          if (Array.isArray(res.tickets)) {
             const prevTicketsMap = new Map((state.tickets || []).map(pt => [String(pt.ticket_id || '').trim().toLowerCase(), pt]));
             state.tickets = res.tickets.map(t => {
               const cached = getAttachmentFromCache(t.ticket_id);
@@ -13892,7 +14084,7 @@ function handleDeleteUserRole(data) {
               return t;
             });
           }
-          if (Array.isArray(res.knowledgeBase) && res.knowledgeBase.length > 0) {
+          if (Array.isArray(res.knowledgeBase)) {
             state.knowledgeBase = res.knowledgeBase.map(k => {
               const cached = getAttachmentFromCache(k.kb_id);
               if (cached) {
@@ -13904,16 +14096,16 @@ function handleDeleteUserRole(data) {
               return k;
             });
           }
-          if (Array.isArray(res.categories) && res.categories.length > 0) state.categories = res.categories;
-          if (Array.isArray(res.ticketCategories) && res.ticketCategories.length > 0) {
+          if (Array.isArray(res.categories)) state.categories = res.categories;
+          if (Array.isArray(res.ticketCategories)) {
             state.ticketCategories = res.ticketCategories;
             saveTicketCategoriesToStorage();
           }
-          if (Array.isArray(res.internalSystems) && res.internalSystems.length > 0) {
+          if (Array.isArray(res.internalSystems)) {
             state.internalSystems = res.internalSystems;
             saveInternalSystemsToStorage();
           }
-          if (Array.isArray(res.departments) && res.departments.length > 0) {
+          if (Array.isArray(res.departments)) {
             state.departments = Array.from(new Set(res.departments.map(d => stripDepartmentNumberPrefix(d)).filter(Boolean)));
           }
           if (typeof res.emailNotifyEnabled === "boolean") {
@@ -13988,6 +14180,10 @@ function handleDeleteUserRole(data) {
       } catch (err) {
         console.error("Data refresh error:", err);
       } finally {
+        if (state.isInitialLoading) {
+          state.isInitialLoading = false;
+          renderAll();
+        }
         state.isRefreshing = false;
         reloadIcons.forEach(icon => icon.classList.remove("animate-spin"));
       }
@@ -14230,22 +14426,36 @@ function handleDeleteUserRole(data) {
       if (saved) {
         try {
           const user = JSON.parse(saved);
-          const u = findMatchedUserInDatabase(user.email) || findMatchedUserInDatabase(user.name);
-          if (u && u.status !== "disabled") {
-            user.email = u.email || user.email;
-            user.first_name = u.first_name || user.first_name || "";
-            user.last_name = u.last_name || user.last_name || "";
-            user.name = u.name || user.name;
-            user.dept = u.dept || user.dept || "";
-            user.role = u.role || "user";
-            user.status = u.status || "active";
+          if (state.isInitialLoading) {
             state.currentUser = user;
-            localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(user));
           } else {
-            localStorage.removeItem(STORAGE_KEY_USER);
-            state.currentUser = null;
+            const u = findMatchedUserInDatabase(user.email) || findMatchedUserInDatabase(user.name);
+            if (u && u.status !== "disabled") {
+              user.email = u.email || user.email;
+              user.first_name = u.first_name || user.first_name || "";
+              user.last_name = u.last_name || user.last_name || "";
+              user.name = u.name || user.name;
+              user.dept = u.dept || user.dept || "";
+              user.role = u.role || "user";
+              user.status = u.status || "active";
+              state.currentUser = user;
+              localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(user));
+            } else {
+              localStorage.removeItem(STORAGE_KEY_USER);
+              state.currentUser = null;
+            }
           }
         } catch (e) {}
+      }
+
+      if (state.isInitialLoading) {
+        const dot = document.getElementById("connStatusDot");
+        const txt = document.getElementById("connStatusText");
+        if (dot && txt) {
+          dot.className = "w-2 h-2 rounded-full bg-tcc-500 animate-ping";
+          txt.className = "truncate max-w-[130px] sm:max-w-none text-tcc-700 font-medium";
+          txt.innerText = "กำลังโหลดฐานข้อมูล...";
+        }
       }
 
       syncItemStatuses();

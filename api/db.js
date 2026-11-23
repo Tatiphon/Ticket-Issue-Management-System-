@@ -129,6 +129,13 @@ function splitName(fullName, firstName, lastName) {
   return { first_name: parts[0], last_name: parts.slice(1).join(" "), name: raw };
 }
 
+function stripDepartmentPrefix(dept) {
+  return String(dept || "")
+    .trim()
+    .replace(/^\d+\s*[.)-]\s*/, "")
+    .trim();
+}
+
 async function sbFetch(cfg, path, options = {}) {
   const method = options.method || "GET";
   const headers = {
@@ -599,25 +606,25 @@ async function handleUpdateItem(cfg, data) {
 }
 
 async function handleAddDepartment(cfg, data) {
-  const name = String(data.deptName || "").trim();
+  const name = stripDepartmentPrefix(data.deptName || "");
   if (!name) return { status: "error", message: "No deptName provided" };
   await sbFetch(cfg, `${TABLES.departments}?on_conflict=department_name`, {
     method: "POST",
     headers: { Prefer: "resolution=ignore-duplicates" },
     body: [{ department_name: name }]
   });
-  return { status: "success", message: "เพิ่มแผนกลง Supabase เรียบร้อย" };
+  return { status: "success", message: "เพิ่มแผนกลง Supabase เรียบร้อย", deptName: name };
 }
 
 async function handleUpdateDepartment(cfg, data) {
   const oldName = String(data.oldName || "").trim();
-  const newName = String(data.newName || "").trim();
+  const newName = stripDepartmentPrefix(data.newName || "");
   if (!oldName || !newName) return { status: "error", message: "Missing department names" };
   await sbFetch(cfg, `${TABLES.departments}?department_name=eq.${encodeURIComponent(oldName)}`, {
     method: "PATCH",
     body: { department_name: newName }
   });
-  return { status: "success", message: "แก้ไขแผนกใน Supabase เรียบร้อย" };
+  return { status: "success", message: "แก้ไขแผนกใน Supabase เรียบร้อย", deptName: newName };
 }
 
 async function handleDeleteDepartment(cfg, data) {

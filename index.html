@@ -3446,17 +3446,25 @@
         .replace(/@thaichamber\.or\.ht$/i, "@thaichamber.or.th");
     }
 
+    function stripDepartmentNumberPrefix(rawDept) {
+      return String(rawDept || "")
+        .trim()
+        .replace(/^\d+\s*[.)-]\s*/, "")
+        .trim();
+    }
+
     function normalizeUserRole(u = {}) {
       const email = normalizeEmailDomainTypos(String(u.email || "").trim());
       const rawFull = u.name || [u.first_name, u.last_name].filter(Boolean).join(" ") || (email ? email.split("@")[0] : "");
       const parsed = splitFullName(rawFull, u.first_name, u.last_name);
+      const rawDept = u.dept !== undefined ? u.dept : (u.department || "");
       return {
         ...u,
         email: email,
         first_name: parsed.first_name,
         last_name: parsed.last_name,
         name: parsed.name,
-        dept: String(u.dept !== undefined ? u.dept : (u.department || "")).trim(),
+        dept: stripDepartmentNumberPrefix(rawDept),
         role: String(u.role || "user").trim(),
         password: String(u.password || "123456").trim(),
         status: String(u.status || "active").trim(),
@@ -4259,7 +4267,7 @@
     function ensureDeptOptionExistsAndSelect(selectId, deptValue) {
       const sel = document.getElementById(selectId);
       if (!sel || !deptValue) return;
-      const cleanDept = String(deptValue).trim();
+      const cleanDept = stripDepartmentNumberPrefix(deptValue);
       if (!cleanDept) return;
 
       if (!state.departments.includes(cleanDept)) {
@@ -9015,8 +9023,8 @@
 
     /* DEPARTMENT & CATEGORY SELECT POPULATION */
     function renderDepartmentSelects() {
-      const baseDepts = state.departments || [];
-      const roleDepts = (state.userRoles || []).map(u => String(u.dept || "").trim()).filter(Boolean);
+      const baseDepts = (state.departments || []).map(d => stripDepartmentNumberPrefix(d)).filter(Boolean);
+      const roleDepts = (state.userRoles || []).map(u => stripDepartmentNumberPrefix(u.dept || "")).filter(Boolean);
       const mergedDepts = Array.from(new Set([...baseDepts, ...roleDepts]));
 
       const optionsHtml = ['<option value="">-- กรุณาเลือกฝ่าย / แผนก --</option>']
@@ -9025,35 +9033,35 @@
 
       const borrowDeptEl = document.getElementById("borrowerDept");
       if (borrowDeptEl) {
-        const cur = borrowDeptEl.value;
+        const cur = stripDepartmentNumberPrefix(borrowDeptEl.value);
         borrowDeptEl.innerHTML = optionsHtml;
         if (cur && mergedDepts.includes(cur)) borrowDeptEl.value = cur;
       }
 
       const ticketDeptEl = document.getElementById("ticketReporterDept");
       if (ticketDeptEl) {
-        const cur = ticketDeptEl.value;
+        const cur = stripDepartmentNumberPrefix(ticketDeptEl.value);
         ticketDeptEl.innerHTML = optionsHtml;
         if (cur && mergedDepts.includes(cur)) ticketDeptEl.value = cur;
       }
 
       const editHistDeptEl = document.getElementById("editHistoryDept");
       if (editHistDeptEl) {
-        const cur = editHistDeptEl.value;
+        const cur = stripDepartmentNumberPrefix(editHistDeptEl.value);
         editHistDeptEl.innerHTML = optionsHtml;
         if (cur && mergedDepts.includes(cur)) editHistDeptEl.value = cur;
       }
 
       const userRoleDeptEl = document.getElementById("inputRoleDept");
       if (userRoleDeptEl) {
-        const cur = userRoleDeptEl.value;
+        const cur = stripDepartmentNumberPrefix(userRoleDeptEl.value);
         userRoleDeptEl.innerHTML = '<option value="">-- ไม่ระบุฝ่าย --</option>' + mergedDepts.map(d => `<option value="${escapeQuotes(d)}">${d}</option>`).join("");
         if (cur && mergedDepts.includes(cur)) userRoleDeptEl.value = cur;
       }
 
       const filterRoleDeptEl = document.getElementById("filterRoleDept");
       if (filterRoleDeptEl) {
-        const cur = filterRoleDeptEl.value;
+        const cur = stripDepartmentNumberPrefix(filterRoleDeptEl.value);
         const allDepts = [...mergedDepts].sort();
         filterRoleDeptEl.innerHTML = '<option value="">🏢 ทุกฝ่าย / แผนก</option>' + allDepts.map(d => `<option value="${escapeQuotes(d)}">${d}</option>`).join("");
         if (cur) filterRoleDeptEl.value = cur;
@@ -11494,6 +11502,7 @@
     }
 
     function openDeptManagementModal() {
+      state.departments = Array.from(new Set((state.departments || []).map(d => stripDepartmentNumberPrefix(d)).filter(Boolean)));
       const container = document.getElementById("deptManageListContainer");
       document.getElementById("deptCountLabel").innerText = state.departments.length;
       if (container) {
@@ -11510,7 +11519,7 @@
 
     function handleAddNewDepartment() {
       const input = document.getElementById("newDepartmentNameInput");
-      const val = input.value.trim();
+      const val = stripDepartmentNumberPrefix(input.value);
       if (!val) return;
       if (!state.departments.includes(val)) state.departments.push(val);
       input.value = "";
@@ -13679,7 +13688,9 @@ function handleDeleteUserRole(data) {
             state.internalSystems = res.internalSystems;
             saveInternalSystemsToStorage();
           }
-          if (Array.isArray(res.departments) && res.departments.length > 0) state.departments = res.departments;
+          if (Array.isArray(res.departments) && res.departments.length > 0) {
+            state.departments = Array.from(new Set(res.departments.map(d => stripDepartmentNumberPrefix(d)).filter(Boolean)));
+          }
           if (typeof res.emailNotifyEnabled === "boolean") {
             state.emailNotifyEnabled = res.emailNotifyEnabled;
             localStorage.setItem(STORAGE_KEY_EMAIL_ENABLED, state.emailNotifyEnabled ? "true" : "false");

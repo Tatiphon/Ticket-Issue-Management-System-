@@ -26,6 +26,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ศูนย์บริการเทคโนโลยีสารสนเทศ | ฝ่ายเทคโนโลยีสารสนเทศ หอการค้าไทย</title>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -107,7 +109,8 @@
       display: block;
     }
     .rich-editor-content img,
-    .rich-display-content img {
+    .rich-display-content img,
+    .ql-editor img {
       max-width: 100%;
       max-height: 280px;
       border-radius: 0.75rem;
@@ -117,6 +120,38 @@
       cursor: zoom-in;
       object-fit: contain;
       background: #ffffff;
+    }
+    /* Quill.js Open-Source Rich Text Editor Custom TCC Theme */
+    .ql-toolbar.ql-snow {
+      border: 0 !important;
+      border-bottom: 1px solid #e2e8f0 !important;
+      background: #f8fafc;
+      padding: 6px 10px !important;
+      font-family: 'Prompt', sans-serif !important;
+    }
+    .ql-container.ql-snow {
+      border: 0 !important;
+      font-family: 'Prompt', sans-serif !important;
+      font-size: 0.875rem !important;
+      color: #1e293b;
+    }
+    .ql-editor {
+      min-height: inherit;
+      max-height: inherit;
+      padding: 12px 14px !important;
+      line-height: 1.625 !important;
+    }
+    .ql-editor.ql-blank::before {
+      color: #94a3b8 !important;
+      font-style: normal !important;
+      left: 14px !important;
+      right: 14px !important;
+    }
+    .tcc-quill-compact .ql-editor {
+      min-height: 82px !important;
+      max-height: 200px !important;
+      padding: 10px 12px !important;
+      font-size: 0.8125rem !important;
     }
   </style>
 </head>
@@ -781,10 +816,16 @@
 
                   <!-- Purpose -->
                   <div>
-                    <label for="borrowPurpose" class="block text-xs font-bold text-slate-700 tracking-wide mb-1.5 leading-5">
-                      7. วัตถุประสงค์ในการยืม / สถานที่ใช้งาน
-                    </label>
-                    <textarea id="borrowPurpose" rows="2" placeholder="เช่น ใช้จัดประชุมคณะกรรมการ, สัมมนา WFH ชั่วคราว" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-tcc-500 focus:border-tcc-500 outline-none transition"></textarea>
+                    <div class="flex items-center justify-between mb-1.5 gap-2 flex-wrap">
+                      <label for="borrowPurposeEditor" class="block text-xs font-bold text-slate-700 tracking-wide leading-5">
+                        7. วัตถุประสงค์ในการยืม / สถานที่ใช้งาน
+                      </label>
+                      <span class="text-[11px] text-slate-400">Quill.js Rich Text Editor (จัดรูปแบบข้อความ / รายการได้)</span>
+                    </div>
+                    <div class="quill-wrapper quill-compact focus-within:ring-2 focus-within:ring-tcc-500 focus-within:border-tcc-500 transition">
+                      <div id="borrowPurposeEditor" data-placeholder="เช่น ใช้จัดประชุมคณะกรรมการ, สัมมนา WFH ชั่วคราว..."></div>
+                    </div>
+                    <textarea id="borrowPurpose" rows="2" class="hidden" aria-hidden="true"></textarea>
                   </div>
 
                   <!-- Email Notification Option -->
@@ -948,39 +989,12 @@
                   <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
                     รายละเอียดของปัญหา (Description) <span class="text-rose-500">*</span>
                   </label>
-                  <span class="text-[11px] text-slate-500">พิมพ์ข้อความ, จัดตัวหนา/ขีดเส้นใต้/สี, หรือ <kbd class="px-1.5 py-0.5 bg-slate-100 border border-slate-200 rounded text-[10px] font-mono">Ctrl+V</kbd> วางรูปภาพในกล่องได้เลย</span>
+                  <span class="text-[11px] text-slate-500">Quill.js Open-Source Rich Text Editor • พิมพ์ข้อความ, จัดรูปแบบ/สี, หรือ <kbd class="px-1.5 py-0.5 bg-slate-100 border border-slate-200 rounded text-[10px] font-mono">Ctrl+V</kbd> วางรูปภาพในกล่องได้เลย</span>
                 </div>
-                <div class="rounded-2xl border border-slate-300 bg-white overflow-hidden focus-within:ring-2 focus-within:ring-tcc-500 focus-within:border-tcc-500 transition">
-                  <!-- Formatting & Image Toolbar -->
-                  <div class="px-3 py-2 bg-slate-50 border-b border-slate-200 flex items-center gap-1.5 flex-wrap">
-                    <button type="button" onmousedown="event.preventDefault(); execRichCmd('ticketDescriptionEditor', 'bold')" class="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-slate-800 font-extrabold text-xs shadow-2xs cursor-pointer" title="ตัวหนา (Bold)">B</button>
-                    <button type="button" onmousedown="event.preventDefault(); execRichCmd('ticketDescriptionEditor', 'underline')" class="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-slate-800 underline font-semibold text-xs shadow-2xs cursor-pointer" title="ขีดเส้นใต้ (Underline)">U</button>
-                    <div class="w-px h-5 bg-slate-200 mx-0.5"></div>
-                    <span class="text-[11px] text-slate-500 font-semibold">สี:</span>
-                    <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('ticketDescriptionEditor', '#0f172a')" class="w-5 h-5 rounded-full bg-slate-900 border border-slate-300 hover:scale-110 transition cursor-pointer" title="สีดำ"></button>
-                    <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('ticketDescriptionEditor', '#dc2626')" class="w-5 h-5 rounded-full bg-red-600 border border-slate-300 hover:scale-110 transition cursor-pointer" title="สีแดง"></button>
-                    <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('ticketDescriptionEditor', '#0284c7')" class="w-5 h-5 rounded-full bg-sky-600 border border-slate-300 hover:scale-110 transition cursor-pointer" title="สีน้ำเงิน"></button>
-                    <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('ticketDescriptionEditor', '#059669')" class="w-5 h-5 rounded-full bg-emerald-600 border border-slate-300 hover:scale-110 transition cursor-pointer" title="สีเขียว"></button>
-                    <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('ticketDescriptionEditor', '#d97706')" class="w-5 h-5 rounded-full bg-amber-600 border border-slate-300 hover:scale-110 transition cursor-pointer" title="สีส้ม"></button>
-                    <label class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-[11px] font-semibold text-slate-700 cursor-pointer" title="เลือกสีอิสระ">
-                      <span>🎨</span>
-                      <input type="color" value="#0f172a" onchange="applyRichTextColor('ticketDescriptionEditor', this.value)" class="w-4 h-4 p-0 border-0 bg-transparent cursor-pointer">
-                    </label>
-                    <div class="w-px h-5 bg-slate-200 mx-0.5"></div>
-                    <input type="file" id="ticketDescInlineImageInput" multiple accept="image/*" onchange="handleRichEditorImagePick(this, 'ticketDescriptionEditor')" class="hidden">
-                    <label for="ticketDescInlineImageInput" class="px-2.5 py-1 rounded-lg bg-tcc-50 hover:bg-tcc-100 border border-tcc-200 text-tcc-700 font-bold text-xs flex items-center gap-1 cursor-pointer transition" title="แทรกรูปภาพลงในกล่องรายละเอียด">
-                      <span>🖼️ แทรกรูปในข้อความ</span>
-                    </label>
-                    <button type="button" onmousedown="event.preventDefault(); execRichCmd('ticketDescriptionEditor', 'removeFormat')" class="px-2 py-1 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-slate-500 text-[11px] cursor-pointer ml-auto" title="ล้างการจัดรูปแบบ">ล้างรูปแบบ</button>
-                  </div>
-                  <!-- Editable Rich Text Area -->
+                <div class="quill-wrapper focus-within:ring-2 focus-within:ring-tcc-500 focus-within:border-tcc-500 transition">
+                  <input type="file" id="ticketDescInlineImageInput" multiple accept="image/*" onchange="handleRichEditorImagePick(this, 'ticketDescriptionEditor')" class="hidden">
                   <div id="ticketDescriptionEditor"
-                       contenteditable="true"
-                       onpaste="handleRichEditorPaste(event, 'ticketDescriptionEditor')"
-                       ondrop="handleRichEditorDrop(event, 'ticketDescriptionEditor')"
-                       ondragover="event.preventDefault()"
-                       data-placeholder="อธิบายขั้นตอนที่เกิดปัญหา หมายเลขเครื่อง ข้อความ Error หรือวางรูปภาพหน้าจอ (Ctrl+V) ลงในช่องนี้ได้เลย..."
-                       class="rich-editor-content w-full min-h-[180px] max-h-[380px] overflow-y-auto p-4 text-sm text-slate-800 leading-relaxed outline-none bg-white"></div>
+                       data-placeholder="อธิบายขั้นตอนที่เกิดปัญหา หมายเลขเครื่อง ข้อความ Error หรือวางรูปภาพหน้าจอ (Ctrl+V) ลงในช่องนี้ได้เลย..."></div>
                 </div>
                 <textarea id="ticketDescription" class="hidden" aria-hidden="true"></textarea>
               </div>
@@ -2186,7 +2200,9 @@
   <div id="loginModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 text-center animate-fadeIn">
       <div class="flex justify-end items-center mb-1">
-        <button onclick="closeLoginModal()" class="text-slate-400 hover:text-slate-600 p-1 font-bold">&times;</button>
+        <button type="button" onclick="closeLoginModal()" aria-label="ปิดหน้าต่าง" title="ปิดหน้าต่าง" class="w-9 h-9 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 active:scale-95 transition cursor-pointer shrink-0">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
       </div>
       <div class="w-14 h-16 mx-auto mb-2 drop-shadow flex items-center justify-center">
         <img src="LOGO The Thai chamber of commerce_2.png" 
@@ -2239,7 +2255,9 @@
             <p id="detailTicketMeta" class="text-[11px] sm:text-xs text-slate-500 mt-0.5"></p>
           </div>
         </div>
-        <button onclick="closeTicketDetailModal()" class="text-slate-400 hover:text-slate-600 p-2 rounded-full hover:bg-slate-200/70 transition shrink-0 text-base leading-none" title="ปิดหน้าต่าง">✕</button>
+        <button type="button" onclick="closeTicketDetailModal()" aria-label="ปิดหน้าต่าง" title="ปิดหน้าต่าง" class="w-9 h-9 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-200/70 active:scale-95 transition cursor-pointer shrink-0">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
       </div>
 
       <div class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 text-xs sm:text-sm">
@@ -2295,37 +2313,12 @@
             <div>
               <div class="flex items-center justify-between mb-1.5 gap-2 flex-wrap">
                 <label class="block font-semibold text-slate-700">บันทึกการแก้ไข / แจ้งผู้ใช้</label>
-                <span class="text-[11px] text-slate-500">พิมพ์ข้อความ, จัดตัวหนา/ขีดเส้นใต้/สี, หรือ <kbd class="px-1.5 py-0.5 bg-white border border-slate-200 rounded text-[10px] font-mono">Ctrl+V</kbd> วางรูปภาพในกล่องได้เลย</span>
+                <span class="text-[11px] text-slate-500">Quill.js Rich Text Editor • พิมพ์ข้อความ, จัดรูปแบบ/สี, หรือ <kbd class="px-1.5 py-0.5 bg-white border border-slate-200 rounded text-[10px] font-mono">Ctrl+V</kbd> วางรูปภาพในกล่องได้เลย</span>
               </div>
-              <div class="rounded-2xl border border-slate-300 bg-white overflow-hidden focus-within:ring-2 focus-within:ring-tcc-500 focus-within:border-tcc-500 transition">
-                <div class="px-3 py-2 bg-slate-50 border-b border-slate-200 flex items-center gap-1.5 flex-wrap">
-                  <button type="button" onmousedown="event.preventDefault(); execRichCmd('detailAdminNoteEditor', 'bold')" class="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-slate-800 font-extrabold text-xs shadow-2xs cursor-pointer" title="ตัวหนา (Bold)">B</button>
-                  <button type="button" onmousedown="event.preventDefault(); execRichCmd('detailAdminNoteEditor', 'underline')" class="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-slate-800 underline font-semibold text-xs shadow-2xs cursor-pointer" title="ขีดเส้นใต้ (Underline)">U</button>
-                  <div class="w-px h-5 bg-slate-200 mx-0.5"></div>
-                  <span class="text-[11px] text-slate-500 font-semibold">สี:</span>
-                  <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('detailAdminNoteEditor', '#0f172a')" class="w-5 h-5 rounded-full bg-slate-900 border border-slate-300 hover:scale-110 transition cursor-pointer" title="สีดำ"></button>
-                  <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('detailAdminNoteEditor', '#dc2626')" class="w-5 h-5 rounded-full bg-red-600 border border-slate-300 hover:scale-110 transition cursor-pointer" title="สีแดง"></button>
-                  <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('detailAdminNoteEditor', '#0284c7')" class="w-5 h-5 rounded-full bg-sky-600 border border-slate-300 hover:scale-110 transition cursor-pointer" title="สีน้ำเงิน"></button>
-                  <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('detailAdminNoteEditor', '#059669')" class="w-5 h-5 rounded-full bg-emerald-600 border border-slate-300 hover:scale-110 transition cursor-pointer" title="สีเขียว"></button>
-                  <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('detailAdminNoteEditor', '#d97706')" class="w-5 h-5 rounded-full bg-amber-600 border border-slate-300 hover:scale-110 transition cursor-pointer" title="สีส้ม"></button>
-                  <label class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-[11px] font-semibold text-slate-700 cursor-pointer" title="เลือกสีอิสระ">
-                    <span>🎨</span>
-                    <input type="color" value="#0f172a" onchange="applyRichTextColor('detailAdminNoteEditor', this.value)" class="w-4 h-4 p-0 border-0 bg-transparent cursor-pointer">
-                  </label>
-                  <div class="w-px h-5 bg-slate-200 mx-0.5"></div>
-                  <input type="file" id="detailAdminNoteImageInput" multiple accept="image/*" onchange="handleRichEditorImagePick(this, 'detailAdminNoteEditor')" class="hidden">
-                  <label for="detailAdminNoteImageInput" class="px-2.5 py-1 rounded-lg bg-tcc-50 hover:bg-tcc-100 border border-tcc-200 text-tcc-700 font-bold text-xs flex items-center gap-1 cursor-pointer transition" title="แทรกรูปภาพลงในกล่องข้อความ">
-                    <span>🖼️ แทรกรูปในข้อความ</span>
-                  </label>
-                  <button type="button" onmousedown="event.preventDefault(); execRichCmd('detailAdminNoteEditor', 'removeFormat')" class="px-2 py-1 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-slate-500 text-[11px] cursor-pointer ml-auto" title="ล้างการจัดรูปแบบ">ล้างรูปแบบ</button>
-                </div>
+              <div class="quill-wrapper quill-compact focus-within:ring-2 focus-within:ring-tcc-500 focus-within:border-tcc-500 transition">
+                <input type="file" id="detailAdminNoteImageInput" multiple accept="image/*" onchange="handleRichEditorImagePick(this, 'detailAdminNoteEditor')" class="hidden">
                 <div id="detailAdminNoteEditor"
-                     contenteditable="true"
-                     onpaste="handleRichEditorPaste(event, 'detailAdminNoteEditor')"
-                     ondrop="handleRichEditorDrop(event, 'detailAdminNoteEditor')"
-                     ondragover="event.preventDefault()"
-                     data-placeholder="ระบุสิ่งที่แก้ไข ความคืบหน้า วิธีแก้ไขปัญหา หรือวางรูปภาพประกอบ (Ctrl+V) เพื่อแจ้งผู้ใช้..."
-                     class="rich-editor-content w-full min-h-[140px] max-h-[300px] overflow-y-auto p-3.5 text-xs sm:text-sm text-slate-800 leading-relaxed outline-none bg-white"></div>
+                     data-placeholder="ระบุสิ่งที่แก้ไข ความคืบหน้า วิธีแก้ไขปัญหา หรือวางรูปภาพประกอบ (Ctrl+V) เพื่อแจ้งผู้ใช้..."></div>
               </div>
               <input type="hidden" id="detailAdminNote" value="">
             </div>
@@ -2382,62 +2375,39 @@
         </div>
       </div>
 
-      <!-- Footer Reply Box (Rich Text & Inline Image Editor + Multi-File Attachments) -->
+      <!-- Footer Reply Box (Quill.js Rich Text & Inline Image Editor + Multi-File Attachments) -->
       <div class="p-3.5 sm:p-4 border-t border-slate-100 bg-slate-50 shrink-0 space-y-2">
-        <div id="adminChatOptions" class="admin-only admin-hidden flex items-center justify-between text-xs gap-2 flex-wrap">
-          <label class="flex items-center gap-1.5 text-amber-900 font-semibold cursor-pointer">
-            <input type="checkbox" id="replyIsInternal" class="rounded text-amber-600">
-            <span>🔒 บันทึกเป็น Internal Note (เฉพาะทีมไอที)</span>
-          </label>
-          <button type="button" onclick="openKbQuickSelectModal()" class="text-tcc-700 font-semibold hover:underline">
-            💡 ดึงคำตอบจากคลังความรู้ (KB)
-          </button>
+        <div class="flex items-center justify-between text-xs gap-2 flex-wrap">
+          <div id="adminChatOptions" class="admin-only admin-hidden flex items-center gap-3 flex-wrap">
+            <label class="flex items-center gap-1.5 text-amber-900 font-semibold cursor-pointer">
+              <input type="checkbox" id="replyIsInternal" class="rounded text-amber-600">
+              <span>🔒 บันทึกเป็น Internal Note (เฉพาะทีมไอที)</span>
+            </label>
+            <button type="button" onclick="openKbQuickSelectModal()" class="text-tcc-700 font-semibold hover:underline cursor-pointer">
+              💡 ดึงคำตอบจากคลังความรู้ (KB)
+            </button>
+          </div>
+          <div class="flex items-center gap-2 ml-auto">
+            <input type="file" id="replyInlineImageInput" multiple accept="image/*" onchange="handleRichEditorImagePick(this, 'replyMessageInput')" class="hidden">
+            <input type="file" id="replyAttachmentInput" multiple accept="image/*,.pdf,.txt,.doc,.docx" onchange="handleReplyFilesSelect(this)" class="hidden">
+            <label for="replyAttachmentInput" class="px-2.5 py-1 rounded-xl bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 font-semibold text-xs flex items-center gap-1 cursor-pointer transition shadow-2xs" title="แนบไฟล์เพิ่มเติม (เลือกได้มากกว่า 1 ไฟล์)">
+              <span>📎 แนบไฟล์/เอกสาร</span>
+            </label>
+          </div>
         </div>
 
         <!-- Preview area for multiple reply image attachments -->
         <div id="replyAttachmentsPreview" class="hidden flex-wrap items-center gap-2 p-2 rounded-xl bg-white border border-slate-200"></div>
 
         <form onsubmit="handleSendTicketComment(event)" class="space-y-2">
-          <div class="rounded-2xl border border-slate-300 bg-white overflow-hidden focus-within:ring-2 focus-within:ring-tcc-500 focus-within:border-tcc-500 transition">
-            <!-- Reply Formatting & Image Toolbar -->
-            <div class="px-2.5 py-1.5 bg-slate-50 border-b border-slate-200 flex items-center gap-1.5 flex-wrap">
-              <button type="button" onmousedown="event.preventDefault(); execRichCmd('replyMessageInput', 'bold')" class="px-2 py-0.5 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-slate-800 font-extrabold text-xs shadow-2xs cursor-pointer" title="ตัวหนา (Bold)">B</button>
-              <button type="button" onmousedown="event.preventDefault(); execRichCmd('replyMessageInput', 'underline')" class="px-2 py-0.5 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-slate-800 underline font-semibold text-xs shadow-2xs cursor-pointer" title="ขีดเส้นใต้ (Underline)">U</button>
-              <div class="w-px h-4 bg-slate-200 mx-0.5"></div>
-              <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('replyMessageInput', '#0f172a')" class="w-4 h-4 rounded-full bg-slate-900 border border-slate-300 hover:scale-110 transition cursor-pointer" title="สีดำ"></button>
-              <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('replyMessageInput', '#dc2626')" class="w-4 h-4 rounded-full bg-red-600 border border-slate-300 hover:scale-110 transition cursor-pointer" title="สีแดง"></button>
-              <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('replyMessageInput', '#0284c7')" class="w-4 h-4 rounded-full bg-sky-600 border border-slate-300 hover:scale-110 transition cursor-pointer" title="สีน้ำเงิน"></button>
-              <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('replyMessageInput', '#059669')" class="w-4 h-4 rounded-full bg-emerald-600 border border-slate-300 hover:scale-110 transition cursor-pointer" title="สีเขียว"></button>
-              <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('replyMessageInput', '#d97706')" class="w-4 h-4 rounded-full bg-amber-600 border border-slate-300 hover:scale-110 transition cursor-pointer" title="สีส้ม"></button>
-              <label class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-[10px] font-semibold text-slate-700 cursor-pointer" title="เลือกสีอิสระ">
-                <span>🎨</span>
-                <input type="color" value="#0f172a" onchange="applyRichTextColor('replyMessageInput', this.value)" class="w-3.5 h-3.5 p-0 border-0 bg-transparent cursor-pointer">
-              </label>
-              <div class="w-px h-4 bg-slate-200 mx-0.5"></div>
-              <input type="file" id="replyInlineImageInput" multiple accept="image/*" onchange="handleRichEditorImagePick(this, 'replyMessageInput')" class="hidden">
-              <label for="replyInlineImageInput" class="px-2 py-0.5 rounded-lg bg-tcc-50 hover:bg-tcc-100 border border-tcc-200 text-tcc-700 font-bold text-[11px] flex items-center gap-1 cursor-pointer transition" title="แทรกรูปภาพในกล่องข้อความ">
-                <span>🖼️ แทรกรูป</span>
-              </label>
-              <input type="file" id="replyAttachmentInput" multiple accept="image/*,.pdf,.txt,.doc,.docx" onchange="handleReplyFilesSelect(this)" class="hidden">
-              <label for="replyAttachmentInput" class="px-2 py-0.5 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 font-semibold text-[11px] flex items-center gap-1 cursor-pointer transition" title="แนบไฟล์เพิ่มเติม (เลือกได้มากกว่า 1 ไฟล์)">
-                <span>📎 แนบไฟล์</span>
-              </label>
-              <button type="button" onmousedown="event.preventDefault(); execRichCmd('replyMessageInput', 'removeFormat')" class="px-1.5 py-0.5 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-slate-500 text-[10px] cursor-pointer ml-auto" title="ล้างการจัดรูปแบบ">ล้างรูปแบบ</button>
-            </div>
-            <!-- Editable Rich Text Reply Box -->
-            <div class="flex items-end gap-2 p-2">
+          <div class="flex flex-col sm:flex-row sm:items-end gap-2">
+            <div class="quill-wrapper quill-reply flex-1 min-w-0 focus-within:ring-2 focus-within:ring-tcc-500 focus-within:border-tcc-500 transition">
               <div id="replyMessageInput"
-                   contenteditable="true"
-                   onpaste="handleRichEditorPaste(event, 'replyMessageInput')"
-                   ondrop="handleRichEditorDrop(event, 'replyMessageInput')"
-                   ondragover="event.preventDefault()"
-                   onkeydown="handleReplyTextareaKeydown(event)"
-                   data-placeholder="พิมพ์ข้อความตอบกลับ, จัดตัวหนา/ขีดเส้นใต้/สี หรือวางรูปภาพ (Ctrl+V) ได้เลย... (Enter ส่ง, Shift+Enter ขึ้นบรรทัดใหม่)"
-                   class="rich-editor-content flex-1 min-h-[76px] max-h-[220px] overflow-y-auto px-2.5 py-1.5 text-xs sm:text-sm text-slate-800 leading-relaxed outline-none bg-white"></div>
-              <button type="submit" class="px-4 sm:px-5 py-2.5 bg-tcc-600 hover:bg-tcc-700 text-white rounded-xl font-bold text-xs sm:text-sm shadow-sm shrink-0 cursor-pointer">
-                ส่ง
-              </button>
+                   data-placeholder="พิมพ์ข้อความตอบกลับ, จัดรูปแบบ/สี หรือวางรูปภาพ (Ctrl+V) ได้เลย..."></div>
             </div>
+            <button type="submit" class="px-5 py-2.5 bg-tcc-600 hover:bg-tcc-700 text-white rounded-xl font-bold text-xs sm:text-sm shadow-sm shrink-0 cursor-pointer h-[42px] flex items-center justify-center gap-1.5">
+              <span>ส่งข้อความ</span>
+            </button>
           </div>
         </form>
       </div>
@@ -2456,7 +2426,9 @@
           <button type="button" onclick="const tid = document.getElementById('adminActionTicketId')?.value; closeTicketAdminActionModal(); if (tid) openTicketDetailModal(tid);" class="px-3 py-1.5 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 text-xs font-bold transition cursor-pointer">
             💬 ดูรายละเอียด / สนทนา
           </button>
-          <button onclick="closeTicketAdminActionModal()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-full hover:bg-slate-100 text-base leading-none">✕</button>
+          <button type="button" onclick="closeTicketAdminActionModal()" aria-label="ปิดหน้าต่าง" title="ปิดหน้าต่าง" class="w-9 h-9 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 active:scale-95 transition cursor-pointer shrink-0">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
         </div>
       </div>
 
@@ -2495,37 +2467,12 @@
         <div>
           <div class="flex items-center justify-between mb-1.5 gap-2 flex-wrap">
             <label class="block font-semibold text-slate-700">บันทึกการแก้ไข / แจ้งผู้ใช้</label>
-            <span class="text-[11px] text-slate-500">พิมพ์ข้อความ, จัดตัวหนา/ขีดเส้นใต้/สี, หรือ <kbd class="px-1.5 py-0.5 bg-slate-100 border border-slate-200 rounded text-[10px] font-mono">Ctrl+V</kbd> วางรูปภาพในกล่องได้เลย</span>
+            <span class="text-[11px] text-slate-500">Quill.js Rich Text Editor • พิมพ์ข้อความ, จัดรูปแบบ/สี, หรือ <kbd class="px-1.5 py-0.5 bg-slate-100 border border-slate-200 rounded text-[10px] font-mono">Ctrl+V</kbd> วางรูปภาพในกล่องได้เลย</span>
           </div>
-          <div class="rounded-2xl border border-slate-300 bg-white overflow-hidden focus-within:ring-2 focus-within:ring-tcc-500 focus-within:border-tcc-500 transition">
-            <div class="px-3 py-2 bg-slate-50 border-b border-slate-200 flex items-center gap-1.5 flex-wrap">
-              <button type="button" onmousedown="event.preventDefault(); execRichCmd('adminActionNoteEditor', 'bold')" class="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-slate-800 font-extrabold text-xs shadow-2xs cursor-pointer" title="ตัวหนา (Bold)">B</button>
-              <button type="button" onmousedown="event.preventDefault(); execRichCmd('adminActionNoteEditor', 'underline')" class="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-slate-800 underline font-semibold text-xs shadow-2xs cursor-pointer" title="ขีดเส้นใต้ (Underline)">U</button>
-              <div class="w-px h-5 bg-slate-200 mx-0.5"></div>
-              <span class="text-[11px] text-slate-500 font-semibold">สี:</span>
-              <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('adminActionNoteEditor', '#0f172a')" class="w-5 h-5 rounded-full bg-slate-900 border border-slate-300 hover:scale-110 transition cursor-pointer" title="สีดำ"></button>
-              <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('adminActionNoteEditor', '#dc2626')" class="w-5 h-5 rounded-full bg-red-600 border border-slate-300 hover:scale-110 transition cursor-pointer" title="สีแดง"></button>
-              <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('adminActionNoteEditor', '#0284c7')" class="w-5 h-5 rounded-full bg-sky-600 border border-slate-300 hover:scale-110 transition cursor-pointer" title="สีน้ำเงิน"></button>
-              <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('adminActionNoteEditor', '#059669')" class="w-5 h-5 rounded-full bg-emerald-600 border border-slate-300 hover:scale-110 transition cursor-pointer" title="สีเขียว"></button>
-              <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('adminActionNoteEditor', '#d97706')" class="w-5 h-5 rounded-full bg-amber-600 border border-slate-300 hover:scale-110 transition cursor-pointer" title="สีส้ม"></button>
-              <label class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-[11px] font-semibold text-slate-700 cursor-pointer" title="เลือกสีอิสระ">
-                <span>🎨</span>
-                <input type="color" value="#0f172a" onchange="applyRichTextColor('adminActionNoteEditor', this.value)" class="w-4 h-4 p-0 border-0 bg-transparent cursor-pointer">
-              </label>
-              <div class="w-px h-5 bg-slate-200 mx-0.5"></div>
-              <input type="file" id="adminActionNoteImageInput" multiple accept="image/*" onchange="handleRichEditorImagePick(this, 'adminActionNoteEditor')" class="hidden">
-              <label for="adminActionNoteImageInput" class="px-2.5 py-1 rounded-lg bg-tcc-50 hover:bg-tcc-100 border border-tcc-200 text-tcc-700 font-bold text-xs flex items-center gap-1 cursor-pointer transition" title="แทรกรูปภาพลงในกล่องข้อความ">
-                <span>🖼️ แทรกรูปในข้อความ</span>
-              </label>
-              <button type="button" onmousedown="event.preventDefault(); execRichCmd('adminActionNoteEditor', 'removeFormat')" class="px-2 py-1 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-slate-500 text-[11px] cursor-pointer ml-auto" title="ล้างการจัดรูปแบบ">ล้างรูปแบบ</button>
-            </div>
+          <div class="quill-wrapper quill-compact focus-within:ring-2 focus-within:ring-tcc-500 focus-within:border-tcc-500 transition">
+            <input type="file" id="adminActionNoteImageInput" multiple accept="image/*" onchange="handleRichEditorImagePick(this, 'adminActionNoteEditor')" class="hidden">
             <div id="adminActionNoteEditor"
-                 contenteditable="true"
-                 onpaste="handleRichEditorPaste(event, 'adminActionNoteEditor')"
-                 ondrop="handleRichEditorDrop(event, 'adminActionNoteEditor')"
-                 ondragover="event.preventDefault()"
-                 data-placeholder="ระบุสิ่งที่แก้ไข ความคืบหน้า วิธีแก้ไขปัญหา หรือวางรูปภาพประกอบ (Ctrl+V) เพื่อแจ้งผู้ใช้..."
-                 class="rich-editor-content w-full min-h-[150px] max-h-[300px] overflow-y-auto p-3.5 text-xs sm:text-sm text-slate-800 leading-relaxed outline-none bg-white"></div>
+                 data-placeholder="ระบุสิ่งที่แก้ไข ความคืบหน้า วิธีแก้ไขปัญหา หรือวางรูปภาพประกอบ (Ctrl+V) เพื่อแจ้งผู้ใช้..."></div>
           </div>
           <input type="hidden" id="adminActionNote" value="">
         </div>
@@ -2547,13 +2494,15 @@
 
   <!-- MODAL: ADD KNOWLEDGE BASE ARTICLE -->
   <div id="addKbModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 animate-fadeIn">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 animate-fadeIn max-h-[92vh] overflow-y-auto">
       <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
         <div>
           <h3 class="font-bold text-slate-900 text-sm">เพิ่มบทความคลังความรู้ไอที</h3>
           <p class="text-[11px] text-slate-500">บันทึกวิธีแก้ปัญหาเพื่อให้ทีมงานค้นหาและดึงไปตอบได้รวดเร็ว</p>
         </div>
-        <button onclick="closeAddKbModal()" class="text-slate-400 hover:text-slate-600 font-bold">&times;</button>
+        <button type="button" onclick="closeAddKbModal()" aria-label="ปิดหน้าต่าง" title="ปิดหน้าต่าง" class="w-9 h-9 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 active:scale-95 transition cursor-pointer shrink-0">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
       </div>
 
       <form onsubmit="handleSaveKbArticle(event)" class="space-y-3.5 text-xs">
@@ -2576,8 +2525,14 @@
         </div>
 
         <div>
-          <label class="block font-semibold text-slate-700 mb-1">ขั้นตอนหรือคำตอบแนะนำ <span class="text-rose-500">*</span></label>
-          <textarea id="inputKbContent" rows="4" required placeholder="เขียนขั้นตอนการแก้ปัญหา หรือข้อความที่ใช้ตอบผู้ใช้งาน..." class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs outline-none focus:ring-2 focus:ring-tcc-500"></textarea>
+          <div class="flex items-center justify-between mb-1 gap-2 flex-wrap">
+            <label class="block font-semibold text-slate-700">ขั้นตอนหรือคำตอบแนะนำ <span class="text-rose-500">*</span></label>
+            <span class="text-[11px] text-slate-400">Quill.js Rich Text Editor</span>
+          </div>
+          <div class="quill-wrapper quill-compact focus-within:ring-2 focus-within:ring-tcc-500 focus-within:border-tcc-500 transition">
+            <div id="inputKbContentEditor" data-placeholder="เขียนขั้นตอนการแก้ปัญหา หรือข้อความที่ใช้ตอบผู้ใช้งาน..."></div>
+          </div>
+          <textarea id="inputKbContent" rows="4" class="hidden" aria-hidden="true"></textarea>
         </div>
 
         <!-- Attachment support for KB (Req 4 + Google Drive Auto-Save) -->
@@ -2628,7 +2583,9 @@
             <p class="text-[11px] text-slate-500">เพิ่ม ลบ หรือแก้ไขหมวดหมู่ปัญหาที่บันทึกในฐานข้อมูลระบบ</p>
           </div>
         </div>
-        <button onclick="closeTicketCategoryManageModal()" class="text-slate-400 hover:text-slate-600 font-bold p-1">✕</button>
+        <button type="button" onclick="closeTicketCategoryManageModal()" aria-label="ปิดหน้าต่าง" title="ปิดหน้าต่าง" class="w-9 h-9 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 active:scale-95 transition cursor-pointer shrink-0">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
       </div>
 
       <!-- Add New Category -->
@@ -2672,7 +2629,9 @@
             <p class="text-[11px] text-slate-500">เพิ่ม ลบ หรือแก้ไขชื่อระบบใน Dropdown เมื่อผู้ใช้แจ้งปัญหาหมวดระบบสารสนเทศภายใน</p>
           </div>
         </div>
-        <button onclick="closeInternalSystemManageModal()" class="text-slate-400 hover:text-slate-600 font-bold p-1">✕</button>
+        <button type="button" onclick="closeInternalSystemManageModal()" aria-label="ปิดหน้าต่าง" title="ปิดหน้าต่าง" class="w-9 h-9 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 active:scale-95 transition cursor-pointer shrink-0">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
       </div>
 
       <!-- Add New Internal System -->
@@ -2708,7 +2667,9 @@
     <div class="bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl border border-slate-100 animate-fadeIn">
       <div class="flex items-center justify-between pb-2 border-b border-slate-100 mb-3">
         <h4 class="font-bold text-slate-900 text-xs">เลือกคำตอบสำเร็จรูปจากคลังความรู้</h4>
-        <button onclick="closeKbQuickSelectModal()" class="text-slate-400 hover:text-slate-600">✕</button>
+        <button type="button" onclick="closeKbQuickSelectModal()" aria-label="ปิดหน้าต่าง" title="ปิดหน้าต่าง" class="w-9 h-9 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 active:scale-95 transition cursor-pointer shrink-0">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
       </div>
       <div id="quickKbOptionsList" class="space-y-2 max-h-60 overflow-y-auto"></div>
     </div>
@@ -2725,7 +2686,9 @@
             <p class="text-[11px] text-slate-500">บันทึกข้อมูลบัญชี สิทธิ์ รหัสผ่าน และสถานะการใช้งาน</p>
           </div>
         </div>
-        <button onclick="closeRoleModal()" class="text-slate-400 hover:text-slate-600 font-bold">&times;</button>
+        <button type="button" onclick="closeRoleModal()" aria-label="ปิดหน้าต่าง" title="ปิดหน้าต่าง" class="w-9 h-9 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 active:scale-95 transition cursor-pointer shrink-0">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
       </div>
 
       <form id="roleForm" onsubmit="handleSaveUserRole(event)" class="space-y-3.5 text-xs">
@@ -2810,7 +2773,9 @@
             <p id="resetPassUserLabel" class="text-[11px] text-slate-500 font-mono truncate max-w-[200px]">-</p>
           </div>
         </div>
-        <button onclick="closeResetPasswordModal()" class="text-slate-400 hover:text-slate-600 font-bold">&times;</button>
+        <button type="button" onclick="closeResetPasswordModal()" aria-label="ปิดหน้าต่าง" title="ปิดหน้าต่าง" class="w-9 h-9 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 active:scale-95 transition cursor-pointer shrink-0">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
       </div>
 
       <form onsubmit="event.preventDefault(); submitResetPassword();" class="space-y-3.5 text-xs">
@@ -2835,7 +2800,6 @@
     </div>
   </div>
   <!-- MODAL: IMPORT USER ROLES FROM CSV / EXCEL (Req 1) -->
-  <!-- MODAL: IMPORT USER ROLES FROM CSV / EXCEL (Req 1) -->
   <div id="importUserModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 animate-fadeIn max-h-[92vh] overflow-y-auto">
       <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
@@ -2848,7 +2812,9 @@
             <p class="text-[11px] text-slate-500">เพิ่มหรืออัปเดตบัญชีผู้ใช้จำนวนมากในครั้งเดียว</p>
           </div>
         </div>
-        <button onclick="closeImportUserModal()" class="text-slate-400 hover:text-slate-600 font-bold text-lg p-1">&times;</button>
+        <button type="button" onclick="closeImportUserModal()" aria-label="ปิดหน้าต่าง" title="ปิดหน้าต่าง" class="w-9 h-9 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 active:scale-95 transition cursor-pointer shrink-0">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
       </div>
 
       <div class="space-y-4 text-xs">
@@ -2940,7 +2906,9 @@
     <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100 max-h-[92vh] overflow-y-auto animate-fadeIn">
       <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
         <h3 class="font-bold text-slate-900 text-sm">แก้ไขข้อมูล รูปภาพตัวอย่าง และสถานะอุปกรณ์</h3>
-        <button onclick="closeEditItemModal()" class="text-slate-400 hover:text-slate-600">✕</button>
+        <button type="button" onclick="closeEditItemModal()" aria-label="ปิดหน้าต่าง" title="ปิดหน้าต่าง" class="w-9 h-9 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 active:scale-95 transition cursor-pointer shrink-0">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
       </div>
       <form onsubmit="handleSaveItemEdit(event)" class="space-y-3 text-xs">
         <input type="hidden" id="editItemId">
@@ -3006,7 +2974,9 @@
           <h3 class="font-bold text-slate-900 text-sm">ปรับปรุงบันทึกประวัติการยืม-คืน (จัดการหลังบ้าน)</h3>
           <p id="editHistoryTransLabel" class="text-[11px] text-slate-500 font-mono"></p>
         </div>
-        <button onclick="closeEditHistoryModal()" class="text-slate-400 hover:text-slate-600 font-bold p-1">✕</button>
+        <button type="button" onclick="closeEditHistoryModal()" aria-label="ปิดหน้าต่าง" title="ปิดหน้าต่าง" class="w-9 h-9 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 active:scale-95 transition cursor-pointer shrink-0">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
       </div>
 
       <form id="editHistoryForm" onsubmit="handleSaveHistoryEdit(event)" class="space-y-3.5 text-xs">
@@ -3059,8 +3029,14 @@
           </div>
         </div>
         <div>
-          <label class="block font-semibold text-slate-700 mb-1">วัตถุประสงค์ / หมายเหตุการใช้งาน</label>
-          <textarea id="editHistoryNotes" rows="2" class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-tcc-500 outline-none"></textarea>
+          <div class="flex items-center justify-between mb-1 gap-2 flex-wrap">
+            <label class="block font-semibold text-slate-700">วัตถุประสงค์ / หมายเหตุการใช้งาน</label>
+            <span class="text-[11px] text-slate-400">Quill.js Rich Text Editor</span>
+          </div>
+          <div class="quill-wrapper quill-compact focus-within:ring-2 focus-within:ring-tcc-500 focus-within:border-tcc-500 transition">
+            <div id="editHistoryNotesEditor" data-placeholder="ระบุวัตถุประสงค์ในการยืม หรือหมายเหตุการใช้งาน..."></div>
+          </div>
+          <textarea id="editHistoryNotes" rows="2" class="hidden" aria-hidden="true"></textarea>
         </div>
         <div class="p-2.5 bg-emerald-50/70 border border-emerald-200 rounded-xl">
           <label class="flex items-center gap-2 cursor-pointer select-none text-emerald-900 font-semibold">
@@ -3084,7 +3060,9 @@
           <h3 class="font-bold text-slate-900 text-sm">จัดการรายชื่อฝ่าย / แผนก</h3>
           <p class="text-[11px] text-slate-500">บันทึกลงตาราง departments ในฐานข้อมูล Supabase (ใช้ร่วมกันทั้ง PROD และ UAT)</p>
         </div>
-        <button onclick="closeDeptManagementModal()" class="text-slate-400 hover:text-slate-600">✕</button>
+        <button type="button" onclick="closeDeptManagementModal()" aria-label="ปิดหน้าต่าง" title="ปิดหน้าต่าง" class="w-9 h-9 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 active:scale-95 transition cursor-pointer shrink-0">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
       </div>
 
       <div class="mb-4">
@@ -3115,7 +3093,9 @@
     <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100 max-h-[92vh] overflow-y-auto animate-fadeIn">
       <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
         <h3 class="font-bold text-slate-900">เพิ่มอุปกรณ์ใหม่เข้าสู่คลัง (TCC)</h3>
-        <button onclick="closeAddItemModal()" class="text-slate-400 hover:text-slate-600">✕</button>
+        <button type="button" onclick="closeAddItemModal()" aria-label="ปิดหน้าต่าง" title="ปิดหน้าต่าง" class="w-9 h-9 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 active:scale-95 transition cursor-pointer shrink-0">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
       </div>
 
       <form id="addItemForm" onsubmit="handleAddNewItem(event)" class="space-y-3 text-xs">
@@ -3180,7 +3160,7 @@
           <h3 class="font-bold text-slate-900">ตั้งค่าฐานข้อมูลกลาง Supabase &amp; Google Drive</h3>
           <p class="text-[11px] text-slate-500">ขั้นตอนที่ 4–5: ทั้ง PROD และ UAT เชื่อมต่อ Supabase Database เดียวกันผ่าน /api/db และเก็บไฟล์แนบไว้บน Google Drive</p>
         </div>
-        <button type="button" onclick="closeSetupModal()" aria-label="ปิดหน้าต่าง" title="ปิดหน้าต่าง" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition cursor-pointer shrink-0">
+        <button type="button" onclick="closeSetupModal()" aria-label="ปิดหน้าต่าง" title="ปิดหน้าต่าง" class="w-9 h-9 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 active:scale-95 transition cursor-pointer shrink-0">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
           </svg>
@@ -3277,7 +3257,9 @@
           <button type="button" id="previewModalDownloadBtn" onclick="downloadCurrentPreviewAttachment()" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1 shadow-xs transition">
             <span>⬇️ ดาวน์โหลดไฟล์</span>
           </button>
-          <button type="button" onclick="closeAttachmentPreviewModal()" class="w-8 h-8 rounded-full bg-slate-200/70 hover:bg-slate-300 text-slate-700 font-bold flex items-center justify-center transition">✕</button>
+          <button type="button" onclick="closeAttachmentPreviewModal()" aria-label="ปิดหน้าต่าง" title="ปิดหน้าต่าง" class="w-9 h-9 rounded-full bg-slate-200/70 hover:bg-slate-300 text-slate-700 flex items-center justify-center active:scale-95 transition cursor-pointer shrink-0">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
         </div>
       </div>
       <div id="previewModalBody" class="p-4 sm:p-6 bg-slate-900/95 flex-1 overflow-auto flex items-center justify-center min-h-[280px] max-h-[75vh]">
@@ -3296,7 +3278,9 @@
             <p class="text-[11px] text-slate-500">แจ้งเตือนทุกความเคลื่อนไหวทั้งการยืม-คืนอุปกรณ์ และการเปิด/อัปเดตเคสแจ้งซ่อมไอที</p>
           </div>
         </div>
-        <button type="button" onclick="closeEmailLogModal()" class="text-slate-400 hover:text-slate-600 font-bold p-1">✕</button>
+        <button type="button" onclick="closeEmailLogModal()" aria-label="ปิดหน้าต่าง" title="ปิดหน้าต่าง" class="w-9 h-9 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 active:scale-95 transition cursor-pointer shrink-0">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
       </div>
 
       <div class="p-3 bg-emerald-50/80 border border-emerald-200 rounded-2xl space-y-2.5 mb-4 text-xs shrink-0">
@@ -3340,7 +3324,9 @@
           <h3 id="emailRecipientModalTitle" class="font-bold text-slate-900 text-sm">เพิ่มอีเมลรับแจ้งเตือนอัตโนมัติ</h3>
           <p class="text-[11px] text-slate-500">กำหนดอีเมลเจ้าหน้าที่หรือกลุ่มผู้รับแจ้งเตือนตามระบบ</p>
         </div>
-        <button type="button" onclick="closeEmailRecipientModal()" class="text-slate-400 hover:text-slate-600 font-bold p-1">✕</button>
+        <button type="button" onclick="closeEmailRecipientModal()" aria-label="ปิดหน้าต่าง" title="ปิดหน้าต่าง" class="w-9 h-9 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 active:scale-95 transition cursor-pointer shrink-0">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
       </div>
 
       <form onsubmit="handleSaveEmailRecipient(event)" class="space-y-3 text-xs">
@@ -6819,7 +6805,7 @@
       const html = String(rawHtml || "");
       if (!html.trim()) return "";
       const doc = new DOMParser().parseFromString(html, "text/html");
-      const allowedTags = new Set(["B", "STRONG", "U", "I", "EM", "BR", "P", "DIV", "SPAN", "FONT", "IMG", "UL", "OL", "LI"]);
+      const allowedTags = new Set(["B", "STRONG", "U", "I", "EM", "S", "STRIKE", "A", "BR", "P", "DIV", "SPAN", "FONT", "IMG", "UL", "OL", "LI", "BLOCKQUOTE", "PRE", "CODE", "H1", "H2", "H3", "H4"]);
       const cleanNode = (node) => {
         if (node.nodeType === 3) return; // Text node
         if (node.nodeType !== 1) {
@@ -6839,14 +6825,23 @@
             if (name === "src" && !/^data:image\/|^https?:\/\//i.test(attr.value)) {
               node.removeAttribute("src");
             }
+          } else if (tag === "A" && (name === "href" || name === "target" || name === "rel")) {
+            if (name === "href" && !/^https?:\/\/|^mailto:/i.test(attr.value)) {
+              node.removeAttribute("href");
+            } else if (name === "href") {
+              node.setAttribute("target", "_blank");
+              node.setAttribute("rel", "noopener noreferrer");
+            }
           } else if (tag === "FONT" && name === "color") {
             // keep color
           } else if (name === "style") {
             const colorMatch = attr.value.match(/(?:^|;)\s*color\s*:\s*([^;]+)/i);
+            const bgMatch = attr.value.match(/(?:^|;)\s*background-color\s*:\s*([^;]+)/i);
             const fwMatch = attr.value.match(/(?:^|;)\s*font-weight\s*:\s*([^;]+)/i);
             const tdMatch = attr.value.match(/(?:^|;)\s*text-decoration(?:-line)?\s*:\s*([^;]+)/i);
             const parts = [];
             if (colorMatch) parts.push(`color: ${colorMatch[1].trim()}`);
+            if (bgMatch) parts.push(`background-color: ${bgMatch[1].trim()}`);
             if (fwMatch) parts.push(`font-weight: ${fwMatch[1].trim()}`);
             if (tdMatch) parts.push(`text-decoration: ${tdMatch[1].trim()}`);
             if (parts.length > 0) node.setAttribute("style", parts.join("; "));
@@ -6858,19 +6853,232 @@
         Array.from(node.childNodes).forEach(cleanNode);
       };
       Array.from(doc.body.childNodes).forEach(cleanNode);
-      return doc.body.innerHTML.trim();
+      const cleaned = doc.body.innerHTML.trim();
+      if (cleaned === "<p><br></p>" || cleaned === "<div><br></div>" || cleaned === "<br>") return "";
+      return cleaned;
+    }
+
+    const quillEditors = {};
+    const EDITOR_BACKING_INPUT_MAP = {
+      ticketDescriptionEditor: "ticketDescription",
+      detailAdminNoteEditor: "detailAdminNote",
+      adminActionNoteEditor: "adminActionNote",
+      borrowPurposeEditor: "borrowPurpose",
+      inputKbContentEditor: "inputKbContent",
+      editHistoryNotesEditor: "editHistoryNotes"
+    };
+
+    function syncEditorToBackingInput(editorId) {
+      const backingId = EDITOR_BACKING_INPUT_MAP[editorId];
+      if (!backingId) return;
+      const backingEl = document.getElementById(backingId);
+      if (!backingEl) return;
+      const q = quillEditors[editorId];
+      if (q) {
+        backingEl.value = (q.getText() || "").trim();
+      } else {
+        const el = document.getElementById(editorId);
+        if (el) backingEl.value = (el.innerText || "").trim();
+      }
+    }
+
+    function initQuillEditor(editorId, options = {}) {
+      const el = document.getElementById(editorId);
+      if (!el) return null;
+      if (quillEditors[editorId]) return quillEditors[editorId];
+
+      const placeholder = options.placeholder || el.getAttribute("data-placeholder") || "พิมพ์ข้อความที่นี่...";
+      if (typeof window.Quill !== "function") {
+        // Graceful fallback if Quill CDN is unavailable
+        el.setAttribute("contenteditable", "true");
+        el.classList.add("rich-editor-content", "p-3", "min-h-[100px]", "outline-none");
+        el.addEventListener("input", () => syncEditorToBackingInput(editorId));
+        return null;
+      }
+
+      const allowImage = options.allowImage !== false;
+      const toolbarConfig = options.compact
+        ? [
+            ["bold", "italic", "underline", "strike"],
+            [{ color: [] }, { background: [] }],
+            [{ list: "ordered" }, { list: "bullet" }],
+            allowImage ? ["link", "image", "clean"] : ["link", "clean"]
+          ]
+        : [
+            ["bold", "italic", "underline", "strike"],
+            [{ color: [] }, { background: [] }],
+            [{ list: "ordered" }, { list: "bullet" }],
+            allowImage ? ["link", "image", "clean"] : ["link", "clean"]
+          ];
+
+      const q = new window.Quill(el, {
+        theme: "snow",
+        placeholder: placeholder,
+        modules: {
+          toolbar: {
+            container: toolbarConfig,
+            handlers: {
+              image: function () {
+                const fileInputId = options.imageInputId;
+                const existingInput = fileInputId ? document.getElementById(fileInputId) : null;
+                if (existingInput) {
+                  existingInput.click();
+                  return;
+                }
+                const tempInput = document.createElement("input");
+                tempInput.type = "file";
+                tempInput.accept = "image/*";
+                tempInput.multiple = true;
+                tempInput.onchange = () => handleRichEditorImagePick(tempInput, editorId);
+                tempInput.click();
+              }
+            }
+          }
+        }
+      });
+
+      // Handle image paste & drag-drop inside Quill editor root via existing compressor
+      if (q.root) {
+        q.root.addEventListener("paste", (e) => {
+          const items = Array.from(e.clipboardData?.items || []);
+          const imageItems = items.filter(it => it.kind === "file" && it.type && it.type.startsWith("image/"));
+          if (imageItems.length > 0) {
+            e.preventDefault();
+            e.stopPropagation();
+            imageItems.forEach(it => {
+              const file = it.getAsFile();
+              if (file) insertImageFileIntoRichEditor(editorId, file);
+            });
+          }
+        }, true);
+
+        q.root.addEventListener("drop", (e) => {
+          const files = Array.from(e.dataTransfer?.files || []).filter(f => f.type && f.type.startsWith("image/"));
+          if (files.length > 0) {
+            e.preventDefault();
+            e.stopPropagation();
+            files.forEach(f => insertImageFileIntoRichEditor(editorId, f));
+          }
+        }, true);
+      }
+
+      q.on("text-change", () => {
+        syncEditorToBackingInput(editorId);
+      });
+
+      quillEditors[editorId] = q;
+      return q;
+    }
+
+    function initAllStaticQuillEditors() {
+      initQuillEditor("ticketDescriptionEditor", {
+        imageInputId: "ticketDescInlineImageInput",
+        allowImage: true
+      });
+      initQuillEditor("detailAdminNoteEditor", {
+        imageInputId: "detailAdminNoteImageInput",
+        compact: true,
+        allowImage: true
+      });
+      initQuillEditor("replyMessageInput", {
+        imageInputId: "replyInlineImageInput",
+        compact: true,
+        allowImage: true
+      });
+      initQuillEditor("adminActionNoteEditor", {
+        imageInputId: "adminActionNoteImageInput",
+        compact: true,
+        allowImage: true
+      });
+      initQuillEditor("borrowPurposeEditor", {
+        compact: true,
+        allowImage: false
+      });
+      initQuillEditor("inputKbContentEditor", {
+        compact: true,
+        allowImage: false
+      });
+      initQuillEditor("editHistoryNotesEditor", {
+        compact: true,
+        allowImage: false
+      });
+    }
+
+    function setRichEditorContent(editorId, htmlOrText = "", isHtml = false) {
+      const q = quillEditors[editorId] || initQuillEditor(editorId, { compact: true });
+      const raw = String(htmlOrText || "");
+      if (q) {
+        if (!raw.trim()) {
+          q.setText("");
+        } else if (isHtml || /<[a-z][\s\S]*>/i.test(raw)) {
+          q.root.innerHTML = sanitizeRichHtml(raw);
+        } else {
+          q.setText(raw);
+        }
+        syncEditorToBackingInput(editorId);
+        return;
+      }
+      const el = document.getElementById(editorId);
+      if (!el) return;
+      if ("value" in el && (el.tagName === "TEXTAREA" || el.tagName === "INPUT")) {
+        el.value = raw;
+      } else if (isHtml || /<[a-z][\s\S]*>/i.test(raw)) {
+        el.innerHTML = sanitizeRichHtml(raw);
+      } else {
+        el.innerText = raw;
+      }
+      syncEditorToBackingInput(editorId);
+    }
+
+    function clearRichEditor(editorId) {
+      setRichEditorContent(editorId, "", false);
+    }
+
+    function focusRichEditor(editorId) {
+      const q = quillEditors[editorId];
+      if (q) {
+        q.focus();
+        return;
+      }
+      const el = document.getElementById(editorId);
+      if (el) el.focus();
     }
 
     function getRichEditorData(editorId) {
+      const q = quillEditors[editorId];
+      if (q && q.root) {
+        const html = sanitizeRichHtml(q.root.innerHTML);
+        const text = (q.getText() || "").trim();
+        const hasImages = /<img\b/i.test(html);
+        syncEditorToBackingInput(editorId);
+        return { html, text, hasImages };
+      }
       const el = document.getElementById(editorId);
       if (!el) return { html: "", text: "", hasImages: false };
-      const html = sanitizeRichHtml(el.innerHTML);
-      const text = (el.innerText || "").trim();
+      if ("value" in el && (el.tagName === "TEXTAREA" || el.tagName === "INPUT")) {
+        const text = (el.value || "").trim();
+        const html = text ? text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>") : "";
+        return { html, text, hasImages: false };
+      }
+      const rootEl = el.querySelector?.(".ql-editor") || el;
+      const html = sanitizeRichHtml(rootEl.innerHTML);
+      const text = (rootEl.innerText || "").trim();
       const hasImages = /<img\b/i.test(html);
       return { html, text, hasImages };
     }
 
     function execRichCmd(editorId, cmd, value = null) {
+      const q = quillEditors[editorId];
+      if (q) {
+        q.focus();
+        if (cmd === "bold") q.format("bold", !q.getFormat().bold);
+        else if (cmd === "underline") q.format("underline", !q.getFormat().underline);
+        else if (cmd === "removeFormat") {
+          const range = q.getSelection();
+          if (range) q.removeFormat(range.index, range.length);
+        }
+        return;
+      }
       const el = document.getElementById(editorId);
       if (!el) return;
       el.focus();
@@ -6881,6 +7089,12 @@
     }
 
     function applyRichTextColor(editorId, colorHex) {
+      const q = quillEditors[editorId];
+      if (q) {
+        q.focus();
+        q.format("color", colorHex);
+        return;
+      }
       const el = document.getElementById(editorId);
       if (!el) return;
       el.focus();
@@ -6894,6 +7108,16 @@
       const el = document.getElementById(editorId);
       if (!el || !file || !file.type || !file.type.startsWith("image/")) return;
       readAndPrepareAttachmentFile(file, (dataUrl, fileName) => {
+        const q = quillEditors[editorId];
+        if (q) {
+          q.focus();
+          const range = q.getSelection(true);
+          const index = range ? range.index : q.getLength();
+          q.insertEmbed(index, "image", dataUrl, "user");
+          q.setSelection(index + 1, 0);
+          syncEditorToBackingInput(editorId);
+          return;
+        }
         el.focus();
         const safeAlt = escapeQuotes(fileName || "image");
         const imgHtml = `<img src="${dataUrl}" alt="${safeAlt}" />&nbsp;`;
@@ -7064,7 +7288,7 @@
       const fallbackDesc = (document.getElementById("ticketDescription")?.value || "").trim();
       const descText = descEditorData.text || fallbackDesc || (descEditorData.hasImages ? "(แนบรูปภาพในรายละเอียด)" : "");
       if (!descText && !descEditorData.hasImages) {
-        document.getElementById("ticketDescriptionEditor")?.focus();
+        focusRichEditor("ticketDescriptionEditor");
         return showNotification("กรุณากรอกรายละเอียดของปัญหา หรือวางรูปภาพประกอบ", "warning");
       }
 
@@ -7133,8 +7357,7 @@
       saveTicketRichCache(newTicket);
 
       document.getElementById("createTicketForm")?.reset();
-      const descEditorEl = document.getElementById("ticketDescriptionEditor");
-      if (descEditorEl) descEditorEl.innerHTML = "";
+      clearRichEditor("ticketDescriptionEditor");
       const tktNotifyChk = document.getElementById("ticketNotifyEmailCheckbox");
       if (tktNotifyChk) tktNotifyChk.checked = state.emailNotifyEnabled !== false;
       handleTicketCategoryChange(document.getElementById("ticketCategory")?.value || "");
@@ -7523,8 +7746,7 @@
       state.activeDetailTicketId = ticketId;
       state.editingCommentIndex = null;
       clearReplyAttachments();
-      const replyEditor = document.getElementById("replyMessageInput");
-      if (replyEditor) replyEditor.innerHTML = "";
+      clearRichEditor("replyMessageInput");
 
       document.getElementById("detailTicketNumber").innerText = ticket.ticket_id;
       document.getElementById("detailTicketTitle").innerText = ticket.title;
@@ -7566,8 +7788,7 @@
       }
       const detailNoteInp = document.getElementById("detailAdminNote");
       if (detailNoteInp) detailNoteInp.value = "";
-      const detailNoteEditor = document.getElementById("detailAdminNoteEditor");
-      if (detailNoteEditor) detailNoteEditor.innerHTML = "";
+      clearRichEditor("detailAdminNoteEditor");
       const detailNotifyChk = document.getElementById("detailAdminNotifyEmail");
       if (detailNotifyChk) detailNotifyChk.checked = state.emailNotifyEnabled !== false;
 
@@ -7832,23 +8053,9 @@
             </div>
             ${isEditing ? `
               <div class="space-y-2 mt-1.5">
-                <div class="rounded-xl border border-tcc-400 bg-white overflow-hidden">
-                  <div class="px-2 py-1 bg-slate-50 border-b border-slate-200 flex items-center gap-1 flex-wrap">
-                    <button type="button" onmousedown="event.preventDefault(); execRichCmd('editCommentEditor-${cIdx}', 'bold')" class="px-2 py-0.5 rounded bg-white hover:bg-slate-100 border border-slate-200 font-extrabold text-[11px] cursor-pointer" title="ตัวหนา">B</button>
-                    <button type="button" onmousedown="event.preventDefault(); execRichCmd('editCommentEditor-${cIdx}', 'underline')" class="px-2 py-0.5 rounded bg-white hover:bg-slate-100 border border-slate-200 underline font-semibold text-[11px] cursor-pointer" title="ขีดเส้นใต้">U</button>
-                    <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('editCommentEditor-${cIdx}', '#0f172a')" class="w-4 h-4 rounded-full bg-slate-900 border border-slate-300 cursor-pointer" title="สีดำ"></button>
-                    <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('editCommentEditor-${cIdx}', '#dc2626')" class="w-4 h-4 rounded-full bg-red-600 border border-slate-300 cursor-pointer" title="สีแดง"></button>
-                    <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('editCommentEditor-${cIdx}', '#0284c7')" class="w-4 h-4 rounded-full bg-sky-600 border border-slate-300 cursor-pointer" title="สีน้ำเงิน"></button>
-                    <button type="button" onmousedown="event.preventDefault(); applyRichTextColor('editCommentEditor-${cIdx}', '#059669')" class="w-4 h-4 rounded-full bg-emerald-600 border border-slate-300 cursor-pointer" title="สีเขียว"></button>
-                    <input type="file" id="editCommentImgInput-${cIdx}" multiple accept="image/*" onchange="handleRichEditorImagePick(this, 'editCommentEditor-${cIdx}')" class="hidden">
-                    <label for="editCommentImgInput-${cIdx}" class="px-2 py-0.5 rounded bg-tcc-50 hover:bg-tcc-100 border border-tcc-200 text-tcc-700 font-bold text-[10px] cursor-pointer">🖼️ แทรกรูป</label>
-                  </div>
-                  <div id="editCommentEditor-${cIdx}"
-                       contenteditable="true"
-                       onpaste="handleRichEditorPaste(event, 'editCommentEditor-${cIdx}')"
-                       ondrop="handleRichEditorDrop(event, 'editCommentEditor-${cIdx}')"
-                       ondragover="event.preventDefault()"
-                       class="rich-editor-content w-full min-h-[70px] max-h-52 overflow-y-auto px-3 py-2 text-xs sm:text-sm text-slate-800 leading-relaxed outline-none bg-white">${c.message_html ? sanitizeRichHtml(c.message_html) : (c.message ? String(c.message).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>") : "")}</div>
+                <div class="quill-wrapper quill-compact border-tcc-400 bg-white overflow-hidden">
+                  <input type="file" id="editCommentImgInput-${cIdx}" multiple accept="image/*" onchange="handleRichEditorImagePick(this, 'editCommentEditor-${cIdx}')" class="hidden">
+                  <div id="editCommentEditor-${cIdx}" data-placeholder="แก้ไขข้อความสนทนา..."></div>
                 </div>
                 <div class="flex items-center justify-end gap-1.5">
                   <button type="button" onclick="cancelEditTicketComment()" class="px-3 py-1 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold text-xs cursor-pointer">ยกเลิก</button>
@@ -7886,14 +8093,26 @@
       const ticket = state.tickets.find(t => t.ticket_id === state.activeDetailTicketId);
       if (!ticket || !Array.isArray(ticket.comments) || !ticket.comments[commentIdx]) return;
       state.editingCommentIndex = commentIdx;
+      const editorId = `editCommentEditor-${commentIdx}`;
+      delete quillEditors[editorId];
       renderTicketComments(ticket);
-      const editEl = document.getElementById(`editCommentEditor-${commentIdx}`);
-      if (editEl) {
-        editEl.focus();
-      }
+      const c = ticket.comments[commentIdx];
+      initQuillEditor(editorId, {
+        imageInputId: `editCommentImgInput-${commentIdx}`,
+        compact: true,
+        allowImage: true
+      });
+      const initialContent = c.message_html
+        ? sanitizeRichHtml(c.message_html)
+        : (c.message ? String(c.message).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>") : "");
+      setRichEditorContent(editorId, initialContent, true);
+      focusRichEditor(editorId);
     }
 
     function cancelEditTicketComment() {
+      if (state.editingCommentIndex !== null && state.editingCommentIndex !== undefined) {
+        delete quillEditors[`editCommentEditor-${state.editingCommentIndex}`];
+      }
       state.editingCommentIndex = null;
       if (!state.activeDetailTicketId) return;
       const ticket = state.tickets.find(t => t.ticket_id === state.activeDetailTicketId);
@@ -7904,7 +8123,8 @@
       if (!state.activeDetailTicketId) return;
       const ticket = state.tickets.find(t => t.ticket_id === state.activeDetailTicketId);
       if (!ticket || !Array.isArray(ticket.comments) || !ticket.comments[commentIdx]) return;
-      const editorData = getRichEditorData(`editCommentEditor-${commentIdx}`);
+      const editorId = `editCommentEditor-${commentIdx}`;
+      const editorData = getRichEditorData(editorId);
       const comment = ticket.comments[commentIdx];
       if (!editorData.text && !editorData.hasImages && (!Array.isArray(comment.attachments) || comment.attachments.length === 0)) {
         return showNotification("กรุณากรอกข้อความหรือวางรูปภาพก่อนบันทึก", "warning");
@@ -7912,6 +8132,7 @@
       comment.message = editorData.text || (editorData.hasImages ? "(แนบรูปภาพในข้อความ)" : "");
       comment.message_html = editorData.html;
       comment.edited_at = getLocalTimestamp(0);
+      delete quillEditors[editorId];
       state.editingCommentIndex = null;
       saveTicketRichCache(ticket);
       renderTicketComments(ticket);
@@ -7938,7 +8159,6 @@
 
     function handleSendTicketComment(e) {
       e.preventDefault();
-      const input = document.getElementById("replyMessageInput");
       const editorData = getRichEditorData("replyMessageInput");
       const msg = editorData.text;
       const attachments = Array.isArray(state.replyAttachments)
@@ -7963,7 +8183,7 @@
 
       (ticket.comments = Array.isArray(ticket.comments) ? ticket.comments : []).push(newComment);
 
-      if (input) input.innerHTML = "";
+      clearRichEditor("replyMessageInput");
       state.editingCommentIndex = null;
       clearReplyAttachments();
       saveTicketRichCache(ticket);
@@ -8080,8 +8300,7 @@
       }
       const noteEl = document.getElementById("adminActionNote");
       if (noteEl) noteEl.value = "";
-      const noteEditorEl = document.getElementById("adminActionNoteEditor");
-      if (noteEditorEl) noteEditorEl.innerHTML = "";
+      clearRichEditor("adminActionNoteEditor");
       const notifyChk = document.getElementById("adminActionNotifyEmail");
       if (notifyChk) notifyChk.checked = state.emailNotifyEnabled !== false;
 
@@ -8502,7 +8721,10 @@
       }).join("");
     }
 
-    function openAddKbModal() { document.getElementById("addKbModal").classList.remove("hidden"); }
+    function openAddKbModal() {
+      clearRichEditor("inputKbContentEditor");
+      document.getElementById("addKbModal").classList.remove("hidden");
+    }
     function closeAddKbModal() { document.getElementById("addKbModal").classList.add("hidden"); }
 
     async function handleSaveKbArticle(e) {
@@ -8511,12 +8733,18 @@
       const kbId = "KB-" + String(state.knowledgeBase.length + 1).padStart(3, "0");
       const attachName = state.currentKbAttachmentName || "";
       const attachBase64 = state.currentKbAttachmentBase64 || "";
+      const kbEditorData = getRichEditorData("inputKbContentEditor");
+      const kbContentText = kbEditorData.text || (document.getElementById("inputKbContent")?.value || "").trim();
+      if (!kbContentText) {
+        focusRichEditor("inputKbContentEditor");
+        return showNotification("กรุณากรอกขั้นตอนหรือคำตอบแนะนำ", "warning");
+      }
 
       const newArticle = {
         kb_id: kbId,
         category: document.getElementById("inputKbCategory").value,
         title: document.getElementById("inputKbTitle").value.trim(),
-        content: document.getElementById("inputKbContent").value.trim(),
+        content: kbContentText,
         doc_url: docUrl,
         attachment_name: attachName,
         attachment_base64: attachBase64,
@@ -8538,6 +8766,7 @@
       if (titleInput) titleInput.value = "";
       const contentInput = document.getElementById("inputKbContent");
       if (contentInput) contentInput.value = "";
+      clearRichEditor("inputKbContentEditor");
 
       showNotification(`เพิ่มบทความ [${newArticle.title}] เรียบร้อย`, "success");
       renderKnowledgeBaseList();
@@ -8580,16 +8809,8 @@
     function closeKbQuickSelectModal() { document.getElementById("quickKbModal").classList.add("hidden"); }
 
     function selectKbAnswer(text) {
-      const input = document.getElementById("replyMessageInput");
-      if (input) {
-        if (input.isContentEditable) {
-          input.innerText = text;
-          input.focus();
-        } else {
-          input.value = text;
-          autoResizeReplyTextarea(input);
-        }
-      }
+      setRichEditorContent("replyMessageInput", text, false);
+      focusRichEditor("replyMessageInput");
       closeKbQuickSelectModal();
     }
 
@@ -9906,7 +10127,8 @@
       const bNameVal = document.getElementById("borrowerName").value.trim();
       const deptVal = document.getElementById("borrowerDept")?.value.trim() || "";
       const contactVal = document.getElementById("borrowerContact").value.trim();
-      const notesVal = document.getElementById("borrowPurpose").value.trim();
+      const borrowPurposeData = getRichEditorData("borrowPurposeEditor");
+      const notesVal = borrowPurposeData.text || (document.getElementById("borrowPurpose")?.value || "").trim();
       const notifyEmail = document.getElementById("borrowNotifyEmailCheckbox")?.checked !== false;
 
       const bDate = document.getElementById("borrowStartDate")?.value || getOffsetDate(0);
@@ -9977,6 +10199,7 @@
       }, true);
 
       document.getElementById("borrowForm").reset();
+      clearRichEditor("borrowPurposeEditor");
       const borrowNotifyChk = document.getElementById("borrowNotifyEmailCheckbox");
       if (borrowNotifyChk) borrowNotifyChk.checked = state.emailNotifyEnabled !== false;
       clearSelectedBorrowItems();
@@ -11433,6 +11656,7 @@
       document.getElementById("editHistoryActualReturn").value = log.actual_return || "";
       document.getElementById("editHistoryStatus").value = log.trans_status;
       document.getElementById("editHistoryNotes").value = log.notes || "";
+      setRichEditorContent("editHistoryNotesEditor", log.notes || "", false);
       const notifyChk = document.getElementById("editHistoryNotifyEmail");
       if (notifyChk) notifyChk.checked = state.emailNotifyEnabled !== false;
       document.getElementById("editHistoryModal").classList.remove("hidden");
@@ -11452,7 +11676,8 @@
       log.expected_return = document.getElementById("editHistoryExpectedReturn").value;
       log.actual_return = document.getElementById("editHistoryActualReturn").value.trim();
       log.trans_status = document.getElementById("editHistoryStatus").value;
-      log.notes = document.getElementById("editHistoryNotes").value.trim();
+      const editNotesData = getRichEditorData("editHistoryNotesEditor");
+      log.notes = editNotesData.text || (document.getElementById("editHistoryNotes")?.value || "").trim();
       const notifyEmail = document.getElementById("editHistoryNotifyEmail")?.checked !== false;
 
       if (log.trans_status === "Returned") {
@@ -13974,6 +14199,7 @@ function handleDeleteUserRole(data) {
 
     function handleResetBorrowForm() {
       clearSelectedBorrowItems();
+      clearRichEditor("borrowPurposeEditor");
       setTimeout(() => {
         setDefaultReturnDate();
         const borrowNotifyChk = document.getElementById("borrowNotifyEmailCheckbox");
@@ -13987,6 +14213,7 @@ function handleDeleteUserRole(data) {
     }
 
     window.addEventListener("DOMContentLoaded", () => {
+      initAllStaticQuillEditors();
       setDefaultReturnDate();
       // Restore cached equipment images from localStorage
       state.items.forEach(item => {

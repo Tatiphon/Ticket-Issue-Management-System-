@@ -845,11 +845,11 @@
           <div class="w-full bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 mb-4">
               <div>
-                <h2 class="text-base sm:text-lg font-bold text-slate-900">รายการอุปกรณ์ที่ฉันยืมไว้</h2>
-                <p class="text-xs text-slate-500">ตรวจสอบกำหนดส่งคืนและประวัติการยืมของคุณ</p>
+                <h2 class="text-base sm:text-lg font-bold text-slate-900">รายการอุปกรณ์ที่ฉันและฝ่าย/แผนกยืมไว้</h2>
+                <p id="myBorrowsDeptSubtext" class="text-xs text-slate-500">ตรวจสอบกำหนดส่งคืนและติดตามรายการยืมของคุณและเพื่อนร่วมฝ่าย/แผนกเดียวกัน</p>
               </div>
               <div class="flex items-center gap-2">
-                <input type="text" id="searchMyBorrowsInput" onkeyup="renderMyBorrowsTable()" placeholder="ค้นหารหัส หรือชื่ออุปกรณ์..." class="px-3 py-1.5 text-xs rounded-xl border border-slate-300 focus:ring-2 focus:ring-tcc-500 outline-none">
+                <input type="text" id="searchMyBorrowsInput" onkeyup="renderMyBorrowsTable()" placeholder="ค้นหารหัส, อุปกรณ์, หรือชื่อผู้ยืม..." class="px-3 py-1.5 text-xs rounded-xl border border-slate-300 focus:ring-2 focus:ring-tcc-500 outline-none">
               </div>
             </div>
 
@@ -1074,8 +1074,8 @@
           <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 mb-4">
               <div>
-                <h2 class="text-base sm:text-lg font-bold text-slate-900">ติดตามสถานะเคสของฉัน</h2>
-                <p class="text-xs text-slate-500">ตรวจสอบความคืบหน้า พูดคุยสอบถาม และให้คะแนนความพึงพอใจการให้บริการ</p>
+                <h2 class="text-base sm:text-lg font-bold text-slate-900">ติดตามสถานะเคสของฉันและฝ่าย/แผนก</h2>
+                <p id="myTicketsDeptSubtext" class="text-xs text-slate-500">ตรวจสอบความคืบหน้า พูดคุยสอบถาม และช่วยกันติดตามสถานะเคสภายในฝ่าย/แผนกเดียวกัน</p>
               </div>
               <div class="flex items-center gap-2">
                 <select id="filterMyTicketStatus" onchange="renderMyTicketsList()" class="px-3 py-1.5 text-xs rounded-xl border border-slate-300 bg-white">
@@ -9901,18 +9901,32 @@
       const q = (document.getElementById("searchMyBorrowsInput")?.value || "").toLowerCase().trim();
       const uEmail = (user?.email || "").toLowerCase().trim();
       const uName = (user?.name || "").trim();
+      const uDept = getCurrentUserEffectiveDept(user);
+
+      const subtextEl = document.getElementById("myBorrowsDeptSubtext");
+      if (subtextEl) {
+        subtextEl.innerHTML = uDept
+          ? `แสดงรายการอุปกรณ์ที่คุณและเพื่อนร่วมสังกัด <b class="text-tcc-700">${uDept}</b> ยืมไว้ เพื่อช่วยกันติดตามกำหนดส่งคืน`
+          : `ตรวจสอบกำหนดส่งคืนและติดตามรายการยืมของคุณและเพื่อนร่วมฝ่าย/แผนกเดียวกัน`;
+      }
+
       const myBorrows = state.activeBorrows.filter(b => {
         const contact = String(b.borrower_contact || "").toLowerCase();
         const bName = String(b.borrower_name || "");
+        const bDept = String(b.borrower_dept || "").trim();
         const isMine = !!user && ((uEmail && contact.includes(uEmail)) || (uName && bName.includes(uName)));
+        const isSameDept = !!user && !!uDept && isSameDepartmentName(uDept, bDept);
         const tid = String(b.trans_id || "").toLowerCase();
         const iid = String(b.item_id || "").toLowerCase();
-        return isMine && (!q || tid.includes(q) || iid.includes(q));
+        const itemObj = state.items.find(i => i.item_id === b.item_id);
+        const iName = String(itemObj?.item_name || "").toLowerCase();
+        const bNameLower = bName.toLowerCase();
+        return (isMine || isSameDept) && (!q || tid.includes(q) || iid.includes(q) || iName.includes(q) || bNameLower.includes(q));
       });
 
       if (badge) badge.innerText = myBorrows.length;
       if (myBorrows.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" class="py-8 text-center text-slate-400 text-xs">ไม่พบรายการยืมของคุณในขณะนี้ 🎉</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" class="py-8 text-center text-slate-400 text-xs">ไม่พบรายการยืมของคุณหรือในฝ่าย/แผนกเดียวกันในขณะนี้ 🎉</td></tr>';
         return;
       }
 
@@ -9921,6 +9935,12 @@
         const item = state.items.find(i => i.item_id === b.item_id) || { item_id: b.item_id, item_name: b.item_id };
         const imgInfo = resolveItemImageInfo(item);
         const isOverdue = b.expected_return && b.expected_return < today;
+        const contact = String(b.borrower_contact || "").toLowerCase();
+        const bName = String(b.borrower_name || "");
+        const isDirectMine = !!user && ((uEmail && contact.includes(uEmail)) || (uName && bName.includes(uName)));
+        const ownerPill = isDirectMine
+          ? `<span class="inline-block ml-1.5 px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-tcc-50 text-tcc-700 border border-tcc-200">ของฉัน</span>`
+          : `<span class="inline-block ml-1.5 px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">ร่วมฝ่าย</span>`;
         return `
           <tr class="hover:bg-slate-50 transition">
             <td class="py-3 px-4 font-mono font-medium text-xs text-slate-700">${b.trans_id}</td>
@@ -9935,7 +9955,7 @@
                 </div>
               </div>
             </td>
-            <td class="py-3 px-4"><div class="font-medium text-slate-800">${b.borrower_name}</div><div class="text-[11px] text-slate-500">${b.borrower_dept}</div></td>
+            <td class="py-3 px-4"><div class="font-medium text-slate-800">${b.borrower_name}${ownerPill}</div><div class="text-[11px] text-slate-500">${b.borrower_dept}</div></td>
             <td class="py-3 px-4 text-xs">${b.borrow_date}</td>
             <td class="py-3 px-4 text-xs font-semibold ${isOverdue ? 'text-rose-600' : 'text-slate-700'}">${b.expected_return}</td>
             <td class="py-3 px-4 text-center">

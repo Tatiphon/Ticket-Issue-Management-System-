@@ -16,21 +16,56 @@ const TABLES = {
 };
 
 function getSupabaseConfig() {
-  const url = String(
+  const envKeys = Object.keys(process.env || {});
+  const matchedEnvKeys = envKeys.filter((k) => /supabase/i.test(k));
+
+  let url = String(
     process.env.SUPABASE_URL ||
     process.env.NEXT_PUBLIC_SUPABASE_URL ||
+    process.env.VITE_SUPABASE_URL ||
+    process.env.REACT_APP_SUPABASE_URL ||
     ""
   ).trim().replace(/\/+$/, "");
 
-  const key = String(
+  if (!url) {
+    for (const k of matchedEnvKeys) {
+      const val = String(process.env[k] || "").trim();
+      if (/^https:\/\/[a-z0-9-]+\.supabase\.co/i.test(val)) {
+        url = val.replace(/\/+$/, "");
+        break;
+      }
+    }
+  }
+
+  let key = String(
     process.env.SUPABASE_SERVICE_ROLE_KEY ||
+    process.env.SUPABASE_SERVICE_KEY ||
+    process.env.SUPABASE_SECRET_KEY ||
     process.env.SUPABASE_KEY ||
     process.env.SUPABASE_ANON_KEY ||
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
     ""
   ).trim();
 
-  return { url, key };
+  if (!key) {
+    for (const k of matchedEnvKeys) {
+      const val = String(process.env[k] || "").trim();
+      if (!/^https?:\/\//i.test(val) && val.length > 20) {
+        key = val;
+        break;
+      }
+    }
+  }
+
+  return {
+    url,
+    key,
+    hasUrl: Boolean(url),
+    hasKey: Boolean(key),
+    vercelEnv: process.env.VERCEL_ENV || "unknown",
+    gitBranch: process.env.VERCEL_GIT_COMMIT_REF || "unknown",
+    detectedSupabaseEnvNames: matchedEnvKeys
+  };
 }
 
 function getBangkokDateParts(dateInput = new Date()) {
@@ -993,11 +1028,20 @@ module.exports = async function handler(req, res) {
 
   const cfg = getSupabaseConfig();
   if (!cfg.url || !cfg.key) {
+    const missingParts = [];
+    if (!cfg.hasUrl) missingParts.push("SUPABASE_URL");
+    if (!cfg.hasKey) missingParts.push("SUPABASE_SERVICE_ROLE_KEY");
+    const envInfo = `VERCEL_ENV=${cfg.vercelEnv}, Branch=${cfg.gitBranch}, ตัวแปรที่มีคำว่า SUPABASE ที่ตรวจพบ=[${cfg.detectedSupabaseEnvNames.join(", ") || "ไม่มีเลย"}]`;
     return res.status(200).json({
       status: "error",
       connected: false,
       needsSupabaseConfig: true,
-      message: "ยังไม่ได้ตั้งค่า SUPABASE_URL และ SUPABASE_SERVICE_ROLE_KEY ใน Environment Variables ของ Vercel"
+      hasUrl: cfg.hasUrl,
+      hasKey: cfg.hasKey,
+      vercelEnv: cfg.vercelEnv,
+      gitBranch: cfg.gitBranch,
+      detectedSupabaseEnvNames: cfg.detectedSupabaseEnvNames,
+      message: `ไม่พบค่า ${missingParts.join(" และ ")} ใน Environment ของ Deployment นี้ (${envInfo}) — กรุณาติ๊กเลือกทั้ง Production และ Preview ในหน้า Vercel Environment Variables แล้วกด Redeploy`
     });
   }
 

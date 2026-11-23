@@ -184,10 +184,10 @@
               <span id="headerEmailLogBadge" class="px-1.5 py-0.2 rounded-full text-[11px] font-bold bg-sky-600 text-white">0</span>
             </button>
 
-            <!-- Google Sheets Setup (Super Admin Only) -->
+            <!-- Database (Supabase) & Google Drive Setup (Super Admin Only) -->
             <button onclick="openSetupModal()" class="superadmin-only superadmin-hidden hidden xl:inline-flex px-3.5 py-2 text-[13px] sm:text-sm font-semibold rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-700 items-center gap-1.5 transition shadow-sm shrink-0 whitespace-nowrap">
-              <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-              <span>Google Sheets</span>
+              <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/></svg>
+              <span>Supabase &amp; Drive</span>
             </button>
           </div>
 
@@ -1711,7 +1711,7 @@
                         </div>
                       </button>
 
-                      <!-- Sync to Google Sheets -->
+                      <!-- Sync to Supabase -->
                       <button type="button" id="btnSyncAllRolesToSheet"
                               onclick="triggerExcelAction('syncSheet')" 
                               class="w-full text-left px-2.5 py-2 rounded-lg hover:bg-indigo-50 text-slate-700 hover:text-indigo-900 flex items-center gap-2.5 transition cursor-pointer group">
@@ -1719,8 +1719,8 @@
                           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
                         </div>
                         <div class="min-w-0">
-                          <div class="font-bold text-slate-800 group-hover:text-indigo-900">ซิงค์ขึ้น Google Sheets</div>
-                          <div class="text-[11px] text-slate-400 group-hover:text-indigo-700">ส่งข้อมูลผู้ใช้งานทั้งหมดขึ้นฐานข้อมูล Google Sheets</div>
+                          <div class="font-bold text-slate-800 group-hover:text-indigo-900">ซิงค์ขึ้น Supabase</div>
+                          <div class="text-[11px] text-slate-400 group-hover:text-indigo-700">ส่งข้อมูลผู้ใช้งานทั้งหมดขึ้นฐานข้อมูล Supabase</div>
                         </div>
                       </button>
                     </div>
@@ -3082,7 +3082,7 @@
       <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
         <div>
           <h3 class="font-bold text-slate-900 text-sm">จัดการรายชื่อฝ่าย / แผนก</h3>
-          <p class="text-[11px] text-slate-500">บันทึกลงชีต Departments ใน Google Sheets</p>
+          <p class="text-[11px] text-slate-500">บันทึกลงตาราง departments ในฐานข้อมูล Supabase (ใช้ร่วมกันทั้ง PROD และ UAT)</p>
         </div>
         <button onclick="closeDeptManagementModal()" class="text-slate-400 hover:text-slate-600">✕</button>
       </div>
@@ -3172,13 +3172,13 @@
     </div>
   </div>
 
-  <!-- MODAL: GOOGLE SHEETS SETUP -->
+  <!-- MODAL: SUPABASE & GOOGLE DRIVE SETUP -->
   <div id="setupModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-xl border border-slate-100 max-h-[90vh] overflow-y-auto animate-fadeIn">
       <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
         <div>
-          <h3 class="font-bold text-slate-900">ตั้งค่าเชื่อมต่อ Google Sheets &amp; Apps Script</h3>
-          <p class="text-[11px] text-slate-500">ระบบ Self-Healing สร้างแท็บตารางทั้งหมดให้อัตโนมัติ</p>
+          <h3 class="font-bold text-slate-900">ตั้งค่าฐานข้อมูลกลาง Supabase &amp; Google Drive</h3>
+          <p class="text-[11px] text-slate-500">ขั้นตอนที่ 4–5: ทั้ง PROD และ UAT เชื่อมต่อ Supabase Database เดียวกันผ่าน /api/db และเก็บไฟล์แนบไว้บน Google Drive</p>
         </div>
         <button type="button" onclick="closeSetupModal()" aria-label="ปิดหน้าต่าง" title="ปิดหน้าต่าง" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition cursor-pointer shrink-0">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
@@ -3188,19 +3188,37 @@
       </div>
 
       <div class="space-y-4 text-xs text-slate-700">
+        <!-- Step 4: Supabase Status -->
+        <div class="p-3.5 bg-emerald-50/70 rounded-xl border border-emerald-200 space-y-2">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <label class="font-bold text-emerald-950 flex items-center gap-1.5">
+                <span>🗄️ 1. ฐานข้อมูลหลัก Supabase (Shared PROD &amp; UAT via /api/db):</span>
+              </label>
+              <p class="text-[11px] text-slate-600 mt-0.5">ตั้งค่า <code class="bg-white px-1 rounded border border-emerald-200">SUPABASE_URL</code> และ <code class="bg-white px-1 rounded border border-emerald-200">SUPABASE_SERVICE_ROLE_KEY</code> ใน Vercel Environment Variables (ใช้ร่วมกันทั้ง Production และ Preview/UAT)</p>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+              <button type="button" onclick="testSupabaseConnection()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-semibold">ทดสอบเชื่อมต่อ Supabase</button>
+              <button type="button" onclick="useLiveSupabaseMode()" class="px-3 py-1.5 bg-white hover:bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-xl font-semibold">ใช้โหมด Live</button>
+              <button type="button" onclick="resetToDemoMode()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-semibold">ใช้ Demo</button>
+            </div>
+          </div>
+          <div id="supabaseDiagnosticBox" class="hidden p-2.5 rounded-lg bg-white border border-emerald-200 text-[11px] leading-relaxed"></div>
+        </div>
+
+        <!-- Step 5: GAS Drive Upload URL -->
         <div>
-          <label class="block font-bold text-slate-800 mb-1">1. ใส่ Web App URL ของคุณที่ได้จากการ Deploy:</label>
+          <label class="block font-bold text-slate-800 mb-1">2. Google Apps Script Web App URL (สำหรับอัปโหลดไฟล์แนบขึ้น Google Drive - ขั้นตอนที่ 5):</label>
           <div class="flex gap-2">
             <input type="url" id="inputWebAppUrl" placeholder="https://script.google.com/macros/s/.../exec" class="flex-1 px-3 py-2 rounded-xl border border-slate-300 text-xs">
-            <button onclick="saveWebAppUrl()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-semibold">บันทึก URL</button>
-            <button onclick="resetToDemoMode()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-semibold">ใช้ Demo</button>
+            <button onclick="saveWebAppUrl()" class="px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-xl font-semibold">บันทึก Drive URL</button>
           </div>
         </div>
 
         <div class="p-3.5 bg-sky-50/70 rounded-xl border border-sky-200 space-y-2">
           <div class="flex items-center justify-between">
             <label class="font-bold text-sky-950 flex items-center gap-1.5">
-              <span>☁️ 2. ตั้งค่าโฟลเดอร์ Google Drive สำหรับเก็บรูปตัวอย่างอุปกรณ์และรูปภาพแนบ:</span>
+              <span>☁️ 3. ตั้งค่าโฟลเดอร์ Google Drive สำหรับเก็บรูปตัวอย่างอุปกรณ์และรูปภาพแนบ:</span>
             </label>
             <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">Auto-Create Folder</span>
           </div>
@@ -3213,7 +3231,7 @@
 
         <div>
           <div class="flex items-center justify-between mb-1">
-            <span class="font-bold text-slate-800">3. โค้ด Apps Script เวอร์ชันล่าสุด (Code.gs รองรับ Google Sheets + Google Drive + Email Notification):</span>
+            <span class="font-bold text-slate-800">4. โค้ด Apps Script สำหรับช่วยอัปโหลด Google Drive (Code.gs):</span>
             <button onclick="copyGasCode()" class="text-tcc-600 font-semibold hover:underline">คัดลอกโค้ดทั้งหมด</button>
           </div>
           <pre id="gasCodeBlock" class="p-3 bg-slate-900 text-slate-100 rounded-xl text-[11px] font-mono overflow-x-auto max-h-56 leading-relaxed"></pre>
@@ -3365,12 +3383,17 @@
   <!-- JAVASCRIPT APPLICATION LOGIC -->
   <script>
     const STORAGE_KEY_URL = "it_asset_webapp_url";
+    const STORAGE_KEY_DEMO_MODE = "it_asset_demo_mode";
     const STORAGE_KEY_USER = "it_asset_logged_user";
     const STORAGE_KEY_ROLES = "it_asset_custom_user_roles";
     const STORAGE_KEY_INTERNAL_SYSTEMS = "it_asset_internal_systems";
     const STORAGE_KEY_TICKET_CATEGORIES = "it_asset_ticket_categories";
     const STORAGE_KEY_DRIVE_FOLDER = "it_asset_drive_folder_id";
     const STORAGE_KEY_ATTACHMENTS = "it_asset_attachments_cache";
+    // Step 4: Both PROD and UAT connect to the same shared Supabase database via /api/db
+    const DB_API_ENDPOINT = "/api/db";
+    // Step 5: Keep Google Apps Script Web App URL for Google Drive attachment uploads & GAS email fallback
+    const GAS_ONLY_ACTIONS = new Set(["uploadFileToDrive", "sendEmailNotification", "checkEmailSetup"]);
     const PROD_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxEj-79eHal39qVlnENM2GxRTn5C1TVXYjE8IxehEKXokpOHh5VtfHCbuc7_PSr4xO0/exec";
     const UAT_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzfqBPSr-st5YVxHdl0yKgVmWz6xVPoHkS2d3IbzCKiEY6LXJMIC9h_D1Cp_3BdIUUd0Q/exec";
     const IS_UAT_ENV = /(^|[.-])uat([.-]|$)/i.test(window.location.hostname) || ["localhost", "127.0.0.1"].includes(window.location.hostname);
@@ -3382,6 +3405,7 @@
       localStorage.setItem(STORAGE_KEY_URL, DEFAULT_WEB_APP_URL);
     }
     const initialUrl = storedUrl || DEFAULT_WEB_APP_URL;
+    const initialDemoMode = localStorage.getItem(STORAGE_KEY_DEMO_MODE) === "true";
 
     /* BUILT-IN ACCOUNTS WITH PASSWORDS (Req 2 & Req 4) */
     const BUILTIN_ROLES = [
@@ -4152,7 +4176,8 @@
 
     const state = {
       webAppUrl: initialUrl,
-      isLive: !!initialUrl,
+      useDemoMode: initialDemoMode,
+      isLive: !initialDemoMode,
       items: JSON.parse(JSON.stringify(INITIAL_DEMO_ITEMS)),
       activeBorrows: getInitialDemoBorrows(),
       allLogs: getInitialDemoLogs(),
@@ -7151,27 +7176,34 @@
             if (att.base64 && att.name && !att.drive_file_id) {
               const driveRes = await uploadFileToGoogleDrive(att.base64, `${ticketNum}_${i + 1}_${att.name}`, "Tickets", ticketNum);
               if (driveRes && (driveRes.fileId || driveRes.viewUrl)) {
-                att.drive_file_id = driveRes.fileId || "";
-                att.url = driveRes.viewUrl || "";
-                if (i === 0 && !newTicket.drive_file_id) {
+                const isSimDrive = String(driveRes.fileId || "").startsWith("DRV_");
+                att.drive_file_id = isSimDrive ? "" : (driveRes.fileId || "");
+                att.url = isSimDrive ? "" : (driveRes.viewUrl || "");
+                if (i === 0 && !newTicket.drive_file_id && !isSimDrive) {
                   newTicket.drive_file_id = att.drive_file_id;
                   newTicket.attachment_url = att.url;
                 }
-                saveAttachmentToCache(ticketNum, att.name, att.base64, att.url, att.drive_file_id);
+                saveAttachmentToCache(ticketNum, att.name, att.base64, driveRes.viewUrl || "", driveRes.fileId || "");
               }
             }
           }
 
-          const compactAttachments = draftAttachments.map(a => ({
-            name: a.name || "",
-            mime: a.mime || "",
-            url: a.url || "",
-            drive_file_id: a.drive_file_id || ""
-          }));
+          const compactAttachments = draftAttachments.map(a => {
+            const isSimDrive = String(a.drive_file_id || "").startsWith("DRV_");
+            return {
+              name: a.name || "",
+              mime: a.mime || "",
+              url: isSimDrive ? "" : (a.url || ""),
+              drive_file_id: isSimDrive ? "" : (a.drive_file_id || "")
+            };
+          });
 
+          const isSimMainDrive = String(newTicket.drive_file_id || "").startsWith("DRV_");
           const ticketPayload = {
             ...newTicket,
-            attachment_base64: newTicket.drive_file_id ? "" : newTicket.attachment_base64,
+            attachment_url: isSimMainDrive ? "" : (newTicket.attachment_url || ""),
+            drive_file_id: isSimMainDrive ? "" : (newTicket.drive_file_id || ""),
+            attachment_base64: (!isSimMainDrive && newTicket.drive_file_id) ? "" : newTicket.attachment_base64,
             attachments: compactAttachments
           };
 
@@ -7911,8 +7943,9 @@
             if (att.base64 && att.name && !att.drive_file_id) {
               const driveRes = await uploadFileToGoogleDrive(att.base64, `${ticket.ticket_id}_REPLY_${Date.now()}_${i + 1}_${att.name}`, "Tickets", ticket.ticket_id);
               if (driveRes && (driveRes.fileId || driveRes.viewUrl)) {
-                att.drive_file_id = driveRes.fileId || "";
-                att.url = driveRes.viewUrl || "";
+                const isSimDrive = String(driveRes.fileId || "").startsWith("DRV_");
+                att.drive_file_id = isSimDrive ? "" : (driveRes.fileId || "");
+                att.url = isSimDrive ? "" : (driveRes.viewUrl || "");
               }
             }
           }
@@ -7920,7 +7953,15 @@
           const compactComments = ticket.comments.map(c => ({
             ...c,
             attachments: Array.isArray(c.attachments)
-              ? c.attachments.map(a => ({ name: a.name || "", mime: a.mime || "", url: a.url || "", drive_file_id: a.drive_file_id || "" }))
+              ? c.attachments.map(a => {
+                  const isSimDrive = String(a.drive_file_id || "").startsWith("DRV_");
+                  return {
+                    name: a.name || "",
+                    mime: a.mime || "",
+                    url: isSimDrive ? "" : (a.url || ""),
+                    drive_file_id: isSimDrive ? "" : (a.drive_file_id || "")
+                  };
+                })
               : []
           }));
           await callAPI("updateTicket", {
@@ -8454,15 +8495,20 @@
       if (attachName && attachBase64) {
         const driveRes = await uploadFileToGoogleDrive(attachBase64, `${kbId}_${attachName}`, "KnowledgeBase", kbId);
         if (driveRes && (driveRes.fileId || driveRes.viewUrl)) {
-          newArticle.drive_file_id = driveRes.fileId || "";
-          newArticle.attachment_url = driveRes.viewUrl || "";
-          if (!newArticle.doc_url && driveRes.viewUrl) newArticle.doc_url = driveRes.viewUrl;
+          const isSimDrive = String(driveRes.fileId || "").startsWith("DRV_");
+          newArticle.drive_file_id = isSimDrive ? "" : (driveRes.fileId || "");
+          newArticle.attachment_url = isSimDrive ? "" : (driveRes.viewUrl || "");
+          if (!isSimDrive && !newArticle.doc_url && driveRes.viewUrl) newArticle.doc_url = driveRes.viewUrl;
           saveAttachmentToCache(kbId, attachName, attachBase64, driveRes.viewUrl || "", driveRes.fileId || "");
           renderKnowledgeBaseList();
         }
       }
 
-      callAPI("saveKbArticle", { articleData: newArticle }, true);
+      const kbPayload = {
+        ...newArticle,
+        attachment_base64: newArticle.drive_file_id ? "" : newArticle.attachment_base64
+      };
+      callAPI("saveKbArticle", { articleData: kbPayload }, true);
     }
 
     function openKbQuickSelectModal() {
@@ -11027,7 +11073,7 @@
 
     async function syncUserRolesToGoogleSheets(usersList) {
       if (isSyncingRoles) {
-        showNotification("กำลังดำเนินการบันทึกข้อมูลผู้ใช้ลง Google Sheets อยู่แล้ว กรุณารอสักครู่", "info");
+        showNotification("กำลังดำเนินการบันทึกข้อมูลผู้ใช้ลง Supabase อยู่แล้ว กรุณารอสักครู่", "info");
         return;
       }
       if (!Array.isArray(usersList) || usersList.length === 0) {
@@ -11053,10 +11099,10 @@
       if (banner) {
         banner.className = "rounded-2xl border border-sky-200 bg-sky-50/70 p-3.5 text-xs transition-all duration-300";
         if (icon) { icon.innerText = "🔄"; icon.className = "inline-block text-base animate-spin"; }
-        if (title) title.innerText = "กำลังบันทึกข้อมูลลง Google Sheets...";
+        if (title) title.innerText = "กำลังบันทึกข้อมูลลง Supabase...";
         if (percent) percent.innerText = "0%";
         if (bar) { bar.className = "bg-sky-600 h-2 rounded-full transition-all duration-200"; bar.style.width = "0%"; }
-        if (subtext) subtext.innerText = "กำลังเชื่อมต่อกับฐานข้อมูล Google Sheets...";
+        if (subtext) subtext.innerText = "กำลังเชื่อมต่อกับฐานข้อมูล Supabase...";
         if (countText) countText.innerText = `0 / ${usersList.length}`;
         banner.classList.remove("hidden");
       }
@@ -11075,13 +11121,13 @@
       localStorage.setItem(STORAGE_KEY_ROLES, JSON.stringify(state.userRoles));
       renderRolesTable();
 
-      // Check if configured with live URL
-      if (!state.webAppUrl || state.webAppUrl.trim() === "") {
+      // Check if in Demo Mode
+      if (state.useDemoMode) {
         if (banner) {
           banner.className = "rounded-2xl border border-amber-200 bg-amber-50 p-3 text-xs";
           if (icon) { icon.innerText = "ℹ️"; icon.className = "text-base"; }
           if (title) title.innerText = "โหมดจำลอง (Demo Mode)";
-          if (subtext) subtext.innerText = "บันทึกในหน่วยความจำและ Local Storage เรียบร้อยแล้ว (ยังไม่ได้เชื่อมต่อ Google Apps Script URL)";
+          if (subtext) subtext.innerText = "บันทึกในหน่วยความจำและ Local Storage เรียบร้อยแล้ว (เปิดโหมด Live ในหน้าตั้งค่า Supabase เพื่อซิงค์ขึ้นฐานข้อมูล)";
           setTimeout(() => banner.classList.add("hidden"), 4000);
         }
         if (syncBtn) {
@@ -11097,7 +11143,7 @@
       try {
         if (bar) bar.style.width = "25%";
         if (percent) percent.innerText = "25%";
-        if (subtext) subtext.innerText = `กำลังส่งข้อมูลแบบชุด (Batch) ${usersList.length} รายการลง Google Sheets...`;
+        if (subtext) subtext.innerText = `กำลังส่งข้อมูลแบบชุด (Batch) ${usersList.length} รายการลง Supabase...`;
 
         const batchRes = await callAPI("saveUserRolesBatch", { rolesList: usersList }, true);
         if (batchRes && batchRes.status === "success") {
@@ -11106,17 +11152,17 @@
           if (percent) percent.innerText = "100%";
           if (countText) countText.innerText = `${usersList.length} / ${usersList.length}`;
           if (icon) { icon.innerText = "✅"; icon.className = "text-base"; }
-          if (title) title.innerText = "บันทึกข้อมูลลง Google Sheets สำเร็จครบถ้วน!";
-          if (subtext) subtext.innerText = `บันทึกข้อมูลสำเร็จครบทั้ง ${usersList.length} รายการ (Batch Write)`;
+          if (title) title.innerText = "บันทึกข้อมูลลง Supabase สำเร็จครบถ้วน!";
+          if (subtext) subtext.innerText = `บันทึกข้อมูลสำเร็จครบทั้ง ${usersList.length} รายการ (Batch Upsert)`;
           if (banner) banner.className = "rounded-2xl border border-emerald-200 bg-emerald-50 p-3.5 text-xs transition-all duration-300";
-          showNotification(`บันทึกข้อมูลผู้ใช้งานลง Google Sheets ครบทั้ง ${usersList.length} รายการเรียบร้อยแล้ว`, "success");
+          showNotification(`บันทึกข้อมูลผู้ใช้งานลง Supabase ครบทั้ง ${usersList.length} รายการเรียบร้อยแล้ว`, "success");
           setTimeout(() => { if (banner) banner.classList.add("hidden"); }, 5000);
         }
       } catch (err) {
-        console.warn("saveUserRolesBatch failed or not supported by deployed GAS, falling back to sequential:", err);
+        console.warn("saveUserRolesBatch failed, falling back to sequential:", err);
       }
 
-      // 2. Sequential Throttled Queue Fallback if batch was not supported or failed
+      // 2. Sequential Throttled Queue Fallback if batch failed
       if (!batchSuccess) {
         if (subtext) subtext.innerText = "ระบบกำลังทยอยบันทึกทีละรายการอย่างปลอดภัย (Safe Sequential Queue)...";
         let savedCount = 0;
@@ -11149,22 +11195,21 @@
           if (ok) savedCount++;
           else failedCount++;
 
-          // Pause between calls to respect Google Apps Script concurrent execution limits & lock acquisition
-          await new Promise(r => setTimeout(r, 120));
+          await new Promise(r => setTimeout(r, 80));
         }
 
         if (banner) {
           if (failedCount === 0) {
             banner.className = "rounded-2xl border border-emerald-200 bg-emerald-50 p-3.5 text-xs transition-all duration-300";
             if (icon) { icon.innerText = "✅"; icon.className = "text-base"; }
-            if (title) title.innerText = "บันทึกข้อมูลลง Google Sheets สำเร็จครบถ้วน!";
+            if (title) title.innerText = "บันทึกข้อมูลลง Supabase สำเร็จครบถ้วน!";
             if (subtext) subtext.innerText = `บันทึกข้อมูลสำเร็จครบทั้ง ${savedCount} รายการ`;
-            showNotification(`บันทึกข้อมูลผู้ใช้งานลง Google Sheets ครบทั้ง ${savedCount} รายการเรียบร้อยแล้ว`, "success");
+            showNotification(`บันทึกข้อมูลผู้ใช้งานลง Supabase ครบทั้ง ${savedCount} รายการเรียบร้อยแล้ว`, "success");
           } else {
             banner.className = "rounded-2xl border border-amber-200 bg-amber-50 p-3.5 text-xs transition-all duration-300";
             if (icon) { icon.innerText = "⚠️"; icon.className = "text-base"; }
             if (title) title.innerText = "บันทึกข้อมูลบางส่วนเรียบร้อย";
-            if (subtext) subtext.innerText = `บันทึกสำเร็จ ${savedCount} รายการ, ติดขัด ${failedCount} รายการ (กดปุ่ม "ซิงค์ขึ้น Sheet" เพื่อบันทึกซ้ำได้)`;
+            if (subtext) subtext.innerText = `บันทึกสำเร็จ ${savedCount} รายการ, ติดขัด ${failedCount} รายการ (กดปุ่ม "ซิงค์ขึ้น Supabase" เพื่อบันทึกซ้ำได้)`;
             showNotification(`บันทึกสำเร็จ ${savedCount} รายการ (ไม่สำเร็จ ${failedCount} รายการ)`, "warning");
           }
           setTimeout(() => { if (banner) banner.classList.add("hidden"); }, 7000);
@@ -11182,7 +11227,7 @@
       if (!state.userRoles || state.userRoles.length === 0) {
         return showNotification("ไม่มีรายชื่อผู้ใช้งานในระบบสำหรับซิงค์", "warning");
       }
-      showNotification(`เริ่มทำการซิงค์รายชื่อผู้ใช้ทั้งหมด ${state.userRoles.length} รายการขึ้น Google Sheets...`, "info");
+      showNotification(`เริ่มทำการซิงค์รายชื่อผู้ใช้ทั้งหมด ${state.userRoles.length} รายการขึ้น Supabase...`, "info");
       syncUserRolesToGoogleSheets(state.userRoles);
     }
 
@@ -11207,9 +11252,9 @@
       closeImportUserModal();
       renderDepartmentSelects();
       renderRolesTable();
-      showNotification(`นำเข้าข้อมูลผู้ใช้งาน ${count} รายการ กำลังเริ่มบันทึกลง Google Sheets...`, "info");
+      showNotification(`นำเข้าข้อมูลผู้ใช้งาน ${count} รายการ กำลังเริ่มบันทึกลง Supabase...`, "info");
 
-      // Start resilient sync to Google Sheets
+      // Start resilient sync to Supabase
       syncUserRolesToGoogleSheets(usersToImport);
     }
 
@@ -13185,6 +13230,7 @@ function handleDeleteUserRole(data) {
       const codeBlock = document.getElementById("gasCodeBlock");
       if (codeBlock) codeBlock.textContent = SELF_HEALING_GAS_CODE;
       document.getElementById("setupModal")?.classList.remove("hidden");
+      testSupabaseConnection(true);
     }
 
     function closeSetupModal() {
@@ -13193,22 +13239,69 @@ function handleDeleteUserRole(data) {
 
     function saveWebAppUrl() {
       const val = document.getElementById("inputWebAppUrl")?.value.trim();
-      if (!val) return showNotification("กรุณาระบุ Web App URL", "warning");
+      if (!val) return showNotification("กรุณาระบุ Google Apps Script Web App URL", "warning");
       state.webAppUrl = val;
-      state.isLive = true;
       localStorage.setItem(STORAGE_KEY_URL, val);
+      showNotification("บันทึก Google Drive Web App URL เรียบร้อย", "success");
+    }
+
+    function useLiveSupabaseMode() {
+      state.useDemoMode = false;
+      state.isLive = true;
+      localStorage.setItem(STORAGE_KEY_DEMO_MODE, "false");
       closeSetupModal();
-      showNotification("บันทึก Web App URL เรียบร้อย กำลังรีเฟรช...", "success");
+      showNotification("เปิดใช้งานโหมดเชื่อมต่อฐานข้อมูล Supabase (Live) แล้ว กำลังโหลดข้อมูล...", "success");
       triggerManualReload();
     }
 
     function resetToDemoMode() {
-      state.webAppUrl = "";
+      state.useDemoMode = true;
       state.isLive = false;
-      localStorage.setItem(STORAGE_KEY_URL, "");
+      localStorage.setItem(STORAGE_KEY_DEMO_MODE, "true");
       closeSetupModal();
       showNotification("สลับใช้งานโหมดจำลอง (Demo Mode) เรียบร้อย", "info");
       triggerManualReload();
+    }
+
+    async function testSupabaseConnection(silent = false) {
+      const box = document.getElementById("supabaseDiagnosticBox");
+      if (box) {
+        box.className = "p-2.5 rounded-lg bg-white border border-sky-200 text-sky-900 text-[11px] leading-relaxed";
+        box.innerHTML = "🔄 กำลังทดสอบการเชื่อมต่อ Supabase (/api/db)...";
+        box.classList.remove("hidden");
+      }
+      try {
+        const response = await fetch(DB_API_ENDPOINT, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "checkDbSetup", env: IS_UAT_ENV ? "uat" : "prod" })
+        });
+        const res = await response.json();
+        if (res && res.status === "success" && res.connected) {
+          const tblSummary = Object.entries(res.tables || {})
+            .map(([k, v]) => `<span class="inline-block px-1.5 py-0.5 rounded bg-emerald-50 border border-emerald-200 mr-1 mb-1"><b>${k}</b>: ${v ?? "-"}</span>`)
+            .join("");
+          if (box) {
+            box.className = "p-2.5 rounded-lg bg-white border border-emerald-300 text-emerald-950 text-[11px] leading-relaxed";
+            box.innerHTML = `✅ <b>เชื่อมต่อ Supabase สำเร็จ!</b> (Environment: <b>${res.environment || (IS_UAT_ENV ? "UAT" : "PROD")}</b> • Host: <code>${res.supabaseHost || "-"}</code>)<div class="mt-1.5">${tblSummary}</div>`;
+          }
+          if (!silent) showNotification("เชื่อมต่อฐานข้อมูล Supabase สำเร็จ", "success");
+          return;
+        }
+        const errMsg = res?.message || "ไม่สามารถเชื่อมต่อ Supabase ได้";
+        if (box) {
+          box.className = "p-2.5 rounded-lg bg-amber-50 border border-amber-300 text-amber-950 text-[11px] leading-relaxed";
+          box.innerHTML = `⚠️ <b>ยังไม่พร้อมใช้งาน:</b> ${errMsg}`;
+        }
+        if (!silent) showNotification(errMsg, "warning");
+      } catch (err) {
+        const msg = err?.message || String(err);
+        if (box) {
+          box.className = "p-2.5 rounded-lg bg-rose-50 border border-rose-300 text-rose-900 text-[11px] leading-relaxed";
+          box.innerHTML = `❌ <b>เชื่อมต่อ /api/db ไม่สำเร็จ:</b> ${msg} (หากรันไฟล์ HTML แบบเปิดตรงโดยไม่มี Vercel Server ระบบจะใช้โหมดจำลองชั่วคราว)`;
+        }
+        if (!silent) showNotification("เชื่อมต่อ /api/db ไม่สำเร็จ", "warning");
+      }
     }
 
     function copyGasCode() {
@@ -13224,11 +13317,12 @@ function handleDeleteUserRole(data) {
     function updateConnectionStatus(connected) {
       const dot = document.getElementById("connStatusDot");
       const txt = document.getElementById("connStatusText");
+      const envTag = IS_UAT_ENV ? "UAT" : "PROD";
       if (dot && txt) {
         if (connected) {
           dot.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
           txt.className = "truncate max-w-[130px] sm:max-w-none text-emerald-700 font-medium";
-          txt.innerText = "เชื่อมต่อระบบ (Live)";
+          txt.innerText = `เชื่อมต่อ Supabase (${envTag})`;
         } else {
           dot.className = "w-2 h-2 rounded-full bg-amber-500";
           txt.className = "truncate max-w-[130px] sm:max-w-none text-amber-700 font-medium";
@@ -13247,12 +13341,37 @@ function handleDeleteUserRole(data) {
     }
 
     async function callAPI(action, payload = {}, isBackground = false) {
-      if (state.webAppUrl && state.webAppUrl.trim() !== "") {
+      // Step 5: Route Google Drive uploads & GAS email fallback to Google Apps Script
+      if (GAS_ONLY_ACTIONS.has(action)) {
+        if (!state.useDemoMode && state.webAppUrl && state.webAppUrl.trim() !== "") {
+          try {
+            const response = await fetch(state.webAppUrl, {
+              method: "POST",
+              headers: { "Content-Type": "text/plain;charset=utf-8" },
+              body: JSON.stringify({ action, ...payload })
+            });
+            if (!response.ok) {
+              throw new Error(`GAS HTTP Error ${response.status}`);
+            }
+            return await response.json();
+          } catch (err) {
+            console.warn(`GAS action "${action}" failed, fallback to simulator:`, err);
+          }
+        }
+        return simulateBackend(action, payload);
+      }
+
+      // Step 4: Route all database operations to shared Supabase backend (/api/db) for both PROD & UAT
+      if (!state.useDemoMode) {
         try {
-          const response = await fetch(state.webAppUrl, {
+          const response = await fetch(DB_API_ENDPOINT, {
             method: "POST",
-            headers: { "Content-Type": "text/plain;charset=utf-8" },
-            body: JSON.stringify({ action, ...payload })
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              action,
+              env: IS_UAT_ENV ? "uat" : "prod",
+              ...payload
+            })
           });
 
           if (!response.ok) {
@@ -13260,15 +13379,19 @@ function handleDeleteUserRole(data) {
           }
 
           const result = await response.json();
+          if (result && result.needsSupabaseConfig) {
+            throw new Error(result.message || "Supabase environment variables not configured");
+          }
+
           state.isLive = true;
           updateConnectionStatus(true);
           return result;
         } catch (err) {
-          console.warn("GAS Connection failed, fallback to local simulator:", err);
+          console.warn("Supabase (/api/db) connection failed, fallback to local simulator:", err);
           state.isLive = false;
           updateConnectionStatus(false);
           if (!isBackground) {
-            showNotification("ไม่สามารถเชื่อมต่อ Google Apps Script ได้ ข้อมูลทำงานในโหมดจำลองชั่วคราว", "warning");
+            showNotification("ไม่สามารถเชื่อมต่อฐานข้อมูล Supabase ได้ ข้อมูลทำงานในโหมดจำลองชั่วคราว", "warning");
           }
         }
       } else {
@@ -13581,7 +13704,7 @@ function handleDeleteUserRole(data) {
           renderEmailSettingsTab();
           autoFillUserFormsFromDatabase(false);
           updateLastSyncedTime();
-          if (showToast) showNotification("ซิงค์ข้อมูลล่าสุดกับ Google Sheets เรียบร้อย", "success");
+          if (showToast) showNotification("ซิงค์ข้อมูลล่าสุดกับฐานข้อมูล Supabase เรียบร้อย", "success");
         }
       } catch (err) {
         console.error("Data refresh error:", err);
@@ -13851,6 +13974,11 @@ function handleDeleteUserRole(data) {
           }
         }
       });
+    });
+  </script>
+</body>
+</html>
+
     });
   </script>
 </body>

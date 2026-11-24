@@ -652,33 +652,33 @@ function openTicketDetailModal(ticketId) {
   const attachList = resolveTicketAttachmentsList(ticket);
   if (attachList.length > 0) {
     attachBox.classList.remove("hidden");
-    attachCont.className = "p-3 rounded-xl border border-slate-200 bg-slate-50/70 space-y-2.5 text-xs";
+    attachCont.className = "p-2.5 rounded-xl border border-slate-200 bg-slate-50/70 space-y-2 text-xs";
     attachCont.innerHTML = `
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+      <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-2.5">
         ${attachList.map((attachInfo, idx) => {
           const fallbackImgSrc = generateFallbackDiagnosticImage(attachInfo.name, ticket.title, ticket.ticket_id);
           const thumbHtml = attachInfo.isImage && attachInfo.displaySrc
-            ? `<div onclick="openTicketAttachmentPreview('${escapeQuotes(ticket.ticket_id)}', ${idx})" class="relative group cursor-pointer rounded-xl overflow-hidden border border-slate-200 bg-white h-40 flex items-center justify-center p-1 hover:border-tcc-400 transition">
-                <img src="${attachInfo.displaySrc}" alt="${escapeQuotes(attachInfo.name)}" class="max-h-36 w-auto object-contain rounded-lg" onerror="this.onerror=null; this.src='${fallbackImgSrc}';" />
+            ? `<div onclick="openTicketAttachmentPreview('${escapeQuotes(ticket.ticket_id)}', ${idx})" class="relative group cursor-pointer rounded-lg overflow-hidden border border-slate-200 bg-white h-28 flex items-center justify-center p-1 hover:border-tcc-400 transition">
+                <img src="${attachInfo.displaySrc}" alt="${escapeQuotes(attachInfo.name)}" class="max-h-24 w-auto object-contain rounded" onerror="this.onerror=null; this.src='${fallbackImgSrc}';" />
                 <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
-                  <span class="px-2.5 py-1 rounded-xl bg-white text-slate-900 font-bold text-[11px] shadow-lg">🔍 ขยายดูเต็มจอ</span>
+                  <span class="px-2 py-0.5 rounded-lg bg-white text-slate-900 font-bold text-[10px] shadow-lg">🔍 ขยายดูเต็มจอ</span>
                 </div>
               </div>`
-            : `<div onclick="openTicketAttachmentPreview('${escapeQuotes(ticket.ticket_id)}', ${idx})" class="cursor-pointer rounded-xl border border-slate-200 bg-white h-40 flex flex-col items-center justify-center p-3 hover:border-tcc-400 transition">
-                <span class="text-3xl">📎</span>
-                <span class="text-[11px] font-semibold text-slate-600 mt-1.5 truncate max-w-full">${attachInfo.name}</span>
+            : `<div onclick="openTicketAttachmentPreview('${escapeQuotes(ticket.ticket_id)}', ${idx})" class="cursor-pointer rounded-lg border border-slate-200 bg-white h-28 flex flex-col items-center justify-center p-2 hover:border-tcc-400 transition">
+                <span class="text-2xl">📎</span>
+                <span class="text-[11px] font-semibold text-slate-600 mt-1 truncate max-w-full">${attachInfo.name}</span>
               </div>`;
           const driveBadge = attachInfo.driveViewUrl
-            ? `<a href="${attachInfo.driveViewUrl}" target="_blank" rel="noopener noreferrer" class="px-2 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 font-bold text-[10px] inline-flex items-center gap-1 transition">☁️ Drive ↗</a>`
-            : `<span class="px-2 py-1 rounded-lg bg-slate-100 text-slate-600 font-medium text-[10px]">💾 ในระบบ</span>`;
+            ? `<a href="${attachInfo.driveViewUrl}" target="_blank" rel="noopener noreferrer" class="px-2 py-0.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 font-bold text-[10px] inline-flex items-center gap-1 transition">☁️ Drive ↗</a>`
+            : `<span class="px-2 py-0.5 rounded-lg bg-slate-100 text-slate-600 font-medium text-[10px]">💾 ในระบบ</span>`;
           return `
-            <div class="p-2.5 rounded-xl bg-white border border-slate-200 space-y-2 flex flex-col justify-between">
+            <div class="p-2 rounded-xl bg-white border border-slate-200 space-y-1.5 flex flex-col justify-between">
               ${thumbHtml}
               <div class="flex items-center justify-between gap-2">
                 <span class="font-bold text-slate-800 truncate text-[11px]" title="${escapeQuotes(attachInfo.name)}">${attachInfo.isImage ? '🖼️' : '📎'} ${attachInfo.name}</span>
               </div>
               <div class="flex items-center justify-between gap-1.5 flex-wrap">
-                <button type="button" onclick="openTicketAttachmentPreview('${escapeQuotes(ticket.ticket_id)}', ${idx})" class="px-2.5 py-1 rounded-lg bg-tcc-600 hover:bg-tcc-700 text-white font-bold text-[10px] inline-flex items-center gap-1 shadow-xs transition">
+                <button type="button" onclick="openTicketAttachmentPreview('${escapeQuotes(ticket.ticket_id)}', ${idx})" class="px-2 py-0.5 rounded-lg bg-tcc-600 hover:bg-tcc-700 text-white font-bold text-[10px] inline-flex items-center gap-1 shadow-xs transition">
                   🔍 เปิดดูไฟล์
                 </button>
                 ${driveBadge}

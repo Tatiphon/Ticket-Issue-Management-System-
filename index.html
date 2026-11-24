@@ -855,12 +855,12 @@
 
               <div>
                 <div class="flex items-center justify-between mb-1.5 gap-2 flex-wrap">
-                  <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                  <label class="block text-xs sm:text-sm font-bold text-slate-800 uppercase tracking-wider">
                     รายละเอียดของปัญหา (Description) <span class="text-rose-500">*</span>
                   </label>
-                  <span class="text-[11px] text-slate-500">Quill.js Open-Source Rich Text Editor • พิมพ์ข้อความ, จัดรูปแบบ/สี, หรือ <kbd class="px-1.5 py-0.5 bg-slate-100 border border-slate-200 rounded text-[10px] font-mono">Ctrl+V</kbd> วางรูปภาพในกล่องได้เลย</span>
+                  <span class="text-[11px] text-slate-500">พิมพ์ข้อความ, จัดรูปแบบ/สี, หรือ <kbd class="px-1.5 py-0.5 bg-slate-100 border border-slate-200 rounded text-[10px] font-mono">Ctrl+V</kbd> วางรูปภาพในกล่องได้เลย</span>
                 </div>
-                <div class="quill-wrapper focus-within:ring-2 focus-within:ring-tcc-500 focus-within:border-tcc-500 transition">
+                <div class="quill-wrapper border-2 border-slate-400 rounded-2xl bg-white shadow-xs focus-within:ring-2 focus-within:ring-tcc-500 focus-within:border-tcc-600 transition">
                   <input type="file" id="ticketDescInlineImageInput" multiple accept="image/*" onchange="handleRichEditorImagePick(this, 'ticketDescriptionEditor')" class="hidden">
                   <div id="ticketDescriptionEditor"
                        data-placeholder="อธิบายขั้นตอนที่เกิดปัญหา หมายเลขเครื่อง ข้อความ Error หรือวางรูปภาพหน้าจอ (Ctrl+V) ลงในช่องนี้ได้เลย..."></div>
@@ -868,33 +868,33 @@
                 <textarea id="ticketDescription" class="hidden" aria-hidden="true"></textarea>
               </div>
 
-              <!-- File Attachment (Supports Multiple Images/Files Preview + Auto Save to Google Drive) -->
+              <!-- File Attachment (Compact Layout + Supports Multiple Images/Files Preview + Auto Save to Google Drive) -->
               <div>
-                <div class="flex items-center justify-between mb-1.5 gap-2 flex-wrap">
-                  <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
-                    แนบรูปภาพหรือเอกสาร (เลือกได้มากกว่า 1 ไฟล์/ภาพ)
+                <div class="flex items-center justify-between mb-1 gap-2 flex-wrap">
+                  <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider">
+                    แนบรูปภาพหรือเอกสารเพิ่มเติม (เลือกได้มากกว่า 1 ไฟล์/ภาพ)
                   </label>
-                  <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                  <span class="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
                     <span>☁️</span>
                     <span>บันทึกรูปลง Google Drive อัตโนมัติ</span>
                   </span>
                 </div>
-                <div id="ticketFileDropZone" class="border-2 border-dashed border-slate-200 hover:border-tcc-400 rounded-2xl p-4 text-center bg-slate-50 transition cursor-pointer">
+                <div id="ticketFileDropZone" class="border border-dashed border-slate-300 hover:border-tcc-500 rounded-xl px-3.5 py-2.5 bg-slate-50/80 hover:bg-tcc-50/30 transition cursor-pointer">
                   <input type="file" id="ticketFileInput" multiple onchange="handleTicketFileSelect(this)" accept="image/*,.pdf,.txt,.doc,.docx" class="hidden">
-                  <label for="ticketFileInput" class="cursor-pointer flex flex-col items-center justify-center gap-1">
-                    <svg class="w-6 h-6 text-tcc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                    <span class="text-xs font-bold text-tcc-700">คลิกเลือกรูปภาพ/ไฟล์ (เลือกหลายไฟล์พร้อมกันได้) หรือลากไฟล์มาวางที่นี่</span>
-                    <span class="text-[10px] text-slate-400">รองรับภาพ PNG, JPG, GIF, WEBP หรือ PDF (ไฟล์ละไม่เกิน 10MB) • กดเลือกเพิ่มได้เรื่อยๆ</span>
+                  <label for="ticketFileInput" class="cursor-pointer flex flex-wrap items-center justify-center gap-2 text-center">
+                    <svg class="w-4 h-4 text-tcc-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    <span class="text-xs font-bold text-tcc-700">คลิกเลือกรูปภาพ/ไฟล์ หรือลากไฟล์มาวางที่นี่</span>
+                    <span class="text-[11px] text-slate-400">(PNG, JPG, GIF, WEBP, PDF ไม่เกิน 10MB • เลือกหลายไฟล์ได้)</span>
                   </label>
-                  <div id="ticketFilePreviewContainer" class="hidden mt-3 p-3 bg-white rounded-xl border border-slate-200 flex-col gap-2.5 text-xs w-full shadow-2xs text-left">
-                    <div class="flex items-center justify-between gap-2 pb-2 border-b border-slate-100">
+                  <div id="ticketFilePreviewContainer" class="hidden mt-2.5 p-2.5 bg-white rounded-xl border border-slate-200 flex-col gap-2 text-xs w-full shadow-2xs text-left">
+                    <div class="flex items-center justify-between gap-2 pb-1.5 border-b border-slate-100">
                       <span id="ticketFileCountBadge" class="font-bold text-tcc-700 text-xs">แนบแล้ว 0 ไฟล์</span>
                       <div class="flex items-center gap-2">
-                        <label for="ticketFileInput" class="px-2.5 py-1 rounded-lg bg-tcc-50 hover:bg-tcc-100 text-tcc-700 font-bold text-[11px] cursor-pointer transition">+ เพิ่มไฟล์/รูป</label>
-                        <button type="button" onclick="clearTicketAttachment()" class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-[11px] transition">ล้างทั้งหมด</button>
+                        <label for="ticketFileInput" class="px-2 py-0.5 rounded-lg bg-tcc-50 hover:bg-tcc-100 text-tcc-700 font-bold text-[11px] cursor-pointer transition">+ เพิ่มไฟล์/รูป</label>
+                        <button type="button" onclick="clearTicketAttachment()" class="px-2 py-0.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-[11px] transition">ล้างทั้งหมด</button>
                       </div>
                     </div>
-                    <div id="ticketFilePreviewGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5"></div>
+                    <div id="ticketFilePreviewGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2"></div>
                   </div>
                 </div>
               </div>
@@ -2270,7 +2270,7 @@
 
         <form onsubmit="handleSendTicketComment(event)" class="space-y-2">
           <div class="flex flex-col sm:flex-row sm:items-end gap-2">
-            <div class="quill-wrapper quill-reply flex-1 min-w-0 focus-within:ring-2 focus-within:ring-tcc-500 focus-within:border-tcc-500 transition">
+            <div class="quill-wrapper quill-reply border-2 border-slate-400 rounded-2xl bg-white shadow-xs flex-1 min-w-0 focus-within:ring-2 focus-within:ring-tcc-500 focus-within:border-tcc-600 transition">
               <div id="replyMessageInput"
                    data-placeholder="พิมพ์ข้อความตอบกลับ, จัดรูปแบบ/สี หรือวางรูปภาพ (Ctrl+V) ได้เลย..."></div>
             </div>
@@ -2336,9 +2336,9 @@
         <div>
           <div class="flex items-center justify-between mb-1.5 gap-2 flex-wrap">
             <label class="block font-semibold text-slate-700">บันทึกการแก้ไข / แจ้งผู้ใช้</label>
-            <span class="text-[11px] text-slate-500">Quill.js Rich Text Editor • พิมพ์ข้อความ, จัดรูปแบบ/สี, หรือ <kbd class="px-1.5 py-0.5 bg-slate-100 border border-slate-200 rounded text-[10px] font-mono">Ctrl+V</kbd> วางรูปภาพในกล่องได้เลย</span>
+            <span class="text-[11px] text-slate-500">พิมพ์ข้อความ, จัดรูปแบบ/สี, หรือ <kbd class="px-1.5 py-0.5 bg-slate-100 border border-slate-200 rounded text-[10px] font-mono">Ctrl+V</kbd> วางรูปภาพในกล่องได้เลย</span>
           </div>
-          <div class="quill-wrapper quill-compact focus-within:ring-2 focus-within:ring-tcc-500 focus-within:border-tcc-500 transition">
+          <div class="quill-wrapper border-2 border-slate-400 rounded-2xl bg-white shadow-xs focus-within:ring-2 focus-within:ring-tcc-500 focus-within:border-tcc-600 transition">
             <input type="file" id="adminActionNoteImageInput" multiple accept="image/*" onchange="handleRichEditorImagePick(this, 'adminActionNoteEditor')" class="hidden">
             <div id="adminActionNoteEditor"
                  data-placeholder="ระบุสิ่งที่แก้ไข ความคืบหน้า วิธีแก้ไขปัญหา หรือวางรูปภาพประกอบ (Ctrl+V) เพื่อแจ้งผู้ใช้..."></div>

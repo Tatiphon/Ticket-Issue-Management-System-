@@ -55,34 +55,76 @@ input[type="date"]::-webkit-datetime-edit-fields-wrapper {
   background: #ffffff;
 }
 /* Quill.js Open-Source Rich Text Editor Custom TCC Theme */
+.quill-wrapper {
+  border: 2px solid #94a3b8;
+  border-radius: 1rem;
+  background: #ffffff;
+  overflow: hidden;
+  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.06);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.quill-wrapper:hover {
+  border-color: #64748b;
+}
+.quill-wrapper:focus-within {
+  border-color: #0284c7 !important;
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.18);
+}
 .ql-toolbar.ql-snow {
   border: 0 !important;
-  border-bottom: 1px solid #e2e8f0 !important;
-  background: #f8fafc;
-  padding: 6px 10px !important;
+  border-bottom: 1.5px solid #cbd5e1 !important;
+  background: #f1f5f9;
+  padding: 8px 12px !important;
   font-family: 'Prompt', sans-serif !important;
 }
 .ql-container.ql-snow {
   border: 0 !important;
   font-family: 'Prompt', sans-serif !important;
-  font-size: 0.875rem !important;
+  font-size: 0.9375rem !important;
   color: #1e293b;
+  background: #ffffff;
 }
 .ql-editor {
-  min-height: inherit;
-  max-height: inherit;
-  padding: 12px 14px !important;
-  line-height: 1.625 !important;
+  min-height: 220px;
+  max-height: 440px;
+  overflow-y: auto;
+  padding: 14px 16px !important;
+  line-height: 1.65 !important;
+}
+#ticketDescriptionEditor .ql-editor {
+  min-height: 260px !important;
+  max-height: 480px !important;
+}
+#detailAdminNoteEditor .ql-editor,
+#adminActionNoteEditor .ql-editor {
+  min-height: 170px !important;
+  max-height: 360px !important;
+  font-size: 0.875rem !important;
 }
 .ql-editor.ql-blank::before {
   color: #94a3b8 !important;
   font-style: normal !important;
-  left: 14px !important;
-  right: 14px !important;
+  left: 16px !important;
+  right: 16px !important;
 }
+.quill-compact .ql-editor,
 .tcc-quill-compact .ql-editor {
-  min-height: 82px !important;
-  max-height: 200px !important;
-  padding: 10px 12px !important;
-  font-size: 0.8125rem !important;
+  min-height: 110px;
+  max-height: 240px;
+  padding: 12px 14px !important;
+  font-size: 0.875rem !important;
 }
+.quill-reply .ql-editor {
+  min-height: 110px !important;
+  max-height: 240px !important;
+  padding: 12px 14px !important;
+  font-size: 0.875rem !important;
+}
+#detailTicketDesc {
+  min-height: 180px;
+  max-height: 460px;
+  overflow-y: auto;
+  border: 2px solid #94a3b8;
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+

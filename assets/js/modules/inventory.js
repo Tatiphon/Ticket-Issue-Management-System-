@@ -667,7 +667,7 @@ async function handleAddNewItem(e) {
     imageName: newItem.image_name,
     imageUrl: isSimulatedId ? manualDriveUrl : newItem.image_url,
     driveFileId: isSimulatedId ? (extractGoogleDriveFileId(manualDriveUrl) || "") : newItem.drive_file_id,
-    imageBase64: (!isSimulatedId && newItem.drive_file_id) ? "" : imageBase64,
+    imageBase64: "",
     folderId: state.driveFolderId || ""
   }, true);
 
@@ -830,7 +830,7 @@ async function handleSaveItemEdit(e) {
     imageName: item.image_name || "",
     imageUrl: isSimulatedId ? manualUrl : (item.image_url || ""),
     driveFileId: isSimulatedId ? (extractGoogleDriveFileId(manualUrl) || "") : (item.drive_file_id || ""),
-    imageBase64: (!isSimulatedId && item.drive_file_id) ? "" : (draftImg.base64 || ""),
+    imageBase64: "",
     folderId: state.driveFolderId || ""
   }, true);
 

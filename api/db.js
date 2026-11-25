@@ -113,7 +113,16 @@ function sanitizeDrivePair(urlVal, fileIdVal) {
   let cleanId = String(fileIdVal || "").trim();
   if (cleanId.startsWith("DRV_")) cleanId = "";
   if (cleanUrl.includes("/file/d/DRV_")) cleanUrl = "";
+  if (/^data:/i.test(cleanUrl)) cleanUrl = "";
   return { url: cleanUrl, fileId: cleanId };
+}
+
+function stripInlineDataImages(rawText) {
+  const s = String(rawText || "");
+  if (!s || !/data:/i.test(s)) return s;
+  return s
+    .replace(/<img\b[^>]*\bsrc\s*=\s*(["'])\s*data:[^"']*\1[^>]*>/gi, "")
+    .replace(/data:image\/[a-zA-Z0-9.+-]+;base64,[A-Za-z0-9+/=]+/gi, "");
 }
 
 function splitName(fullName, firstName, lastName) {
@@ -831,10 +840,27 @@ function cleanAttachmentList(list) {
       if (a.driveFileId !== undefined) a.driveFileId = clean.fileId;
       else a.drive_file_id = clean.fileId;
     }
-    if (clean.fileId || clean.url) {
-      delete a.base64;
-    }
+    delete a.base64;
+    delete a.attachment_base64;
+    delete a.dataUrl;
     return a;
+  });
+}
+
+function cleanCommentList(comments) {
+  if (!Array.isArray(comments)) return [];
+  return comments.map((c) => {
+    const out = { ...c };
+    if (out.html !== undefined) out.html = stripInlineDataImages(out.html);
+    if (out.message_html !== undefined) out.message_html = stripInlineDataImages(out.message_html);
+    if (out.text !== undefined) out.text = stripInlineDataImages(out.text);
+    if (out.message !== undefined) out.message = stripInlineDataImages(out.message);
+    if (Array.isArray(out.attachments)) {
+      out.attachments = cleanAttachmentList(out.attachments);
+    }
+    delete out.base64;
+    delete out.attachment_base64;
+    return out;
   });
 }
 
@@ -845,12 +871,7 @@ async function handleCreateTicket(cfg, data) {
 
   const cleanDrive = sanitizeDrivePair(t.attachment_url, t.drive_file_id);
   const attachments = cleanAttachmentList(t.attachments);
-  const comments = Array.isArray(t.comments)
-    ? t.comments.map((c) => ({
-        ...c,
-        attachments: Array.isArray(c.attachments) ? cleanAttachmentList(c.attachments) : undefined
-      }))
-    : [];
+  const comments = cleanCommentList(t.comments);
 
   await sbFetch(cfg, `${TABLES.tickets}?on_conflict=ticket_id`, {
     method: "POST",
@@ -864,7 +885,7 @@ async function handleCreateTicket(cfg, data) {
       reporter_name: String(t.reporter_name || ""),
       reporter_dept: String(t.reporter_dept || ""),
       reporter_contact: String(t.reporter_contact || ""),
-      description: String(t.description || ""),
+      description: stripInlineDataImages(t.description),
       created_at: String(t.created_at || getBangkokDateParts().ymdhms),
       sla_target: String(t.sla_target || ""),
       assigned_agent: String(t.assigned_agent || ""),
@@ -876,7 +897,7 @@ async function handleCreateTicket(cfg, data) {
       attachment_url: cleanDrive.url,
       drive_file_id: cleanDrive.fileId,
       system_name: String(t.system_name || ""),
-      description_html: String(t.description_html || ""),
+      description_html: stripInlineDataImages(t.description_html),
       attachments
     }]
   });
@@ -902,7 +923,8 @@ async function handleUpdateTicket(cfg, data) {
   if (u.csat_score !== undefined) patch.csat_score = parseInt(u.csat_score, 10) || 0;
   if (u.csat_feedback !== undefined) patch.csat_feedback = String(u.csat_feedback);
   if (u.system_name !== undefined) patch.system_name = String(u.system_name);
-  if (u.description_html !== undefined) patch.description_html = String(u.description_html);
+  if (u.description !== undefined) patch.description = stripInlineDataImages(u.description);
+  if (u.description_html !== undefined) patch.description_html = stripInlineDataImages(u.description_html);
   if (u.attachment_name !== undefined) patch.attachment_name = String(u.attachment_name);
   if (u.attachment_url !== undefined || u.drive_file_id !== undefined) {
     const clean = sanitizeDrivePair(u.attachment_url, u.drive_file_id);
@@ -910,12 +932,7 @@ async function handleUpdateTicket(cfg, data) {
     if (u.drive_file_id !== undefined) patch.drive_file_id = clean.fileId;
   }
   if (u.comments !== undefined) {
-    patch.comments = Array.isArray(u.comments)
-      ? u.comments.map((c) => ({
-          ...c,
-          attachments: Array.isArray(c.attachments) ? cleanAttachmentList(c.attachments) : undefined
-        }))
-      : u.comments;
+    patch.comments = Array.isArray(u.comments) ? cleanCommentList(u.comments) : u.comments;
   }
   if (u.attachments !== undefined) {
     patch.attachments = cleanAttachmentList(u.attachments);
@@ -936,7 +953,6 @@ async function handleSaveKbArticle(cfg, data) {
   if (!kbId) return { status: "error", message: "No kb_id provided" };
 
   const cleanDrive = sanitizeDrivePair(k.attachment_url, k.drive_file_id);
-  const safeBase64 = cleanDrive.fileId ? "" : (String(k.attachment_base64 || "").length < 150000 ? String(k.attachment_base64 || "") : "");
 
   await sbFetch(cfg, `${TABLES.knowledge_base}?on_conflict=kb_id`, {
     method: "POST",
@@ -945,10 +961,10 @@ async function handleSaveKbArticle(cfg, data) {
       kb_id: kbId,
       category: String(k.category || ""),
       title: String(k.title || ""),
-      content: String(k.content || ""),
+      content: stripInlineDataImages(k.content),
       doc_url: String(k.doc_url || cleanDrive.url || ""),
       attachment_name: String(k.attachment_name || ""),
-      attachment_base64: safeBase64,
+      attachment_base64: "",
       attachment_url: cleanDrive.url,
       drive_file_id: cleanDrive.fileId
     }]

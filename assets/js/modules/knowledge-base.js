@@ -343,12 +343,14 @@ async function handleSaveKbArticle(e) {
       if (!isSimDrive && !newArticle.doc_url && driveRes.viewUrl) newArticle.doc_url = driveRes.viewUrl;
       saveAttachmentToCache(kbId, attachName, attachBase64, driveRes.viewUrl || "", driveRes.fileId || "");
       renderKnowledgeBaseList();
+    } else if (!state.useDemoMode) {
+      showNotification("อัปโหลดไฟล์แนบขึ้น Google Drive ไม่สำเร็จ (ระบบจะไม่เก็บไฟล์ลงฐานข้อมูล Supabase)", "warning");
     }
   }
 
   const kbPayload = {
     ...newArticle,
-    attachment_base64: newArticle.drive_file_id ? "" : newArticle.attachment_base64
+    attachment_base64: ""
   };
   callAPI("saveKbArticle", { articleData: kbPayload }, true);
 }

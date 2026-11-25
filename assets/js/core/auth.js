@@ -345,7 +345,7 @@ function applyUserRoleUI() {
     mainApp?.classList.add("hidden");
   }
 
-  const btnLoginModal = document.getElementById("btnLoginModal");
+  const authContainer = document.getElementById("authContainer");
   const userProfilePill = document.getElementById("userProfilePill");
   const userAvatarImg = document.getElementById("userAvatarImg");
   const userDisplayName = document.getElementById("userDisplayName");
@@ -353,14 +353,16 @@ function applyUserRoleUI() {
   const roleBadge = document.getElementById("roleBadge");
 
   if (user) {
-    btnLoginModal?.classList.add("hidden");
+    authContainer?.classList.remove("hidden");
+    authContainer?.classList.add("flex");
     userProfilePill?.classList.remove("hidden");
     userProfilePill?.classList.add("flex");
     if (userAvatarImg) userAvatarImg.src = user.picture;
     if (userDisplayName) userDisplayName.innerText = user.name;
     if (userEmailSub) userEmailSub.innerText = isSuperAdmin ? "👑 Super Admin" : (isAdmin ? "🛡️ Admin ไอที" : user.email);
   } else {
-    btnLoginModal?.classList.remove("hidden");
+    authContainer?.classList.add("hidden");
+    authContainer?.classList.remove("flex");
     userProfilePill?.classList.add("hidden");
     userProfilePill?.classList.remove("flex");
   }

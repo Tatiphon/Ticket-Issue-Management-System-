@@ -163,6 +163,7 @@ function switchTab(tabId, updateUrl = true) {
   if (targetSidebarBtn) {
     targetSidebarBtn.classList.add("bg-tcc-600", "text-white", "shadow-sm", "font-bold");
     targetSidebarBtn.classList.remove("text-slate-700", "hover:bg-slate-100");
+    expandSidebarSectionOf(targetSidebarBtn);
   }
 
   const targetTab = document.getElementById("tabContent-" + tabId);
@@ -360,3 +361,59 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
+/* ADMIN SIDEBAR: COLLAPSIBLE SECTIONS (พับ/กางหมวดหมู่เมนู) */
+const STORAGE_KEY_SIDEBAR_SECTIONS = "it_asset_sidebar_sections";
+const SIDEBAR_SECTION_DEFAULTS = { dashboard: true, helpdesk: true, reports: true, settings: false };
+
+function getSidebarSectionStates() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(STORAGE_KEY_SIDEBAR_SECTIONS) || "{}");
+    return { ...SIDEBAR_SECTION_DEFAULTS, ...(raw && typeof raw === "object" ? raw : {}) };
+  } catch (_) {
+    return { ...SIDEBAR_SECTION_DEFAULTS };
+  }
+}
+
+function setSidebarSectionOpen(key, open, persist = true) {
+  const sec = document.querySelector(`[data-sidebar-section="${key}"]`);
+  if (!sec) return;
+  sec.querySelector(".sidebar-section-body")?.classList.toggle("hidden", !open);
+  sec.querySelector(".sidebar-section-chevron")?.classList.toggle("-rotate-90", !open);
+  sec.querySelector(".sidebar-section-header")?.setAttribute("aria-expanded", open ? "true" : "false");
+  if (persist) {
+    try {
+      const states = getSidebarSectionStates();
+      states[key] = open;
+      localStorage.setItem(STORAGE_KEY_SIDEBAR_SECTIONS, JSON.stringify(states));
+    } catch (_) {}
+  }
+}
+
+function toggleSidebarSection(key) {
+  const sec = document.querySelector(`[data-sidebar-section="${key}"]`);
+  if (!sec) return;
+  const isOpen = !sec.querySelector(".sidebar-section-body")?.classList.contains("hidden");
+  setSidebarSectionOpen(key, !isOpen);
+}
+
+function initSidebarSections() {
+  const states = getSidebarSectionStates();
+  document.querySelectorAll("[data-sidebar-section]").forEach(sec => {
+    const key = sec.getAttribute("data-sidebar-section");
+    setSidebarSectionOpen(key, states[key] !== false, false);
+  });
+  const active = document.querySelector(".admin-sidebar-btn.bg-tcc-600");
+  if (active) expandSidebarSectionOf(active);
+}
+
+function expandSidebarSectionOf(btn) {
+  const sec = btn?.closest("[data-sidebar-section]");
+  if (sec) setSidebarSectionOpen(sec.getAttribute("data-sidebar-section"), true, false);
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initSidebarSections);
+} else {
+  initSidebarSections();
+}

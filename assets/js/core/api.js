@@ -340,6 +340,21 @@ async function refreshData(showToast = false) {
           smtpPass: incomingPass || getSessionSmtpPass() || state.emailConfig?.smtpPass || ""
         });
         saveEmailConfigToStorage();
+        if (typeof state.emailConfig.kbEnabled === "boolean") {
+          state.kbEnabled = state.emailConfig.kbEnabled;
+          try {
+            localStorage.setItem(STORAGE_KEY_KB_ENABLED, state.kbEnabled ? "true" : "false");
+          } catch (_) {}
+        }
+        if (Array.isArray(state.emailConfig.kbDisabledIds)) {
+          if (typeof saveDisabledKbIds === "function") {
+            saveDisabledKbIds(state.emailConfig.kbDisabledIds);
+          } else {
+            try {
+              localStorage.setItem(STORAGE_KEY_KB_DISABLED_IDS, JSON.stringify(state.emailConfig.kbDisabledIds));
+            } catch (_) {}
+          }
+        }
       }
       if (res.emailTemplates && typeof res.emailTemplates === "object") {
         const mergedTpls = JSON.parse(JSON.stringify(DEFAULT_EMAIL_TEMPLATES));

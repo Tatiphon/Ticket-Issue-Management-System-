@@ -142,16 +142,24 @@ function applyKbFeatureVisibility() {
   if (searchWrapper) {
     searchWrapper.classList.toggle("hidden", !enabled && !isAdmin);
   }
+
+  if (!enabled && !isAdmin) {
+    const kbTabContent = document.getElementById("tabContent-kbTab");
+    if (kbTabContent && !kbTabContent.classList.contains("hidden")) {
+      if (typeof switchTab === "function") switchTab("borrowTab");
+    }
+  }
 }
 
 function toggleKnowledgeBaseEnabled(enabled) {
   state.kbEnabled = !!enabled;
   try {
     localStorage.setItem(STORAGE_KEY_KB_ENABLED, state.kbEnabled ? "true" : "false");
-    if (state.emailConfig && typeof state.emailConfig === "object") {
-      state.emailConfig.kbEnabled = state.kbEnabled;
-      saveEmailConfigToStorage();
+    if (!state.emailConfig || typeof state.emailConfig !== "object") {
+      state.emailConfig = {};
     }
+    state.emailConfig.kbEnabled = state.kbEnabled;
+    saveEmailConfigToStorage();
   } catch (_) {}
 
   applyKbFeatureVisibility();
@@ -181,6 +189,13 @@ function toggleKbArticleEnabled(kbId) {
     disabledIds.push(kbId);
   }
   saveDisabledKbIds(disabledIds);
+  try {
+    if (!state.emailConfig || typeof state.emailConfig !== "object") {
+      state.emailConfig = {};
+    }
+    state.emailConfig.kbDisabledIds = disabledIds;
+    saveEmailConfigToStorage();
+  } catch (_) {}
 
   renderKnowledgeBaseList();
   showNotification(
@@ -189,6 +204,7 @@ function toggleKbArticleEnabled(kbId) {
       : `ซ่อนบทความ [${article.kb_id}] ${article.title} จากผู้ใช้งานชั่วคราวแล้ว`,
     nextEnabled ? "success" : "info"
   );
+  saveAllEmailSettingsToServer(true);
 }
 
 function renderKnowledgeBaseList() {
